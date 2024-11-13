@@ -1,17 +1,17 @@
-package com.backend.novel.identityservice.entity;
+package com.backend.identityservice.dto.request;
 
-import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.Set;
+
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Entity
-public class Permission {
-    @Id
+public class RoleRequest {
     String name;
     String description;
+    Set<String> permissions;
 }

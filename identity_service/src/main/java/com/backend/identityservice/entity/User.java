@@ -1,5 +1,6 @@
-package com.backend.novel.identityservice.entity;
+package com.backend.identityservice.entity;
 
+import com.backend.identityservice.enums.UserState;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -20,7 +21,9 @@ public class User {
     String username;
     String email;
     String password;
-    LocalDate dateCreated;
+    LocalDate createdDate;
+    @Enumerated(EnumType.STRING)
+    UserState state;
     @ManyToMany
     Set<Role> roles;
 }
