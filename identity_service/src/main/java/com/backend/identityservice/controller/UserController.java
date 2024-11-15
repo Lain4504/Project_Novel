@@ -20,7 +20,7 @@ import java.util.List;
 @Slf4j
 public class UserController {
     UserService userService;
-    @PostMapping
+    @PostMapping("/registration")
     ResponseEntity<UserResponse> createUser(@RequestBody UserCreationRequest request) {
         return ResponseEntity.ok(userService.createUser(request));
     }

@@ -1,14 +1,14 @@
 package com.backend.profileservice.entity;
 
-import lombok.*;
-import lombok.experimental.FieldDefaults;
+import java.time.LocalDate;
+
 import org.springframework.data.neo4j.core.schema.GeneratedValue;
 import org.springframework.data.neo4j.core.schema.Id;
 import org.springframework.data.neo4j.core.schema.Node;
-import org.springframework.data.neo4j.core.schema.Property;
 import org.springframework.data.neo4j.core.support.UUIDStringGenerator;
 
-import java.time.LocalDate;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 @Data
 @Builder
@@ -20,6 +20,7 @@ public class UserProfile {
     @Id
     @GeneratedValue(generatorClass = UUIDStringGenerator.class)
     String id;
+
     String userId;
     String firstName;
     String lastName;
@@ -27,5 +28,4 @@ public class UserProfile {
     String ward;
     String district;
     String province;
-
 }
