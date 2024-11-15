@@ -4,7 +4,6 @@ import com.backend.identityservice.enums.UserState;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import org.mapstruct.EnumMapping;
 
 import java.time.LocalDate;
 import java.util.Set;
