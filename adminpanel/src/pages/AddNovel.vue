@@ -1,10 +1,8 @@
 <script setup lang="ts">
 </script>
-
 <template>
-  <RouterView />
+    <div>
+        Add Novel
+    </div>
 </template>
 
-<style scoped>
-
-</style>

@@ -1,10 +1,8 @@
 <script setup lang="ts">
 </script>
-
 <template>
-  <RouterView />
+    <div>
+        Existed Novel
+    </div>
 </template>
 
-<style scoped>
-
-</style>
