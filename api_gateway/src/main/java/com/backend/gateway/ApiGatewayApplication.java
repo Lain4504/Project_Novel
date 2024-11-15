@@ -1,11 +1,13 @@
-package com.backend.novel;
+package com.backend.gateway;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class IdentityService {
+public class ApiGatewayApplication {
+
 	public static void main(String[] args) {
-		SpringApplication.run(IdentityService.class, args);
+		SpringApplication.run(ApiGatewayApplication.class, args);
 	}
+
 }

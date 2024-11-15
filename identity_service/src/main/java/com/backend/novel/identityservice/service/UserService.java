@@ -1,15 +1,17 @@
 package com.backend.novel.identityservice.service;
 
-import com.backend.novel.enums.UserState;
-import com.backend.novel.identityservice.constant.PredefinedRole;
-import com.backend.novel.identityservice.dto.request.UserCreationRequest;
-import com.backend.novel.identityservice.dto.request.UserUpdateRequest;
-import com.backend.novel.identityservice.dto.response.UserResponse;
-import com.backend.novel.identityservice.entity.Role;
-import com.backend.novel.identityservice.entity.User;
-import com.backend.novel.identityservice.mapper.UserMapper;
-import com.backend.novel.identityservice.repository.RoleRepository;
-import com.backend.novel.identityservice.repository.UserRepository;
+import com.backend.identityservice.enums.UserState;
+import com.backend.identityservice.constant.PredefinedRole;
+import com.backend.identityservice.dto.request.UserCreationRequest;
+import com.backend.identityservice.dto.request.UserUpdateRequest;
+import com.backend.identityservice.dto.response.UserResponse;
+import com.backend.identityservice.entity.Role;
+import com.backend.identityservice.entity.User;
+import com.backend.identityservice.mapper.ProfileMapper;
+import com.backend.identityservice.mapper.UserMapper;
+import com.backend.identityservice.repository.RoleRepository;
+import com.backend.identityservice.repository.UserRepository;
+import com.backend.identityservice.repository.httpclient.ProfileClient;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -31,6 +33,8 @@ public class UserService {
     RoleRepository roleRepository;
     UserMapper userMapper;
     PasswordEncoder passwordEncoder;
+    ProfileClient profileClient;
+    ProfileMapper profileMapper;
 
     public UserResponse createUser(UserCreationRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) throw new MessageDescriptorFormatException("User already exists");
@@ -42,7 +46,11 @@ public class UserService {
         user.setRoles(roles);
         user.setState(UserState.INACTIVE);
         user.setCreatedDate(java.time.LocalDate.now());
-        return userMapper.toUserResponse(userRepository.save(user));
+        user = userRepository.save(user);
+        var profileRequest = profileMapper.toProfileCreationRequest(request);
+        profileRequest.setUserId(user.getId());
+        profileClient.createProfile(profileRequest);
+        return userMapper.toUserResponse(user);
     }
     public UserResponse updateUser(String userId, UserUpdateRequest request) {
         User user = userRepository.findById(userId).orElseThrow(() -> new MessageDescriptorFormatException("User not found"));
