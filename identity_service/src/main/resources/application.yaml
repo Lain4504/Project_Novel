@@ -14,10 +14,14 @@ spring:
       show-sql: true
 outbound:
   identity:
-    client-id: "<>"
-    client-secret: "<>"
+    client-id: "<ClientID>"
+    client-secret: "<ClientSecret>"
     redirect-uri: "http://localhost:5173/authenticate"
 jwt:
   signerKey: "1TjXchw5FloESb63Kc+DFhTARvpWL4jUGCwfGWxuG5SIf/1y/LgJxHnMqaF6A/ij"
   valid-duration: 3600 # in second
   refreshable-duration: 36000 # in seconds
+
+app:
+  services:
+      profile: http://localhost:8081/profile

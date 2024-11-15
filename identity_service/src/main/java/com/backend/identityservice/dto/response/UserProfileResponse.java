@@ -1,4 +1,4 @@
-package com.backend.profileservice.dto.request;
+package com.backend.identityservice.dto.response;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -12,13 +12,13 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ProfileCreationRequest {
-    String userId;
+public class UserProfileResponse {
+    String id;
     String firstName;
     String lastName;
     LocalDate dateOfBirth;
+    String street;
     String ward;
     String district;
     String province;
-
 }

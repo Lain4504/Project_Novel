@@ -7,9 +7,11 @@ import com.backend.identityservice.dto.request.UserUpdateRequest;
 import com.backend.identityservice.dto.response.UserResponse;
 import com.backend.identityservice.entity.Role;
 import com.backend.identityservice.entity.User;
+import com.backend.identityservice.mapper.ProfileMapper;
 import com.backend.identityservice.mapper.UserMapper;
 import com.backend.identityservice.repository.RoleRepository;
 import com.backend.identityservice.repository.UserRepository;
+import com.backend.identityservice.repository.httpclient.ProfileClient;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -34,6 +36,8 @@ public class UserService {
     RoleRepository roleRepository;
     UserMapper userMapper;
     PasswordEncoder passwordEncoder;
+    ProfileClient profileClient;
+    ProfileMapper profileMapper;
 
     public UserResponse createUser(UserCreationRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) throw new RuntimeException("User already exists");
@@ -45,7 +49,11 @@ public class UserService {
         user.setRoles(roles);
         user.setState(UserState.INACTIVE);
         user.setCreatedDate(java.time.LocalDate.now());
-        return userMapper.toUserResponse(userRepository.save(user));
+        user = userRepository.save(user);
+        var profileRequest = profileMapper.toProfileCreationRequest(request);
+        profileRequest.setUserId(user.getId());
+        profileClient.createProfile(profileRequest);
+        return userMapper.toUserResponse(user);
     }
     @PostAuthorize("returnObject.email == authentication.name")
     public UserResponse updateUser(String userId, UserUpdateRequest request) {

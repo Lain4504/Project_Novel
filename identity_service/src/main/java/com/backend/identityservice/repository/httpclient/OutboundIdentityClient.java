@@ -1,4 +1,4 @@
-package com.backend.identityservice.httpclient;
+package com.backend.identityservice.repository.httpclient;
 
 import com.backend.identityservice.dto.request.ExchangeTokenRequest;
 import com.backend.identityservice.dto.response.ExchangeTokenResponse;

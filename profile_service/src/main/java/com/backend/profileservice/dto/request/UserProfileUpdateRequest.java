@@ -16,7 +16,6 @@ public class UserProfileUpdateRequest {
     String firstName;
     String lastName;
     LocalDate dateOfBirth;
-    String street;
     String ward;
     String district;
     String province;
