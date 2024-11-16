@@ -4,6 +4,8 @@ import UserManagement from '../pages/UserManagement.vue';
 import Analysis from '../pages/Analysis.vue';
 import AddNovel from '../pages/AddNovel.vue';
 import ExistedNovel from '../pages/ExistedNovel.vue';
+import Login from '../pages/Login.vue';
+import Register from '../pages/Register.vue';
 const routes: Array<RouteRecordRaw> = [
   {
     name: 'dashboard',
@@ -30,9 +32,18 @@ const routes: Array<RouteRecordRaw> = [
         path: '/existing-novels',
         component: ExistedNovel,
       },
-
     ]
   },
+  {
+    name: 'login',
+    path: '/login',
+    component: Login,
+  },
+  {
+    name: 'register',
+    path: '/register',
+    component: Register,
+  }
 ];
 
 // Tạo router

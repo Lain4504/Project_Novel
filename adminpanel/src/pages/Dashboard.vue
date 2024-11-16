@@ -59,7 +59,6 @@ const dropdownItems = [
     { label: 'Sign out', href: '#' },
 ];
 </script>
-
 <template>
     <div class="w-screen h-screen flex">
         <!-- Sidebar for larger screens -->
@@ -71,7 +70,7 @@ const dropdownItems = [
             </div>
             <div class="h-[calc(100vh-50px)] bg-gray-800 py-[20px]">
                 <div class="flex flex-col justify-between h-full px-[20px]">
-                    <!-- <Management> & My Book Group -->
+                    <!-- Management and Book Groups -->
                     <div class="space-y-2">
                         <!-- Management Group -->
                         <div class="space-y-2">
@@ -85,7 +84,7 @@ const dropdownItems = [
                             </div>
                         </div>
 
-                        <!-- My Novel Group -->
+                        <!-- My Book Group -->
                         <div class="space-y-2">
                             <div class="text-xs text-gray-400 font-semibold">My Book</div>
                             <div class="flex flex-col justify-between">
@@ -100,9 +99,8 @@ const dropdownItems = [
                 </div>
             </div>
         </div>
-
-        <!-- Mobile overlay sidebar -->
-        <div v-show="showMobileSide" class="fixed inset-0 z-20 bg-gray-900 bg-opacity-50">
+<!-- Mobile overlay sidebar -->
+<div v-show="showMobileSide" class="fixed inset-0 z-20 bg-gray-900 bg-opacity-50">
             <div class="w-[250px] h-full bg-gray-800 text-white p-4">
                 <div class="flex justify-between items-center">
                     <h3 class="font-bold text-xl">Admin Panel</h3>
@@ -134,23 +132,19 @@ const dropdownItems = [
                 </div>
             </div>
         </div>
-
         <!-- Main Content -->
-        <div class="flex-1 h-full bg-gray-400 relative">
-            <div
-                class="h-[50px] bg-gray-100 flex items-center shadow-sm px-[20px] w-full py-[10px] z-10 border-b justify-between">
+        <div class="flex-1 h-full bg-gray-400 relative content-area">
+            <div class="h-[50px] navbar bg-gray-100 flex items-center shadow-sm px-[20px] w-full py-[10px] z-10 border-b justify-between">
                 <!-- Toggle Sidebar Button -->
                 <div class="cursor-pointer w-[30px] text-gray-700 hover:text-black transition-transform duration-200 hover:scale-110 focus:scale-125 active:animate-custom-pulse focus:outline-none"
                     @click="toggleSideBar">
                     <MenuOutlined style="font-size: 24px;" />
                 </div>
 
-
-                <!-- Dropdown Menu aligned to the right -->
+                <!-- Dropdown Menu -->
                 <div class="relative flex items-center space-x-4 cursor-pointer">
                     <div class="relative mr-4">
-                        <BellOutlined style="font-size: 24px;"
-                            class="cursor-pointer w-[30px] text-gray-700 hover:text-black transition-transform duration-200 hover:scale-110 focus:scale-125 active:animate-pulse focus:outline-none" />
+                        <BellOutlined style="font-size: 24px;" class="cursor-pointer w-[30px] text-gray-700 hover:text-black transition-transform duration-200 hover:scale-110 focus:scale-125 active:animate-pulse focus:outline-none" />
                         <span class="absolute top-0 right-0 h-2 w-2 rounded-full bg-red-500"></span>
                     </div>
                     <img class="w-10 h-10 rounded-full border-2 border-gray-50 ml-[-4px] transition-transform duration-200 hover:scale-110 hover:border-blue-500"
@@ -169,7 +163,7 @@ const dropdownItems = [
                 </div>
             </div>
             <!-- Content Area -->
-            <div class="h-[calc(100vh-50px)] bg-gray-50 p-[20px]">
+            <div class="table-container h-full bg-gray-50 p-[20px]">
                 <div class="border border-gray-300 rounded-md p-[20px] h-full">
                     <RouterView />
                 </div>
@@ -193,4 +187,24 @@ const dropdownItems = [
     opacity: 0;
     transform: translateY(10px);
 }
+/* Cố định navbar */
+.navbar {
+    position: sticky;
+    top: 0;
+    z-index: 10; /* Đảm bảo navbar luôn nằm trên các phần tử khác */
+    background-color: #f1f1f1; /* Màu nền của navbar */
+}
+
+/* Cung cấp không gian cho nội dung */
+.content-area {
+    height: calc(100vh - 50px); /* Đảm bảo nội dung chiếm hết chiều cao còn lại */
+    overflow-y: auto; /* Cho phép cuộn dọc khi nội dung vượt quá kích thước */
+}
+
+/* Thiết lập các kiểu cho bảng */
+.table-container {
+    width: 100%;
+    overflow-x: auto; /* Cho phép cuộn ngang nếu bảng quá rộng */
+}
+
 </style>
