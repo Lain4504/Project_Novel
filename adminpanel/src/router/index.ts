@@ -1,11 +1,12 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
 import Dashboard from '../pages/Dashboard.vue';
-import UserManagement from '../pages/UserManagement.vue';
 import Analysis from '../pages/Analysis.vue';
 import AddNovel from '../pages/AddNovel.vue';
 import ExistedNovel from '../pages/ExistedNovel.vue';
 import Login from '../pages/Login.vue';
 import Register from '../pages/Register.vue';
+import Support from '../pages/Support.vue';
+import SystemNotification from '../pages/SystemNotification.vue';
 const routes: Array<RouteRecordRaw> = [
   {
     name: 'dashboard',
@@ -13,14 +14,9 @@ const routes: Array<RouteRecordRaw> = [
     component: Dashboard,
     children: [
       {
-        name: 'analysis',
-        path: '/analysis',
+        name: 'analytics',
+        path: '/analytics',
         component: Analysis,
-      },
-      {
-        name: 'usermanagement',
-        path: '/user-management',
-        component: UserManagement,
       },
       {
         name: 'newnovel',
@@ -32,6 +28,16 @@ const routes: Array<RouteRecordRaw> = [
         path: '/existing-novels',
         component: ExistedNovel,
       },
+      {
+        name: 'support',
+        path: '/support',
+        component: Support,
+      },
+      {
+        name: 'adminnotification',
+        path: '/admin-notification',
+        component: SystemNotification,
+      }
     ]
   },
   {
