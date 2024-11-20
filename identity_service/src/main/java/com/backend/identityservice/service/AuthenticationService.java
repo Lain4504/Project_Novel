@@ -1,15 +1,18 @@
 package com.backend.identityservice.service;
 
+import com.backend.event.NotificationEvent;
 import com.backend.identityservice.constant.PredefinedRole;
 import com.backend.identityservice.dto.request.*;
 import com.backend.identityservice.dto.response.AuthenticationResponse;
 import com.backend.identityservice.dto.response.IntrospectResponse;
 import com.backend.identityservice.entity.InvalidatedToken;
+import com.backend.identityservice.entity.RefreshToken;
 import com.backend.identityservice.entity.Role;
 import com.backend.identityservice.entity.User;
+import com.backend.identityservice.repository.InvalidatedTokenRepository;
+import com.backend.identityservice.repository.RefreshTokenRepository;
 import com.backend.identityservice.repository.httpclient.OutboundIdentityClient;
 import com.backend.identityservice.repository.httpclient.OutboundUserClient;
-import com.backend.identityservice.repository.InvalidatedTokenRepository;
 import com.backend.identityservice.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +20,9 @@ import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -24,6 +30,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.text.ParseException;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 
@@ -39,9 +46,11 @@ import com.nimbusds.jose.Payload;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AuthenticationService {
     UserRepository userRepository;
-    InvalidatedTokenRepository invalidatedTokenRepository;
     OutboundIdentityClient outboundIdentityClient;
+    RefreshTokenRepository refreshTokenRepository;
     OutboundUserClient outboundUserClient;
+    InvalidatedTokenRepository invalidatedTokenRepository;
+    KafkaTemplate<String, Object> kafkaTemplate;
     @NonFinal
     @Value("${jwt.signerKey}")
     protected String SIGNER_KEY;
@@ -66,7 +75,7 @@ public class AuthenticationService {
         var token = request.getToken();
         boolean isValid = true;
         try{
-            verifyToken(token, false);
+            verifyToken(token);
         } catch (Exception e){
             isValid = false;
         }
@@ -100,31 +109,58 @@ public class AuthenticationService {
         var user = userRepository.findByEmail(request.getEmail()).orElseThrow(() -> new RuntimeException("User not found"));
         boolean authenticated = passwordEncoder.matches(request.getPassword(), user.getPassword());
         if(!authenticated) throw new RuntimeException("Invalid credentials");
-        var token = generateToken(user);
-        return AuthenticationResponse.builder().token(token).authenticated(true).build();
+        var accessToken = generateToken(user);
+        var refreshToken = generateRefeshToken(user);
+        return AuthenticationResponse.builder().token(accessToken).refreshToken(refreshToken).authenticated(true).build();
     }
+
+    private String generateRefeshToken(User user) {
+        String token = UUID.randomUUID().toString();
+        RefreshToken refreshToken = RefreshToken.builder()
+                .token(token)
+                .user(user)
+                .expiryDate(LocalDateTime.now().plus(REFRESHABLE_DURATION, ChronoUnit.SECONDS))
+                .build();
+        refreshTokenRepository.save(refreshToken);
+        return token;
+    }
+
     public void logout(LogoutRequest request) throws ParseException, JOSEException {
         try{
-            var signToken = verifyToken(request.getToken(), true);
+            var signToken = verifyToken(request.getAccessToken());
             String jit = signToken.getJWTClaimsSet().getJWTID();
             Date expiryTime = signToken.getJWTClaimsSet().getExpirationTime();
             InvalidatedToken invalidatedToken = InvalidatedToken.builder().id(jit).expiryTime(expiryTime).build();
             invalidatedTokenRepository.save(invalidatedToken);
+            var refreshToken = refreshTokenRepository.findByToken(request.getToken()).orElseThrow(() -> new RuntimeException("Invalid refresh token"));
+            refreshTokenRepository.delete(refreshToken);
         }
         catch (Exception e) {
             throw new RuntimeException("Token already expired");
         }
     }
     public AuthenticationResponse refreshToken(RefreshRequest request) throws ParseException, JOSEException {
-        var signedJWT = verifyToken(request.getToken(), true);
-        var jit = signedJWT.getJWTClaimsSet().getJWTID();
-        var expiryTime = signedJWT.getJWTClaimsSet().getExpirationTime();
-        InvalidatedToken invalidatedToken = InvalidatedToken.builder().id(jit).expiryTime(expiryTime).build();
-        invalidatedTokenRepository.save(invalidatedToken);
-        var email = signedJWT.getJWTClaimsSet().getSubject();
-        var user = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("Invalid credentials"));
-        var token = generateToken(user);
-        return AuthenticationResponse.builder().token(token).authenticated(true).build();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new RuntimeException("User not authenticated");
+        }
+        String userEmailFromAccessToken = authentication.getName(); // Lấy userId từ authentication
+        RefreshToken existingRefreshToken = refreshTokenRepository.findByToken(request.getToken())
+                .orElseThrow(() -> new RuntimeException("Invalid refresh token"));
+        if (!existingRefreshToken.getUser().getEmail().equals(userEmailFromAccessToken)) {
+            throw new RuntimeException("User mismatch: This refresh token doesn't belong to the current user");
+        }
+        if (existingRefreshToken.getExpiryDate().isBefore(LocalDateTime.now())) {
+            throw new RuntimeException("Refresh token expired");
+        }
+        var user = userRepository.findById(existingRefreshToken.getUser().getId())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        String newAccessToken = generateToken(user);
+        return AuthenticationResponse.builder()
+                .token(newAccessToken)
+                .refreshToken(existingRefreshToken.getToken())
+                .authenticated(true)
+                .build();
     }
     private String generateToken(User user) {
         JWSHeader header = new JWSHeader(JWSAlgorithm.HS512);
@@ -149,17 +185,14 @@ public class AuthenticationService {
         }
     }
 
-    private SignedJWT verifyToken(String token, boolean isRefresh) throws JOSEException, ParseException {
+    private SignedJWT verifyToken(String token) throws JOSEException, ParseException {
         JWSVerifier verifier = new MACVerifier(SIGNER_KEY.getBytes());
         SignedJWT signedJWT = SignedJWT.parse(token);
-        Date expiryTime = (isRefresh)
-                ? new Date(signedJWT.getJWTClaimsSet().getIssueTime()
-                .toInstant().plus(REFRESHABLE_DURATION, ChronoUnit.SECONDS).toEpochMilli())
-                : signedJWT.getJWTClaimsSet().getExpirationTime();
+        Date expiryTime = signedJWT.getJWTClaimsSet().getExpirationTime();
         var verified = signedJWT.verify(verifier);
         if (!(verified && expiryTime.after(new Date()))) throw new RuntimeException("Token invalid");
         if (invalidatedTokenRepository.existsById(signedJWT.getJWTClaimsSet().getJWTID()))
-            throw new RuntimeException("Token invalid");
+            throw new RuntimeException("Token already invalidated");
         return signedJWT;
     }
 
@@ -172,5 +205,48 @@ public class AuthenticationService {
                     role.getPermissions().forEach(permission -> stringJoiner.add(permission.getName()));
             });
         return stringJoiner.toString();
+    }
+    public void resetPassword(ResetPasswordRequest request) throws ParseException, JOSEException {
+        if (!request.getNewPassword().equals(request.getConfirmPassword())) {
+            throw new RuntimeException("Password not match");
+        }
+        var signedJWT = verifyToken(request.getToken());
+        String email = signedJWT.getJWTClaimsSet().getSubject();
+        var user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+        String encodedPassword = passwordEncoder.encode(request.getNewPassword());
+        user.setPassword(encodedPassword);
+        userRepository.save(user);
+    }
+    public void changePassword(ChangePasswordRequest request){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new RuntimeException("User not authenticated");
+        }
+        String email = authentication.getName();
+        var user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+        if (!passwordEncoder.matches(request.getOldPassword(), user.getPassword())) {
+            throw new RuntimeException("Invalid old password");
+        }
+        String encodedPassword = passwordEncoder.encode(request.getNewPassword());
+        user.setPassword(encodedPassword);
+        userRepository.save(user);
+    }
+
+    public void forgotPassword(ForgotPasswordRequest request) {
+        var user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        var token = generateToken(user);
+        NotificationEvent event = NotificationEvent
+                .builder()
+                .channel("EMAIL")
+                .recipient(user.getEmail())
+                .subject("Account Activation")
+                .body("Please activate your account")
+                .build();
+        kafkaTemplate.send("reset-password-request", event);
     }
 }

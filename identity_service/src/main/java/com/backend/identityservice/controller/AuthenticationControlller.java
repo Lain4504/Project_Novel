@@ -1,9 +1,6 @@
 package com.backend.identityservice.controller;
 
-import com.backend.identityservice.dto.request.AuthenticationRequest;
-import com.backend.identityservice.dto.request.IntrospectRequest;
-import com.backend.identityservice.dto.request.LogoutRequest;
-import com.backend.identityservice.dto.request.RefreshRequest;
+import com.backend.identityservice.dto.request.*;
 import com.backend.identityservice.dto.response.AuthenticationResponse;
 import com.backend.identityservice.dto.response.IntrospectResponse;
 import com.backend.identityservice.service.AuthenticationService;
@@ -49,4 +46,21 @@ public class AuthenticationControlller {
         authenticationService.logout(request);
         return ResponseEntity.ok().build();
     }
+    @PostMapping("/change-password")
+    ResponseEntity<Void> changePassword(@RequestBody ChangePasswordRequest request) {
+        authenticationService.changePassword(request);
+        return ResponseEntity.ok().build();
+    }
+    @PostMapping("/reset-password")
+    ResponseEntity<Void> resetPassword(@RequestBody ResetPasswordRequest request) throws ParseException, JOSEException {
+        authenticationService.resetPassword(request);
+        return ResponseEntity.ok().build();
+    }
+    @PostMapping("/forgot-password")
+    ResponseEntity<Void> forgotPassword(@RequestBody ForgotPasswordRequest request) {
+        authenticationService.forgotPassword(request);
+        return ResponseEntity.ok().build();
+    }
+
+
 }

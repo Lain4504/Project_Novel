@@ -1,0 +1,30 @@
+server:
+  port: 8082
+  servlet:
+    context-path: /notification
+spring:
+  application:
+    name: notification-service
+  data:
+    mongodb:
+      uri: mongodb://root:root@localhost:27017/notification-service?authSource=admin
+  kafka:
+    bootstrap-servers: localhost:9094
+    consumer:
+      group-id: notification-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "*"
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: yuki0586ab@gmail.com
+    password: tljs bpms waby bkeo
+    properties:
+        mail:
+            smtp:
+            auth: true
+            starttls:
+                enable: true

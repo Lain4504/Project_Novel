@@ -7,6 +7,7 @@ import com.backend.identityservice.dto.request.UserUpdateRequest;
 import com.backend.identityservice.dto.response.UserResponse;
 import com.backend.identityservice.entity.Role;
 import com.backend.identityservice.entity.User;
+import com.backend.event.NotificationEvent;
 import com.backend.identityservice.mapper.ProfileMapper;
 import com.backend.identityservice.mapper.UserMapper;
 import com.backend.identityservice.repository.RoleRepository;
@@ -17,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.validator.internal.engine.messageinterpolation.parser.MessageDescriptorFormatException;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -38,6 +40,7 @@ public class UserService {
     PasswordEncoder passwordEncoder;
     ProfileClient profileClient;
     ProfileMapper profileMapper;
+    KafkaTemplate<String, Object> kafkaTemplate;
 
     public UserResponse createUser(UserCreationRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) throw new RuntimeException("User already exists");
@@ -53,13 +56,22 @@ public class UserService {
         var profileRequest = profileMapper.toProfileCreationRequest(request);
         profileRequest.setUserId(user.getId());
         profileClient.createProfile(profileRequest);
+        NotificationEvent event = NotificationEvent
+                .builder()
+                .channel("EMAIL")
+                .recipient(user.getEmail())
+                .subject("Account Activation")
+                .body("Please activate your account")
+                .build();
+        //Publish message to kafka
+        kafkaTemplate.send("onboard-successfull", event);
+
         return userMapper.toUserResponse(user);
     }
     @PostAuthorize("returnObject.email == authentication.name")
     public UserResponse updateUser(String userId, UserUpdateRequest request) {
         User user = userRepository.findById(userId).orElseThrow(() -> new MessageDescriptorFormatException("User not found"));
         userMapper.updateUser(user, request);
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
         var roles = roleRepository.findAllById(request.getRoles());
         user.setRoles(new HashSet<>(roles));
         return userMapper.toUserResponse(userRepository.save(user));
@@ -78,4 +90,5 @@ public class UserService {
     public UserResponse getUserById(String userId) {
         return userMapper.toUserResponse(userRepository.findById(userId).orElseThrow(() -> new MessageDescriptorFormatException("User not found")));
     }
+
 }

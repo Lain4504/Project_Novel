@@ -1,4 +1,5 @@
-package com.backend.identityservice.dto.response;
+package com.backend.identityservice.dto.request;
+
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -8,8 +9,8 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class AuthenticationResponse {
+public class ResetPasswordRequest {
+    String newPassword;
+    String confirmPassword;
     String token;
-    String refreshToken;
-    boolean authenticated;
 }

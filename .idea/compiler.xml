@@ -9,7 +9,7 @@
         <outputRelativeToContentRoot value="true" />
         <module name="apigateway" />
       </profile>
-      <profile name="Annotation profile for profile_service" enabled="true">
+      <profile name="Annotation profile for notification_service" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
@@ -22,8 +22,9 @@
           <entry name="$MAVEN_REPOSITORY$/org/mapstruct/mapstruct-processor/1.5.5.Final/mapstruct-processor-1.5.5.Final.jar" />
           <entry name="$MAVEN_REPOSITORY$/org/mapstruct/mapstruct/1.5.5.Final/mapstruct-1.5.5.Final.jar" />
         </processorPath>
-        <module name="profileservice" />
+        <module name="notificationservice" />
         <module name="identityservice" />
+        <module name="profileservice" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
@@ -35,6 +36,7 @@
       <module name="api_gateway" options="-parameters" />
       <module name="apigateway" options="-parameters" />
       <module name="identityservice" options="-parameters -Amapstruct.suppressGeneratorTimestamp=true -Amapstruct.defaultComponentModel=spring -Amapstruct.verbose=true" />
+      <module name="notificationservice" options="-parameters -Amapstruct.suppressGeneratorTimestamp=true -Amapstruct.defaultComponentModel=spring -Amapstruct.verbose=true" />
       <module name="profileservice" options="-parameters -Amapstruct.suppressGeneratorTimestamp=true -Amapstruct.defaultComponentModel=spring -Amapstruct.verbose=true" />
     </option>
   </component>
