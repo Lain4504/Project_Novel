@@ -165,7 +165,7 @@ public class AuthenticationService {
     private String generateToken(User user) {
         JWSHeader header = new JWSHeader(JWSAlgorithm.HS512);
         JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
-                .subject(user.getEmail())
+                .subject(user.getId())
                 .issuer("lain4504.com")
                 .issueTime(new Date())
                 .expirationTime(new Date(
@@ -211,8 +211,8 @@ public class AuthenticationService {
             throw new RuntimeException("Password not match");
         }
         var signedJWT = verifyToken(request.getToken());
-        String email = signedJWT.getJWTClaimsSet().getSubject();
-        var user = userRepository.findByEmail(email)
+        String id = signedJWT.getJWTClaimsSet().getSubject();
+        var user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
         String encodedPassword = passwordEncoder.encode(request.getNewPassword());
@@ -224,8 +224,8 @@ public class AuthenticationService {
         if (authentication == null || !authentication.isAuthenticated()) {
             throw new RuntimeException("User not authenticated");
         }
-        String email = authentication.getName();
-        var user = userRepository.findByEmail(email)
+        String id = authentication.getName();
+        var user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
         if (!passwordEncoder.matches(request.getOldPassword(), user.getPassword())) {
