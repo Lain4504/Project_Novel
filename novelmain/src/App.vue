@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useRoute } from 'vue-router'; // Import useRoute từ vue-router
-import Header from './components/Header.vue'; // Import Header component
+import Header from './components/home/Header.vue'; // Import Header component
 
 const route = useRoute(); // Lấy route hiện tại
 

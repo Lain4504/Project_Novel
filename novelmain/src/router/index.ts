@@ -1,13 +1,13 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
-import Dashboard from '../pages/Dashboard.vue';
-import Analysis from '../pages/Analysis.vue';
-import AddNovel from '../pages/AddNovel.vue';
-import ExistedNovel from '../pages/ExistedNovel.vue';
-import Login from '../pages/Login.vue';
-import Register from '../pages/Register.vue';
-import Support from '../pages/Support.vue';
-import SystemNotification from '../pages/SystemNotification.vue';
-import Home from '../pages/Home.vue';
+import Dashboard from '../views/admin/Dashboard.vue';
+import Analysis from '../views/admin/Analysis.vue';
+import AddNovel from '../views/admin/AddNovel.vue';
+import ExistedNovel from '../views/admin/ExistedNovel.vue';
+import Support from '../views/admin/Support.vue';
+import SystemNotification from '../views/admin/SystemNotification.vue';
+import Login from '../views/common/Login.vue';
+import Register from '../views/common/Register.vue';
+import Home from '../views/home/Home.vue';
 const routes: Array<RouteRecordRaw> = [
   {
     name: 'dashboard',

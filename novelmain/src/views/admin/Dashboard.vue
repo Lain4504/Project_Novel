@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount } from 'vue';
+import { ref, onMounted, onBeforeUnmount} from 'vue';
 import { 
     BookOutlined, 
     MenuOutlined, 
@@ -11,43 +11,63 @@ import {
     RadarChartOutlined, 
     StopOutlined, 
     UploadOutlined, 
-    MacCommandFilled, 
-    MacCommandOutlined} from '@ant-design/icons-vue';
-const showDropDown = ref(false);
-const showSide = ref(true);
-const isMobile = ref(false);
-const showMobileSide = ref(false);
-const isDropdownOpen = ref(false);
-const toggleDropdown = () => {
+    MacCommandOutlined
+} from '@ant-design/icons-vue';
+
+enum Routes {
+    NewNovel = '/new-novel',
+    ExistingNovels = '/existing-novels',
+    Analytics = '/analytics',
+    Support = '/support',
+    AdminNotification = '/admin-notification',
+    Account = '/account',
+    Payment = '/payment',
+    Rules = '/rules',
+    Tutorial = '/tutorial',
+    BookCategory = '/book-category',
+    PostCategory = '/post-category',
+}
+
+type MenuItem = {
+    to: Routes;
+    label: string;
+    icon?: typeof BookOutlined; // Icon component
+};
+
+const showDropDown = ref<boolean>(false);
+const showSide = ref<boolean>(true);
+const isMobile = ref<boolean>(false);
+const showMobileSide = ref<boolean>(false);
+const isDropdownOpen = ref<boolean>(false);
+
+const toggleDropdown = (): void => {
     isDropdownOpen.value = !isDropdownOpen.value;
+};
+// Toggle dropdown menu
+const toggleDropdownMenu = () : void => {
+    showDropDown.value = !showDropDown.value;
 }
-const handleItemClick = () => {
+const handleItemClick = (): void => {
     isDropdownOpen.value = false;
-}
-// Toggle main sidebar
-const toggleSideBar = () => {
+};
+
+const toggleSideBar = (): void => {
     if (isMobile.value) {
         showMobileSide.value = !showMobileSide.value;
     } else {
         showSide.value = !showSide.value;
     }
-    // Close the dropdown when toggling sidebar
     showDropDown.value = false;
-}
+};
 
-// Toggle dropdown menu
-const toggleDropdownMenu = () => {
-    showDropDown.value = !showDropDown.value;
-}
-
-const handleResize = () => {
+const handleResize = (): void => {
     isMobile.value = window.innerWidth <= 768;
     if (isMobile.value) {
-        showSide.value = false; // Auto-close main sidebar on mobile
+        showSide.value = false;
     } else {
-        showMobileSide.value = false; // Auto-close mobile sidebar on larger screens
+        showMobileSide.value = false;
     }
-}
+};
 
 onMounted(() => {
     handleResize();
@@ -58,29 +78,30 @@ onBeforeUnmount(() => {
     window.removeEventListener('resize', handleResize);
 });
 
-const bookMenuItems = [
-    { to: '/new-novel', label: 'Add Novel', icon: BookOutlined },
-    { to: '/existing-novels', label: 'Existed Novel', icon: UploadOutlined },
-    { to: '/analytics', label: 'Analytics', icon: RadarChartOutlined },
+const bookMenuItems: MenuItem[] = [
+    { to: Routes.NewNovel, label: 'Add Novel', icon: BookOutlined },
+    { to: Routes.ExistingNovels, label: 'Existed Novel', icon: UploadOutlined },
+    { to: Routes.Analytics, label: 'Analytics', icon: RadarChartOutlined },
 ];
-const supportMenuItems = [
-    { to: '/support', label: 'Support', icon: PhoneOutlined },
-    { to: '/admin-notification', label: 'Notification', icon: MessageOutlined },
+const supportMenuItems: MenuItem[] = [
+    { to: Routes.Support, label: 'Support', icon: PhoneOutlined },
+    { to: Routes.AdminNotification, label: 'Notification', icon: MessageOutlined },
 ];
-const informationMenuItems = [
-    { to: '/rules', label: 'Rule', icon: StopOutlined },
-    { to: '/tutorial', label: 'Tutorial', icon: CompassOutlined },
+const informationMenuItems: MenuItem[] = [
+    { to: Routes.Rules, label: 'Rule', icon: StopOutlined },
+    { to: Routes.Tutorial, label: 'Tutorial', icon: CompassOutlined },
 ];
-const featureMenuItems = [
-    { to: '/book-category', label: 'Book Category', },
-    { to: '/post-category', label: 'Post Category' }
+const featureMenuItems: MenuItem[] = [
+    { to: Routes.BookCategory, label: 'Book Category', },
+    { to: Routes.PostCategory, label: 'Post Category' }
 ];
 const dropdownItems = [
-    { label: 'Account', to: '/account' },
-    { label: 'Payment', to: '/payment' },
-    { label: 'Sign out', to: '#' },
+    { to: Routes.Account, label: 'Account' },
+    { to: Routes.Payment, label: 'Payment'},
+    { label: 'Sign out'},
 ];
 </script>
+
 <template>
     <div class="w-screen h-screen flex">
         <!-- Sidebar for larger screens -->
@@ -97,7 +118,7 @@ const dropdownItems = [
                         <div class="space-y-2 py-1">
                             <RouterLink to="admin-management">
                             <div class="text-md text-gray-700 font-semibold flex items-center hover:underline hover:text-gray-900">
-                                <MacCommandFilled style="font-size: 16px; margin-right: 10px;" />Admin Management
+                                <MacCommandOutlined style="font-size: 16px; margin-right: 10px;" />Admin Management
                             </div>
                         </RouterLink>
                         </div>
@@ -251,7 +272,7 @@ const dropdownItems = [
                         <div v-show="showDropDown"
                             class="absolute top-full mt-2 right-0 z-10 w-44 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                             <div class="py-1 text-left" role="none">
-                                <RouterLink v-for="item in dropdownItems" :key="item.label" :to="item.to"
+                                <RouterLink v-for="item in dropdownItems" :key="item.label" :to="item.to ? item.to : ''"
                                     class="text-gray-700 block px-4 py-2 text-sm hover:bg-[#e7f5dc]" role="menuitem">
                                     {{ item.label }}
                                 </RouterLink>
