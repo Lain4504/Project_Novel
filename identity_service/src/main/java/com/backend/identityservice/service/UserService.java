@@ -78,8 +78,8 @@ public class UserService {
     }
     public UserResponse getMyInfo(){
         var context = SecurityContextHolder.getContext();
-        String email = context.getAuthentication().getName();
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new MessageDescriptorFormatException("User not found"));
+        String id = context.getAuthentication().getName();
+        User user = userRepository.findById(id).orElseThrow(() -> new MessageDescriptorFormatException("User not found"));
         return userMapper.toUserResponse(user);
     }
     @PreAuthorize("hasRole('ADMIN')")
