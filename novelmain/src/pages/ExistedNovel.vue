@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { DeleteOutlined, EditOutlined } from '@ant-design/icons-vue';
+
 </script>
 
 <template>
@@ -17,7 +19,7 @@
                         Novel Author
                     </th>
                     <th scope="col" class="py-3 px-6">
-                        <span>Edit</span>
+                        <span>Action</span>
                     </th>
                 </tr>
             </thead>
@@ -32,9 +34,15 @@
                     <td class="py-4 px-6 dark:text-white">
                         Maruyama Kugane
                     </td>
-                    <td class="py-4 px-6 dark:text-white">
-                        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                            Edit
+                    <td class="py-4 px-6 dark:text-white flex space-x-2">
+                        <button
+                            class="bg-transparent border-[1px] border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white font-medium py-2 px-4 rounded transition duration-300 flex items-center justify-center">
+                            <EditOutlined />
+                        </button>
+
+                        <button
+                            class="bg-transparent border-[1px] border-red-500 text-red-500 hover:bg-red-500 hover:text-white font-medium py-2 px-4 rounded transition duration-300 flex items-center justify-center">
+                            <DeleteOutlined />
                         </button>
                     </td>
                 </tr>

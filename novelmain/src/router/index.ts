@@ -7,10 +7,11 @@ import Login from '../pages/Login.vue';
 import Register from '../pages/Register.vue';
 import Support from '../pages/Support.vue';
 import SystemNotification from '../pages/SystemNotification.vue';
+import Home from '../pages/Home.vue';
 const routes: Array<RouteRecordRaw> = [
   {
     name: 'dashboard',
-    path: '/',
+    path: '/dashboard',
     component: Dashboard,
     children: [
       {
@@ -49,7 +50,12 @@ const routes: Array<RouteRecordRaw> = [
     name: 'register',
     path: '/register',
     component: Register,
-  }
+  },
+  {
+    name: 'home',
+    path: '/',
+    component: Home,
+  },
 ];
 
 // Tạo router

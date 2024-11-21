@@ -1,30 +1,23 @@
 <script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
+import { useRoute } from 'vue-router'; // Import useRoute từ vue-router
+import Header from './components/Header.vue'; // Import Header component
+
+const route = useRoute(); // Lấy route hiện tại
+
+// Mảng chứa tên các route mà bạn muốn hiển thị Header
+const routesWithHeader = ['home', 'anotherRoute']; // Thêm các route bạn muốn hiển thị Header
+
+// Dùng computed để theo dõi sự thay đổi của route
+import { computed } from 'vue';
+
+const showHeader = computed(() => {
+  // Kiểm tra xem route hiện tại có nằm trong danh sách các route cần hiển thị Header hay không
+  return routesWithHeader.includes(route.name as string);
+});
 </script>
 
 <template>
-  <div>
-    <a href="https://vite.dev" target="_blank">
-      <img src="/vite.svg" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://vuejs.org/" target="_blank">
-      <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
-    </a>
-  </div>
-  <HelloWorld msg="Vite + Vue" />
+  <!-- Hiển thị Header chỉ khi showHeader là true -->
+  <Header v-if="showHeader" />
+  <RouterView />
 </template>
-
-<style scoped>
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
-}
-</style>
