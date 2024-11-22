@@ -27,6 +27,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -41,7 +42,7 @@ public class UserService {
     ProfileClient profileClient;
     ProfileMapper profileMapper;
     KafkaTemplate<String, Object> kafkaTemplate;
-
+    AuthenticationService authenticationService;
     public UserResponse createUser(UserCreationRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) throw new RuntimeException("User already exists");
         User user = userMapper.toUser(request);
@@ -56,15 +57,17 @@ public class UserService {
         var profileRequest = profileMapper.toProfileCreationRequest(request);
         profileRequest.setUserId(user.getId());
         profileClient.createProfile(profileRequest);
+        var activeToken = authenticationService.activeAccountCode(user.getId());
+        var subject = "Activate your account";
         NotificationEvent event = NotificationEvent
                 .builder()
                 .channel("EMAIL")
                 .recipient(user.getEmail())
-                .subject("Account Activation")
-                .body("Please activate your account")
+                .templateCode("ACTIVATION_EMAIL")
+                .param(Map.of("activeToken", activeToken, "subject", subject))
                 .build();
         //Publish message to kafka
-        kafkaTemplate.send("onboard-successfull", event);
+        kafkaTemplate.send("onboard-successfully", event);
 
         return userMapper.toUserResponse(user);
     }

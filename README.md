@@ -9,7 +9,6 @@
 - **MySQL 8.0** - Relational database for structured data.
 - **MongoDB** - NoSQL database for flexible and unstructured data.
 - **Elasticsearch 8.2.0** - Full-text search engine for efficient search functionality.
-- **Neo4j** - Graph database for managing relationships between entities.
 - **JDK 21** - Java Development Kit for backend development.
 - **Maven 3.8** - Build and dependency management tool.
 - **Node.js 18** - Runtime environment for server-side JavaScript.
@@ -25,16 +24,15 @@
 
 ## Backend Technology Stack
 
-| Technology           | Version    | Description                                     | 
-|----------------------|------------|-------------------------------------------------|
-| **Spring Boot**      | 3.0.0      | Container + MVC Framework                       | 
-| **JJWT**             | 0.11.5     | JSON Web Token support for authentication       |
-| **Lombok**           | 1.18.24    | Simplifies object encapsulation and reduces boilerplate code |
-| **MySQL**            | 8.0        | Relational database for structured data         | 
-| **Elasticsearch**    | 8.2.0      | Full-text search engine for fast and efficient queries |
-| **Docker**           | -          | Application containerization for deployment     | 
-| **MongoDB**          | -          | NoSQL database for storing unstructured data    | 
-| **Neo4j**            | -          | Graph database for managing complex relationships | 
+| Technology          | Version    | Description                                     | 
+|---------------------|------------|-------------------------------------------------|
+| **Spring Boot**     | 3.0.0      | Container + MVC Framework                       | 
+| **JWT**             | 0.11.5     | JSON Web Token support for authentication       |
+| **Lombok**          | 1.18.24    | Simplifies object encapsulation and reduces boilerplate code |
+| **MySQL**           | 8.0        | Relational database for structured data         | 
+| **Elasticsearch**   | 8.2.0      | Full-text search engine for fast and efficient queries |
+| **Docker**          | -          | Application containerization for deployment     | 
+| **MongoDB**         | -          | NoSQL database for storing unstructured data    | 
 
 ### Microservices Architecture Features:
 - **Independent Services**: Each functionality (authentication, search, statistics, etc.) is developed and deployed independently.

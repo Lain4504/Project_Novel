@@ -39,7 +39,30 @@ public class PostService {
         post = postRepository.save(post);
         return postMapper.toPostResponse(post);
     }
-
+    public PostResponse updatePost(String postId, PostRequest request){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new RuntimeException("Post not found"));
+        if(!post.getUserId().equals(authentication.getName())) {
+            throw new RuntimeException("You are not allowed to update this post");
+        }
+        post.setContent(request.getContent());
+        post.setModifiedDate(Instant.now());
+        post = postRepository.save(post);
+        return postMapper.toPostResponse(post);
+        }
+    public void deletePost(String postId){
+        var post = postRepository.findById(postId)
+                .orElseThrow(() -> new RuntimeException("Post not found"));
+        postRepository.delete(post);
+    }
+    public PostResponse getPost(String postId){
+        var post = postRepository.findById(postId)
+                .orElseThrow(() -> new RuntimeException("Post not found"));
+        var postResponse = postMapper.toPostResponse(post);
+        postResponse.setCreated(dateTimeFormatter.format(post.getCreatedDate()));
+        return postResponse;
+    }
     public PageResponse<PostResponse> getMyPosts(int page, int size){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userId = authentication.getName();
@@ -58,6 +81,5 @@ public class PostService {
                 .totalElements(pageData.getTotalElements())
                 .data(postList)
                 .build();
-
     }
 }

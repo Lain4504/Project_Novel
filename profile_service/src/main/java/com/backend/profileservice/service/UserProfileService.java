@@ -1,4 +1,4 @@
-package com.backend.profileservice.Service;
+package com.backend.profileservice.service;
 
 import java.util.List;
 

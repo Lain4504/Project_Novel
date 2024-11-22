@@ -110,11 +110,11 @@ public class AuthenticationService {
         boolean authenticated = passwordEncoder.matches(request.getPassword(), user.getPassword());
         if(!authenticated) throw new RuntimeException("Invalid credentials");
         var accessToken = generateToken(user);
-        var refreshToken = generateRefeshToken(user);
+        var refreshToken = generateRefreshToken(user);
         return AuthenticationResponse.builder().token(accessToken).refreshToken(refreshToken).authenticated(true).build();
     }
 
-    private String generateRefeshToken(User user) {
+    private String generateRefreshToken(User user) {
         String token = UUID.randomUUID().toString();
         RefreshToken refreshToken = RefreshToken.builder()
                 .token(token)
@@ -240,13 +240,17 @@ public class AuthenticationService {
         var user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("User not found"));
         var token = generateToken(user);
+        var subject = "Reset password";
         NotificationEvent event = NotificationEvent
                 .builder()
                 .channel("EMAIL")
                 .recipient(user.getEmail())
-                .subject("Account Activation")
-                .body("Please activate your account")
+                .templateCode("RESET_PASSWORD")
+                .param(Map.of("token", token, "subject", subject))
                 .build();
         kafkaTemplate.send("reset-password-request", event);
+    }
+    public String activeAccountCode (String userId) {
+        return generateToken(userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found")));
     }
 }

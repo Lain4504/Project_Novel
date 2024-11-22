@@ -1,5 +1,6 @@
 package com.backend.notificationservice.controller;
 
+import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,8 +23,25 @@ public class EmailController {
     @Autowired
     EmailService emailService;
 
-    @KafkaListener(topics = "onboard-successfull")
+    @KafkaListener(topics = "onboard-successfully")
     public void listen(NotificationEvent message) {
-        log.info("Received message: " + message);
+        log.info("Received message: {}", message);
+        try {
+            emailService.sendActivationEmail(message);
+            log.info("Email sent to: {}", message.getRecipient());
+        } catch (MessagingException e) {
+            log.error("Error sending email to {}: {}", message.getRecipient(), e.getMessage());
+        }
     }
+    @KafkaListener(topics = "reset-password-request")
+    public void listenResetPassword(NotificationEvent message) {
+        log.info("Received message: {}", message);
+        try {
+            emailService.sendResetPasswordEmail(message);
+            log.info("Email sent to: {}", message.getRecipient());
+        } catch (MessagingException e) {
+            log.error("Error sending email to {}: {}", message.getRecipient(), e.getMessage());
+        }
+    }
+
 }

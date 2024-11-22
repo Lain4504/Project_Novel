@@ -4,7 +4,7 @@ server:
     context-path: /post
 spring:
   application:
-    name: post-service
+    name: search-service
   data:
     mongodb:
-      uri: mongodb://root:root@localhost:27017/post-service?authSource=admin
+      uri: mongodb://root:root@localhost:27017/search-service?authSource=admin

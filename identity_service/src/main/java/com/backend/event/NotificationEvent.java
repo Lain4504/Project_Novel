@@ -14,7 +14,4 @@ public class NotificationEvent {
     String recipient;
     String templateCode;
     Map<String, Object> param;
-    //temp
-    String subject;
-    String body;
 }

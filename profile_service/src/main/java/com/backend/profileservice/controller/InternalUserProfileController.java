@@ -2,7 +2,7 @@ package com.backend.profileservice.controller;
 
 import org.springframework.web.bind.annotation.*;
 
-import com.backend.profileservice.Service.UserProfileService;
+import com.backend.profileservice.service.UserProfileService;
 import com.backend.profileservice.dto.request.ProfileCreationRequest;
 import com.backend.profileservice.dto.response.UserProfileResponse;
 

@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.backend.profileservice.Service.UserProfileService;
+import com.backend.profileservice.service.UserProfileService;
 import com.backend.profileservice.dto.request.UserProfileUpdateRequest;
 import com.backend.profileservice.dto.response.UserProfileResponse;
 
