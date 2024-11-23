@@ -8,6 +8,9 @@ import SystemNotification from '../views/admin/SystemNotification.vue';
 import Login from '../views/common/Login.vue';
 import Register from '../views/common/Register.vue';
 import Home from '../views/home/Home.vue';
+import Chapter from '../views/home/Chapter.vue';
+import NovelDetail from '../views/home/NovelDetail.vue';
+import Account from '../views/home/Account.vue';
 const routes: Array<RouteRecordRaw> = [
   {
     name: 'dashboard',
@@ -56,6 +59,21 @@ const routes: Array<RouteRecordRaw> = [
     path: '/',
     component: Home,
   },
+  {
+    name: 'chapter',
+    path: '/novel',
+    component: Chapter,
+  },
+  {
+    name: 'noveldetail',
+    path: '/noveldetail',
+    component: NovelDetail,
+  },
+  {
+    name: 'account',
+    path: '/account',
+    component: Account,
+  }
 ];
 
 // Tạo router

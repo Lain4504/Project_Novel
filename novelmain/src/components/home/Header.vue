@@ -17,10 +17,10 @@ const isCategoryMenuOpen = ref(false);
 
 // Danh sách danh mục mẫu
 const categories = [
-  "Thể loại 1", "Thể loại 2", "Thể loại 3",
-  "Thể loại 4", "Thể loại 5", "Thể loại 6",
-  "Thể loại 7", "Thể loại 8", "Thể loại 9",
-  "Thể loại 10", "Thể loại 11", "Thể loại 12",
+  "Category 1", "Category 2", "Category 3",
+  "Category 4", "Category 5", "Category 6",
+  "Category 7", "Category 8", "Category 9",
+  "Category 10", "Category 11", "Category 12",
 ];
 
 // Đồng bộ trạng thái giữa các menu
@@ -52,9 +52,9 @@ watch(isAccountMenuOpen, (newVal) => {
         </button>
   
         <!-- Logo -->
-        <div class="text-black text-xl font-semibold">
+        <RouterLink to="/" class="text-black text-xl font-semibold">
           LOGO
-        </div>
+        </RouterLink>
   
         <!-- Desktop Menu -->
         <div class="hidden md:flex space-x-3 items-center relative">
@@ -64,12 +64,12 @@ watch(isAccountMenuOpen, (newVal) => {
               @click="isCategoryMenuOpen = !isCategoryMenuOpen" 
               class="text-black text-sm hover:underline transition-all duration-300"
             >
-              Danh mục
+              Category
             </button>
             <transition name="fade">
               <div 
                 v-if="isCategoryMenuOpen" 
-                class="absolute top-full mt-2 w-[20rem] bg-white shadow-lg rounded-lg border border-gray-200 grid grid-cols-3 gap-4 p-4"
+                class="absolute top-full mt-2 w-[20rem] bg-white shadow-lg rounded-lg border border-gray-200 grid grid-cols-3 gap-4 p-4 z-10"
               >
                 <div 
                   v-for="(category, index) in categories.slice(0, 9)" 
@@ -79,25 +79,25 @@ watch(isAccountMenuOpen, (newVal) => {
                   {{ category }}
                 </div>
                 <button class="col-span-3 text-center text-blue-500 text-sm hover:underline">
-                  Xem thêm
+                  View more
                 </button>
               </div>
             </transition>
           </div>
-          <a href="#" class="text-black text-sm hover:underline transition-all duration-300">Thảo luận</a>
-          <a href="#" class="text-black text-sm hover:underline transition-all duration-300">Hỗ trợ</a>
-          <a href="#" class="text-black text-sm hover:underline transition-all duration-300">Bảng xếp hạng</a>
+          <a href="#" class="text-black text-sm hover:underline transition-all duration-300">Forum</a>
+          <a href="#" class="text-black text-sm hover:underline transition-all duration-300">Support</a>
+          <a href="#" class="text-black text-sm hover:underline transition-all duration-300">Ranking</a>
           <!-- Search bar -->
           <div class="relative">
             <input 
               type="text" 
-              placeholder="Tìm kiếm..." 
+              placeholder="Search..." 
               class="p-[0.4rem] rounded-full placeholder:text-sm bg-gray-100 text-black focus:outline-none focus:ring-1 focus:ring-[#889b6c] transition-all duration-300">
             <SearchOutlined class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 cursor-pointer" />
           </div>
           <!-- Login/Register -->
-              <RouterLink to="/login" class="text-black text-sm hover:underline transition-all duration-300">Đăng nhập</RouterLink> 
-              <RouterLink to="/register" class="text-black text-sm ml-4 hover:underline transition-all duration-300">Đăng ký</RouterLink>
+              <RouterLink to="/login" class="text-black text-sm hover:underline transition-all duration-300">Login</RouterLink> 
+              <RouterLink to="/register" class="text-black text-sm ml-4 hover:underline transition-all duration-300">Register</RouterLink>
         </div>
   
         <!-- Account Dropdown (only on mobile) -->
@@ -112,15 +112,10 @@ watch(isAccountMenuOpen, (newVal) => {
           <transition name="fade">
             <div 
               v-if="isAccountMenuOpen" 
-              class="absolute right-0 mt-2 w-[9rem] bg-white shadow-lg rounded-lg border border-gray-200 text-sm"
+              class="absolute right-0 mt-2 w-[9rem] bg-white shadow-lg rounded-lg border border-gray-200 text-sm z-10"
             >
-              <a href="#" class="block px-4 py-2 text-black hover:bg-gray-100 hover:underline transition-all duration-300">Đăng nhập</a>
-              <a href="#" class="block px-4 py-2 text-black hover:bg-gray-100 hover:underline transition-all duration-300">Đăng ký</a>
-              <a href="#" class="block px-4 py-2 text-black hover:bg-gray-100 hover:underline transition-all duration-300">Tài khoản</a>
-              <a href="#" class="block px-4 py-2 text-black hover:bg-gray-100 hover:underline transition-all duration-300">Lịch sử</a>
-              <a href="#" class="block px-4 py-2 text-black hover:bg-gray-100 hover:underline transition-all duration-300">Đánh dấu</a>
-              <a href="#" class="block px-4 py-2 text-black hover:bg-gray-100 hover:underline transition-all duration-300">Kệ sách</a>
-              <a href="#" class="block px-4 py-2 text-black hover:bg-gray-100 hover:underline transition-all duration-300">Nạp tiền</a>
+              <RouterLink to="/login" class="block px-4 py-2 text-black hover:bg-gray-100 hover:underline transition-all duration-300">Login</RouterLink>
+              <RouterLink to="/register" class="block px-4 py-2 text-black hover:bg-gray-100 hover:underline transition-all duration-300">Register</RouterLink>
             </div>
           </transition>
         </div>
@@ -134,7 +129,7 @@ watch(isAccountMenuOpen, (newVal) => {
             <div class="relative">
               <input 
                 type="text" 
-                placeholder="Tìm kiếm..." 
+                placeholder="Search..." 
                 class="p-[0.4rem] pr-10 rounded-full placeholder:text-sm w-full bg-gray-100 text-black focus:outline-none focus:ring-1 focus:ring-[#889b6c] transition-all duration-300">
               <SearchOutlined class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 cursor-pointer" />
             </div>
@@ -143,7 +138,7 @@ watch(isAccountMenuOpen, (newVal) => {
                 @click="isCategoryMenuOpen = !isCategoryMenuOpen"
                 class="block w-full text-sm hover:underline text-left transition-all"
               >
-                Danh mục
+                Category
               </button>
               <transition name="fade">
                 <div 
@@ -158,14 +153,14 @@ watch(isAccountMenuOpen, (newVal) => {
                     {{ category }}
                   </div>
                   <button class="col-span-3 text-center text-blue-500 text-sm hover:underline">
-                    Xem thêm
+                    View more
                   </button>
                 </div>
               </transition>
             </div>
-            <a href="#" class="block text-sm hover:underline transition-all duration-300">Thảo luận</a>
-            <a href="#" class="block text-sm hover:underline transition-all duration-300">Hỗ trợ</a>
-            <a href="#" class="block text-sm hover:underline transition-all duration-300">Bảng xếp hạng</a>
+            <a href="#" class="block text-sm hover:underline transition-all duration-300">Forum</a>
+            <a href="#" class="block text-sm hover:underline transition-all duration-300">Support</a>
+            <a href="#" class="block text-sm hover:underline transition-all duration-300">Ranking</a>
           </div>
         </div>
       </transition>

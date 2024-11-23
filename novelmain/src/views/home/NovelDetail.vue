@@ -1,0 +1,237 @@
+<template>
+    <div class="bg-gray-50 p-6 rounded-lg shadow-lg max-w-7xl mx-auto">
+        <!-- Header Section -->
+        <div class="flex flex-col lg:flex-row items-center space-y-6 lg:space-y-0 lg:space-x-8">
+            <!-- Novel Image -->
+            <div class="w-full lg:w-1/4 flex justify-center">
+                <img src="/src/assets/logo.jpg" class="w-56 h-72 object-cover rounded-lg shadow-lg" alt="Novel Cover">
+            </div>
+
+            <!-- Novel Information -->
+            <div class="w-full lg:w-3/4 space-y-4 text-left lg:text-left">
+                <h1 class="text-xl font-semibold text-gray-800 hover:text-[#728156]">Daininki Idol na Classmate ni
+                    Natsukareta, Isshou Hatarakitakunai Ore</h1>
+                <div class="space-x-2">
+                    <span
+                        class="inline-block py-1 px-3 text-sm font-semibold text-gray-700 bg-gray-200 rounded-full hover:bg-[#b6c99b]">Fantasy</span>
+                    <span
+                        class="inline-block py-1 px-3 text-sm font-semibold text-gray-700 bg-gray-200 rounded-full hover:bg-[#b6c99b]">Science
+                        Fiction</span>
+                    <span
+                        class="inline-block py-1 px-3 text-sm font-semibold text-gray-700 bg-gray-200 rounded-full hover:bg-[#b6c99b]">Romance</span>
+                    <span
+                        class="inline-block py-1 px-3 text-sm font-semibold text-gray-700 bg-gray-200 rounded-full hover:bg-[#b6c99b]">Adventure</span>
+                </div>
+
+                <!-- Tác giả Section -->
+                <p class=" text-gray-600 text-left">
+                    <span class="font-bold text-md">Author:</span>
+                    Sarimang
+                </p>
+                <p class=" text-gray-600 text-left">
+                    <span class="font-bold text-md">Status:</span>
+                    Completed
+                </p>
+
+                <div class="grid grid-cols-3 lg:grid-cols-6 gap-4">
+                    <!-- Collect -->
+                    <div class="flex justify-center items-center">
+                        <a id="collect" class="flex flex-col items-center text-center text-gray-700">
+                            <HeartOutlined style="font-size: 16px; color: red;" />
+                            <span class="text-sm">543</span>
+                        </a>
+                    </div>
+
+                    <!-- Rating -->
+                    <div class="flex justify-center items-center">
+                        <div class="flex flex-col items-center text-center text-gray-700 hover:text-blue-600">
+                            <a href="#">
+                                <label for="open-rating" class="flex flex-col items-center">
+                                    <StarOutlined style="font-size: 16px; color: #f8d64e;" />
+                                    <span class="text-sm">Đánh giá</span>
+                                </label>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Catalog -->
+                    <div class="flex justify-center items-center">
+                        <div class="flex flex-col items-center text-center text-gray-700 hover:text-blue-600">
+                            <OrderedListOutlined style="font-size: 16px; color: black;" />
+                            <span class="text-sm">Mục lục</span>
+                        </div>
+                    </div>
+
+                    <!-- Discussions -->
+                    <div class="flex justify-center items-center">
+                        <a href="#" class="flex flex-col items-center text-center text-gray-700 hover:text-blue-600">
+                            <CommentOutlined style="font-size: 16px; color: black;" />
+                            <span class="text-sm">Bàn luận</span>
+                        </a>
+                    </div>
+
+                    <!-- Share -->
+                    <div class="flex justify-center items-center">
+                        <label for="open-sharing"
+                            class="flex flex-col items-center text-center text-gray-700 hover:text-blue-600">
+                            <ShareAltOutlined style="font-size: 16px; color: black;" />
+                            <span class="text-sm">Chia sẻ</span>
+                        </label>
+                        <input type="checkbox" id="open-sharing" class="hidden">
+                        <div class="sharing-box hidden mt-2">
+                            <a x-data="" href="#"
+                                class="sharing-item block text-sm text-blue-600 hover:text-blue-800">Link rút gọn</a>
+                            <a class="sharing-item block text-xl text-blue-600 hover:text-blue-800" href="#"
+                                target="_blank"><i class="fab fa-facebook-f"></i></a>
+                            <a class="sharing-item block text-xl text-blue-600 hover:text-blue-800" href="#"
+                                target="_blank"><i class="fab fa-twitter"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Novel Description Section -->
+        <div class="mt-10 text-left lg:text-left">
+            <h3 class="font-bold text-md items-start justify-start flex">Description:</h3>
+            <p class="text-md text-gray-600 mt-4 text-left">
+                Đây là phần mô tả chi tiết về nội dung của truyện, nơi bạn có thể tìm thấy
+                các thông tin bổ sung về câu chuyện, các nhân vật chính, và những điều thú vị khác.
+            </p>
+        </div>
+
+        <!-- New Chapters Section -->
+        <div class="w-full max-w-7xl mx-auto mt-10">
+    <h2 class="text-xl font-semibold text-gray-800 mb-6">Chapter List</h2>
+
+    <div class="space-y-6">
+      <div v-for="(volume, volumeIndex) in volumes" :key="volumeIndex" 
+           class="border border-gray-200 rounded-lg overflow-hidden">
+        <!-- Volume Header -->
+        <button @click="toggleVolume(volumeIndex)"
+                class="w-full px-4 py-3 bg-gray-50 flex items-center justify-between hover:bg-gray-100 transition-colors">
+          <h3 class="text-lg font-medium text-gray-800">{{ volume.title }}</h3>
+          <component :is="volume.expanded ? UpOutlined : DownOutlined" 
+                    class="text-gray-500" />
+        </button>
+
+        <!-- Chapter List -->
+        <div v-show="volume.expanded"
+             class="transition-all duration-300 ease-in-out">
+          <div class="p-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              <!-- Initial Chapters -->
+              <div v-for="(chapter, chapterIndex) in volume.chapters.slice(0, volume.showMore ? undefined : 6)" 
+                   :key="chapterIndex"
+                   class="group relative">
+                <div class="p-3 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow
+                           border border-gray-100 hover:border-gray-200">
+                  <span class="text-sm text-gray-700 truncate block">
+                    {{ chapter.title }}
+                  </span>
+                  <!-- Tooltip -->
+                  <div class="absolute left-1/2 transform -translate-x-1/2 bottom-full mb-2 
+                              hidden group-hover:block z-10 bg-black text-white text-xs py-1 px-2 rounded">
+                    {{ chapter.title }}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Show More Button -->
+            <div v-if="volume.chapters.length > 6" 
+                 class="mt-4 text-center">
+              <button @click="toggleShowMore(volumeIndex)"
+                      class="inline-flex items-center gap-2 px-4 py-2 text-sm text-gray-600 
+                             hover:text-gray-800 transition-colors">
+                {{ volume.showMore ? 'Show Less' : 'Show More' }}
+                <component :is="volume.showMore ? UpOutlined : DownOutlined" />
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+        <!-- Comments Section -->
+        <div class="mt-10">
+            <h2 class="text-xl font-semibold text-gray-800">Comment</h2>
+            <div class="mt-4">
+                <textarea
+                    class="w-full p-4 text-lg border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:text-sm"
+                    rows="4" placeholder="Viết bình luận của bạn..."></textarea>
+                <button
+                    class="mt-4 px-4 py-2 bg-[#88976c] text-white rounded-lg hover:bg-[#728156] focus:outline-none">Send
+                    </button>
+            </div>
+        </div>
+    </div>
+</template>
+<script setup lang="ts">
+import { ref } from 'vue';
+import { DownOutlined, UpOutlined } from '@ant-design/icons-vue';
+
+interface Chapter {
+  title: string;
+}
+
+interface Volume {
+  title: string;
+  showMore: boolean;
+  expanded: boolean;
+  chapters: Chapter[];
+}
+
+const volumes = ref<Volume[]>([
+  {
+    title: 'Tập 1',
+    showMore: false,
+    expanded: false,
+    chapters: [
+      { title: 'Chương 1: Khởi Đầu Mới' },
+      { title: 'Chương 2: Cuộc Phiêu Lưu' },
+      { title: 'Chương 3: Tìm Kiếm' },
+      { title: 'Chương 4: Đột Phá' },
+      { title: 'Chương 5: Tái Ngộ' },
+      { title: 'Chương 6: Chuyến Phiêu Lưu Mới' },
+      { title: 'Chương 7: Đối Mặt Với Nguy Cơ' },
+      { title: 'Chương 8: Khám Phá Thế Giới' },
+    ],
+  },
+  {
+    title: 'Tập 2',
+    showMore: false,
+    expanded: false,
+    chapters: [
+      { title: 'Chương 1: Khởi Đầu Mới' },
+      { title: 'Chương 2: Cuộc Phiêu Lưu' },
+      { title: 'Chương 3: Tìm Kiếm' },
+      { title: 'Chương 4: Đột Phá' },
+      { title: 'Chương 5: Tái Ngộ' },
+      { title: 'Chương 6: Chuyến Phiêu Lưu Mới' },
+      { title: 'Chương 7: Đối Mặt Với Nguy Cơ' },
+      { title: 'Chương 8: Khám Phá Thế Giới' },
+    ],
+  },
+]);
+
+const toggleVolume = (index: number) => {
+  volumes.value[index].expanded = !volumes.value[index].expanded;
+};
+
+const toggleShowMore = (index: number) => {
+  volumes.value[index].showMore = !volumes.value[index].showMore;
+};
+</script>
+
+<style scoped>
+.sharing-box {
+    display: none;
+}
+
+#open-sharing:checked+.sharing-box {
+    display: block;
+}
+</style>
