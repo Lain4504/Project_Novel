@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Builder
-public class ChapterRevision {
+public class NovelChapterRevision {
     @MongoId
     String id;          
     String chapterId;    

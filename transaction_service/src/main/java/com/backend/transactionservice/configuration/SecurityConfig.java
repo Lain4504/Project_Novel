@@ -1,4 +1,4 @@
-package com.backend.postservice.configuration;
+package com.backend.transactionservice.configuration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;

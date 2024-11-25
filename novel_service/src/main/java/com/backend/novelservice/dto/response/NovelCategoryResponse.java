@@ -1,24 +1,18 @@
-package com.backend.novelservice.entity;
+package com.backend.novelservice.dto.response;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.time.LocalDateTime;
-
-import org.springframework.data.annotation.Id;
-
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.MongoId;
 
-@Getter
-@Setter
+import java.time.LocalDateTime;
+
+@Data
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @NoArgsConstructor
 @AllArgsConstructor
-@Document(value = "category")
-public class Category {
-    @MongoId
+public class NovelCategoryResponse {
     Long id;
     String name;
     LocalDateTime createdDate;

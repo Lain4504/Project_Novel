@@ -20,19 +20,20 @@ public class UserProfileController {
     UserProfileService userProfileService;
 
     @GetMapping("/users/{profileId}")
-    UserProfileResponse getUserProfile(@PathVariable String profileId) {
-        return userProfileService.getProfile(profileId);
+    ResponseEntity<UserProfileResponse> getUserProfile(@PathVariable String profileId) {
+        return ResponseEntity.ok(userProfileService.getProfile(profileId));
     }
 
     @DeleteMapping("/users/{profileId}")
-    void deleteUserProfile(@PathVariable String profileId) {
+    ResponseEntity<Void> deleteUserProfile(@PathVariable String profileId) {
         userProfileService.deleteProfile(profileId);
+        return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/users/{profileId}")
-    UserProfileResponse updateUserProfile(
+    ResponseEntity<UserProfileResponse> updateUserProfile(
             @PathVariable String profileId, @RequestBody UserProfileUpdateRequest request) {
-        return userProfileService.updateProfile(profileId, request);
+      return ResponseEntity.ok(userProfileService.updateProfile(profileId, request));
     }
 
     @GetMapping("/users")

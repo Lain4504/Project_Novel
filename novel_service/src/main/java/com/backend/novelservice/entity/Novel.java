@@ -1,7 +1,9 @@
 package com.backend.novelservice.entity;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
+import jakarta.persistence.ManyToMany;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.aggregation.ArrayOperators.In;
@@ -21,8 +23,8 @@ public class Novel {
     @MongoId
     String id;
     String title;
-    Long categoryId;
-    String categoryName;
+    @ManyToMany
+    Set<NovelCategory> categories;
     String coverPicture;
     Long authorId;
     String authorName;

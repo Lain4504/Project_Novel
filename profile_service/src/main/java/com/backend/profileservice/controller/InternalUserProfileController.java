@@ -1,5 +1,6 @@
 package com.backend.profileservice.controller;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.backend.profileservice.service.UserProfileService;
@@ -17,7 +18,7 @@ public class InternalUserProfileController {
     UserProfileService userProfileService;
 
     @PostMapping("/internal/users")
-    UserProfileResponse createUserProfile(@RequestBody ProfileCreationRequest request) {
-        return userProfileService.createProfile(request);
+    ResponseEntity<UserProfileResponse> createUserProfile(@RequestBody ProfileCreationRequest request) {
+        return ResponseEntity.ok(userProfileService.createProfile(request));
     }
 }

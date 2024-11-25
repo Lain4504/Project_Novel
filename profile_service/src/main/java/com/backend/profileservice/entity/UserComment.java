@@ -1,27 +1,28 @@
-package com.backend.novelservice.entity;
-
-import java.time.LocalDateTime;
+package com.backend.profileservice.entity;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.MongoId;
 
-@AllArgsConstructor
-@NoArgsConstructor
-@FieldDefaults(level = lombok.AccessLevel.PRIVATE)
-@Builder
-@Document(value = "comment")
+import java.time.LocalDateTime;
+
+@Document(collection = "user_comment")
 @Getter
 @Setter
-public class Comment {
+@NoArgsConstructor
+@AllArgsConstructor
+@FieldDefaults(level = lombok.AccessLevel.PRIVATE)
+@Builder
+public class UserComment {
     @MongoId
     String id;
-    String novelId;
     String userId;
-    String content;
+    String novelId;
+    String comment;
+    Integer likeCount;
     Integer replyCount;
     LocalDateTime createdDate;
     LocalDateTime updateDateTime;
+
 }

@@ -29,4 +29,17 @@ public class PostController {
             @RequestParam(value = "size", required = false, defaultValue = "10") int size){
         return ResponseEntity.ok(postService.getMyPosts(page, size));
     }
+    @PutMapping("/update/{postId}")
+    ResponseEntity<PostResponse> updatePost(@PathVariable("postId") String postId, @RequestBody PostRequest request){
+        return ResponseEntity.ok(postService.updatePost(postId, request));
+    }
+    @GetMapping("/{postId}")
+    ResponseEntity<PostResponse> getPost(@PathVariable("postId") String postId){
+        return ResponseEntity.ok(postService.getPost(postId));
+    }
+    @DeleteMapping("/{postId}")
+    ResponseEntity<Void> deletePost(@PathVariable("postId") String postId){
+        postService.deletePost(postId);
+        return ResponseEntity.ok().build();
+    }
 }

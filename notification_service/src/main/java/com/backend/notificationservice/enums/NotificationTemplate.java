@@ -1,4 +1,8 @@
 package com.backend.notificationservice.enums;
+
+import lombok.Getter;
+
+@Getter
 public enum NotificationTemplate {
     ACTIVATION_EMAIL("""
         <html>
@@ -121,7 +125,4 @@ public enum NotificationTemplate {
         this.template = template;
     }
 
-    public String getTemplate() {
-        return template;
-    }
 }

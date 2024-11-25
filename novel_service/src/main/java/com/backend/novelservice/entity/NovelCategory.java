@@ -1,29 +1,24 @@
 package com.backend.novelservice.entity;
 
+import lombok.*;
+import lombok.experimental.FieldDefaults;
+
 import java.time.LocalDateTime;
 
-import lombok.*;
-import org.springframework.data.annotation.Id;
-
-import lombok.experimental.FieldDefaults;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.MongoId;
 
 @Getter
 @Setter
-@FieldDefaults(level = AccessLevel.PRIVATE)
-@AllArgsConstructor
-@NoArgsConstructor
 @Builder
-@Document(value = "chapter")
-public class Chapter {
+@FieldDefaults(level = AccessLevel.PRIVATE)
+@NoArgsConstructor
+@AllArgsConstructor
+@Document(value = "category")
+public class NovelCategory {
     @MongoId
-    String id;
-    String novelId;
-    Integer chapterNumber;
-    String chapterTitle;
-    Integer wordCount;
-    Boolean isVip;
+    Long id;
+    String name;
     LocalDateTime createdDate;
-    LocalDateTime updateDateTime;
+    LocalDateTime modifiedDate;
 }

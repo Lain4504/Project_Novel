@@ -1,4 +1,4 @@
-package com.backend.notificationservice.entity;
+package com.backend.novelservice.entity;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -7,19 +7,20 @@ import org.springframework.data.mongodb.core.mapping.MongoId;
 
 import java.time.LocalDateTime;
 
-@NoArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
-@AllArgsConstructor
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@FieldDefaults(level = lombok.AccessLevel.PRIVATE)
+@Document(value = "comment_reply")
 @Builder
-@Document(value = "notification")
-public class Notification {
+public class NovelCommentReply {
     @MongoId
     String id;
+    String commentId;
     String userId;
-    String content;
-    Boolean isRead;
+    String replyContent;
+    String replyTo;
     LocalDateTime createdDate;
-    String contentType;
+    LocalDateTime updateDateTime;
 }
