@@ -15,6 +15,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
+@RequestMapping("/post-categories")
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class PostCategoryController {
     PostCategoryService postCategoryService;

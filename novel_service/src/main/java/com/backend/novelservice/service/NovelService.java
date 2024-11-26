@@ -2,17 +2,24 @@ package com.backend.novelservice.service;
 
 import com.backend.novelservice.dto.request.NovelCreationRequest;
 import com.backend.novelservice.dto.response.NovelResponse;
+import com.backend.novelservice.dto.response.PageResponse;
 import com.backend.novelservice.entity.NovelCategory;
 import com.backend.novelservice.mapper.NovelCategoryMapper;
 import com.backend.novelservice.mapper.NovelMapper;
 import com.backend.novelservice.repository.NovelCategoryRepository;
 import com.backend.novelservice.repository.NovelRepository;
+import com.backend.novelservice.utils.DateTimeFormatter;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -25,6 +32,7 @@ public class NovelService {
     NovelCategoryRepository novelCategoryRepository;
     NovelMapper novelMapper;
     NovelCategoryMapper novelCategoryMapper;
+    DateTimeFormatter dateTimeFormatter;
     public NovelResponse createNovel(NovelCreationRequest request) {
         if (novelRepository.existsByTitle(request.getTitle())) {
             throw new IllegalArgumentException("Novel with title " + request.getTitle() + " already exists");
@@ -56,7 +64,21 @@ public class NovelService {
         var novel = novelRepository.findById(novelId).orElseThrow(() -> new IllegalArgumentException("Novel with id " + novelId + " not found"));
         return novelMapper.toNovelResponse(novel);
     }
-    public List<NovelResponse> getNovels() {
-        return novelRepository.findAll().stream().map(novelMapper::toNovelResponse).toList();
+    public PageResponse<NovelResponse> getNovels(int page, int size) {
+        Sort sort = Sort.by(Sort.Order.desc("createdDate"));
+        Pageable pageable = PageRequest.of(page - 1, size, sort);
+        var pageData = novelRepository.findAll(pageable);
+        var novelList = pageData.getContent().stream().map(novel -> {
+            var novelResponse = novelMapper.toNovelResponse(novel);
+            novelResponse.setCreatedDate(LocalDateTime.parse(dateTimeFormatter.format(Instant.from(novel.getCreatedDate()))));
+            return novelResponse;
+        }).toList();
+        return PageResponse.<NovelResponse>builder()
+                .currentPage(page)
+                .pageSize(pageData.getSize())
+                .totalPages(pageData.getTotalPages())
+                .totalElements(pageData.getTotalElements())
+                .data(novelList)
+                .build();
     }
 }

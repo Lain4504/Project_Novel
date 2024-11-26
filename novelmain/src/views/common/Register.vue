@@ -3,13 +3,18 @@ import { ref, computed } from 'vue';
 import { EyeInvisibleOutlined, EyeOutlined } from '@ant-design/icons-vue';
 import GoogleOutlined from '@ant-design/icons-vue/GoogleOutlined';
 import { RouterLink } from 'vue-router';
-
+import {register} from '../../api/user';
+import { useStore } from 'vuex';
+import { useRouter } from 'vue-router';
 // Refs cho input
 const email = ref('');
 const password = ref('');
 const confirmPassword = ref('');
 const passwordVisible = ref(false);
 const confirmPasswordVisible = ref(false);
+const store = useStore();
+const router = useRouter();
+const registerError = ref('');
 
 // Kiểm tra định dạng email
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -29,6 +34,31 @@ const togglePasswordVisibility = () => {
 const toggleConfirmPasswordVisibility = () => {
   confirmPasswordVisible.value = !confirmPasswordVisible.value;
 };
+const handleRegister = async () => {
+  registerError.value = '';
+  try{
+    const response = await register({
+      email: email.value,
+      password: password.value
+    });
+    console.log(response);
+    store.commit('setToken', response.token);
+    const userData = await getMyInfo();
+    store.commit('setUser', userData);
+    console.log('User from store:', store.state.user);
+    console.log('Token from store:', store.state.token);
+    router.push('/');
+  }
+  catch(error: any){
+    if (error.response) {
+      registerError.value = error.response.data.message || 'Login failed. Please try again.';
+    } else if (error.request) {
+      registerError.value = 'No response from server. Please try again.';
+    } else {
+      registerError.value = 'An unexpected error occurred. Please try again.';
+    }
+  }
+}
 </script>
 
 <template>
@@ -48,7 +78,7 @@ const toggleConfirmPasswordVisibility = () => {
       <div class="w-full md:w-1/2 p-6 sm:p-10 max-w-md md:max-w-lg mx-auto">
         <h2 class="text-3xl font-bold text-center text-gray-800">Register</h2>
         <p class="text-sm text-center text-gray-600 mt-2">Join us and explore the platform!</p>
-        <form class="mt-8 space-y-6">
+        <form @submit.prevent="handleRegister" class="mt-8 space-y-6">
           <!-- Email -->
           <div>
             <label for="email" class="block text-sm font-medium text-gray-700">Email</label>

@@ -9,6 +9,7 @@ import com.backend.identityservice.entity.InvalidatedToken;
 import com.backend.identityservice.entity.RefreshToken;
 import com.backend.identityservice.entity.Role;
 import com.backend.identityservice.entity.User;
+import com.backend.identityservice.enums.UserState;
 import com.backend.identityservice.repository.InvalidatedTokenRepository;
 import com.backend.identityservice.repository.RefreshTokenRepository;
 import com.backend.identityservice.repository.httpclient.OutboundIdentityClient;
@@ -109,6 +110,8 @@ public class AuthenticationService {
         var user = userRepository.findByEmail(request.getEmail()).orElseThrow(() -> new RuntimeException("User not found"));
         boolean authenticated = passwordEncoder.matches(request.getPassword(), user.getPassword());
         if(!authenticated) throw new RuntimeException("Invalid credentials");
+        boolean isActivated = user.getState().equals(UserState.ACTIVE);
+        if(!isActivated) throw new RuntimeException("User not activated");
         var accessToken = generateToken(user);
         var refreshToken = generateRefreshToken(user);
         return AuthenticationResponse.builder().token(accessToken).refreshToken(refreshToken).authenticated(true).build();
@@ -132,7 +135,7 @@ public class AuthenticationService {
             Date expiryTime = signToken.getJWTClaimsSet().getExpirationTime();
             InvalidatedToken invalidatedToken = InvalidatedToken.builder().id(jit).expiryTime(expiryTime).build();
             invalidatedTokenRepository.save(invalidatedToken);
-            var refreshToken = refreshTokenRepository.findByToken(request.getToken()).orElseThrow(() -> new RuntimeException("Invalid refresh token"));
+            var refreshToken = refreshTokenRepository.findByToken(request.getRefreshtoken()).orElseThrow(() -> new RuntimeException("Invalid refresh token"));
             refreshTokenRepository.delete(refreshToken);
         }
         catch (Exception e) {

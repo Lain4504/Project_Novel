@@ -19,7 +19,7 @@ import java.text.ParseException;
 @Slf4j
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class AuthenticationControlller {
+public class AuthenticationController {
     AuthenticationService authenticationService;
     @PostMapping("/outbound/authentication")
     ResponseEntity<AuthenticationResponse> outboundAuthenticate(@RequestParam("code") String code){

@@ -22,8 +22,11 @@ public class NovelCategoryController {
         return ResponseEntity.ok(novelCategoryService.createNovelCategory(request));
     }
     @GetMapping("/all")
-    ResponseEntity<List<NovelCategoryResponse>> getAllCategories() {
-        return ResponseEntity.ok(novelCategoryService.getNovelCategories());
+    ResponseEntity<List<NovelCategoryResponse>> getAllCategories(
+            @RequestParam(value = "page", required = false, defaultValue = "1") int page,
+            @RequestParam(value = "size", required = false, defaultValue = "10") int size
+    ) {
+        return ResponseEntity.ok(novelCategoryService.getNovelCategories(page, size));
     }
     @GetMapping("/{categoryId}")
     ResponseEntity<NovelCategoryResponse> getCategory(String categoryId) {

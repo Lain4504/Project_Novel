@@ -18,13 +18,13 @@
         <h3 class="text-md font-bold mb-4">Utilities</h3>
         <ul class="text-sm">
           <li class="mb-2">
-            <a href="#" class="text-gray-600 hover:text-blue-500">Settings</a>
+            <RouterLink to="#" class="text-gray-600 hover:text-blue-500">Settings</RouterLink>
           </li>
           <li class="mb-2">
-            <a href="#" class="text-gray-600 hover:text-blue-500">Mark</a>
+            <RouterLink to="#" class="text-gray-600 hover:text-blue-500">Mark</RouterLink>
           </li>
           <li class="mb-2">
-            <a href="#" class="text-gray-600 hover:text-blue-500">Chapter List</a>
+            <RouterLink to="#" class="text-gray-600 hover:text-blue-500">Chapter List</RouterLink>
           </li>
         </ul>
       </div>
