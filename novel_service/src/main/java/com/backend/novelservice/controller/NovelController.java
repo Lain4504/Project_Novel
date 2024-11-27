@@ -2,6 +2,7 @@ package com.backend.novelservice.controller;
 
 import com.backend.novelservice.dto.request.NovelCreationRequest;
 import com.backend.novelservice.dto.response.NovelResponse;
+import com.backend.novelservice.dto.response.PageResponse;
 import com.backend.novelservice.service.NovelService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -35,8 +36,10 @@ public class NovelController {
     ResponseEntity<NovelResponse> getNovel(@PathVariable("novelId") String novelId) {
         return ResponseEntity.ok(novelService.getNovel(novelId));
     }
-    @GetMapping
-    ResponseEntity<List<NovelResponse>> getNovels() {
-        return ResponseEntity.ok(novelService.getNovels());
+    @GetMapping("/get-all/")
+    ResponseEntity<PageResponse<NovelResponse>> myPosts(
+            @RequestParam(value = "page", required = false, defaultValue = "1") int page,
+            @RequestParam(value = "size", required = false, defaultValue = "10") int size){
+        return ResponseEntity.ok(novelService.getNovels(page, size));
     }
 }

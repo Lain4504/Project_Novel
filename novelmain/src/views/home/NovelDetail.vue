@@ -45,7 +45,7 @@
                     <!-- Rating -->
                     <div class="flex justify-center items-center">
                         <div class="flex flex-col items-center text-center text-gray-700 hover:text-blue-600">
-                            <a href="#">
+                            <a>
                                 <label for="open-rating" class="flex flex-col items-center">
                                     <StarOutlined style="font-size: 16px; color: #f8d64e;" />
                                     <span class="text-sm">Đánh giá</span>
@@ -64,10 +64,10 @@
 
                     <!-- Discussions -->
                     <div class="flex justify-center items-center">
-                        <a href="#" class="flex flex-col items-center text-center text-gray-700 hover:text-blue-600">
+                        <RouterLink to="#" class="flex flex-col items-center text-center text-gray-700 hover:text-blue-600">
                             <CommentOutlined style="font-size: 16px; color: black;" />
                             <span class="text-sm">Bàn luận</span>
-                        </a>
+                        </RouterLink>
                     </div>
 
                     <!-- Share -->

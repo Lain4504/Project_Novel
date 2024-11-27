@@ -5,7 +5,7 @@
       <section class="p-4 border rounded">
         <div class="flex justify-between items-center">
           <h4 class="text-md font-bold">Bài viết mới nhất</h4>
-          <a href="#" class="text-[#98a77c] text-sm">Xem tất cả</a>
+          <RouterLink to="#" class="text-[#98a77c] text-sm">Xem tất cả</RouterLink>
         </div>
         <div class="mt-4 text-sm">
           <ul class="space-y-4">
@@ -29,7 +29,7 @@
       <section class="p-4 border rounded">
         <div class="flex justify-between items-center">
           <h4 class="text-md font-bold">Đang đọc</h4>
-          <a href="#" class="text-[#98a77c] text-sm">Xem tất cả</a>
+          <RouterLink to="#" class="text-[#98a77c] text-sm">Xem tất cả</RouterLink>
         </div>
         <div class="mt-4 text-sm">
           <div class="space-y-4">
