@@ -2,18 +2,15 @@
   <div class="min-h-screen bg-gray-50 text-gray-800 relative">
     <!-- Icon setting luôn nổi -->
     <div @click="toggleSidebar"
-      class="fixed top-28 right-4 bg-[#98a77c] hover:bg-[#88976c] text-white p-3 rounded-full cursor-pointer shadow-lg z-5">
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="h-4 w-4">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-          d="M12 3v2m0 4v10m4-6h2m-4 4h2m-4 4h2m-4-4H6m-2 0h2m0-4H6m0-4h2" />
-      </svg>
-    </div>
+      class="fixed top-28 right-4 w-10 h-10 bg-[#98a77c] hover:bg-[#88976c] text-white p-3 rounded-full cursor-pointer shadow-lg z-5 flex items-center justify-center">
+      <font-awesome-icon :icon="['fas', 'feather-pointed']" />
+        </div>
 
     <!-- Sidebar menu -->
     <div :class="{ 'block': sidebarOpen, 'hidden': !sidebarOpen }" class="fixed inset-0 bg-gray-900 bg-opacity-50 z-50">
       <div class="absolute top-0 left-0 w-40 bg-white h-full shadow-lg p-4">
         <button @click="toggleSidebar" class="text-gray-700 text-xl font-bold mb-6">
-          <CloseOutlined style="font-size: 16px;" />
+         <font-awesome-icon :icon="['fas', 'xmark']" />
         </button>
         <h3 class="text-md font-bold mb-4">Utilities</h3>
         <ul class="text-sm">
@@ -59,72 +56,14 @@
           Next Chapter
         </button>
       </div>
-
+      <Comment />
     </main>
-
-    <section class="bg-gray-50 mt-6 py-4 px-6 max-w-5xl mx-auto">
-      <h3 class="text-xl font-bold mb-4">Comment</h3>
-      <div class="flex flex-col">
-  <textarea v-model="newComment" placeholder="Để lại bình luận..."
-    class="w-full border border-gray-300 rounded p-2 mb-2"></textarea>
-  <div class="flex justify-end">
-    <button @click="addComment"
-      class="px-5 py-2 bg-[#98a77c] hover:bg-[#88976c] text-white rounded text-sm">
-      Send
-    </button>
-  </div>
-</div>
-
-
-<ul class="mt-4 space-y-6">
-  <li v-for="(comment, index) in comments" :key="index" class="border-b pb-4">
-    <div class="flex items-start space-x-4">
-      <!-- Avatar -->
-      <div class="w-10 h-10 bg-gray-300 rounded-full"></div>
-
-      <div class="w-full">
-        <p class="text-gray-700 font-semibold">User {{ index + 1 }}</p>
-        <p class="text-gray-600">{{ comment }}</p>
-
-        <!-- Like and Reply buttons -->
-        <div class="flex items-center space-x-4 mt-2">
-          <button @click="likeComment(index)"
-            class="flex items-center text-gray-500 hover:text-blue-500 text-sm space-x-1">
-            <LikeOutlined style="font-size: 14px;" />
-            <span>Like</span>
-          </button>
-
-          <button @click="toggleReplyBox(index)" class="text-gray-500 hover:text-blue-500 text-sm">
-            💬 Reply
-          </button>
-        </div>
-
-        <!-- Reply Box -->
-        <div v-if="replyBoxes[index]" class="mt-2">
-          <textarea v-model="replyText[index]" 
-            class="w-full border border-gray-300 rounded p-2 mb-2"
-            placeholder="Write your reply..."></textarea>
-            <div class="flex justify-end"> 
-          <button @click="submitReply(index)" 
-            class="px-4 py-2 bg-[#98a77c] hover:bg-[#88976c] text-white rounded text-sm">
-             Reply
-          </button>
-        </div>
-        </div>
-      </div>
-    </div>
-  </li>
-</ul>
-
-    </section>
-
   </div>
 </template>
 
 <script setup lang="ts">
-import { CloseOutlined, LikeOutlined } from '@ant-design/icons-vue';
 import { reactive, ref } from 'vue';
-
+import Comment from './Comment.vue';
 const chapter = reactive({
   title: 'Chương 1: Khởi đầu',
   content: `

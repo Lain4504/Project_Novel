@@ -1,18 +1,6 @@
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount} from 'vue';
-import { 
-    BookOutlined, 
-    MenuOutlined, 
-    BellOutlined,
-    CloseOutlined, 
-    CompassOutlined, 
-    MessageOutlined, 
-    PhoneOutlined, 
-    RadarChartOutlined, 
-    StopOutlined, 
-    UploadOutlined, 
-    MacCommandOutlined
-} from '@ant-design/icons-vue';
+import { ref, onMounted, onBeforeUnmount } from 'vue';
+
 
 enum Routes {
     NewNovel = '/new-novel',
@@ -28,12 +16,6 @@ enum Routes {
     PostCategory = '/post-category',
 }
 
-type MenuItem = {
-    to: Routes;
-    label: string;
-    icon?: typeof BookOutlined; // Icon component
-};
-
 const showDropDown = ref<boolean>(false);
 const showSide = ref<boolean>(true);
 const isMobile = ref<boolean>(false);
@@ -44,7 +26,7 @@ const toggleDropdown = (): void => {
     isDropdownOpen.value = !isDropdownOpen.value;
 };
 // Toggle dropdown menu
-const toggleDropdownMenu = () : void => {
+const toggleDropdownMenu = (): void => {
     showDropDown.value = !showDropDown.value;
 }
 const handleItemClick = (): void => {
@@ -77,28 +59,30 @@ onMounted(() => {
 onBeforeUnmount(() => {
     window.removeEventListener('resize', handleResize);
 });
+const bookMenuItems = [
+    { to: Routes.NewNovel, label: 'Add Novel', icon: 'fa-solid fa-plus' },
+    { to: Routes.ExistingNovels, label: 'Existed Novel', icon: 'fa-solid fa-book' },
+    { to: Routes.Analytics, label: 'Analytics', icon: 'fa-solid fa-chart-pie' },
+];
 
-const bookMenuItems: MenuItem[] = [
-    { to: Routes.NewNovel, label: 'Add Novel', icon: BookOutlined },
-    { to: Routes.ExistingNovels, label: 'Existed Novel', icon: UploadOutlined },
-    { to: Routes.Analytics, label: 'Analytics', icon: RadarChartOutlined },
+
+const supportMenuItems = [
+    { to: Routes.Support, label: 'Support', icon: 'fa-solid fa-phone' },
+    { to: Routes.AdminNotification, label: 'Notification', icon: 'fa-solid fa-bullhorn' },
 ];
-const supportMenuItems: MenuItem[] = [
-    { to: Routes.Support, label: 'Support', icon: PhoneOutlined },
-    { to: Routes.AdminNotification, label: 'Notification', icon: MessageOutlined },
+
+const informationMenuItems = [
+    { to: Routes.Rules, label: 'Rule', icon: 'fa-solid fa-scale-balanced' },
+    { to: Routes.Tutorial, label: 'Tutorial', icon: 'fa-solid fa-question' },
 ];
-const informationMenuItems: MenuItem[] = [
-    { to: Routes.Rules, label: 'Rule', icon: StopOutlined },
-    { to: Routes.Tutorial, label: 'Tutorial', icon: CompassOutlined },
-];
-const featureMenuItems: MenuItem[] = [
+const featureMenuItems = [
     { to: Routes.BookCategory, label: 'Book Category', },
     { to: Routes.PostCategory, label: 'Post Category' }
 ];
 const dropdownItems = [
     { to: Routes.Account, label: 'Account' },
-    { to: Routes.Payment, label: 'Payment'},
-    { label: 'Sign out'},
+    { to: Routes.Payment, label: 'Payment' },
+    { label: 'Sign out' },
 ];
 </script>
 
@@ -117,10 +101,11 @@ const dropdownItems = [
                     <div class="space-y-2">
                         <div class="space-y-2 py-1">
                             <RouterLink to="admin-management">
-                            <div class="text-md text-gray-700 font-semibold flex items-center hover:underline hover:text-gray-900">
-                                <MacCommandOutlined style="font-size: 16px; margin-right: 10px;" />Admin Management
-                            </div>
-                        </RouterLink>
+                                <div
+                                    class="text-md text-gray-700 font-semibold flex items-center hover:underline hover:text-gray-900">
+                                    <font-awesome-icon icon="fa-solid fa-bars-progress" class="mr-2"  />Admin Management
+                                </div>
+                            </RouterLink>
                         </div>
                         <!-- My Book Group -->
                         <div class="space-y-2">
@@ -129,8 +114,7 @@ const dropdownItems = [
                                 <RouterLink v-for="item in bookMenuItems" :key="item.to" :to="item.to"
                                     class="inline-flex relative items-center py-[10px] px-[10px] w-full text-sm font-medium rounded-md border-gray-200 transition duration-500 ease-in-out hover:underline"
                                     active-class="bg-[#e7f5dc] text-gray-800 font-semibold">
-                                    <component :is="item.icon" class="mr-2" style="font-size: 16px;" />
-                                    {{ item.label }}
+                                    <font-awesome-icon :icon="item.icon" class="mr-2" /> {{ item.label }}
                                 </RouterLink>
                             </div>
                         </div>
@@ -140,8 +124,7 @@ const dropdownItems = [
                                 <RouterLink v-for="item in supportMenuItems" :key="item.to" :to="item.to"
                                     class="inline-flex relative items-center py-[10px] px-[10px] w-full text-sm font-medium rounded-md border-gray-200 transition duration-500 ease-in-out hover:underline"
                                     active-class="bg-[#e7f5dc] text-gray-800 font-semibold">
-                                    <component :is="item.icon" class="mr-2" style="font-size: 16px;" />
-                                    {{ item.label }}
+                                    <font-awesome-icon :icon="item.icon" class="mr-2" /> {{ item.label }}
                                 </RouterLink>
                             </div>
                         </div>
@@ -151,8 +134,7 @@ const dropdownItems = [
                                 <RouterLink v-for="item in informationMenuItems" :key="item.to" :to="item.to"
                                     class="inline-flex relative items-center py-[10px] px-[10px] w-full text-sm font-medium rounded-md border-gray-200 transition duration-500 ease-in-out hover:underline"
                                     active-class="bg-[#e7f5dc] text-gray-800 font-semibold">
-                                    <component :is="item.icon" class="mr-2" style="font-size: 16px;" />
-                                    {{ item.label }}
+                                    <font-awesome-icon :icon="item.icon" class="mr-2" /> {{ item.label }}
                                 </RouterLink>
                             </div>
                         </div>
@@ -186,22 +168,23 @@ const dropdownItems = [
                     <h3 class="font-bold text-xl">Admin Panel</h3>
                     <button @click="toggleSideBar"
                         class="text-black transition-transform duration-200 hover:scale-125 focus:scale-150 active:animate-pulse focus:outline-none">
-                        <CloseOutlined style="font-size: 18px;" />
+                        <font-awesome-icon icon="fa-solid fa-xmark" size="xl" />
                     </button>
                 </div>
                 <div class="space-y-4 mt-6">
                     <div class="space-y-2 py-1">
-                            <div class="text-md text-gray-700 font-semibold flex items-center">
-                                <MacCommandOutlined style="font-size: 16px; margin-right: 10px;" /> Admin Management
-                            </div>
+                        <div class="text-md text-gray-700 font-semibold flex items-center">
+                            <font-awesome-icon icon="fa-solid fa-bars-progress" class="mr-2" />
+                            Admin Management
                         </div>
+                    </div>
                     <!-- My Book Links -->
                     <div class="space-y-2">
                         <div class="text-sm text-gray-700 font-semibold">My Book</div>
                         <RouterLink v-for="item in bookMenuItems" :key="item.to" :to="item.to"
                             class="inline-flex relative items-center py-2 px-3 w-full text-sm font-medium rounded-md transition duration-500 ease-in-out"
                             active-class="bg-[#e7f5dc] text-gray-800 font-semibold" @click="toggleSideBar">
-                            <component :is="item.icon" class="mr-2" style="font-size: 16px;" />
+                            <font-awesome-icon :icon="item.icon" class="mr-2" />
                             {{ item.label }}
                         </RouterLink>
                     </div>
@@ -210,7 +193,7 @@ const dropdownItems = [
                         <RouterLink v-for="item in supportMenuItems" :key="item.to" :to="item.to"
                             class="inline-flex relative items-center py-2 px-3 w-full text-sm font-medium rounded-md transition duration-500 ease-in-out"
                             active-class="bg-[#e7f5dc] text-gray-800 font-semibold" @click="toggleSideBar">
-                            <component :is="item.icon" class="mr-2" style="font-size: 16px;" />
+                            <font-awesome-icon :icon="item.icon" class="mr-2" />
                             {{ item.label }}
                         </RouterLink>
                     </div>
@@ -219,7 +202,7 @@ const dropdownItems = [
                         <RouterLink v-for="item in informationMenuItems" :key="item.to" :to="item.to"
                             class="inline-flex relative items-center py-2 px-3 w-full text-sm font-medium rounded-md transition duration-500 ease-in-out"
                             active-class="bg-[#e7f5dc] text-gray-800 font-semibold" @click="toggleSideBar">
-                            <component :is="item.icon" class="mr-2" style="font-size: 16px;" />
+                            <font-awesome-icon :icon="item.icon" class="mr-2" />
                             {{ item.label }}
                         </RouterLink>
                     </div>
@@ -253,19 +236,26 @@ const dropdownItems = [
                 <!-- Toggle Sidebar Button -->
                 <div class="cursor-pointer w-[30px] text-gray-700 hover:text-black transition-transform duration-200 hover:scale-110 focus:scale-125 active:animate-custom-pulse focus:outline-none"
                     @click="toggleSideBar">
-                    <MenuOutlined style="font-size: 24px;" />
+                    <font-awesome-icon icon="fa-solid fa-bars" size="xl" />
+
                 </div>
 
                 <!-- Dropdown Menu -->
                 <div class="relative flex items-center space-x-4 cursor-pointer">
-                    <div class="relative mr-4">
-                        <BellOutlined style="font-size: 24px;"
-                            class="cursor-pointer w-[30px] text-gray-700 hover:text-black transition-transform duration-200 hover:scale-110 focus:scale-125 active:animate-pulse focus:outline-none" />
-                            <span className='absolute right-[-5px] bottom-[-5px] w-4 text-center leading-4 bg-black text-white aspect-square rounded-full text-[8px]'
-                            >
+                    <div class="relative">
+            <RouterLink to="/"
+              class="flex items-center text-black hover:underline transition-all duration-300 text-sm">
+              <!-- Writer Icon -->
+              <font-awesome-icon :icon="['fas', 'house']" size="lg" />
+            </RouterLink>
+          </div>
+                    <div class="relative mr-2">
+                        <font-awesome-icon icon="fa-regular fa-bell" size="xl"  class="cursor-pointer w-[30px] text-gray-700 hover:text-black transition-transform duration-200 hover:scale-110 focus:scale-125 active:animate-pulse focus:outline-none" />
+                        <span
+                            className='absolute right-[-5px] bottom-[-5px] w-4 text-center leading-4 bg-black text-white aspect-square rounded-full text-[8px]'>
                             1
-                          </span>
-                        </div>
+                        </span>
+                    </div>
                     <img class="w-10 h-10 rounded-full border-2 border-gray-50 ml-[-4px] transition-transform duration-200 hover:scale-110 hover:border-blue-500"
                         src="\src\assets\logo.jpg" alt="" @click="toggleDropdownMenu" />
                     <transition name="dropdown-fade">

@@ -1,4 +1,4 @@
-import axios from '../utils/axiosInstance';
+import axios from '@/utils/axiosInstance';
 
 const USER_API = 'identity/users';
 const IDENTITY_API = '/identity/auth';

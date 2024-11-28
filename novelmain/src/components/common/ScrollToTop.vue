@@ -1,11 +1,10 @@
 <template>
-<button v-if="isVisible" @click="scrollToTop" class="fixed bottom-4 right-4 ">
-    <ToTopOutlined style="font-size: 30px;" />
+<button v-if="isVisible" @click="scrollToTop" class="fixed bottom-6 right-6">
+  <font-awesome-icon :icon="['fas', 'arrow-up-from-bracket']" size="xl" />
 </button>
   </template>
   
   <script setup lang="ts">
-  import { ToTopOutlined } from '@ant-design/icons-vue';
 import { ref, onMounted } from 'vue';
   
   // Quản lý hiển thị của nút
