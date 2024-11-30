@@ -20,7 +20,10 @@ import ReadingList from '@/views/home/ReadingList.vue';
 import UserProfile from '@/views/home/UserProfile.vue';
 import Libarary from '@/views/home/Libarary.vue';
 import History from '@/views/home/History.vue';
-
+import AdvancedManagement from '@/views/home/AdvancedManagement.vue';
+import EditNovel from '@/views/admin/EditNovel.vue';
+import FAQ from '@/components/admin/FAQ.vue';
+import OrderSortVolume from '@/views/admin/OrderSortVolume.vue';
 const routes: Array<RouteRecordRaw> = [
   { name: 'dashboard', path: '/dashboard', component: Dashboard, 
     children: [
@@ -29,6 +32,9 @@ const routes: Array<RouteRecordRaw> = [
       { name: 'existednovels', path: '/existing-novels', component: ExistedNovel },
       { name: 'support', path: '/support', component: Support },
       { name: 'adminnotification', path: '/admin-notification', component: SystemNotification },
+      { name: 'editnovel', path: '/edit-novel', component: EditNovel },
+      { name: 'faq', path: '/faq', component: FAQ },
+      { name: 'ordersortvolume', path: '/order-sort-volume', component: OrderSortVolume }
     ]
   },
   { name: 'login', path: '/login', component: Login },
@@ -63,6 +69,7 @@ const routes: Array<RouteRecordRaw> = [
   { name: 'userprofile', path: '/user-profile', component: UserProfile },
   { name: 'library', path: '/library', component: Libarary },
   { name: 'history', path: '/history', component: History },
+  { name: 'advancedmanagement', path: '/advanced-management', component: AdvancedManagement},
 ];
 
 const router = createRouter({

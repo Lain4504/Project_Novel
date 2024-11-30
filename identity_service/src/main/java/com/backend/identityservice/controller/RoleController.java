@@ -1,6 +1,7 @@
 package com.backend.identityservice.controller;
 
 import com.backend.identityservice.dto.request.RoleRequest;
+import com.backend.identityservice.dto.response.ApiResponse;
 import com.backend.identityservice.dto.response.RoleResponse;
 import com.backend.identityservice.service.RoleService;
 import lombok.AccessLevel;
@@ -20,16 +21,16 @@ import java.util.List;
 public class RoleController {
     RoleService roleService;
     @PostMapping
-    ResponseEntity<RoleResponse> create(@RequestBody RoleRequest request) {
-        return ResponseEntity.ok(roleService.create(request));
+    ApiResponse<RoleResponse> create(@RequestBody RoleRequest request) {
+        return ApiResponse.<RoleResponse>builder().result(roleService.create(request)).build();
     }
     @GetMapping
-    ResponseEntity<List<RoleResponse>> getAll() {
-        return ResponseEntity.ok(roleService.getAll());
+    ApiResponse<List<RoleResponse>> getAll() {
+        return ApiResponse.<List<RoleResponse>>builder().result(roleService.getAll()).build();
     }
     @DeleteMapping("/{role}")
-    ResponseEntity<Void> delete(@PathVariable String role) {
+    ApiResponse<Void> delete(@PathVariable String role) {
         roleService.delete(role);
-        return ResponseEntity.ok().build();
+        return ApiResponse.<Void>builder().build();
     }
 }

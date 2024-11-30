@@ -38,7 +38,7 @@ const handleLogin = async () => {
     }, 1000);
   } catch (error: any) {
     if (error.response) {
-      showNotification('', error.response.data.message || 'Login failed. Please try again.');
+      showNotification('danger', error.response.data.message || 'Login failed. Please try again.');
     } else if (error.request) {
       showNotification('danger', 'No response from server. Please try again.');
     } else {

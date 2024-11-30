@@ -34,11 +34,12 @@
                         Maruyama Kugane
                     </td>
                     <td class="py-4 px-6 dark:text-white flex space-x-2">
+                        <router-link to="/edit-novel"> 
                         <button
                             class="bg-transparent border-[1px] border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white font-medium py-2 px-4 rounded transition duration-300 flex items-center justify-center">
                             <font-awesome-icon :icon="['fas', 'pen']" />
                         </button>
-
+                    </router-link>
                         <button
                             class="bg-transparent border-[1px] border-red-500 text-red-500 hover:bg-red-500 hover:text-white font-medium py-2 px-4 rounded transition duration-300 flex items-center justify-center">
                             <font-awesome-icon :icon="['fas', 'trash']" />

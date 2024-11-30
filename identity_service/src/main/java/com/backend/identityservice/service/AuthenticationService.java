@@ -10,6 +10,8 @@ import com.backend.identityservice.entity.RefreshToken;
 import com.backend.identityservice.entity.Role;
 import com.backend.identityservice.entity.User;
 import com.backend.identityservice.enums.UserState;
+import com.backend.identityservice.exception.AppException;
+import com.backend.identityservice.exception.ErrorCode;
 import com.backend.identityservice.repository.InvalidatedTokenRepository;
 import com.backend.identityservice.repository.RefreshTokenRepository;
 import com.backend.identityservice.repository.httpclient.OutboundIdentityClient;
@@ -107,11 +109,11 @@ public class AuthenticationService {
     }
     public AuthenticationResponse authenticate(AuthenticationRequest request){
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
-        var user = userRepository.findByEmail(request.getEmail()).orElseThrow(() -> new RuntimeException("User not found"));
+        var user = userRepository.findByEmail(request.getEmail()).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
         boolean authenticated = passwordEncoder.matches(request.getPassword(), user.getPassword());
-        if(!authenticated) throw new RuntimeException("Invalid credentials");
+        if(!authenticated) throw new AppException(ErrorCode.INCORRECT_CREDENTIALS);
         boolean isActivated = user.getState().equals(UserState.ACTIVE);
-        if(!isActivated) throw new RuntimeException("User not activated");
+        if(!isActivated) throw new AppException(ErrorCode.INACTIVE_USER);
         var accessToken = generateToken(user);
         var refreshToken = generateRefreshToken(user);
         return AuthenticationResponse.builder().token(accessToken).refreshToken(refreshToken).authenticated(true).build();
