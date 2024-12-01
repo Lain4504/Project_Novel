@@ -2,6 +2,7 @@ package com.backend.identityservice.controller;
 
 import com.backend.identityservice.dto.request.UserCreationRequest;
 import com.backend.identityservice.dto.request.UserUpdateRequest;
+import com.backend.identityservice.dto.response.ApiResponse;
 import com.backend.identityservice.dto.response.UserResponse;
 import com.backend.identityservice.service.UserService;
 import lombok.AccessLevel;
@@ -21,23 +22,25 @@ import java.util.List;
 public class UserController {
     UserService userService;
     @PostMapping("/registration")
-    ResponseEntity<UserResponse> createUser(@RequestBody UserCreationRequest request) {
-        return ResponseEntity.ok(userService.createUser(request));
+    ApiResponse<UserResponse> createUser(@RequestBody UserCreationRequest request) {
+        return ApiResponse.<UserResponse>builder().result(userService.createUser(request)).build();
     }
     @GetMapping
-    ResponseEntity<List<UserResponse>> getUsers() {
-        return ResponseEntity.ok(userService.getAllUsers());
+    ApiResponse<List<UserResponse>> getUsers()
+    {
+
+        return ApiResponse.<List<UserResponse>>builder().result(userService.getAllUsers()).build();
     }
     @GetMapping("/{userId}")
-    ResponseEntity<UserResponse> getUser(@PathVariable("userId") String userId) {
-        return ResponseEntity.ok(userService.getUserById(userId));
+    ApiResponse<UserResponse> getUser(@PathVariable("userId") String userId) {
+        return ApiResponse.<UserResponse>builder().result(userService.getUserById(userId)).build();
     }
     @PutMapping("/{userId}")
-    ResponseEntity<UserResponse> updateUser(@PathVariable("userId") String userId, @RequestBody UserUpdateRequest request) {
-        return ResponseEntity.ok(userService.updateUser(userId, request));
+    ApiResponse<UserResponse> updateUser(@PathVariable("userId") String userId, @RequestBody UserUpdateRequest request) {
+        return ApiResponse.<UserResponse>builder().result(userService.updateUser(userId, request)).build();
     }
     @GetMapping("/my-info")
-    ResponseEntity<UserResponse> getMyInfo() {
-        return ResponseEntity.ok(userService.getMyInfo());
+    ApiResponse<UserResponse> getMyInfo() {
+        return ApiResponse.<UserResponse>builder().result(userService.getMyInfo()).build();
     }
 }

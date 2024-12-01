@@ -1,9 +1,5 @@
 <script setup lang="ts">
-import {
-  MenuOutlined,
-  SearchOutlined,
-  BellOutlined
-} from '@ant-design/icons-vue';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { ref, watch, computed } from 'vue';
 import { useStore } from 'vuex';
 
@@ -18,10 +14,9 @@ const isCategoryMenuOpen = ref(false);
 
 // Danh sách danh mục mẫu
 const categories = [
-  "Category 1", "Category 2", "Category 3",
-  "Category 4", "Category 5", "Category 6",
-  "Category 7", "Category 8", "Category 9",
-  "Category 10", "Category 11", "Category 12",
+  "Action", "Fantasy", "Romance", 
+  "Horror", "Adventure", "Comedy",
+
 ];
 
 // Đồng bộ trạng thái giữa các menu
@@ -38,9 +33,54 @@ watch(isAccountMenuOpen, (newVal) => {
     isCategoryMenuOpen.value = false;
   }
 });
+watch(isCategoryMenuOpen, (newVal) => {
+  if (newVal) {
+    isAccountMenuOpen.value = false;
+  }
+});
 const store = useStore();
 const isAuthenticated = computed(() => store.getters.isAuthenticated || '');
+const dropdownMenu = [
+  {
+    label: 'User Profile',
+    icon: 'fa-solid fa-user',
+    link: '/member',
+  },
+  {
+    label: 'Bookmark',
+    icon: 'fa-solid fa-bookmark',
+    link: '/list/bookmark',
+  },
+  {
+    label: 'Library',
+    icon: 'fa-solid fa-book',
+    link: '/library',
+  },
+  {
+    label: 'Setting',
+    icon: 'fa-solid fa-gear',
+    link: '/user-profile',
+  },
+  {
+    label: 'Transaction History',
+    icon: 'fa-solid fa-money-bill',
+    link: '/history',
+  },
+  {
+    label: 'Logout',
+    icon: 'fa-solid fa-right-from-bracket',
+    link: '/logout',
+  },
+];
+
+// Hàm đóng menu khi chọn một mục trong dropdown
+const closeMenu = () => {
+  isMenuOpen.value = false;
+  isAccountMenuOpen.value = false;
+  isCategoryMenuOpen.value = false;
+};
 </script>
+
 
 <template>
   <nav class="bg-white p-4 shadow-md relative">
@@ -50,10 +90,9 @@ const isAuthenticated = computed(() => store.getters.isAuthenticated || '');
       <div class="flex items-center space-x-4 md:space-x-0">
         <!-- Mobile Menu Button -->
         <button @click="isMenuOpen = !isMenuOpen"
-          class="text-black md:hidden mr-4 w-6 h-6 hover:text-gray-600 transition-colors">
-          <MenuOutlined />
+          class="text-black md:hidden w-6 h-6 hover:text-gray-600 transition-colors">
+          <font-awesome-icon icon="fa-solid fa-bars" />
         </button>
-
         <!-- Logo -->
         <RouterLink to="/" class="text-black text-xl font-semibold">
           LOGO
@@ -71,13 +110,13 @@ const isAuthenticated = computed(() => store.getters.isAuthenticated || '');
           <transition name="fade">
             <div v-if="isCategoryMenuOpen"
               class="absolute top-full mt-2 w-[20rem] bg-white shadow-lg rounded-lg border border-gray-200 grid grid-cols-3 gap-4 p-4 z-10">
-              <div v-for="(category, index) in categories.slice(0, 9)" :key="index"
+              <div v-for="(category, index) in categories.slice(0, 9)" :key="index" 
                 class="text-black text-sm hover:underline transition-all duration-300">
                 {{ category }}
               </div>
-              <button class="col-span-3 text-center text-blue-500 text-sm hover:underline">
-                View more
-              </button>
+              <RouterLink to="" class="col-span-3 text-center text-blue-500 text-sm hover:underline">
+                <font-awesome-icon icon="fa-solid fa-arrow-up-right-from-square" />
+                            </RouterLink>
             </div>
           </transition>
         </div>
@@ -89,36 +128,31 @@ const isAuthenticated = computed(() => store.getters.isAuthenticated || '');
 
         <!-- Search bar -->
         <div class="relative flex items-center">
-          <input type="text" placeholder="Search..."
-            class="p-[0.4rem] rounded-full placeholder:text-sm bg-gray-100 text-black focus:outline-none focus:ring-1 focus:ring-[#889b6c] transition-all duration-300">
-          <SearchOutlined class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 cursor-pointer" />
+          <input type="text" placeholder="Search by author or name..."
+            class="p-[0.4rem] rounded-full placeholder:text-sm placeholder:pl-1 bg-gray-100 text-black focus:outline-none focus:ring-1 focus:ring-[#889b6c] transition-all duration-300">
+          <font-awesome-icon icon="fa-solid fa-magnifying-glass"
+            class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-700 cursor-pointer" />
         </div>
-
         <!-- Bell và Avatar -->
-        <div v-if="isAuthenticated" class="flex items-center space-x-4">
+        <div v-if="isAuthenticated" class="flex items-center space-x-3">
           <div class="relative">
-            <RouterLink to="/writter"
+            <RouterLink to="/dashboard"
               class="flex items-center text-black hover:underline transition-all duration-300 text-sm">
               <!-- Writer Icon -->
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                class="bi bi-pencil mr-2" viewBox="0 0 16 16">
-                <path
-                  d="M12.146.354a2 2 0 0 1 2.828 2.828l-9.293 9.293a.5.5 0 0 1-.146.105l-3 1a.5.5 0 0 1-.605-.605l1-3a.5.5 0 0 1 .105-.146l9.293-9.293a2 2 0 0 1 2.828 2.828z" />
-              </svg>
-              Writter
+              <font-awesome-icon :icon="['far', 'pen-to-square']" size="lg" class="mr-1" />
+              Writting
             </RouterLink>
           </div>
           <!-- Bell -->
           <div class="relative">
-
-            <BellOutlined style="font-size: 24px;"
+            <font-awesome-icon icon="fa-regular fa-bell" size="xl"
               class="cursor-pointer text-gray-700 hover:text-black transition-transform duration-200 hover:scale-110 focus:scale-125 active:animate-pulse focus:outline-none" />
             <span
               class="absolute -right-1 -bottom-1 w-4 text-center leading-4 bg-black text-white aspect-square rounded-full text-[8px]">
               1
             </span>
           </div>
-         
+
           <!-- Account Dropdown -->
           <div class="relative">
             <img
@@ -127,67 +161,13 @@ const isAuthenticated = computed(() => store.getters.isAuthenticated || '');
             <transition name="fade">
               <div v-if="isAccountMenuOpen"
                 class="absolute right-0 mt-2 w-[10rem] bg-white shadow-lg rounded-lg border border-gray-200 text-sm z-10">
-                <RouterLink to="/user-profile"
+                <div v-for="item in dropdownMenu" :key="item.label"  @click="closeMenu"
                   class="flex items-center px-4 py-2 text-black hover:bg-gray-100 hover:underline transition-all duration-300">
-                  <!-- User Profile Icon -->
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                    class="bi bi-person mr-2" viewBox="0 0 16 16">
-                    <path
-                      d="M8 8a3 3 0 1 0-3-3 3 3 0 0 0 3 3zM8 0a8 8 0 1 0 8 8A8 8 0 0 0 8 0zM1 8a7 7 0 1 1 14 0 7 7 0 0 1-14 0z" />
-                  </svg>
-                  User Profile
-                </RouterLink>
-
-                <RouterLink to="/bookmark"
-                  class="flex items-center px-4 py-2 text-black hover:bg-gray-100 hover:underline transition-all duration-300">
-                  <!-- Bookmark Icon -->
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                    class="bi bi-bookmark mr-2" viewBox="0 0 16 16">
-                    <path d="M2 4v10l5-3 5 3V4H2z" />
-                  </svg>
-                  Bookmark
-                </RouterLink>
-
-                <RouterLink to="/library"
-                  class="flex items-center px-4 py-2 text-black hover:bg-gray-100 hover:underline transition-all duration-300">
-                  <!-- Library Icon -->
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                    class="bi bi-house-door mr-2" viewBox="0 0 16 16">
-                    <path
-                      d="M6.5 0L0 6v9.5A1.5 1.5 0 0 0 1.5 17h13A1.5 1.5 0 0 0 16 15.5V6l-6.5-6zM1 7.412l5.5-5.5L12 7.412V14h-2V8H6v6H4V7.412z" />
-                  </svg>
-                  Library
-                </RouterLink>
-
-                <RouterLink to="/settings"
-                  class="flex items-center px-4 py-2 text-black hover:bg-gray-100 hover:underline transition-all duration-300">
-                  <!-- Settings Icon -->
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                    class="bi bi-gear mr-2" viewBox="0 0 16 16">
-                    <path d="M8 4a4 4 0 1 0 4 4 4 4 0 0 0-4-4zM8 14a6 6 0 1 1 6-6 6 6 0 0 1-6 6z" />
-                  </svg>
-                  Setting
-                </RouterLink>
-
-                <RouterLink to="/history"
-                  class="flex items-center px-4 py-2 text-black hover:bg-gray-100 hover:underline transition-all duration-300">
-                  <!-- History Icon -->
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                    class="bi bi-gear mr-2" viewBox="0 0 16 16">
-                    <path d="M8 4a4 4 0 1 0 4 4 4 4 0 0 0-4-4zM8 14a6 6 0 1 1 6-6 6 6 0 0 1-6 6z" />
-                  </svg>
-                  Transaction History
-                </RouterLink>
-                <RouterLink to="/logout"
-                  class="flex items-center px-4 py-2 text-black hover:bg-gray-100 hover:underline transition-all duration-300">
-                  <!-- Logout Icon -->
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                    class="bi bi-door-open mr-2" viewBox="0 0 16 16">
-                    <path
-                      d="M11 0a1 1 0 0 1 1 1v7.586l2.707-2.707a1 1 0 1 1 1.414 1.414l-4 4a1 1 0 0 1-1.414 0l-4-4a1 1 0 1 1 1.414-1.414L10 8.586V1a1 1 0 0 1 1-1zM3 0a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V1a1 1 0 0 1 1-1h1z" />
-                  </svg>
-                  Logout
-                </RouterLink>
+                  <RouterLink :to="item.link" class="flex items-center w-full">
+                    <font-awesome-icon :icon="item.icon" class="mr-2" />
+                    {{ item.label }}
+                  </RouterLink>
+                </div>
               </div>
             </transition>
           </div>
@@ -201,34 +181,29 @@ const isAuthenticated = computed(() => store.getters.isAuthenticated || '');
         </div>
       </div>
 
-
       <!-- Mobile Account Section -->
       <div class="flex items-center md:hidden">
         <!-- Bell and Account for Authenticated Users -->
         <div v-if="isAuthenticated" class="flex items-center space-x-4">
           <div class="relative">
-            <RouterLink to="/writter"
+            <RouterLink to="/dashboard"
               class="flex items-center text-black hover:underline transition-all duration-300 text-sm">
               <!-- Writer Icon -->
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                class="bi bi-pencil mr-2" viewBox="0 0 16 16">
-                <path
-                  d="M12.146.354a2 2 0 0 1 2.828 2.828l-9.293 9.293a.5.5 0 0 1-.146.105l-3 1a.5.5 0 0 1-.605-.605l1-3a.5.5 0 0 1 .105-.146l9.293-9.293a2 2 0 0 1 2.828 2.828z" />
-              </svg>
-              Writter
+              <font-awesome-icon :icon="['far', 'pen-to-square']" size="lg" class="mr-1" />
+              Writting
             </RouterLink>
 
           </div>
           <!-- Bell icon remains the same -->
           <div class="relative mr-4">
-            <BellOutlined style="font-size: 24px;"
+            <font-awesome-icon icon="fa-regular fa-bell" size="xl"
               class="cursor-pointer text-gray-700 hover:text-black transition-transform duration-200 hover:scale-110 focus:scale-125 active:animate-pulse focus:outline-none" />
             <span
               class="absolute -right-1 -bottom-1 w-4 text-center leading-4 bg-black text-white aspect-square rounded-full text-[8px]">
               1
             </span>
           </div>
-         
+
           <!-- Account Dropdown remains the same -->
           <div class="relative">
             <img
@@ -238,67 +213,14 @@ const isAuthenticated = computed(() => store.getters.isAuthenticated || '');
             <transition name="fade">
               <div v-if="isAccountMenuOpen"
                 class="absolute right-0 mt-2 w-[10rem] bg-white shadow-lg rounded-lg border border-gray-200 text-sm z-10">
-                <RouterLink to="/user-profile"
+                <div v-for="item in dropdownMenu" :key="item.label"  @click="closeMenu"
                   class="flex items-center px-4 py-2 text-black hover:bg-gray-100 hover:underline transition-all duration-300">
-                  <!-- User Profile Icon -->
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                    class="bi bi-person mr-2" viewBox="0 0 16 16">
-                    <path
-                      d="M8 8a3 3 0 1 0-3-3 3 3 0 0 0 3 3zM8 0a8 8 0 1 0 8 8A8 8 0 0 0 8 0zM1 8a7 7 0 1 1 14 0 7 7 0 0 1-14 0z" />
-                  </svg>
-                  User Profile
-                </RouterLink>
-
-                <RouterLink to="/bookmark"
-                  class="flex items-center px-4 py-2 text-black hover:bg-gray-100 hover:underline transition-all duration-300">
-                  <!-- Bookmark Icon -->
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                    class="bi bi-bookmark mr-2" viewBox="0 0 16 16">
-                    <path d="M2 4v10l5-3 5 3V4H2z" />
-                  </svg>
-                  Bookmark
-                </RouterLink>
-
-                <RouterLink to="/library"
-                  class="flex items-center px-4 py-2 text-black hover:bg-gray-100 hover:underline transition-all duration-300">
-                  <!-- Library Icon -->
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                    class="bi bi-house-door mr-2" viewBox="0 0 16 16">
-                    <path
-                      d="M6.5 0L0 6v9.5A1.5 1.5 0 0 0 1.5 17h13A1.5 1.5 0 0 0 16 15.5V6l-6.5-6zM1 7.412l5.5-5.5L12 7.412V14h-2V8H6v6H4V7.412z" />
-                  </svg>
-                  Library
-                </RouterLink>
-
-                <RouterLink to="/settings"
-                  class="flex items-center px-4 py-2 text-black hover:bg-gray-100 hover:underline transition-all duration-300">
-                  <!-- Settings Icon -->
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                    class="bi bi-gear mr-2" viewBox="0 0 16 16">
-                    <path d="M8 4a4 4 0 1 0 4 4 4 4 0 0 0-4-4zM8 14a6 6 0 1 1 6-6 6 6 0 0 1-6 6z" />
-                  </svg>
-                  Setting
-                </RouterLink>
-
-                <RouterLink to="/history"
-                  class="flex items-center px-4 py-2 text-black hover:bg-gray-100 hover:underline transition-all duration-300">
-                  <!-- History Icon -->
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                    class="bi bi-gear mr-2" viewBox="0 0 16 16">
-                    <path d="M8 4a4 4 0 1 0 4 4 4 4 0 0 0-4-4zM8 14a6 6 0 1 1 6-6 6 6 0 0 1-6 6z" />
-                  </svg>
-                  Transaction History
-                </RouterLink>
-                <RouterLink to="/logout"
-                  class="flex items-center px-4 py-2 text-black hover:bg-gray-100 hover:underline transition-all duration-300">
-                  <!-- Logout Icon -->
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                    class="bi bi-door-open mr-2" viewBox="0 0 16 16">
-                    <path
-                      d="M11 0a1 1 0 0 1 1 1v7.586l2.707-2.707a1 1 0 1 1 1.414 1.414l-4 4a1 1 0 0 1-1.414 0l-4-4a1 1 0 1 1 1.414-1.414L10 8.586V1a1 1 0 0 1 1-1zM3 0a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V1a1 1 0 0 1 1-1h1z" />
-                  </svg>
-                  Logout
-                </RouterLink>
+                  <RouterLink :to="item.link" class="flex items-center w-full">
+                    <!-- FontAwesome Icon -->
+                    <font-awesome-icon :icon="item.icon" class="mr-2" />
+                    {{ item.label }}
+                  </RouterLink>
+                </div>
               </div>
             </transition>
           </div>
@@ -324,7 +246,8 @@ const isAuthenticated = computed(() => store.getters.isAuthenticated || '');
           <div class="relative">
             <input type="text" placeholder="Search..."
               class="p-[0.4rem] pr-10 rounded-full placeholder:text-sm w-full bg-gray-100 text-black focus:outline-none focus:ring-1 focus:ring-[#889b6c] transition-all duration-300">
-            <SearchOutlined class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 cursor-pointer" />
+            <font-awesome-icon icon="fa-solid fa-magnifying-glass"
+              class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-700 cursor-pointer" />
           </div>
           <div>
             <button @click="isCategoryMenuOpen = !isCategoryMenuOpen"
@@ -337,9 +260,9 @@ const isAuthenticated = computed(() => store.getters.isAuthenticated || '');
                   class="text-black text-sm hover:underline transition-all duration-300">
                   {{ category }}
                 </div>
-                <button class="col-span-3 text-center text-blue-500 text-sm hover:underline">
-                  View more
-                </button>
+                <RouterLink to="" class="col-span-3 text-center text-blue-500 text-sm hover:underline">
+                  <font-awesome-icon icon="fa-solid fa-arrow-up-right-from-square" />
+                </RouterLink>
               </div>
             </transition>
           </div>

@@ -1,9 +1,7 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
-import { EyeInvisibleOutlined, EyeOutlined } from '@ant-design/icons-vue';
-import GoogleOutlined from '@ant-design/icons-vue/GoogleOutlined';
+import { ref, computed, watch } from 'vue';
 import { RouterLink } from 'vue-router';
-import {register} from '../../api/user';
+import { register } from '@/api/user';
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
 // Refs cho input
@@ -34,9 +32,12 @@ const togglePasswordVisibility = () => {
 const toggleConfirmPasswordVisibility = () => {
   confirmPasswordVisible.value = !confirmPasswordVisible.value;
 };
+watch(password, () => {
+  confirmPassword.value = '';  // Reset confirmPassword when password changes
+});
 const handleRegister = async () => {
   registerError.value = '';
-  try{
+  try {
     const response = await register({
       email: email.value,
       password: password.value
@@ -49,7 +50,7 @@ const handleRegister = async () => {
     console.log('Token from store:', store.state.token);
     router.push('/');
   }
-  catch(error: any){
+  catch (error: any) {
     if (error.response) {
       registerError.value = error.response.data.message || 'Login failed. Please try again.';
     } else if (error.request) {
@@ -71,8 +72,8 @@ const handleRegister = async () => {
           Sign up to join our community and explore exclusive content.
         </p>
         <div class="mt-96 relative z-10">
-        <div class="bubble-effect"></div>
-      </div>
+          <div class="bubble-effect"></div>
+        </div>
       </div>
       <!-- Right Side -->
       <div class="w-full md:w-1/2 p-6 sm:p-10 max-w-md md:max-w-lg mx-auto">
@@ -97,8 +98,8 @@ const handleRegister = async () => {
                 placeholder="Enter your password" required
                 class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#889b6c] focus:border-[#889b6c] sm:text-sm" />
               <span @click="togglePasswordVisibility"
-                class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 cursor-pointer">
-                <component :is="passwordVisible ? EyeOutlined : EyeInvisibleOutlined" />
+                class="absolute right-3 top-1/2 bottom-[0.05rem] transform -translate-y-1/2 text-gray-500 cursor-pointer">
+                <font-awesome-icon :icon="passwordVisible ? 'fa-regular fa-eye' : 'fa-regular fa-eye-slash'" />
               </span>
             </div>
 
@@ -114,10 +115,11 @@ const handleRegister = async () => {
             <div class="relative">
               <input v-model="confirmPassword" :type="confirmPasswordVisible ? 'text' : 'password'"
                 id="confirm-password" name="confirm-password" placeholder="Re-enter your password" required
+                :disabled="!isPasswordValid"
                 class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#889b6c] focus:border-[#889b6c] sm:text-sm" />
               <span @click="toggleConfirmPasswordVisibility"
-                class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 cursor-pointer">
-                <component :is="confirmPasswordVisible ? EyeOutlined : EyeInvisibleOutlined" />
+                class="absolute right-3 top-1/2 bottom-[0.05rem] transform -translate-y-1/2 text-gray-500 cursor-pointer">
+                <font-awesome-icon :icon="confirmPasswordVisible  ? 'fa-regular fa-eye' : 'fa-regular fa-eye-slash'" />
               </span>
             </div>
 
@@ -125,6 +127,7 @@ const handleRegister = async () => {
               Passwords do not match.
             </p>
           </div>
+
 
           <!-- Submit Button -->
           <div>
@@ -143,7 +146,8 @@ const handleRegister = async () => {
           <div class="flex items-center justify-center space-x-2 mt-4">
             <button type="button"
               class="w-full flex items-center justify-center bg-gray-50 border text-gray-700 py-2 px-4 rounded-md hover:bg-gray-100 focus:ring-2 focus:ring-gray-500 focus:outline-none">
-              <GoogleOutlined class="mr-2 text-red-600" style="font-size: 18px" /> Sign Up with Google
+              <font-awesome-icon :icon="['fab', 'google']" class="mr-2 text-red-600" />
+              Sign Up with Google
             </button>
           </div>
         </form>

@@ -41,6 +41,9 @@ const store = createStore({
         getToken(state): string | null {
             return state.token;
         },
+        getUserId(state): string | null {
+            return state.user ? state.user.id : null;
+        }
     }
 });
 

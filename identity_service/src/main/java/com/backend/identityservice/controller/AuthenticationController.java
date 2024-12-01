@@ -1,6 +1,7 @@
 package com.backend.identityservice.controller;
 
 import com.backend.identityservice.dto.request.*;
+import com.backend.identityservice.dto.response.ApiResponse;
 import com.backend.identityservice.dto.response.AuthenticationResponse;
 import com.backend.identityservice.dto.response.IntrospectResponse;
 import com.backend.identityservice.service.AuthenticationService;
@@ -22,44 +23,46 @@ import java.text.ParseException;
 public class AuthenticationController {
     AuthenticationService authenticationService;
     @PostMapping("/outbound/authentication")
-    ResponseEntity<AuthenticationResponse> outboundAuthenticate(@RequestParam("code") String code){
+    ApiResponse<AuthenticationResponse> outboundAuthenticate(@RequestParam("code") String code){
         var result = authenticationService.outboundAuthenticate(code);
-        return ResponseEntity.ok(result);
+        return ApiResponse.<AuthenticationResponse>builder().result(result).build();
     }
     @PostMapping("/token")
-    ResponseEntity<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest request) {
+    ApiResponse<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest request) {
         var result = authenticationService.authenticate(request);
-        return ResponseEntity.ok(result);
+        return ApiResponse.<AuthenticationResponse>builder().result(result).build();
     }
     @PostMapping("/introspect")
-    ResponseEntity<IntrospectResponse> authenticate(@RequestBody IntrospectRequest request) throws JOSEException, ParseException {
+    ApiResponse<IntrospectResponse> authenticate(@RequestBody IntrospectRequest request) throws JOSEException, ParseException {
         var result = authenticationService.introspect(request);
-        return ResponseEntity.ok(result);
+        return ApiResponse.<IntrospectResponse>builder().result(result).build();
     }
     @PostMapping("/refresh")
-    ResponseEntity<AuthenticationResponse> authenticate(@RequestBody RefreshRequest request) throws ParseException, JOSEException {
+    ApiResponse<AuthenticationResponse> authenticate(@RequestBody RefreshRequest request) throws ParseException, JOSEException {
         var result = authenticationService.refreshToken(request);
-        return ResponseEntity.ok(result);
+        return ApiResponse.<AuthenticationResponse>builder().result(result).build();
     }
     @PostMapping("/logout")
-    ResponseEntity<Void> logout(@RequestBody LogoutRequest request) throws ParseException, JOSEException {
+    public ApiResponse<Void> logout(@RequestBody LogoutRequest request) throws ParseException, JOSEException {
         authenticationService.logout(request);
-        return ResponseEntity.ok().build();
+        return ApiResponse.<Void>builder().build();
+
     }
+
     @PostMapping("/change-password")
-    ResponseEntity<Void> changePassword(@RequestBody ChangePasswordRequest request) {
+    ApiResponse<Void> changePassword(@RequestBody ChangePasswordRequest request) {
         authenticationService.changePassword(request);
-        return ResponseEntity.ok().build();
+        return ApiResponse.<Void>builder().build();
     }
     @PostMapping("/reset-password")
-    ResponseEntity<Void> resetPassword(@RequestBody ResetPasswordRequest request) throws ParseException, JOSEException {
+    ApiResponse<Void> resetPassword(@RequestBody ResetPasswordRequest request) throws ParseException, JOSEException {
         authenticationService.resetPassword(request);
-        return ResponseEntity.ok().build();
+        return ApiResponse.<Void>builder().build();
     }
     @PostMapping("/forgot-password")
-    ResponseEntity<Void> forgotPassword(@RequestBody ForgotPasswordRequest request) {
+    ApiResponse<Void> forgotPassword(@RequestBody ForgotPasswordRequest request) {
         authenticationService.forgotPassword(request);
-        return ResponseEntity.ok().build();
+        return ApiResponse.<Void>builder().build();
     }
 
 

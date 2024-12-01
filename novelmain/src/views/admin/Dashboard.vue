@@ -1,19 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount} from 'vue';
-import { 
-    BookOutlined, 
-    MenuOutlined, 
-    BellOutlined,
-    CloseOutlined, 
-    CompassOutlined, 
-    MessageOutlined, 
-    PhoneOutlined, 
-    RadarChartOutlined, 
-    StopOutlined, 
-    UploadOutlined, 
-    MacCommandOutlined
-} from '@ant-design/icons-vue';
-
+import { ref, onMounted, onBeforeUnmount } from 'vue';
 enum Routes {
     NewNovel = '/new-novel',
     ExistingNovels = '/existing-novels',
@@ -22,17 +8,11 @@ enum Routes {
     AdminNotification = '/admin-notification',
     Account = '/account',
     Payment = '/payment',
-    Rules = '/rules',
+    FAQ = '/faq',
     Tutorial = '/tutorial',
     BookCategory = '/book-category',
     PostCategory = '/post-category',
 }
-
-type MenuItem = {
-    to: Routes;
-    label: string;
-    icon?: typeof BookOutlined; // Icon component
-};
 
 const showDropDown = ref<boolean>(false);
 const showSide = ref<boolean>(true);
@@ -44,7 +24,7 @@ const toggleDropdown = (): void => {
     isDropdownOpen.value = !isDropdownOpen.value;
 };
 // Toggle dropdown menu
-const toggleDropdownMenu = () : void => {
+const toggleDropdownMenu = (): void => {
     showDropDown.value = !showDropDown.value;
 }
 const handleItemClick = (): void => {
@@ -61,7 +41,7 @@ const toggleSideBar = (): void => {
 };
 
 const handleResize = (): void => {
-    isMobile.value = window.innerWidth <= 768;
+    isMobile.value = window.innerWidth <= 1280;
     if (isMobile.value) {
         showSide.value = false;
     } else {
@@ -77,83 +57,70 @@ onMounted(() => {
 onBeforeUnmount(() => {
     window.removeEventListener('resize', handleResize);
 });
+const MenuItems = [
+    {
+        label: 'My Book',
+        isParent: true, // Indicates it's a parent item
+        children: [
+            { to: Routes.NewNovel, label: 'Add Novel', icon: 'fa-solid fa-square-plus' },
+            { to: Routes.ExistingNovels, label: 'Existed Novel', icon: 'fa-solid fa-book' },
+            { to: Routes.Analytics, label: 'Analytics', icon: 'fa-solid fa-chart-pie' },
+        ]
+    },
+    {
+        label: 'Notification and Support',
+        isParent: true,
+        children: [
+            { to: Routes.Support, label: 'Support', icon: 'fa-solid fa-phone' },
+            { to: Routes.AdminNotification, label: 'Notification', icon: 'fa-solid fa-bullhorn' },
+        ]
+    },
+    {
+        label: 'Information',
+        isParent: true,
+        children: [
+            { to: Routes.FAQ, label: 'FAQ', icon: 'fa-solid fa-circle-question' },
+        ]
+    }
+];
 
-const bookMenuItems: MenuItem[] = [
-    { to: Routes.NewNovel, label: 'Add Novel', icon: BookOutlined },
-    { to: Routes.ExistingNovels, label: 'Existed Novel', icon: UploadOutlined },
-    { to: Routes.Analytics, label: 'Analytics', icon: RadarChartOutlined },
-];
-const supportMenuItems: MenuItem[] = [
-    { to: Routes.Support, label: 'Support', icon: PhoneOutlined },
-    { to: Routes.AdminNotification, label: 'Notification', icon: MessageOutlined },
-];
-const informationMenuItems: MenuItem[] = [
-    { to: Routes.Rules, label: 'Rule', icon: StopOutlined },
-    { to: Routes.Tutorial, label: 'Tutorial', icon: CompassOutlined },
-];
-const featureMenuItems: MenuItem[] = [
+const featureMenuItems = [
     { to: Routes.BookCategory, label: 'Book Category', },
     { to: Routes.PostCategory, label: 'Post Category' }
 ];
 const dropdownItems = [
     { to: Routes.Account, label: 'Account' },
-    { to: Routes.Payment, label: 'Payment'},
-    { label: 'Sign out'},
+    { to: Routes.Payment, label: 'Payment' },
+    { label: 'Sign out' },
 ];
 </script>
 
 <template>
     <div class="w-screen h-screen flex">
         <!-- Sidebar for larger screens -->
-        <div class="w-[270px] h-full bg-gray-200 text-black" v-show="showSide && !isMobile">
+        <div class="w-[260px] h-full bg-gray-200 text-black" v-show="showSide && !isMobile">
             <div class="h-[50px] bg-gray-100 flex justify-start items-center">
                 <div class="px-[20px]">
                     <h3 class="font-bold text-xl">Admin Panel</h3>
                 </div>
             </div>
-            <div class="h-[calc(100vh-50px)] bg-gray-100 py-[20px]">
+            <div class="h-[calc(100vh-50px)] bg-gray-100 py-[10px]">
                 <div class="flex flex-col justify-between h-full px-[20px]">
-                    <!-- Management and Book Groups -->
                     <div class="space-y-2">
-                        <div class="space-y-2 py-1">
-                            <RouterLink to="admin-management">
-                            <div class="text-md text-gray-700 font-semibold flex items-center hover:underline hover:text-gray-900">
-                                <MacCommandOutlined style="font-size: 16px; margin-right: 10px;" />Admin Management
-                            </div>
-                        </RouterLink>
-                        </div>
                         <!-- My Book Group -->
                         <div class="space-y-2">
-                            <div class="text-sm text-gray-700 font-semibold">My Book</div>
-                            <div class="flex flex-col justify-between">
-                                <RouterLink v-for="item in bookMenuItems" :key="item.to" :to="item.to"
-                                    class="inline-flex relative items-center py-[10px] px-[10px] w-full text-sm font-medium rounded-md border-gray-200 transition duration-500 ease-in-out hover:underline"
-                                    active-class="bg-[#e7f5dc] text-gray-800 font-semibold">
-                                    <component :is="item.icon" class="mr-2" style="font-size: 16px;" />
-                                    {{ item.label }}
-                                </RouterLink>
-                            </div>
-                        </div>
-                        <div class="space-y-2">
-                            <div class="text-sm text-gray-700 font-semibold">Notification and Support</div>
-                            <div class="flex flex-col justify-between">
-                                <RouterLink v-for="item in supportMenuItems" :key="item.to" :to="item.to"
-                                    class="inline-flex relative items-center py-[10px] px-[10px] w-full text-sm font-medium rounded-md border-gray-200 transition duration-500 ease-in-out hover:underline"
-                                    active-class="bg-[#e7f5dc] text-gray-800 font-semibold">
-                                    <component :is="item.icon" class="mr-2" style="font-size: 16px;" />
-                                    {{ item.label }}
-                                </RouterLink>
-                            </div>
-                        </div>
-                        <div class="space-y-2">
-                            <div class="text-sm text-gray-700 font-semibold">information</div>
-                            <div class="flex flex-col justify-between">
-                                <RouterLink v-for="item in informationMenuItems" :key="item.to" :to="item.to"
-                                    class="inline-flex relative items-center py-[10px] px-[10px] w-full text-sm font-medium rounded-md border-gray-200 transition duration-500 ease-in-out hover:underline"
-                                    active-class="bg-[#e7f5dc] text-gray-800 font-semibold">
-                                    <component :is="item.icon" class="mr-2" style="font-size: 16px;" />
-                                    {{ item.label }}
-                                </RouterLink>
+                            <div v-for="item in MenuItems" :key="item.label">
+                                <!-- Parent Item (My Book) -->
+                                <div class="text-sm text-gray-700 font-semibold">{{ item.label }}</div>
+
+                                <!-- Child Items (Menu Links) -->
+                                <div v-if="item.isParent" class="flex flex-col justify-between">
+                                    <RouterLink v-for="subItem in item.children" :key="subItem.to" :to="subItem.to"
+                                        class="inline-flex relative items-center py-[10px] px-[10px] w-full text-sm font-medium rounded-md border-gray-200 transition duration-500 ease-in-out hover:underline"
+                                        active-class="bg-[#e7f5dc] text-gray-800 font-semibold">
+                                        <font-awesome-icon :icon="subItem.icon" class="mr-2" /> {{ subItem.label }}
+                                    </RouterLink>
+                                </div>
                             </div>
                         </div>
                         <!-- Dropdown menun -->
@@ -183,45 +150,24 @@ const dropdownItems = [
         <div v-show="showMobileSide" class="fixed inset-0 z-20 bg-gray-900 bg-opacity-50">
             <div class="w-[250px] h-full bg-gray-100 text-gray-700 p-4">
                 <div class="flex justify-between items-center">
-                    <h3 class="font-bold text-xl">Admin Panel</h3>
+                   <h3 class="font-bold text-xl">Admin Panel</h3>
                     <button @click="toggleSideBar"
                         class="text-black transition-transform duration-200 hover:scale-125 focus:scale-150 active:animate-pulse focus:outline-none">
-                        <CloseOutlined style="font-size: 18px;" />
+                        <font-awesome-icon icon="fa-solid fa-xmark" size="lg" />
                     </button>
                 </div>
-                <div class="space-y-4 mt-6">
-                    <div class="space-y-2 py-1">
-                            <div class="text-md text-gray-700 font-semibold flex items-center">
-                                <MacCommandOutlined style="font-size: 16px; margin-right: 10px;" /> Admin Management
-                            </div>
+                <div class="space-y-4 mt-3">
+                    <div class="space-y-2">
+                        <div v-for="item in MenuItems" :key="item.label">
+
+                            <div class="text-sm text-gray-700 font-semibold">{{ item.label }}</div>
+                            <RouterLink v-for="subItem in item.children" :key="subItem.to" :to="subItem.to"
+                                class="inline-flex relative items-center py-2 px-3 w-full text-sm font-medium rounded-md transition duration-500 ease-in-out"
+                                active-class="bg-[#e7f5dc] text-gray-800 font-semibold" @click="toggleSideBar">
+                                <font-awesome-icon :icon="subItem.icon" class="mr-2" />
+                                {{ subItem.label }}
+                            </RouterLink>
                         </div>
-                    <!-- My Book Links -->
-                    <div class="space-y-2">
-                        <div class="text-sm text-gray-700 font-semibold">My Book</div>
-                        <RouterLink v-for="item in bookMenuItems" :key="item.to" :to="item.to"
-                            class="inline-flex relative items-center py-2 px-3 w-full text-sm font-medium rounded-md transition duration-500 ease-in-out"
-                            active-class="bg-[#e7f5dc] text-gray-800 font-semibold" @click="toggleSideBar">
-                            <component :is="item.icon" class="mr-2" style="font-size: 16px;" />
-                            {{ item.label }}
-                        </RouterLink>
-                    </div>
-                    <div class="space-y-2">
-                        <div class="text-sm text-gray-700 font-semibold">Notification and Support</div>
-                        <RouterLink v-for="item in supportMenuItems" :key="item.to" :to="item.to"
-                            class="inline-flex relative items-center py-2 px-3 w-full text-sm font-medium rounded-md transition duration-500 ease-in-out"
-                            active-class="bg-[#e7f5dc] text-gray-800 font-semibold" @click="toggleSideBar">
-                            <component :is="item.icon" class="mr-2" style="font-size: 16px;" />
-                            {{ item.label }}
-                        </RouterLink>
-                    </div>
-                    <div class="space-y-2">
-                        <div class="text-sm text-gray-700 font-semibold">Information</div>
-                        <RouterLink v-for="item in informationMenuItems" :key="item.to" :to="item.to"
-                            class="inline-flex relative items-center py-2 px-3 w-full text-sm font-medium rounded-md transition duration-500 ease-in-out"
-                            active-class="bg-[#e7f5dc] text-gray-800 font-semibold" @click="toggleSideBar">
-                            <component :is="item.icon" class="mr-2" style="font-size: 16px;" />
-                            {{ item.label }}
-                        </RouterLink>
                     </div>
                     <div class="space-y-2">
                         <!-- Tiêu đề chính của dropdown -->
@@ -233,7 +179,6 @@ const dropdownItems = [
                                 ▼
                             </span>
                         </div>
-
                         <!-- Menu items (dropdown content) -->
                         <div v-if="isDropdownOpen" class="mt-2 flex flex-col space-y-1">
                             <RouterLink v-for="item in featureMenuItems" :key="item.to" :to="item.to"
@@ -253,19 +198,34 @@ const dropdownItems = [
                 <!-- Toggle Sidebar Button -->
                 <div class="cursor-pointer w-[30px] text-gray-700 hover:text-black transition-transform duration-200 hover:scale-110 focus:scale-125 active:animate-custom-pulse focus:outline-none"
                     @click="toggleSideBar">
-                    <MenuOutlined style="font-size: 24px;" />
+                    <font-awesome-icon icon="fa-solid fa-bars" size="xl" />
+
                 </div>
 
                 <!-- Dropdown Menu -->
                 <div class="relative flex items-center space-x-4 cursor-pointer">
-                    <div class="relative mr-4">
-                        <BellOutlined style="font-size: 24px;"
+                    <div class="relative mr-1">
+                        <RouterLink to="/advanced-management"
+                        
+                            class="border border-gray-400 bg-gray-200 rounded-lg p-1 flex items-center text-black hover:underline transition-all duration-300 text-sm">
+                            <font-awesome-icon icon="fa-solid fa-bars-progress"  size="lg" class="mx-2 my-[0.2rem]" />     
+                               </RouterLink>
+                    </div>
+                    <div class="relative">
+                        <RouterLink to="/"
+                            class="flex items-center text-black hover:underline transition-all duration-300 text-sm">
+                            <!-- Writer Icon -->
+                            <font-awesome-icon :icon="['fas', 'house']" size="lg" />
+                        </RouterLink>
+                    </div>
+                    <div class="relative mr-1">
+                        <font-awesome-icon icon="fa-regular fa-bell" size="xl"
                             class="cursor-pointer w-[30px] text-gray-700 hover:text-black transition-transform duration-200 hover:scale-110 focus:scale-125 active:animate-pulse focus:outline-none" />
-                            <span className='absolute right-[-5px] bottom-[-5px] w-4 text-center leading-4 bg-black text-white aspect-square rounded-full text-[8px]'
-                            >
+                        <span
+                            className='absolute right-[-5px] bottom-[-5px] w-4 text-center leading-4 bg-black text-white aspect-square rounded-full text-[8px]'>
                             1
-                          </span>
-                        </div>
+                        </span>
+                    </div>
                     <img class="w-10 h-10 rounded-full border-2 border-gray-50 ml-[-4px] transition-transform duration-200 hover:scale-110 hover:border-blue-500"
                         src="\src\assets\logo.jpg" alt="" @click="toggleDropdownMenu" />
                     <transition name="dropdown-fade">
@@ -283,7 +243,7 @@ const dropdownItems = [
             </div>
             <!-- Content Area -->
             <div class="table-container h-full bg-gray-50 p-[20px]">
-                <div class="border border-gray-300 rounded-md p-[20px] h-full">
+                <div class=" border-gray-300 h-full">
                     <RouterView />
                 </div>
             </div>
@@ -319,8 +279,6 @@ const dropdownItems = [
 
 /* Cung cấp không gian cho nội dung */
 .content-area {
-    height: calc(100vh - 50px);
-    /* Đảm bảo nội dung chiếm hết chiều cao còn lại */
     overflow-y: auto;
     /* Cho phép cuộn dọc khi nội dung vượt quá kích thước */
 }

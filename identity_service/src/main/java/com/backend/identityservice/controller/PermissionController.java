@@ -1,6 +1,7 @@
 package com.backend.identityservice.controller;
 
 import com.backend.identityservice.dto.request.PermissionRequest;
+import com.backend.identityservice.dto.response.ApiResponse;
 import com.backend.identityservice.dto.response.PermissionResponse;
 import com.backend.identityservice.service.PermissionService;
 import lombok.AccessLevel;
@@ -20,16 +21,18 @@ import java.util.List;
 public class PermissionController {
     PermissionService permissionService;
     @PostMapping
-    ResponseEntity<PermissionResponse> createPermission(@RequestBody PermissionRequest request) {
-        return ResponseEntity.ok(permissionService.create(request));
+    ApiResponse<PermissionResponse> createPermission(@RequestBody PermissionRequest request) {
+        return ApiResponse.<PermissionResponse>builder().result(permissionService.create(request)).build();
     }
     @GetMapping
-    ResponseEntity<List<PermissionResponse>> getPermissions() {
-        return ResponseEntity.ok(permissionService.getAll());
+    ApiResponse<List<PermissionResponse>> getPermissions() {
+        return ApiResponse.<List<PermissionResponse>>builder()
+                .result(permissionService.getAll())
+                .build();
     }
     @DeleteMapping("/{permissionId}")
-    ResponseEntity<Void> deletePermission(@PathVariable("permissionId") String permissionId) {
+    ApiResponse<Void> deletePermission(@PathVariable("permissionId") String permissionId) {
         permissionService.delete(permissionId);
-        return ResponseEntity.ok().build();
+        return ApiResponse.<Void>builder().build();
     }
 }

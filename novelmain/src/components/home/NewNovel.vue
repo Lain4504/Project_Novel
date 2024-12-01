@@ -1,8 +1,13 @@
 <template>
     <div class="max-w-screen-xl mx-auto p-6">
+      
       <div class="flex flex-col lg:flex-row gap-6">
+        
         <!-- Left: Latest Books Section -->
-        <div class="p-6 flex-1">
+        <div class=" flex-1">
+          <div class="flex justify-between items-center my-2 p-2">
+        <h4 class="text-lg font-semibold">TIỂU THUYẾT MỚI</h4>
+      </div>
           <div
             class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 transition-transform duration-300"
             :style="{ transform: `translateX(-${currentSlide * 100}%)` }"
@@ -38,7 +43,7 @@
             <button
               v-if="currentSlide < paginatedBooks.length - 1"
               @click="nextPage"
-              class="bg-yellow-600 text-white py-2 px-4 rounded-full hover:bg-yellow-700 transition"
+              class="text-sm bg-yellow-600 text-white py-2 px-4 rounded-full hover:bg-yellow-700 transition"
             >
               Xem Thêm
             </button>
