@@ -2,11 +2,10 @@ package com.backend.novelservice.service;
 
 import com.backend.novelservice.dto.request.NovelCategoryRequest;
 import com.backend.novelservice.dto.response.NovelCategoryResponse;
-import com.backend.novelservice.dto.response.PageResponse;
+import com.backend.dto.response.PageResponse;
 import com.backend.novelservice.mapper.NovelCategoryMapper;
 import com.backend.novelservice.repository.NovelCategoryRepository;
-import com.backend.novelservice.utils.DateTimeFormatter;
-import org.springframework.data.domain.Page;
+import com.backend.utils.DateTimeFormatter;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -14,8 +13,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.List;
 
 @Service
 public class NovelCategoryService {

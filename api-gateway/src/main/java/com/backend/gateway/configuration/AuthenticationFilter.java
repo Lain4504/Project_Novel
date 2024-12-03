@@ -1,10 +1,14 @@
 package com.backend.gateway.configuration;
 
+import com.backend.dto.response.ApiResponse;
 import com.backend.gateway.service.IdentityService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
@@ -23,49 +27,73 @@ import java.util.Arrays;
 import java.util.List;
 
 @Component
+@Slf4j
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@FieldDefaults(level = AccessLevel.PACKAGE, makeFinal = true)
 public class AuthenticationFilter implements GlobalFilter, Ordered {
     IdentityService identityService;
+    ObjectMapper objectMapper;
 
     @NonFinal
     private String[] publicEndpoints = {
-        "/identity/auth/token",
-        "/identity/auth/outbound/authentication",
-        "/identity/users/registration"
-    }; //can be config .*
+            "/identity/auth/.*",
+            "/identity/users/registration"
+    };
+
     @Value("${app.api-prefix}")
     @NonFinal
     private String apiPrefix;
+
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
+        log.info("Enter authentication filter....");
+
         if (isPublicEndpoint(exchange.getRequest()))
-             return chain.filter(exchange);
+            return chain.filter(exchange);
 
         // Get token from authorization header
         List<String> authHeader = exchange.getRequest().getHeaders().get(HttpHeaders.AUTHORIZATION);
         if (CollectionUtils.isEmpty(authHeader))
-            return unauthorized(exchange.getResponse());
+            return unauthenticated(exchange.getResponse());
+
         String token = authHeader.getFirst().replace("Bearer ", "");
-        return identityService.instrospect(token).flatMap(instrospectReponse -> {
-            if (instrospectReponse.getBody().isValid()){
+        log.info("Token: {}", token);
+
+        return identityService.introspect(token).flatMap(introspectResponse -> {
+            if (introspectResponse.getResult().isValid())
                 return chain.filter(exchange);
-            }
-            return unauthorized(exchange.getResponse());
-        }).onErrorResume(throwable -> unauthorized(exchange.getResponse()));
+            else
+                return unauthenticated(exchange.getResponse());
+        }).onErrorResume(throwable -> unauthenticated(exchange.getResponse()));
     }
+
     @Override
     public int getOrder() {
         return -1;
     }
-    private boolean isPublicEndpoint(ServerHttpRequest request) {
+
+    private boolean isPublicEndpoint(ServerHttpRequest request){
         return Arrays.stream(publicEndpoints)
                 .anyMatch(s -> request.getURI().getPath().matches(apiPrefix + s));
     }
-    Mono<Void> unauthorized(ServerHttpResponse response) {
-        String body = "{\"message\":\"Unauthorized\"}";
+
+    Mono<Void> unauthenticated(ServerHttpResponse response){
+        ApiResponse<?> apiResponse = ApiResponse.builder()
+                .code("1401")
+                .message("Unauthenticated")
+                .build();
+
+        String body = null;
+        try {
+            body = objectMapper.writeValueAsString(apiResponse);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+
         response.setStatusCode(HttpStatus.UNAUTHORIZED);
         response.getHeaders().add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
-        return response.writeWith(Mono.just(response.bufferFactory().wrap(body.getBytes())));
+
+        return response.writeWith(
+                Mono.just(response.bufferFactory().wrap(body.getBytes())));
     }
 }

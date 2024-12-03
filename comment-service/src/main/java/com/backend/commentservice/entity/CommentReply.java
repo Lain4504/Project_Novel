@@ -1,27 +1,25 @@
-package com.backend.postservice.entity;
+package com.backend.commentservice.entity;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.MongoId;
 
 import java.time.LocalDateTime;
-
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@FieldDefaults(level = lombok.AccessLevel.PRIVATE)
-@Builder
-@Document(value = "comment")
-public class Comment {
+@FieldDefaults(level = AccessLevel.PRIVATE)
+@Document(value = "comment_reply")
+public class CommentReply {
     @MongoId
     String id;
-    String postId;
+    String commentId;
     String userId;
-    String content;
-    Integer replyCount;
+    String replyContent;
+    String replyTo;
     LocalDateTime createdDate;
     LocalDateTime updateDateTime;
 }

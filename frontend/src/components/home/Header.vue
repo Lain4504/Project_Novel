@@ -4,7 +4,8 @@ import { ref, watch, computed } from 'vue';
 import { useStore } from 'vuex';
 import { logout } from '../../api/user';
 import router from '../../router';
-
+import AuthorNotification from '../common/NotificationDropdown.vue';
+import NotificationDropdown from '../common/NotificationDropdown.vue';
 // Trạng thái cho menu trên mobile
 const isMenuOpen = ref(false);
 
@@ -61,10 +62,7 @@ const handleLogout = async () => {
       accessToken: accessToken
     });
 
-    if (result) {
-      // Clear the authentication state (e.g., remove token and user info)
       store.commit('clearUser'); // Adjust to your Vuex store mutation for logout
-    }
   } catch (error) {
     console.error('Logout failed:', error);
     alert('Logout failed. Please try again.');
@@ -110,12 +108,33 @@ const closeMenu = () => {
   isCategoryMenuOpen.value = false;
 };
 
+const isNotificationListOpen = ref(false);
+const unreadNotifications = ref(1); // Số thông báo chưa đọc
+const notifications = ref([
+{
+    id: 1,
+    user: "Jese Leos",
+    message: 'Hey, what\'s up? All set for the presentation?',
+    time: 'a few moments ago',
+    iconColor: 'bg-blue-600',
+  },
+  {
+    id: 2,
+    user: "Joseph Mcfall",
+    message: 'and 5 others started following you.',
+    time: '10 minutes ago',
+    iconColor: 'bg-gray-900',
+  },
+]); // Danh sách thông báo mẫu
 
+// Phương thức toggle
+const toggleNotificationList = () => {
+  isNotificationListOpen.value = !isNotificationListOpen.value;
+};
 </script>
 
-
 <template>
-  <nav class="bg-white p-4 shadow-md relative">
+  <nav class="bg-[#F0EEE5] p-4 shadow-md relative">
     <!-- Navbar container -->
     <div class="max-w-[90rem] mx-auto flex items-center justify-between">
       <!-- Mobile Menu Button (hamburger) + LOGO -->
@@ -154,7 +173,7 @@ const closeMenu = () => {
         </div>
 
         <!-- Forum, Support, Ranking -->
-        <RouterLink to="#" class="text-black text-sm hover:underline transition-all duration-300">Forum</RouterLink>
+        <RouterLink to="/post-forum" class="text-black text-sm hover:underline transition-all duration-300">Forum</RouterLink>
         <RouterLink to="#" class="text-black text-sm hover:underline transition-all duration-300">Support</RouterLink>
         <RouterLink to="#" class="text-black text-sm hover:underline transition-all duration-300">Ranking</RouterLink>
 
@@ -175,15 +194,27 @@ const closeMenu = () => {
               Writting
             </RouterLink>
           </div>
-          <!-- Bell -->
-          <div class="relative">
-            <font-awesome-icon icon="fa-regular fa-bell" size="xl"
-              class="cursor-pointer text-gray-700 hover:text-black transition-transform duration-200 hover:scale-110 focus:scale-125 active:animate-pulse focus:outline-none" />
-            <span
-              class="absolute -right-1 -bottom-1 w-4 text-center leading-4 bg-black text-white aspect-square rounded-full text-[8px]">
-              1
-            </span>
-          </div>
+       <!-- Bell -->
+<div class="relative">
+  <div @click="toggleNotificationList" class="relative">
+    <font-awesome-icon icon="fa-regular fa-bell" size="xl"
+      class="cursor-pointer text-gray-700 hover:text-black transition-transform duration-200 hover:scale-110 focus:scale-125 active:animate-pulse focus:outline-none" />
+    <span
+      class="absolute -right-1 -bottom-1 w-4 text-center leading-4 bg-black text-white aspect-square rounded-full text-[8px]">
+      {{ unreadNotifications }}
+    </span>
+  </div>
+
+  <!-- Notification List -->
+  <transition name="fade">
+    <div v-if="isNotificationListOpen"
+      class="absolute right-0 top-full mt-2 w-80 bg-white shadow-lg rounded-lg border border-gray-200 z-20">
+      <!-- Include AuthorNotification component -->
+      <NotificationDropdown :notifications="notifications" />
+    </div>
+  </transition>
+</div>
+
 
           <!-- Account Dropdown -->
           <div class="relative">
@@ -222,6 +253,7 @@ const closeMenu = () => {
         </div>
       </div>
 
+
       <!-- Mobile Account Section -->
       <div class="flex items-center md:hidden">
         <!-- Bell and Account for Authenticated Users -->
@@ -235,15 +267,26 @@ const closeMenu = () => {
             </RouterLink>
 
           </div>
-          <!-- Bell icon remains the same -->
-          <div class="relative mr-4">
-            <font-awesome-icon icon="fa-regular fa-bell" size="xl"
-              class="cursor-pointer text-gray-700 hover:text-black transition-transform duration-200 hover:scale-110 focus:scale-125 active:animate-pulse focus:outline-none" />
-            <span
-              class="absolute -right-1 -bottom-1 w-4 text-center leading-4 bg-black text-white aspect-square rounded-full text-[8px]">
-              1
-            </span>
-          </div>
+             <!-- Bell -->
+<div class="relative">
+  <div @click="toggleNotificationList" class="relative">
+    <font-awesome-icon icon="fa-regular fa-bell" size="xl"
+      class="cursor-pointer text-gray-700 hover:text-black transition-transform duration-200 hover:scale-110 focus:scale-125 active:animate-pulse focus:outline-none" />
+    <span
+      class="absolute -right-1 -bottom-1 w-4 text-center leading-4 bg-black text-white aspect-square rounded-full text-[8px]">
+      {{ unreadNotifications }}
+    </span>
+  </div>
+
+  <!-- Notification List -->
+  <transition name="fade">
+    <div v-if="isNotificationListOpen"
+      class="absolute right-0 top-full mt-2 w-80 bg-white shadow-lg rounded-lg border border-gray-200 z-20">
+      <!-- Include AuthorNotification component -->
+      <AuthorNotification :notifications="notifications" />
+    </div>
+  </transition>
+</div>
 
           <!-- Account Dropdown remains the same -->
           <div class="relative">
@@ -285,9 +328,8 @@ const closeMenu = () => {
             Register
           </RouterLink>
         </div>
-      </div>
     </div>
-
+  </div>
     <!-- Mobile Dropdown Menu (overlay) -->
     <transition name="fade">
       <div v-if="isMenuOpen" class="md:hidden fixed top-16 left-0 w-full h-full bg-black bg-opacity-50 z-50">
@@ -316,7 +358,7 @@ const closeMenu = () => {
               </div>
             </transition>
           </div>
-          <RouterLink to="#" class="block text-sm hover:underline transition-all duration-300">Forum</RouterLink>
+          <RouterLink to="/post-forum" class="block text-sm hover:underline transition-all duration-300">Forum</RouterLink>
           <RouterLink to="#" class="block text-sm hover:underline transition-all duration-300">Support</RouterLink>
           <RouterLink to="#" class="block text-sm hover:underline transition-all duration-300">Ranking</RouterLink>
         </div>

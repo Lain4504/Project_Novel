@@ -1,7 +1,12 @@
 <template>
   <div class="max-w-7xl mx-auto">
+
     <Ads class="my-4" />
-    <div class="flex space-x-4">
+    <Breedcrumb :breadcrumbs="[
+      { label: 'Home', href: '/' },
+      { label: 'Reading List', href: '/list/readinglist', isCurrent: true }
+    ]" />
+    <div class="flex space-x-4 my-2">
       <router-link
         v-for="tab in tabs"
         :key="tab.name"
@@ -24,7 +29,7 @@
 
 <script setup lang="ts">
 import Ads from '@/components/home/Ads.vue';
-
+import Breedcrumb from '@/components/common/Breadcrumb.vue';
 interface Tab {
   name: string;
   label: string;

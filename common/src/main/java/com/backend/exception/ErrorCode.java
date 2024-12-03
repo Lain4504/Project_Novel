@@ -1,4 +1,4 @@
-package com.backend.identityservice.exception;
+package com.backend.exception;
 
 import lombok.Getter;
 import org.springframework.http.HttpStatus;

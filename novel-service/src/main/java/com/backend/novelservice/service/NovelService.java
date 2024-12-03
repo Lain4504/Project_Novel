@@ -2,13 +2,13 @@ package com.backend.novelservice.service;
 
 import com.backend.novelservice.dto.request.NovelCreationRequest;
 import com.backend.novelservice.dto.response.NovelResponse;
-import com.backend.novelservice.dto.response.PageResponse;
+import com.backend.dto.response.PageResponse;
 import com.backend.novelservice.entity.NovelCategory;
 import com.backend.novelservice.mapper.NovelCategoryMapper;
 import com.backend.novelservice.mapper.NovelMapper;
 import com.backend.novelservice.repository.NovelCategoryRepository;
 import com.backend.novelservice.repository.NovelRepository;
-import com.backend.novelservice.utils.DateTimeFormatter;
+import com.backend.utils.DateTimeFormatter;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -21,8 +21,6 @@ import org.springframework.stereotype.Service;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor

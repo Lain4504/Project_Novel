@@ -1,20 +1,19 @@
 <template>
     <div class="max-w-7xl mx-auto">
         <Ads class="my-4" />
-        <Breadcrumb
-            :breadcrumbs="[
-                { label: 'Home', href: '/' },
-                { label: 'Account', href: '/templates' },
-                { label: 'Transaction History', href: '/flowbite', isCurrent: true }
-            ]"
-        />
+        <Breadcrumb :breadcrumbs="[
+            { label: 'Home', href: '/' },
+            { label: 'Account', href: '/templates' },
+            { label: 'Transaction History', href: '/flowbite', isCurrent: true }
+        ]" />
         <div>
             <div class="flex justify-between items-center my-2">
                 <h4 class="text-lg font-semibold">TIỂU THUYẾT ĐÁNH DẤU CỦA BẠN</h4>
                 <button @click="topUp"
-                        class="text-sm bg-transparent border-[1px] bg-green-400 hover:bg-green-600 hover:scale-105 font-medium py-2 px-4 rounded transition-all duration-300 flex items-center justify-center">
-                        Deposit
-                    </button>
+                    class="text-sm bg-green-400 border-[1px] hover:bg-green-400 hover:scale-105 font-medium py-2 px-4 rounded transition-all duration-300 flex items-center justify-center">
+                    Deposit
+                </button>
+
             </div>
             <table class="min-w-full table-auto border-collapse bg-white rounded-lg shadow-md">
                 <thead>
@@ -45,9 +44,10 @@
 
                     <ul class="inline-flex -space-x-px text-sm">
                         <li v-for="n in totalPagesComputed" :key="n">
-                            <a href="#" :class="{'bg-blue-500 text-white': n === page, 'text-blue-500 hover:bg-blue-100': n !== page}"
-                               @click="goToPage(n)"
-                               class="flex items-center justify-center px-3 h-8 leading-tight border border-gray-300 hover:bg-gray-100 rounded-md">
+                            <a href="#"
+                                :class="{ 'bg-blue-500 text-white': n === page, 'text-blue-500 hover:bg-blue-100': n !== page }"
+                                @click="goToPage(n)"
+                                class="flex items-center justify-center px-3 h-8 leading-tight border border-gray-300 hover:bg-gray-100 rounded-md">
                                 {{ n }}
                             </a>
                         </li>

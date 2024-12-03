@@ -11,7 +11,7 @@ import UpdatedList from '@/components/home/UpdatedList.vue';
 
 <template>
   <!-- Wrapper to limit width and ensure padding on smaller screens -->
-  <div class="max-w-[83rem] mx-auto px-4 sm:px-6 lg:px-8 my-5">
+  <div class="max-w-[83rem] mx-auto px-4 sm:px-6 lg:px-8 my-5 ">
     <Banner />
     <StoryList />
     <PromtNovel/>
@@ -21,7 +21,7 @@ import UpdatedList from '@/components/home/UpdatedList.vue';
     <Ads/>
     <CompletedNovel/>
     <Reviews/>
-      </div>
+    </div>
 </template>
 
 <style scoped>

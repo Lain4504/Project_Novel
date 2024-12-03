@@ -1,4 +1,4 @@
-package com.backend.novelservice.entity;
+package com.backend.commentservice.entity;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;

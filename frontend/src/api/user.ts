@@ -1,4 +1,5 @@
-import axios from '@/utils/axiosInstance';
+import axios from '../utils/axiosInstance';
+import store from '../store';
 
 const USER_API = '/identity/users';
 const IDENTITY_API = '/identity/auth';
@@ -7,7 +8,7 @@ interface AccountRequest {
     password: string;
 }
 interface LogoutRequest {
-    refreshtoken: string;
+    refreshToken: string;
     accessToken: string;
 }
 const register = async (data: AccountRequest) => {
@@ -40,7 +41,13 @@ const introspect = async (data : string) => {
 }
 const logout = async (data: LogoutRequest) => {
     try{
-        const response = await axios.post(`${IDENTITY_API}/logout`, data);
+        const response = await axios.post(`http://localhost:8888/api/identity/auth/logout`, data,
+            {
+                headers: {
+                    Authorization: `Bearer ${store.getters.getToken}`
+                }
+            }
+        );
         return response.data.result;
     }
     catch(error){

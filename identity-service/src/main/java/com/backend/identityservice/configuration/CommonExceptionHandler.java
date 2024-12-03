@@ -1,19 +1,23 @@
-package com.backend.identityservice.exception;
+package com.backend.identityservice.configuration;
+import java.util.Map;
+import java.util.Objects;
 
-import com.backend.identityservice.dto.response.ApiResponse;
+import com.backend.dto.response.ApiResponse;
+import com.backend.exception.AppException;
+import com.backend.exception.ErrorCode;
 import jakarta.validation.ConstraintViolation;
-import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import lombok.extern.slf4j.Slf4j;
 
-import java.util.Map;
-import java.util.Objects;
-@Slf4j
 @ControllerAdvice
+@Slf4j
 public class CommonExceptionHandler {
+
     private static final String MIN_ATTRIBUTE = "min";
 
     @ExceptionHandler(value = Exception.class)

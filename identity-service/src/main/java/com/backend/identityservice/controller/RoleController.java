@@ -1,14 +1,13 @@
 package com.backend.identityservice.controller;
 
+import com.backend.dto.response.ApiResponse;
 import com.backend.identityservice.dto.request.RoleRequest;
-import com.backend.identityservice.dto.response.ApiResponse;
 import com.backend.identityservice.dto.response.RoleResponse;
 import com.backend.identityservice.service.RoleService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
