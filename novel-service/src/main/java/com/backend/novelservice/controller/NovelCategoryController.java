@@ -1,5 +1,7 @@
 package com.backend.novelservice.controller;
 
+import com.backend.dto.response.ApiResponse;
+import com.backend.dto.response.PageResponse;
 import com.backend.novelservice.dto.request.NovelCategoryRequest;
 import com.backend.novelservice.dto.response.NovelCategoryResponse;
 import com.backend.novelservice.service.NovelCategoryService;
@@ -18,27 +20,31 @@ import java.util.List;
 public class NovelCategoryController {
     NovelCategoryService novelCategoryService;
     @PostMapping("/create")
-    ResponseEntity<NovelCategoryResponse> createCategory(@RequestBody NovelCategoryRequest request) {
-        return ResponseEntity.ok(novelCategoryService.createNovelCategory(request));
+    ApiResponse<NovelCategoryResponse> createCategory(@RequestBody NovelCategoryRequest request) {
+        return ApiResponse.<NovelCategoryResponse>builder()
+                .result(novelCategoryService.createNovelCategory(request)).build();
     }
     @GetMapping("/all")
-    ResponseEntity<List<NovelCategoryResponse>> getAllCategories(
+    ApiResponse<PageResponse<NovelCategoryResponse>> getAllCategories(
             @RequestParam(value = "page", required = false, defaultValue = "1") int page,
             @RequestParam(value = "size", required = false, defaultValue = "10") int size
     ) {
-        return ResponseEntity.ok(novelCategoryService.getNovelCategories(page, size));
+        return ApiResponse.<PageResponse<NovelCategoryResponse>>builder()
+                .result(novelCategoryService.getNovelCategories(page, size)).build();
     }
     @GetMapping("/{categoryId}")
-    ResponseEntity<NovelCategoryResponse> getCategory(String categoryId) {
-        return ResponseEntity.ok(novelCategoryService.getNovelCategoryById(categoryId));
+    ApiResponse<NovelCategoryResponse> getCategory(String categoryId) {
+        return ApiResponse.<NovelCategoryResponse>builder()
+                .result(novelCategoryService.getNovelCategoryById(categoryId)).build();
     }
     @DeleteMapping("/delete/{categoryId}")
-    ResponseEntity<Void> deleteCategory(String categoryId) {
+    ApiResponse<Void> deleteCategory(String categoryId) {
         novelCategoryService.deleteNovelCategory(categoryId);
-        return ResponseEntity.ok().build();
+        return ApiResponse.<Void>builder().build();
     }
     @PutMapping("/update/{categoryId}")
-    ResponseEntity<NovelCategoryResponse> updateCategory(@PathVariable("categoryId") String categoryId, @RequestBody NovelCategoryRequest request) {
-        return ResponseEntity.ok(novelCategoryService.updateNovelCategory(categoryId, request));
+    ApiResponse<NovelCategoryResponse> updateCategory(@PathVariable("categoryId") String categoryId, @RequestBody NovelCategoryRequest request) {
+        return ApiResponse.<NovelCategoryResponse>builder()
+                .result(novelCategoryService.updateNovelCategory(categoryId, request)).build();
     }
 }

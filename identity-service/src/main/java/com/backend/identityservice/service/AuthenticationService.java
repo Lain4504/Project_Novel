@@ -1,6 +1,8 @@
 package com.backend.identityservice.service;
 
 import com.backend.event.NotificationEvent;
+import com.backend.exception.AppException;
+import com.backend.exception.ErrorCode;
 import com.backend.identityservice.constant.PredefinedRole;
 import com.backend.identityservice.dto.request.*;
 import com.backend.identityservice.dto.response.AuthenticationResponse;
@@ -10,8 +12,6 @@ import com.backend.identityservice.entity.RefreshToken;
 import com.backend.identityservice.entity.Role;
 import com.backend.identityservice.entity.User;
 import com.backend.identityservice.enums.UserState;
-import com.backend.identityservice.exception.AppException;
-import com.backend.identityservice.exception.ErrorCode;
 import com.backend.identityservice.repository.InvalidatedTokenRepository;
 import com.backend.identityservice.repository.RefreshTokenRepository;
 import com.backend.identityservice.repository.httpclient.OutboundIdentityClient;
@@ -130,18 +130,18 @@ public class AuthenticationService {
         return token;
     }
 
-    public void logout(LogoutRequest request) throws ParseException {
-        try{
+    public void logout(LogoutRequest request) throws ParseException, JOSEException {
+        try {
             var signToken = verifyToken(request.getAccessToken());
             String jit = signToken.getJWTClaimsSet().getJWTID();
             Date expiryTime = signToken.getJWTClaimsSet().getExpirationTime();
-            InvalidatedToken invalidatedToken = InvalidatedToken.builder().id(jit).expiryTime(expiryTime).build();
+            InvalidatedToken invalidatedToken =
+                    InvalidatedToken.builder().id(jit).expiryTime(expiryTime).build();
             invalidatedTokenRepository.save(invalidatedToken);
             var refreshToken = refreshTokenRepository.findByToken(request.getRefreshToken()).orElseThrow(() ->  new AppException(ErrorCode.INVALID_REFRESH_TOKEN));
             refreshTokenRepository.delete(refreshToken);
-        }
-        catch (Exception e) {
-            throw new AppException(ErrorCode.UNAUTHENTICATED);
+        } catch (AppException exception){
+            log.info("Token already expired");
         }
     }
     public AuthenticationResponse refreshToken(RefreshRequest request) throws ParseException, JOSEException {

@@ -1,0 +1,10 @@
+server:
+  port: 8084
+  servlet:
+    context-path: /novel
+spring:
+  application:
+    name: novel-service
+  data:
+    mongodb:
+      uri: mongodb://root:root@localhost:27017/novel-service?authSource=admin

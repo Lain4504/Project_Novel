@@ -1,4 +1,4 @@
-package com.backend.novelservice.dto.response;
+package com.backend.dto.response;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;

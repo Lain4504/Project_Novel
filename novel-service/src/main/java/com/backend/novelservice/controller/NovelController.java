@@ -1,16 +1,15 @@
 package com.backend.novelservice.controller;
 
+import com.backend.dto.response.ApiResponse;
 import com.backend.novelservice.dto.request.NovelCreationRequest;
 import com.backend.novelservice.dto.response.NovelResponse;
-import com.backend.novelservice.dto.response.PageResponse;
+import com.backend.dto.response.PageResponse;
 import com.backend.novelservice.service.NovelService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/novels")
@@ -20,26 +19,30 @@ public class NovelController {
     NovelService novelService;
 
     @PostMapping("/create")
-    ResponseEntity<NovelResponse> createNovel(@RequestBody NovelCreationRequest request) {
-        return ResponseEntity.ok(novelService.createNovel(request));
+    ApiResponse<NovelResponse> createNovel(@RequestBody NovelCreationRequest request) {
+        return ApiResponse.<NovelResponse>builder()
+                .result(novelService.createNovel(request)).build();
     }
     @PutMapping("/update/{novelId}")
-    ResponseEntity<NovelResponse> updateNovel(@PathVariable("novelId") String novelId, @RequestBody NovelCreationRequest request) {
-        return ResponseEntity.ok(novelService.updateNovel(novelId, request));
+    ApiResponse<NovelResponse> updateNovel(@PathVariable("novelId") String novelId, @RequestBody NovelCreationRequest request) {
+        return ApiResponse.<NovelResponse>builder()
+                .result(novelService.updateNovel(novelId, request)).build();
     }
     @DeleteMapping("/delete/{novelId}")
-    ResponseEntity<Void> deleteNovel(@PathVariable("novelId") String novelId) {
+    ApiResponse<Void> deleteNovel(@PathVariable("novelId") String novelId) {
         novelService.deleteNovel(novelId);
-        return ResponseEntity.ok().build();
+        return ApiResponse.<Void>builder().build();
     }
     @GetMapping("/{novelId}")
-    ResponseEntity<NovelResponse> getNovel(@PathVariable("novelId") String novelId) {
-        return ResponseEntity.ok(novelService.getNovel(novelId));
+    ApiResponse<NovelResponse> getNovel(@PathVariable("novelId") String novelId) {
+        return ApiResponse.<NovelResponse>builder()
+                .result(novelService.getNovel(novelId)).build();
     }
     @GetMapping("/get-all/")
-    ResponseEntity<PageResponse<NovelResponse>> myPosts(
+    ApiResponse<PageResponse<NovelResponse>> myPosts(
             @RequestParam(value = "page", required = false, defaultValue = "1") int page,
             @RequestParam(value = "size", required = false, defaultValue = "10") int size){
-        return ResponseEntity.ok(novelService.getNovels(page, size));
+        return ApiResponse.<PageResponse<NovelResponse>>builder()
+                .result(novelService.getNovels(page, size)).build();
     }
 }

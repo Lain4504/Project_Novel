@@ -5,8 +5,23 @@ export default {
     "./src/**/*.{vue,js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      typography: (theme) => ({
+        DEFAULT: {
+          css: {
+           '--tw-prose-bullets': theme('colors.pink.500'),
+           li:{
+            p:{
+              margin: 0,
+            }
+           }
+          },
+        },
+    }),
   },
-  plugins: [],
+},
+  plugins: [
+    require('@tailwindcss/typography'),
+  ],
 }
 

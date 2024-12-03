@@ -28,6 +28,9 @@ const handleLogin = async () => {
     });
     console.log(response);
     store.commit('setToken', response.token);
+    const userData = await getMyInfo();
+    store.commit('setUser', userData);
+    console.log('User from store:', store.state.user);
     store.commit('setRefreshToken', response.refreshToken);
     console.log('Token from store:', store.state.token);
     console.log('Refresh Token from store:', store.state.refreshToken);

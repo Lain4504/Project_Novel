@@ -10,10 +10,8 @@
                     <!-- Dropdown Menu -->
                     <div v-if="isDropdownVisible"
                         class="absolute z-10 bg-white border border-gray-300 rounded-md mt-2 w-36 shadow-md">
-                        <div class="p-2 cursor-pointer hover:bg-gray-100 text-sm" @click="handleOptionClick('Tập')">Tập
-                        </div>
                         <div class="p-2 cursor-pointer hover:bg-gray-100 text-sm"
-                            @click="handleOptionClick('Sắp xếp tập')">Sắp xếp tập</div>
+                            @click="handleOptionClick('Thêm tập')">Thêm tập</div>
                         <div class="p-2 cursor-pointer hover:bg-gray-100 text-sm"
                             @click="handleOptionClick('Xóa novel')">Xóa novel</div>
                     </div>
@@ -110,7 +108,7 @@
     <div class="flex justify-center items-center max-w-7xl mx-auto">
     <EditContentChapter v-if="showEditChapter" class="my-10" />
     <AddChapter v-if="showAddChapter" class="my-10" />
-    <OrderSortVolume v-if="showOrderSortVolume" class="my-10" />
+    <OrderSortChapter v-if="showOrderSortChapter" class="my-10" />
 </div>
 </template>
 
@@ -119,7 +117,7 @@ import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { ref } from "vue";
 import EditContentChapter from "./EditContentChapter.vue";
 import AddChapter from "./AddChapter.vue";
-import OrderSortVolume from "./OrderSortVolume.vue";
+import OrderSortChapter from "./OrderSortChapter.vue";
 const activeChapters = ref<Record<string, boolean>>({}); // Trạng thái mở/đóng các chương
 const activeDropdown = ref<string | number | null>(null); // Trạng thái mở/đóng dropdown menu của tập/chương
 
@@ -203,9 +201,9 @@ const editVolume = (volumeName: string) => {
 const showEditChapter = ref(false);
 const showAddChapter = ref(false);
 const selectedChapterId = ref<number | null>(null);
-const showOrderSortVolume = ref(false);
+const showOrderSortChapter = ref(false);
 const sortChapters = (novelId: string) => {
-    showOrderSortVolume.value = true;
+    showOrderSortChapter.value = true;
     showEditChapter.value = false; // Ẩn component chỉnh sửa
     showAddChapter.value = false; // Ẩn component thêm chương
 };
@@ -214,12 +212,14 @@ const editChapter = (id: number) => {
     selectedChapterId.value = id; // Lưu ID chương được chọn
     showEditChapter.value = true; // Hiển thị component chỉnh sửa
     showAddChapter.value = false; // Ẩn component thêm chương
+    showOrderSortChapter.value = false;
 };
 
 // Hàm xử lý khi nhấn vào "Thêm chương"
 const addChapter = (volumeName: string) => {
     showAddChapter.value = true; // Hiển thị component thêm chương
     showEditChapter.value = false; // Ẩn component chỉnh sửa
+    showOrderSortChapter.value = false;
 };
 
 </script>

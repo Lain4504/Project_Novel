@@ -1,4 +1,4 @@
-package com.backend.identityservice.exception;
+package com.backend.exception;
 
 public class AppException extends RuntimeException {
 

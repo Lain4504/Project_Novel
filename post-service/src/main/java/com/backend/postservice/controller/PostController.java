@@ -1,7 +1,8 @@
 package com.backend.postservice.controller;
 
+import com.backend.dto.response.ApiResponse;
+import com.backend.dto.response.PageResponse;
 import com.backend.postservice.dto.request.PostRequest;
-import com.backend.postservice.dto.response.PageResponse;
 import com.backend.postservice.dto.response.PostResponse;
 import com.backend.postservice.service.PostService;
 import lombok.AccessLevel;
@@ -14,33 +15,41 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
-@RequestMapping("/posts")
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@RequestMapping("/posts")
 public class PostController {
     PostService postService;
 
     @PostMapping("/create")
-    ResponseEntity<PostResponse> createPost(@RequestBody PostRequest request){
-        return ResponseEntity.ok(postService.createPost(request));
+    ApiResponse<PostResponse> createPost(@RequestBody PostRequest request){
+        return ApiResponse.<PostResponse>builder()
+                .result(postService.createPost(request))
+                .build();
     }
 
     @GetMapping("/my-posts")
-    ResponseEntity<PageResponse<PostResponse>> myPosts(
+    ApiResponse<PageResponse<PostResponse>> myPosts(
             @RequestParam(value = "page", required = false, defaultValue = "1") int page,
             @RequestParam(value = "size", required = false, defaultValue = "10") int size){
-        return ResponseEntity.ok(postService.getMyPosts(page, size));
+        return ApiResponse.<PageResponse<PostResponse>>builder()
+                .result(postService.getMyPosts(page, size))
+                .build();
     }
     @PutMapping("/update/{postId}")
-    ResponseEntity<PostResponse> updatePost(@PathVariable("postId") String postId, @RequestBody PostRequest request){
-        return ResponseEntity.ok(postService.updatePost(postId, request));
+    ApiResponse<PostResponse> updatePost(@PathVariable("postId") String postId, @RequestBody PostRequest request){
+        return ApiResponse.<PostResponse>builder()
+                .result(postService.updatePost(postId, request))
+                .build();
     }
     @GetMapping("/{postId}")
-    ResponseEntity<PostResponse> getPost(@PathVariable("postId") String postId){
-        return ResponseEntity.ok(postService.getPost(postId));
+    ApiResponse<PostResponse> getPost(@PathVariable("postId") String postId){
+        return ApiResponse.<PostResponse>builder()
+                .result(postService.getPost(postId))
+                .build();
     }
     @DeleteMapping("/{postId}")
-    ResponseEntity<Void> deletePost(@PathVariable("postId") String postId){
+    ApiResponse<Void> deletePost(@PathVariable("postId") String postId){
         postService.deletePost(postId);
-        return ResponseEntity.ok().build();
+        return ApiResponse.<Void>builder().build();
     }
 }

@@ -1,4 +1,4 @@
-package com.backend.novelservice.utils;
+package com.backend.utils;
 
 import org.springframework.stereotype.Component;
 

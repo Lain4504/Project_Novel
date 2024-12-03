@@ -2,6 +2,7 @@ package com.backend.profileservice.controller;
 
 import java.util.List;
 
+import com.backend.dto.response.ApiResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,24 +21,27 @@ public class UserProfileController {
     UserProfileService userProfileService;
 
     @GetMapping("/users/{profileId}")
-    ResponseEntity<UserProfileResponse> getUserProfile(@PathVariable String profileId) {
-        return ResponseEntity.ok(userProfileService.getProfile(profileId));
+    ApiResponse<UserProfileResponse> getUserProfile(@PathVariable String profileId) {
+        return ApiResponse.<UserProfileResponse>builder()
+                .result(userProfileService.getProfile(profileId)).
+                build();
     }
 
     @DeleteMapping("/users/{profileId}")
-    ResponseEntity<Void> deleteUserProfile(@PathVariable String profileId) {
+    ApiResponse<Void> deleteUserProfile(@PathVariable String profileId) {
         userProfileService.deleteProfile(profileId);
-        return ResponseEntity.noContent().build();
+        return ApiResponse.<Void>builder().build();
     }
 
     @PutMapping("/users/{profileId}")
-    ResponseEntity<UserProfileResponse> updateUserProfile(
+    ApiResponse<UserProfileResponse> updateUserProfile(
             @PathVariable String profileId, @RequestBody UserProfileUpdateRequest request) {
-      return ResponseEntity.ok(userProfileService.updateProfile(profileId, request));
+      return ApiResponse.<UserProfileResponse>builder()
+              .result(userProfileService.updateProfile(profileId, request)).build();
     }
 
     @GetMapping("/users")
-    ResponseEntity<List<UserProfileResponse>> getAllProfiles() {
-        return ResponseEntity.ok(userProfileService.getAllProfiles());
+    ApiResponse<List<UserProfileResponse>> getAllProfiles() {
+        return ApiResponse.<List<UserProfileResponse>>builder().result(userProfileService.getAllProfiles()).build();
     }
 }

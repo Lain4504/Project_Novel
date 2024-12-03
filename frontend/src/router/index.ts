@@ -23,7 +23,9 @@ import History from '@/views/home/History.vue';
 import AdvancedManagement from '@/views/home/AdvancedManagement.vue';
 import EditNovel from '@/views/admin/EditNovel.vue';
 import FAQ from '@/components/admin/FAQ.vue';
-import OrderSortVolume from '@/views/admin/OrderSortVolume.vue';
+import OrderSortChapter from '@/views/admin/OrderSortChapter.vue';
+import Payment from '@/views/admin/Payment.vue';
+import AuthorAccount from '@/views/admin/AuthorAccount.vue';
 const routes: Array<RouteRecordRaw> = [
   { name: 'dashboard', path: '/dashboard', component: Dashboard, 
     children: [
@@ -33,7 +35,9 @@ const routes: Array<RouteRecordRaw> = [
       { name: 'support', path: '/support', component: Support },
       { name: 'adminnotification', path: '/admin-notification', component: SystemNotification },
       { name: 'editnovel', path: '/edit-novel', component: EditNovel },
-      { name: 'ordersortvolume', path: '/order-sort-volume', component: OrderSortVolume }
+      { name: 'ordersortchapter', path: '/order-sort-chapter', component: OrderSortChapter },
+      { name: 'payment', path: '/payment', component: Payment },
+      { name: 'authoraccount', path: '/author-account', component: AuthorAccount }
     ]
   },
   { name: 'login', path: '/login', component: Login },

@@ -6,14 +6,14 @@ enum Routes {
     Analytics = '/analytics',
     Support = '/support',
     AdminNotification = '/admin-notification',
-    Account = '/account',
+    Account = '/author-account',
     Payment = '/payment',
     FAQ = '/faq',
     Tutorial = '/tutorial',
     BookCategory = '/book-category',
     PostCategory = '/post-category',
 }
-
+import NotificationDropdown from '@/components/common/NotificationDropdown.vue';
 const showDropDown = ref<boolean>(false);
 const showSide = ref<boolean>(true);
 const isMobile = ref<boolean>(false);
@@ -93,6 +93,30 @@ const dropdownItems = [
     { to: Routes.Payment, label: 'Payment' },
     { label: 'Sign out' },
 ];
+
+const isNotificationListOpen = ref(false);
+const unreadNotifications = ref(1); // Số thông báo chưa đọc
+const notifications = ref([
+    {
+        id: 1,
+        user: "Jese Leos",
+        message: 'Hey, what\'s up? All set for the presentation?',
+        time: 'a few moments ago',
+        iconColor: 'bg-blue-600',
+    },
+    {
+        id: 2,
+        user: "Joseph Mcfall",
+        message: 'and 5 others started following you.',
+        time: '10 minutes ago',
+        iconColor: 'bg-gray-900',
+    },
+]); // Danh sách thông báo mẫu
+
+// Phương thức toggle
+const toggleNotificationList = () => {
+    isNotificationListOpen.value = !isNotificationListOpen.value;
+};
 </script>
 
 <template>
@@ -150,7 +174,7 @@ const dropdownItems = [
         <div v-show="showMobileSide" class="fixed inset-0 z-20 bg-gray-900 bg-opacity-50">
             <div class="w-[250px] h-full bg-gray-100 text-gray-700 p-4">
                 <div class="flex justify-between items-center">
-                   <h3 class="font-bold text-xl">Admin Panel</h3>
+                    <h3 class="font-bold text-xl">Admin Panel</h3>
                     <button @click="toggleSideBar"
                         class="text-black transition-transform duration-200 hover:scale-125 focus:scale-150 active:animate-pulse focus:outline-none">
                         <font-awesome-icon icon="fa-solid fa-xmark" size="lg" />
@@ -206,10 +230,9 @@ const dropdownItems = [
                 <div class="relative flex items-center space-x-4 cursor-pointer">
                     <div class="relative mr-1">
                         <RouterLink to="/advanced-management"
-                        
                             class="border border-gray-400 bg-gray-200 rounded-lg p-1 flex items-center text-black hover:underline transition-all duration-300 text-sm">
-                            <font-awesome-icon icon="fa-solid fa-bars-progress"  size="lg" class="mx-2 my-[0.2rem]" />     
-                               </RouterLink>
+                            <font-awesome-icon icon="fa-solid fa-bars-progress" size="lg" class="mx-2 my-[0.2rem]" />
+                        </RouterLink>
                     </div>
                     <div class="relative">
                         <RouterLink to="/"
@@ -219,12 +242,23 @@ const dropdownItems = [
                         </RouterLink>
                     </div>
                     <div class="relative mr-1">
-                        <font-awesome-icon icon="fa-regular fa-bell" size="xl"
-                            class="cursor-pointer w-[30px] text-gray-700 hover:text-black transition-transform duration-200 hover:scale-110 focus:scale-125 active:animate-pulse focus:outline-none" />
-                        <span
-                            className='absolute right-[-5px] bottom-[-5px] w-4 text-center leading-4 bg-black text-white aspect-square rounded-full text-[8px]'>
-                            1
-                        </span>
+                        <div @click="toggleNotificationList" class="relative">
+
+                            <font-awesome-icon icon="fa-regular fa-bell" size="xl"
+                                class="cursor-pointer w-[30px] text-gray-700 hover:text-black transition-transform duration-200 hover:scale-110 focus:scale-125 active:animate-pulse focus:outline-none" />
+                            <span
+                                className='absolute right-[-5px] bottom-[-5px] w-4 text-center leading-4 bg-black text-white aspect-square rounded-full text-[8px]'>
+                                1
+                            </span>
+                        </div>
+                        <!-- Notification List -->
+                        <transition name="fade">
+                            <div v-if="isNotificationListOpen"
+                                class="absolute right-0 top-full mt-2 w-80 bg-white shadow-lg rounded-lg border border-gray-200 z-20">
+                                <!-- Include AuthorNotification component -->
+                                <NotificationDropdown :notifications="notifications" />
+                            </div>
+                        </transition>
                     </div>
                     <img class="w-10 h-10 rounded-full border-2 border-gray-50 ml-[-4px] transition-transform duration-200 hover:scale-110 hover:border-blue-500"
                         src="\src\assets\logo.jpg" alt="" @click="toggleDropdownMenu" />
@@ -288,5 +322,13 @@ const dropdownItems = [
     width: 100%;
     overflow-x: auto;
     /* Cho phép cuộn ngang nếu bảng quá rộng */
+}
+/* Ẩn scrollbar nhưng vẫn cho phép cuộn */
+.table-container::-webkit-scrollbar {
+    display: none; /* Ẩn scrollbar */
+}
+.table-container {
+    -ms-overflow-style: none;  /* Ẩn scrollbar trên Internet Explorer và Edge */
+    scrollbar-width: none; /* Ẩn scrollbar trên Firefox */
 }
 </style>

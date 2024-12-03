@@ -18,7 +18,7 @@ import org.springframework.data.mongodb.core.mapping.MongoId;
 public class NovelChapter {
     @MongoId
     String id;
-    String novelId;
+    String volumeId;
     Integer chapterNumber;
     String chapterTitle;
     Integer wordCount;

@@ -5,9 +5,6 @@
 *{
     font-family: Outfit;
 }
-::-webkit-scrollbar{
-    display: none;
-}
 /* Đảm bảo rằng hiệu ứng chỉ hiển thị trên màn hình lớn */
 @media (min-width: 768px) {
   .bubble-effect {
