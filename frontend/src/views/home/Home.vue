@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import Ads from '@/components/home/Ads.vue';
-import Banner from '@/components/home/Banner.vue';
+import Ads from '@/components/home/Banner.vue';
+import Banner from '@/components/home/Carousel.vue';
 import CompletedNovel from '@/components/home/CompletedNovel.vue';
 import NewNovel from '@/components/home/NewNovel.vue';
 import PromtNovel from '@/components/home/PromtNovel.vue';
-import Reviews from '@/components/home/Reviews.vue';
+import Reviews from '@/components/home/ReviewsSection.vue';
 import StoryList from '@/components/home/StoryList.vue';
 import UpdatedList from '@/components/home/UpdatedList.vue';
 </script>
@@ -24,13 +24,3 @@ import UpdatedList from '@/components/home/UpdatedList.vue';
     </div>
 </template>
 
-<style scoped>
-/* Ensure the container doesn't exceed 1200px and is centered */
-.max-w-screen-lg {
-  max-width: 1350px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-/* Optional: if you want to add custom padding or further tweaks */
-</style>

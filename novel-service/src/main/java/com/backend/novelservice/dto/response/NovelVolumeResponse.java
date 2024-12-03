@@ -1,6 +1,9 @@
-package com.backend.novelservice.entity;
+package com.backend.novelservice.dto.response;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
@@ -9,8 +12,8 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
-public class NovelVolume {
+@FieldDefaults(level = lombok.AccessLevel.PRIVATE)
+public class NovelVolumeResponse {
     String id;
     String novelId;
     String volumeName;

@@ -92,11 +92,11 @@
 </template>
 
 <script setup lang="ts">
-import Ads from '@/components/home/Ads.vue';
+import Ads from '@/components/home/Banner.vue';
 import { useStore } from 'vuex';
 import { ref, onMounted } from 'vue';
 import { getUserProfile } from '@/api/user';
-import  Breadcrumb  from '@/components/common/Breadcrumb.vue';
+import  Breadcrumb  from '@/components/home/Breadcrumb.vue';
 const store = useStore();
 const userId = store.getters.getUserId;
 

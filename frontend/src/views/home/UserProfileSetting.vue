@@ -229,8 +229,8 @@
 
 <script setup lang="ts">
 import { ref, watch, computed } from 'vue';
-import Breadcrumb from '@/components/common/Breadcrumb.vue';
-import Ads from '@/components/home/Ads.vue';
+import Breadcrumb from '@/components/home/Breadcrumb.vue';
+import Ads from '@/components/home/Banner.vue';
 // Data for profile, passwords, and settings
 const profile = ref({
     username: '',

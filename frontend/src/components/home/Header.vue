@@ -4,8 +4,8 @@ import { ref, watch, computed } from 'vue';
 import { useStore } from 'vuex';
 import { logout } from '../../api/user';
 import router from '../../router';
-import AuthorNotification from '../common/NotificationDropdown.vue';
-import NotificationDropdown from '../common/NotificationDropdown.vue';
+import AuthorNotification from '../common/BellNotificationDropdown.vue';
+import NotificationDropdown from '../common/BellNotificationDropdown.vue';
 // Trạng thái cho menu trên mobile
 const isMenuOpen = ref(false);
 

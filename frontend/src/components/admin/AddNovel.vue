@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import Rules from '@/components/admin/Rules.vue';
-import EditorContent from './EditorContent.vue';
-import Tiptap from '../../components/Tiptap.vue';
+import Tiptap from '../common/Tiptap.vue';
 
 const selectedCategories = ref<string[]>([]);
 const categories = ref([

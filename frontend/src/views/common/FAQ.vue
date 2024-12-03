@@ -39,7 +39,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import Ads from '@/components/home/Ads.vue';
+import Ads from '@/components/home/Banner.vue';
 // Fake data for the FAQ with multiple questions per section
 const faqItems = ref([
   {

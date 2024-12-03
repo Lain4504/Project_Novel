@@ -188,10 +188,10 @@
 </template>
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import Comment from '@/components/home/Comment.vue';
-import ReviewNovel from '@/components/home/ReviewNovel.vue';
-import Ads from '@/components/home/Ads.vue';
-import Breadcrumb from '@/components/common/Breadcrumb.vue';
+import Comment from '@/components/home/CommentSection.vue';
+import ReviewNovel from '@/components/home/ReviewNovelForm.vue';
+import Ads from '@/components/home/Banner.vue';
+import Breadcrumb from '@/components/home/Breadcrumb.vue';
 interface Chapter {
     title: string;
 }

@@ -28,8 +28,8 @@
 </template>
 
 <script setup lang="ts">
-import Ads from '@/components/home/Ads.vue';
-import Breedcrumb from '@/components/common/Breadcrumb.vue';
+import Ads from '@/components/home/Banner.vue';
+import Breedcrumb from '@/components/home/Breadcrumb.vue';
 interface Tab {
   name: string;
   label: string;

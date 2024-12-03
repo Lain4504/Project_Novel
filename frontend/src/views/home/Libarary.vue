@@ -37,7 +37,7 @@
   
   <script setup lang="ts">
   import { ref } from 'vue';
-  import Ads from '@/components/home/Ads.vue';
+  import Ads from '@/components/home/Banner.vue';
   // Define the data structure for the books
   interface Book {
     hinhanh: string;

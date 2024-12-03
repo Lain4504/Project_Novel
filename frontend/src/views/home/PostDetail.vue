@@ -37,8 +37,8 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import Ads from '@/components/home/Ads.vue';
-import Breadcrumb from '@/components/common/Breadcrumb.vue';
+import Ads from '@/components/home/Banner.vue';
+import Breadcrumb from '@/components/home/Breadcrumb.vue';
 // State for storing the comment input
 const comment = ref('');
 </script>

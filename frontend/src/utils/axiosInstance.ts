@@ -1,6 +1,7 @@
 import axios from 'axios';
-import router from '@/router';
-import store from '@/store';
+import store from "../store";
+import router from "../router";
+
 
 axios.defaults.baseURL = import.meta.env.VITE_API_URL
 axios.defaults.timeout = 10000;

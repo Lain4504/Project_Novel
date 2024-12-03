@@ -41,7 +41,7 @@
   
   <script setup lang="ts">
   import { ref } from 'vue';
-import Tiptap from '../../components/Tiptap.vue';
+import Tiptap from '../common/Tiptap.vue';
   
   const title = ref("");
   const status = ref("incomplete");

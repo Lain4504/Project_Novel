@@ -101,9 +101,9 @@
 </template>
 
 <script setup lang="ts">
-import Ads from "@/components/home/Ads.vue";
+import Ads from "@/components/home/Banner.vue";
 import { ref, computed } from 'vue';
-import Breadcrumb from '@/components/common/Breadcrumb.vue';
+import Breadcrumb from '@/components/home/Breadcrumb.vue';
 const data = [
     {
         title: "Thảo luận cho tác giả",

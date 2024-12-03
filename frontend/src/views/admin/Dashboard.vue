@@ -13,7 +13,7 @@ enum Routes {
     BookCategory = '/book-category',
     PostCategory = '/post-category',
 }
-import NotificationDropdown from '@/components/common/NotificationDropdown.vue';
+import NotificationDropdown from '@/components/common/BellNotificationDropdown.vue';
 const showDropDown = ref<boolean>(false);
 const showSide = ref<boolean>(true);
 const isMobile = ref<boolean>(false);

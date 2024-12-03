@@ -1,4 +1,4 @@
-package com.backend.novelservice.entity;
+package com.backend.novelservice.dto.response;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -10,12 +10,13 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class NovelVolume {
+public class NovelChapterResponse {
     String id;
-    String novelId;
-    String volumeName;
-    int volumeNumber;
-    int chapterCount;
+    String volumeId;
+    Integer chapterNumber;
+    String chapterTitle;
+    Integer wordCount;
+    Boolean isVip;
     LocalDateTime createdDate;
-    LocalDateTime modifiedDate;
+    LocalDateTime updateDateTime;
 }

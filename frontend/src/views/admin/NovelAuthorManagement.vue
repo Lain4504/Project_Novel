@@ -115,9 +115,9 @@
 <script setup lang="ts">
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { ref } from "vue";
-import EditContentChapter from "./EditContentChapter.vue";
-import AddChapter from "./AddChapter.vue";
-import OrderSortChapter from "./OrderSortChapter.vue";
+import EditContentChapter from "../../components/admin/EditNovelChapter.vue";
+import AddChapter from "../../components/admin/AddNovelChapter.vue";
+import OrderSortChapter from "../../components/admin/OrderSortChapter.vue";
 const activeChapters = ref<Record<string, boolean>>({}); // Trạng thái mở/đóng các chương
 const activeDropdown = ref<string | number | null>(null); // Trạng thái mở/đóng dropdown menu của tập/chương
 
