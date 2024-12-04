@@ -8,7 +8,6 @@ import com.backend.novelservice.mapper.NovelVolumeMapper;
 import com.backend.novelservice.repository.NovelVolumeRepository;
 import com.backend.utils.DateTimeFormatter;
 import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.PageRequest;

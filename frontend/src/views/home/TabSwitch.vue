@@ -1,3 +1,16 @@
+<script setup lang="ts">
+import Ads from '@/components/home/Banner.vue';
+import Breedcrumb from '@/components/home/Breadcrumb.vue';
+interface Tab {
+  name: string;
+  label: string;
+}
+
+const tabs: Tab[] = [
+  { name: 'readinglist', label: 'TRUYỆN ĐANG ĐỌC' },
+  { name: 'bookmark', label: 'BOOKMARK' }
+];
+</script>
 <template>
   <div class="max-w-7xl mx-auto">
 
@@ -27,19 +40,7 @@
   </div>
 </template>
 
-<script setup lang="ts">
-import Ads from '@/components/home/Banner.vue';
-import Breedcrumb from '@/components/home/Breadcrumb.vue';
-interface Tab {
-  name: string;
-  label: string;
-}
 
-const tabs: Tab[] = [
-  { name: 'readinglist', label: 'TRUYỆN ĐANG ĐỌC' },
-  { name: 'bookmark', label: 'BOOKMARK' }
-];
-</script>
 
 <style scoped>
 /* Add custom styles if needed */

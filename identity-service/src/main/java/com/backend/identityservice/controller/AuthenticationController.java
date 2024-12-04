@@ -62,6 +62,9 @@ public class AuthenticationController {
         authenticationService.forgotPassword(request);
         return ApiResponse.<Void>builder().build();
     }
-
-
+    @PostMapping("/active-account")
+    ApiResponse<Void> activeAccount(@RequestBody ActivationTokenRequest request) {
+        authenticationService.activeAccount(request);
+        return ApiResponse.<Void>builder().build();
+    }
 }

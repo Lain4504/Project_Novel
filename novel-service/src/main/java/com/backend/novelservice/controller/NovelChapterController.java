@@ -3,16 +3,12 @@ package com.backend.novelservice.controller;
 import com.backend.dto.response.ApiResponse;
 import com.backend.dto.response.PageResponse;
 import com.backend.novelservice.dto.request.NovelChapterRequest;
-import com.backend.novelservice.dto.request.NovelCreationRequest;
 import com.backend.novelservice.dto.response.NovelChapterResponse;
-import com.backend.novelservice.dto.response.NovelResponse;
 import com.backend.novelservice.service.NovelChapterService;
-import com.backend.novelservice.service.NovelService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.web.bind.annotation.*;
-
 @RestController
 @RequestMapping("/novel-chapters")
 @RequiredArgsConstructor

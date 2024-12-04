@@ -1,51 +1,54 @@
 <script setup lang="ts">
+import DynamicDataTable from "@/components/common/DynamicDataTable.vue";
+import router from "@/router";
+
+const postColumns = [
+  { field: "id", headerName: "ID", width: 70 },
+  { field: "title", headerName: "Tiêu đề", width: 200 },
+  {
+    field: "category",
+    headerName: "Danh mục",
+    width: 200,
+    renderCell: (row: any) => row.categoryId,
+  },
+  { field: "createdAt", headerName: "Thời gian tạo", width: 200 },
+  {
+    field: "author",
+    headerName: "Tác giả",
+    width: 150,
+    renderCell: (row: any) => row.userId,
+  },
+  {
+    field: "actions",
+    headerName: "Hành động",
+    width: 200,
+    isAction: true, // Đánh dấu không hiển thị cột này
+  },
+];
+
+
+const postRows = [
+  { id: 1, title: "Overlord", categoryId: "Light Novel", createdAt: "2024-12-04", userId: "Maruyama Kugane" },
+  { id: 2, title: "Re:Zero", categoryId: "Fantasy", createdAt: "2024-12-04", userId: "Tappei Nagatsuki" },
+];
+
+function handleEdit() {
+  router.push({ name: "editnovel"});
+}
+// function handleEdit(row: any) {
+//   router.push({ name: "edit-novel", params: { id: row.id } });
+// }
+function handleDelete(row: any) {
+  alert(`Xoá: ${JSON.stringify(row)}`);
+}
 </script>
 
 <template>
-    <h3 class="text-2xl font-bold text-left py-2">User Management</h3>
-    <div class="overflow-x-auto relative sm:rounded-lg">
-        <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-            <thead class="text-xs text-gray-700 uppercase bg-[#F8F8F7] dark:bg-gray-700 dark:text-gray-400">
-                <tr>
-                    <th scope="col" class="py-3 px-6">
-                        Novel ID
-                    </th>
-                    <th scope="col" class="py-3 px-6">
-                        Novel Title
-                    </th>
-                    <th scope="col" class="py-3 px-6">
-                        Novel Author
-                    </th>
-                    <th scope="col" class="py-3 px-6">
-                        <span>Action</span>
-                    </th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-                    <th scope="row" class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                        1
-                    </th>
-                    <td class="py-4 px-6 dark:text-white">
-                        Overlord
-                    </td>
-                    <td class="py-4 px-6 dark:text-white">
-                        Maruyama Kugane
-                    </td>
-                    <td class="py-4 px-6 dark:text-white flex space-x-2">
-                        <router-link to="/edit-novel"> 
-                        <button
-                            class="bg-transparent border-[1px] border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white font-medium py-2 px-4 rounded transition duration-300 flex items-center justify-center">
-                            <font-awesome-icon :icon="['fas', 'pen']" />
-                        </button>
-                    </router-link>
-                        <button
-                            class="bg-transparent border-[1px] border-red-500 text-red-500 hover:bg-red-500 hover:text-white font-medium py-2 px-4 rounded transition duration-300 flex items-center justify-center">
-                            <font-awesome-icon :icon="['fas', 'trash']" />
-                        </button>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+  <h3 class="text-2xl font-bold text-left py-2">Post Management</h3>
+  <DynamicDataTable
+      :columns="postColumns"
+      :rows="postRows"
+      @edit="handleEdit"
+      @delete="handleDelete"
+  />
 </template>

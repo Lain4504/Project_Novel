@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import Rules from '@/components/admin/Rules.vue';
-import Tiptap from '../common/Tiptap.vue';
+import Tiptap from '@/components/common/Tiptap.vue';
 
 const selectedCategories = ref<string[]>([]);
 const categories = ref([
@@ -67,7 +67,7 @@ const submitForm = () => {
     <!-- Parent container to wrap both the form and section -->
     <div class="flex flex-col lg:flex-row gap-4">
         <!-- Form Section -->
-        <div class="bg-white border border-gray-300 rounded-lg p-4 shadow-md flex-1">
+        <div class="bg-[#F8F8F7] border border-gray-300 rounded-lg p-4 shadow-md flex-1">
             <div class=" font-semibold text-xl text-gray-800 mb-2">
                 Thông báo
             </div>
@@ -80,14 +80,14 @@ const submitForm = () => {
                     <label for="floating_title" class="block text-sm font-medium text-gray-700">Tiêu đề tiểu
                         thuyết</label>
                     <input type="text" name="floating_title" id="floating_title"
-                        class="mt-1 block w-full p-2 border rounded-md text-sm text-gray-900 bg-transparent border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        class="bg-white mt-1 block w-full p-2 border rounded-md text-sm text-gray-900 bg-transparent border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
                         required />
                 </div>
                 <!-- Author -->
                 <div class="md:col-span-1 my-4">
                     <label for="floating_author" class="block text-sm font-medium text-gray-700">Tác giả</label>
                     <input type="text" name="floating_author" id="floating_author"
-                        class="mt-1 block w-full p-2 border rounded-md text-sm text-gray-900 bg-transparent border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        class="bg-white mt-1 block w-full p-2 border rounded-md text-sm text-gray-900 bg-transparent border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
                         required />
                 </div>
 
@@ -101,7 +101,7 @@ const submitForm = () => {
                     <!-- File Input -->
                     <div class="relative">
                         <input type="file" id="file_input" @change="handleImageChange"
-                            class="block w-full text-sm text-gray-900 border rounded-lg cursor-pointer bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:text-gray-400 dark:bg-gray-800 dark:border-gray-600 dark:focus:ring-blue-400 dark:focus:border-blue-400 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" />
+                            class="bg-white block w-full text-sm text-gray-900 border rounded-lg cursor-pointer bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:text-gray-400 dark:bg-gray-800 dark:border-gray-600 dark:focus:ring-blue-400 dark:focus:border-blue-400 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" />
                     </div>
 
                     <!-- Helper Text -->
@@ -121,7 +121,7 @@ const submitForm = () => {
                 <div class="md:col-span-1 my-4 relative">
                     <label for="floating_category" class="block text-sm font-medium text-gray-700">Chọn thể loại</label>
                     <input type="text" readonly :value="selectedCategories.join(', ')"
-                        class="mt-1 block w-full p-2 border rounded-md text-sm text-gray-900 bg-transparent border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        class="bg-white mt-1 block w-full p-2 border rounded-md text-sm text-gray-900 bg-transparent border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
                         @click="isDropdownOpen = !isDropdownOpen" />
                     <div v-if="isDropdownOpen"
                         class="absolute z-10 bg-white border border-gray-300 rounded-md mt-1 shadow-md max-h-60 overflow-y-auto w-full">
@@ -147,7 +147,7 @@ const submitForm = () => {
         </div>
 
         <!-- Quy định đăng truyện Section -->
-        <div class="bg-white border border-gray-300 rounded-lg p-4 shadow-md flex-1">
+        <div class="bg-[#F8F8F7] border border-gray-300 rounded-lg p-4 shadow-md flex-1">
             <div class="font-semibold text-xl text-gray-800 mb-2">
                 QUY ĐỊNH ĐĂNG TRUYỆN
             </div>

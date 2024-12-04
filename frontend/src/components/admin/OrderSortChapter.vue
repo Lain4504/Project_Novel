@@ -5,32 +5,34 @@
       <!-- draggable component to enable drag-and-drop -->
       <draggable v-model="items" item-key="id" class="list" @end="logOrder">
         <template #item="{ element }">
-          <div class="bg-green-100 p-2 mb-2 rounded border text-sm">
+          <div class="bg-green-300 p-2 mb-2 rounded border text-sm">
             {{ element.name }}
           </div>
         </template>
       </draggable>
     </div>
     <div class="flex justify-between">
-      <button @click="saveOrder" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">Lưu thứ
-        tự</button>
-      <button @click="goBack" class="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600">Quay lại</button>
+      <button @click="saveOrder" class="text-sm bg-transparent border-[1px] border-blue-500 text-blue-500 hover:border-blue-700 hover:scale-105 font-medium py-2 px-4 rounded transition-all duration-300">
+      Lưu thứ
+        tự
+      </button>
+      <button @click="goBack" class="text-sm bg-transparent border-[1px] border-yellow-500 text-yellow-500 hover:border-yellow-700 hover:scale-105 font-medium py-2 px-4 rounded transition-all duration-300">Quay lại</button>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import {ref} from 'vue';
 import draggable from 'vue3-draggable-next';
 
 // Define the data for items
 const items = ref([
-  { id: 1, name: 'Manga' },
-  { id: 2, name: 'Tập 01: Tài liệu về chuyến thám hiểm kì dị của họ.' },
-  { id: 3, name: 'Tập 02' },
-  { id: 4, name: 'Tập 03' },
-  { id: 5, name: 'Tập 04' },
-  { id: 6, name: 'Tập 05' },
+  {id: 1, name: 'Manga'},
+  {id: 2, name: 'Tập 01: Tài liệu về chuyến thám hiểm kì dị của họ.'},
+  {id: 3, name: 'Tập 02'},
+  {id: 4, name: 'Tập 03'},
+  {id: 5, name: 'Tập 04'},
+  {id: 6, name: 'Tập 05'},
 ]);
 
 // Function to handle saving the order
