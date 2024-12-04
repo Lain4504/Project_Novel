@@ -1,4 +1,4 @@
-package com.backend.notificationservice.dto.request;
+package com.backend.identityservice.dto.request;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -12,5 +12,4 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ActivationTokenRequest {
     String token;
-    String email;
 }

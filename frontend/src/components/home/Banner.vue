@@ -120,12 +120,6 @@ const isHovered = ref(false);
   50% { transform: translateY(-10px); }
 }
 
-/* Optional: Add custom font for game-style text */
-@font-face {
-  font-family: 'GameFont';
-  src: url('/path-to-your-game-font.ttf') format('truetype');
-}
-
 .font-game {
   font-family: 'GameFont', sans-serif;
 }

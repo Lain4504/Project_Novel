@@ -1,3 +1,14 @@
+<script setup lang="ts">
+import { ref } from 'vue';
+import Tiptap from '@/components/common/Tiptap.vue';
+
+const title = ref("");
+const status = ref("incomplete");
+const content = ref("");
+const isPaid = ref(false); // Biến để xác định có trả phí hay không
+const price = ref(0); // Giá tiền
+</script>
+
 <template>
     <!-- Main Content -->
     <main class="flex-1 p-6 bg-[#F8F8F7] shadow-md">
@@ -59,13 +70,3 @@
     </main>
 </template>
 
-<script setup lang="ts">
-import { ref } from 'vue';
-import Tiptap from '../common/Tiptap.vue';
-
-const title = ref("");
-const status = ref("incomplete");
-const content = ref("");
-const isPaid = ref(false); // Biến để xác định có trả phí hay không
-const price = ref(0); // Giá tiền
-</script>

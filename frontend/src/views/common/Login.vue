@@ -1,9 +1,12 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
-import { RouterLink } from 'vue-router';
-import { useStore } from 'vuex';
-import { useRouter } from 'vue-router';
-import { login, getMyInfo } from '../../api/user';
+import {computed, ref, inject} from 'vue';
+import {RouterLink} from 'vue-router';
+import {useStore} from 'vuex';
+import {useRouter} from 'vue-router';
+import {login} from '@/api/auth';
+import {getMyInfo} from '@/api/user';
+import ForgotPasswordModal from '@/components/common/ForgotPasswordModal.vue';
+
 const email = ref('');
 const password = ref('');
 const passwordVisible = ref(false);
@@ -11,13 +14,17 @@ const store = useStore();
 const router = useRouter();
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const isEmailValid = computed(() => emailRegex.test(email.value));
-import { inject } from 'vue';
 const showAlert = inject('showAlert');
 const showNotification = (type: string, message: string) => {
   showAlert(type, message);  // Call the global showAlert function
 };
 const togglePasswordVisibility = () => {
   passwordVisible.value = !passwordVisible.value;
+};
+const isModalVisible = ref(false);
+
+const openModal = () => {
+  isModalVisible.value = true;
 };
 
 const handleLogin = async () => {
@@ -54,11 +61,11 @@ const handleGoogleLogin = () => {
 };
 // Slider logic
 const slides = ref([
-  { id: 1, img: 'https://placehold.co/600x400', content: 'Content for Slide 1' },
-  { id: 2, img: 'https://placehold.co/600x400', content: 'Content for Slide 2' },
-  { id: 3, img: 'https://placehold.co/600x400', content: 'Content for Slide 3' },
-  { id: 4, img: 'https://placehold.co/600x400', content: 'Content for Slide 4' },
-  { id: 5, img: 'https://placehold.co/600x400', content: 'Content for Slide 5' },
+  {id: 1, img: 'https://placehold.co/600x400', content: 'Content for Slide 1'},
+  {id: 2, img: 'https://placehold.co/600x400', content: 'Content for Slide 2'},
+  {id: 3, img: 'https://placehold.co/600x400', content: 'Content for Slide 3'},
+  {id: 4, img: 'https://placehold.co/600x400', content: 'Content for Slide 4'},
+  {id: 5, img: 'https://placehold.co/600x400', content: 'Content for Slide 5'},
 ]);
 const currentSlide = ref(0);
 
@@ -86,12 +93,12 @@ const goToSlide = (index: number) => {
             <p class="text-gray-700 text-sm">{{ activeSlide.content }}</p>
           </div>
           <!-- Active Image -->
-          <img :src="activeSlide.img" alt="" class="block w-full h-56 object-cover rounded-lg" />
+          <img :src="activeSlide.img" alt="" class="block w-full h-56 object-cover rounded-lg"/>
         </div>
         <!-- Dots -->
         <div class="flex justify-center mt-4 space-x-3">
           <button v-for="(slide, index) in slides" :key="slide.id" @click="goToSlide(index)"
-            class="w-2 h-2 rounded-full" :class="{
+                  class="w-2 h-2 rounded-full" :class="{
               'bg-gray-700': currentSlide === index,
               'bg-gray-300': currentSlide !== index,
             }"></button>
@@ -109,7 +116,7 @@ const goToSlide = (index: number) => {
           <div>
             <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
             <input v-model="email" type="email" id="email" name="email" placeholder="Enter your email" required
-              class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#889b6c] focus:border-[#889b6c] sm:text-sm" />
+                   class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#889b6c] focus:border-[#889b6c] sm:text-sm"/>
             <p v-if="!isEmailValid && email" class="text-sm text-red-500 mt-1">
               Please enter a valid email address.
             </p>
@@ -119,31 +126,31 @@ const goToSlide = (index: number) => {
           <div class="relative">
             <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
             <input v-model="password" :type="passwordVisible ? 'text' : 'password'" id="password" name="password"
-              placeholder="Enter your password" required
-              class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#889b6c] focus:border-[#889b6c] sm:text-sm" />
+                   placeholder="Enter your password" required
+                   class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#889b6c] focus:border-[#889b6c] sm:text-sm"/>
             <!-- Custom Toggle Icon -->
             <span @click="togglePasswordVisibility"
-              class="absolute right-3 bottom-[0.45rem] text-gray-500 cursor-pointer">
-              <font-awesome-icon :icon="passwordVisible ? 'fa-regular fa-eye' : 'fa-regular fa-eye-slash'" />
+                  class="absolute right-3 bottom-[0.45rem] text-gray-500 cursor-pointer">
+              <font-awesome-icon :icon="passwordVisible ? 'fa-regular fa-eye' : 'fa-regular fa-eye-slash'"/>
             </span>
           </div>
 
           <div class="flex justify-between items-center">
             <div class="flex items-center">
-              <input type="checkbox" id="remember" class="mr-2" />
+              <input type="checkbox" id="remember" class="mr-2"/>
               <label for="remember" class="text-sm text-[#C15E3C]">
                 Remember me
               </label>
             </div>
-            <RouterLink to="/forgot-password" class="text-sm text-[#C15E3C] hover:underline">
+            <a class="text-sm text-[#C15E3C] hover:underline cursor-pointer" @click="openModal">
               Forgot password?
-            </RouterLink>
+            </a>
           </div>
 
           <!-- Submit Button -->
           <div>
             <button type="submit"
-              class="w-full bg-[#C15E3C] text-white py-2 px-4 rounded-md hover:bg-[#d76843] focus:ring-2 focus:ring-[#889b6c] focus:outline-none">
+                    class="w-full bg-[#C15E3C] text-white py-2 px-4 rounded-md hover:bg-[#d76843] focus:ring-2 focus:ring-[#889b6c] focus:outline-none">
               Login
             </button>
           </div>
@@ -157,9 +164,9 @@ const goToSlide = (index: number) => {
 
           <div class="flex items-center justify-center space-x-2 mt-4">
             <button @click="handleGoogleLogin" type="button"
-              class="w-full flex items-center justify-center bg-gray-50 border text-gray-700 py-2 px-4 rounded-md hover:bg-gray-100 focus:ring-2 focus:ring-gray-500 focus:outline-none">
+                    class="w-full flex items-center justify-center bg-gray-50 border text-gray-700 py-2 px-4 rounded-md hover:bg-gray-100 focus:ring-2 focus:ring-gray-500 focus:outline-none">
               <!-- Google Login Button -->
-              <font-awesome-icon :icon="['fab', 'google']" class="mr-2 text-red-600" />
+              <font-awesome-icon :icon="['fab', 'google']" class="mr-2 text-red-600"/>
               Login with Google
             </button>
           </div>
@@ -174,4 +181,6 @@ const goToSlide = (index: number) => {
       </div>
     </div>
   </section>
+  <ForgotPasswordModal :isModalVisible="isModalVisible" @update:isModalVisible="isModalVisible = $event"/>
+
 </template>

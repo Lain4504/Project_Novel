@@ -2,8 +2,7 @@
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { ref, watch, computed } from 'vue';
 import { useStore } from 'vuex';
-import { logout } from '../../api/user';
-import router from '../../router';
+import { logout } from '../../api/auth.ts';
 import AuthorNotification from '../common/BellNotificationDropdown.vue';
 import NotificationDropdown from '../common/BellNotificationDropdown.vue';
 // Trạng thái cho menu trên mobile
@@ -58,7 +57,7 @@ const handleLogout = async () => {
 
     // Call the logout API and pass both token and refreshToken
     const result = await logout({
-      refreshtoken: refreshToken,
+      refreshToken: refreshToken,
       accessToken: accessToken
     });
 
@@ -220,7 +219,7 @@ const toggleNotificationList = () => {
           <div class="relative">
             <img
               class="w-10 h-10 rounded-full border-2 border-gray-50 transition-transform duration-200 hover:scale-110 hover:border-blue-500 cursor-pointer"
-              src="\src\assets\logo.jpg" @click="isAccountMenuOpen = !isAccountMenuOpen" />
+              src="\src\assets\logo.jpg" alt="" @click="isAccountMenuOpen = !isAccountMenuOpen" />
             <transition name="fade">
               <div v-if="isAccountMenuOpen"
                 class="absolute right-0 mt-2 w-[10rem] bg-white shadow-lg rounded-lg border border-gray-200 text-sm z-10">
@@ -377,14 +376,6 @@ const toggleNotificationList = () => {
 .fade-leave-to {
   opacity: 0;
 }
-
-/* Đảm bảo menu mobile phủ lên phần còn lại mà không che thanh header */
-.md:hidden.fixed {
-  position: fixed;
-  top: 4rem;
-  /* Dịch menu xuống dưới header */
-}
-
 .user-email {
   max-width: 100%;
   /* Hoặc một giá trị chiều rộng cụ thể như 200px */

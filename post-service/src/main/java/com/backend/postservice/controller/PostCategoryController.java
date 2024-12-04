@@ -35,7 +35,7 @@ public class PostCategoryController {
     public ResponseEntity<PostCategoryResponse> getPostCategory(@PathVariable("postCategoryId") String postCategoryId){
         return ResponseEntity.ok(postCategoryService.getPostCategory(postCategoryId));
     }
-    @DeleteMapping("/{postCategoryId}")
+    @DeleteMapping("/delete/{postCategoryId}")
     public ResponseEntity<Void> deletePostCategory(@PathVariable("postCategoryId") String postCategoryId){
         postCategoryService.deletePostCategory(postCategoryId);
         return ResponseEntity.ok().build();

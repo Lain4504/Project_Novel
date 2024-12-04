@@ -1,3 +1,11 @@
+<script setup lang="ts">
+import { ref } from 'vue';
+import Ads from '@/components/home/Banner.vue';
+import Breadcrumb from '@/components/home/Breadcrumb.vue';
+// State for storing the comment input
+const comment = ref('');
+</script>
+
 <template>
     <div class="max-w-7xl mx-auto">
         <Ads class="my-4" />
@@ -34,14 +42,6 @@
         </div>
     </div>
 </template>
-
-<script setup lang="ts">
-import { ref } from 'vue';
-import Ads from '@/components/home/Banner.vue';
-import Breadcrumb from '@/components/home/Breadcrumb.vue';
-// State for storing the comment input
-const comment = ref('');
-</script>
 
 <style scoped>
 .content-body {

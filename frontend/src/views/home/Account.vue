@@ -1,3 +1,70 @@
+<script setup lang="ts">
+import Ads from '@/components/home/Banner.vue';
+import { useStore } from 'vuex';
+import { ref, onMounted } from 'vue';
+import { getUserProfile } from '@/api/user';
+import  Breadcrumb  from '@/components/home/Breadcrumb.vue';
+const store = useStore();
+const userId = store.getters.getUserId;
+
+interface PublishedNovel {
+  id: number;
+  title: string;
+  coverImage: string;
+  lastUpdated: string;
+}
+
+interface UserProfile {
+  profilePicture: string;
+  username: string;
+  dateCreated: string;
+  bio: string;
+  readNovels: number;
+  marked: number;
+  recommended: number;
+  comments: number;
+  ratings: number;
+  publishedNovels: PublishedNovel[];
+}
+
+const userProfile = ref<UserProfile | null>(null);
+
+const fetchUserProfile = async () => {
+  try {
+    const response = await getUserProfile(userId);
+    userProfile.value = response.data;
+    publishedNovels.value = response.data.publishedNovels || [];
+  } catch (error) {
+    console.error('Error fetching user profile:', error);
+  }
+};
+
+onMounted(() => {
+  fetchUserProfile();
+});
+const publishedNovels = ref([
+  {
+    id: 1,
+    title: 'The Dark Chronicles',
+    image: 'https://via.placeholder.com/150',
+    description: 'A dark and mysterious adventure of epic proportions. A dark and mysterious adventure of epic proportions. A dark and mysterious adventure of epic proportions.',
+    author: 'John Doe',
+    genre: 'Fantasy',
+    lastUpdated: '2024-11-25',
+  },
+  {
+    id: 2,
+    title: 'Journey of the Lost Kingdom',
+    image: 'https://via.placeholder.com/150',
+    description: 'Follow the journey of a young prince to reclaim his kingdom.A dark and mysterious adventure of epic proportions.A dark and mysterious adventure of epic proportions.',
+    author: 'Jane Smith',
+    genre: 'Adventure',
+    lastUpdated: '2024-11-20',
+  },
+
+]);
+
+</script>
 <template>
       <div class="max-w-7xl mx-auto my-10">
 
@@ -91,73 +158,6 @@
     </div>  </div>
 </template>
 
-<script setup lang="ts">
-import Ads from '@/components/home/Banner.vue';
-import { useStore } from 'vuex';
-import { ref, onMounted } from 'vue';
-import { getUserProfile } from '@/api/user';
-import  Breadcrumb  from '@/components/home/Breadcrumb.vue';
-const store = useStore();
-const userId = store.getters.getUserId;
-
-interface PublishedNovel {
-    id: number;
-    title: string;
-    coverImage: string;
-    lastUpdated: string;
-}
-
-interface UserProfile {
-    profilePicture: string;
-    username: string;
-    dateCreated: string;
-    bio: string;
-    readNovels: number;
-    marked: number;
-    recommended: number;
-    comments: number;
-    ratings: number;
-    publishedNovels: PublishedNovel[];
-}
-
-const userProfile = ref<UserProfile | null>(null);
-
-const fetchUserProfile = async () => {
-    try {
-        const response = await getUserProfile(userId);
-        userProfile.value = response.data;
-        publishedNovels.value = response.data.publishedNovels || [];
-    } catch (error) {
-        console.error('Error fetching user profile:', error);
-    }
-};
-
-onMounted(() => {
-    fetchUserProfile();
-});
-const publishedNovels = ref([
-    {
-        id: 1,
-        title: 'The Dark Chronicles',
-        image: 'https://via.placeholder.com/150',
-        description: 'A dark and mysterious adventure of epic proportions. A dark and mysterious adventure of epic proportions. A dark and mysterious adventure of epic proportions.',
-        author: 'John Doe',
-        genre: 'Fantasy',
-        lastUpdated: '2024-11-25',
-    },
-    {
-        id: 2,
-        title: 'Journey of the Lost Kingdom',
-        image: 'https://via.placeholder.com/150',
-        description: 'Follow the journey of a young prince to reclaim his kingdom.A dark and mysterious adventure of epic proportions.A dark and mysterious adventure of epic proportions.',
-        author: 'Jane Smith',
-        genre: 'Adventure',
-        lastUpdated: '2024-11-20',
-    },
- 
-]);
-
-</script>
 
 <style scoped>
 /* Add any custom styles here */

@@ -1,5 +1,7 @@
 package com.backend.identityservice.service;
 
+import com.backend.exception.AppException;
+import com.backend.exception.ErrorCode;
 import com.backend.identityservice.enums.UserState;
 import com.backend.identityservice.constant.PredefinedRole;
 import com.backend.identityservice.dto.request.UserCreationRequest;
@@ -44,7 +46,7 @@ public class UserService {
     KafkaTemplate<String, Object> kafkaTemplate;
     AuthenticationService authenticationService;
     public UserResponse createUser(UserCreationRequest request) {
-        if (userRepository.existsByEmail(request.getEmail())) throw new RuntimeException("User already exists");
+        if (userRepository.existsByEmail(request.getEmail())) throw new AppException(ErrorCode.USER_EXISTED);
         User user = userMapper.toUser(request);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
 

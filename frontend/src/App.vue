@@ -8,7 +8,7 @@ import Footer from '@/components/common/Footer.vue';
 const route = useRoute(); // Lấy route hiện tại
 
 const routesIncludeHome = ['home', 'chapter', 'noveldetail', 'userprofile', 'member', 'list', 'bookmark', 'readinglist', 'library', 'history', 'faq', 'postforum',
-  'postdetail', 'postcreateform'
+  'postdetail', 'postcreateform', 'activation/:token'
 ]; // Thêm các route bạn muốn hiển thị Header
 const showAdmin = computed(() => {
   // Kiểm tra xem route hiện tại có nằm trong danh sách các route cần hiển thị Header hay không

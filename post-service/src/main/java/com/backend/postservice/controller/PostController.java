@@ -47,7 +47,15 @@ public class PostController {
                 .result(postService.getPost(postId))
                 .build();
     }
-    @DeleteMapping("/{postId}")
+    @GetMapping("/all")
+    ApiResponse<PageResponse<PostResponse>> getAllPosts(
+            @RequestParam(value = "page", required = false, defaultValue = "1") int page,
+            @RequestParam(value = "size", required = false, defaultValue = "10") int size){
+        return ApiResponse.<PageResponse<PostResponse>>builder()
+                .result(postService.getAllPosts(page, size))
+                .build();
+    }
+    @DeleteMapping("/delete/{postId}")
     ApiResponse<Void> deletePost(@PathVariable("postId") String postId){
         postService.deletePost(postId);
         return ApiResponse.<Void>builder().build();
