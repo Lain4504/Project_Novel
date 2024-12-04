@@ -258,4 +258,17 @@ public class AuthenticationService {
     public String activeAccountCode (String userId) {
         return generateToken(userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found")));
     }
+
+    public void activeAccount(ActivationTokenRequest request){
+        try {
+            var signedJWT = verifyToken(request.getToken());
+            String id = signedJWT.getJWTClaimsSet().getSubject();
+            var user = userRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+            user.setState(UserState.ACTIVE);
+            userRepository.save(user);
+        } catch (Exception e){
+            throw new RuntimeException("Invalid token");
+        }
+    }
 }

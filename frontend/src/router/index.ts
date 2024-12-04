@@ -1,11 +1,11 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
-import store from '@/store'; // Import Vuex store
+import store from '@/store';
 
 // Import các component
 import Dashboard from '@/views/admin/Dashboard.vue';
 import Analysis from '@/views/admin/Analysis.vue';
 import AddNovel from '@/views/admin/AddNovel.vue';
-import ExistedNovel from '@/views/admin/ExistedNovel.vue';
+import ExistedNovel from '@/views/admin/NovelAuthorList.vue';
 import Support from '@/views/admin/Support.vue';
 import SystemNotification from '@/views/admin/SystemNotification.vue';
 import Login from '@/views/common/Login.vue';
@@ -14,18 +14,21 @@ import Home from '@/views/home/Home.vue';
 import Chapter from '@/views/home/Chapter.vue';
 import NovelDetail from '@/views/home/NovelDetail.vue';
 import Account from '@/views/home/Account.vue';
-import Tab from '@/views/home/Tab.vue';
-import BookMark from '@/views/home/BookMark.vue';
-import ReadingList from '@/views/home/ReadingList.vue';
-import UserProfile from '@/views/home/UserProfile.vue';
+import Tab from '@/views/home/TabSwitch.vue';
+import BookMark from '@/components/home/BookMark.vue';
+import ReadingList from '@/components/home/RecentlyReadingList.vue';
+import UserProfile from '@/views/home/UserProfileSetting.vue';
 import Libarary from '@/views/home/Libarary.vue';
-import History from '@/views/home/History.vue';
-import AdvancedManagement from '@/views/home/AdvancedManagement.vue';
-import EditNovel from '@/views/admin/EditNovel.vue';
-import FAQ from '@/components/admin/FAQ.vue';
-import OrderSortChapter from '@/views/admin/OrderSortChapter.vue';
+import History from '@/views/home/TransactionHistory.vue';
+import AdvancedManagement from '@/views/admin/AdvancedManagement.vue';
+import EditNovel from '@/views/admin/NovelAuthorManagement.vue';
+import FAQ from '@/views/common/FAQ.vue';
 import Payment from '@/views/admin/Payment.vue';
 import AuthorAccount from '@/views/admin/AuthorAccount.vue';
+import PostForum from '@/views/home/PostForum.vue';
+import PostDetail from '@/views/home/PostDetail.vue';
+import PostCreateForm from '@/views/home/PostCreateForm.vue';
+import Activation from "@/views/home/Activation.vue";
 const routes: Array<RouteRecordRaw> = [
   { name: 'dashboard', path: '/dashboard', component: Dashboard, 
     children: [
@@ -35,7 +38,6 @@ const routes: Array<RouteRecordRaw> = [
       { name: 'support', path: '/support', component: Support },
       { name: 'adminnotification', path: '/admin-notification', component: SystemNotification },
       { name: 'editnovel', path: '/edit-novel', component: EditNovel },
-      { name: 'ordersortchapter', path: '/order-sort-chapter', component: OrderSortChapter },
       { name: 'payment', path: '/payment', component: Payment },
       { name: 'authoraccount', path: '/author-account', component: AuthorAccount }
     ]
@@ -74,6 +76,10 @@ const routes: Array<RouteRecordRaw> = [
   { name: 'history', path: '/history', component: History },
   { name: 'advancedmanagement', path: '/advanced-management', component: AdvancedManagement},
   { name: 'faq', path: '/faq', component: FAQ },
+  { name: 'postforum', path: '/post-forum', component: PostForum },
+  { name: 'postdetail', path: '/post-detail', component: PostDetail },
+  { name: 'postcreateform', path: '/post-create-form', component: PostCreateForm },
+  { name: 'activation', path: '/activation/:token', component: Activation }
 ];
 
 const router = createRouter({

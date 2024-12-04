@@ -1,145 +1,141 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref } from 'vue';
 
-interface BannerItem {
+interface GameAd {
   id: number;
   title: string;
   subtitle: string;
-  category: string;
-  description: string;
-  coverImage: string;
-  status?: string;
+  backgroundImage: string;
+  logo?: string;
+  className?: string;
 }
 
-const currentSlide = ref(0);
-const banners = ref<BannerItem[]>([
+// Sample data
+const gameAds = ref<GameAd[]>([
   {
     id: 1,
-    title: 'Vợ Nhỏ Nhút Nhát, Chồng À!',
-    subtitle: 'Anh Đừng Qua Đây',
-    category: 'tiểu cam cam',
-    description: 'Nghe đồn hắn là 1 lão già không thích phụ nữ lại có số thích bệnh hoạn. Đời có chắc chắn rơi vào bị kịch rồi',
-    coverImage: '/src/assets/logo.jpg',
-    status: 'Còn tiếp'
-  },
-  {
-    id: 1,
-    title: 'Vợ Nhỏ Nhút Nhát, Chồng À!',
-    subtitle: 'Anh Đừng Qua Đây',
-    category: 'tiểu cam cam',
-    description: 'Nghe đồn hắn là 1 lão già không thích phụ nữ lại có số thích bệnh hoạn. Đời có chắc chắn rơi vào bị kịch rồi',
-    coverImage: '/banner1.jpg',
-    status: 'Còn tiếp'
-  },
-  // Add more banner items as needed
+    title: "TRỞ LẠI 1982",
+    subtitle: "LÀNG CHÀI NHỎ",
+    backgroundImage: "/path-to-banner-bg.jpg",
+    logo: "/path-to-game-logo.png",
+    className: "font-game" // Custom class for game-style font
+  }
 ]);
 
-const autoPlay = ref(true);
-const slideInterval = ref<number | null>(null);
-
-const nextSlide = () => {
-  currentSlide.value = (currentSlide.value + 1) % banners.value.length;
-};
-
-const prevSlide = () => {
-  currentSlide.value = currentSlide.value === 0 
-    ? banners.value.length - 1 
-    : currentSlide.value - 1;
-};
-
-const startAutoPlay = () => {
-  if (autoPlay.value && !slideInterval.value) {
-    slideInterval.value = window.setInterval(nextSlide, 5000);
-  }
-};
-
-onMounted(() => {
-  startAutoPlay();
-});
+// Optional: Add animation state
+const isHovered = ref(false);
 </script>
 
 <template>
-  <div class="relative w-full h-[400px] overflow-hidden">
-    <!-- Banner Slides -->
-    <div class="relative w-full h-full">
-      <div
-        v-for="(banner, index) in banners"
-        :key="banner.id"
-        class="absolute w-full h-full transition-opacity duration-500"
-        :class="{ 'opacity-0': currentSlide !== index }"
-      >
-        <!-- Banner Content -->
-        <div class="relative w-full h-full">
-          <!-- Background Image -->
-          <img
-            :src="banner.coverImage"
-            :alt="banner.title"
-            class="w-full h-full object-cover"
-          />
-          
-          <!-- Gradient Overlay -->
-          <div class="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent"></div>
-          
-          <!-- Content -->
-          <div class="absolute inset-0 flex items-center p-8 md:p-16">
-            <div class="max-w-2xl text-white">
-              <!-- Status Badge -->
-              <div 
-                v-if="banner.status"
-                class="inline-block px-4 py-1 mb-4 text-sm bg-amber-600 rounded-full"
-              >
-                {{ banner.status }}
-              </div>
-              
-              <!-- Title -->
-              <h2 class="text-3xl md:text-4xl font-bold mb-2">
-                {{ banner.title }}
-              </h2>
-              
-              <!-- Subtitle -->
-              <h3 class="text-xl md:text-2xl font-semibold mb-2 text-green-400 italic">
-                {{ banner.subtitle }}
-              </h3>
-              
-              <!-- Category -->
-              <div class="text-sm text-gray-300 mb-4">
-                - {{ banner.category }} -
-              </div>
-              
-              <!-- Description -->
-              <p class="text-sm md:text-base text-gray-200">
-                {{ banner.description }}
-              </p>
-            </div>
-          </div>
+  <div class="w-full">
+    <!-- Game Ad Banner Container -->
+    <div 
+      v-for="ad in gameAds" 
+      :key="ad.id"
+      class="relative w-full h-[300px] overflow-hidden rounded-lg cursor-pointer group"
+      @mouseenter="isHovered = true"
+      @mouseleave="isHovered = false"
+    >
+      <!-- Background Image -->
+      <img 
+        :src="ad.backgroundImage"
+        :alt="ad.title"
+        class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+      />
+
+      <!-- Overlay Content -->
+      <div class="absolute inset-0 flex flex-col justify-center items-center">
+        <!-- Game Logo if exists -->
+        <img 
+          v-if="ad.logo"
+          :src="ad.logo"
+          alt="Game Logo"
+          class="h-16 md:h-20 object-contain absolute top-4 right-4"
+        />
+
+        <!-- Title Text with Game-style Font -->
+        <div 
+          class="text-center transform"
+          :class="[
+            ad.className,
+            'space-y-2'
+          ]"
+        >
+          <!-- Main Title with 3D Effect -->
+          <h1 
+            class="text-4xl md:text-6xl font-bold text-white tracking-wider"
+            style="text-shadow: 
+              2px 2px 0 #000,
+              -2px -2px 0 #000,
+              2px -2px 0 #000,
+              -2px 2px 0 #000,
+              0 2px 0 #000,
+              2px 0 0 #000,
+              0 -2px 0 #000,
+              -2px 0 0 #000;
+            "
+          >
+            {{ ad.title }}
+          </h1>
+
+          <!-- Subtitle -->
+          <h2 
+            class="text-3xl md:text-5xl font-bold text-white tracking-wide"
+            style="text-shadow: 
+              2px 2px 0 #000,
+              -2px -2px 0 #000,
+              2px -2px 0 #000,
+              -2px 2px 0 #000;
+            "
+          >
+            {{ ad.subtitle }}
+          </h2>
+        </div>
+
+        <!-- Optional: Floating Effects -->
+        <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent pointer-events-none"></div>
+        
+        <!-- Sparkle Effects -->
+        <div class="absolute inset-0 overflow-hidden pointer-events-none">
+          <div 
+            v-for="i in 5" 
+            :key="i"
+            class="absolute w-1 h-1 bg-white rounded-full animate-ping"
+            :style="{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              animationDelay: `${i * 0.5}s`
+            }"
+          ></div>
         </div>
       </div>
     </div>
-
-    <!-- Navigation Dots -->
-    <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
-      <button
-        v-for="(_, index) in banners"
-        :key="index"
-        @click="currentSlide = index"
-        class="w-2 h-2 rounded-full transition-all duration-300"
-        :class="currentSlide === index ? 'bg-white w-4' : 'bg-white/50'"
-      ></button>
-    </div>
-
-    <!-- Navigation Arrows -->
-    <button
-  @click="prevSlide"
-  class="absolute left-4 top-1/2 -translate-y-1/2 p-4 h-10 w-10 rounded-full bg-black/30 text-white hover:bg-black/50 transition-colors flex items-center justify-center"
->
-  <font-awesome-icon icon="fa-solid fa-chevron-left" size="lg"/>
-</button>
-
-    <button
-      @click="nextSlide"
-      class="absolute right-4 top-1/2 -translate-y-1/2 p-4 h-10 w-10 rounded-full bg-black/30 text-white hover:bg-black/50 transition-colors flex items-center justify-center"
-      >
-    <font-awesome-icon icon="fa-solid fa-chevron-right" size="lg"/>
-    </button>
   </div>
 </template>
+
+<style scoped>
+/* Custom Animation for Floating Effect */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.font-game {
+  font-family: 'GameFont', sans-serif;
+}
+
+/* Custom Animation Classes */
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Custom Sparkle Animation */
+@keyframes sparkle {
+  0%, 100% { opacity: 0; transform: scale(0); }
+  50% { opacity: 1; transform: scale(1); }
+}
+
+.animate-sparkle {
+  animation: sparkle 2s ease-in-out infinite;
+}
+</style>

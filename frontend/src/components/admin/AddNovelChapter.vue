@@ -1,6 +1,17 @@
+<script setup lang="ts">
+import { ref } from 'vue';
+import Tiptap from '@/components/common/Tiptap.vue';
+
+const title = ref("");
+const status = ref("incomplete");
+const content = ref("");
+const isPaid = ref(false); // Biến để xác định có trả phí hay không
+const price = ref(0); // Giá tiền
+</script>
+
 <template>
     <!-- Main Content -->
-    <main class="flex-1 p-6 bg-gray-100 shadow-md">
+    <main class="flex-1 p-6 bg-[#F8F8F7] shadow-md">
         <h1 class="my-2">Add Chapter</h1>
 
         <!-- Title Input -->
@@ -10,15 +21,15 @@
                 class="block w-full px-4 py-2 mt-1 text-gray-900 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
         </div>
 
-       <!-- Status Selection -->
-<div class="mt-4">
-    <label for="status" class="block text-sm font-medium text-gray-700">Trạng thái</label>
-    <select id="status" v-model="status"
-        class="block w-1/2 px-4 py-2 mt-1 text-gray-900 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-        <option value="completed">Đã hoàn thành</option>
-        <option value="incomplete">Chưa hoàn thành</option>
-    </select>
-</div>
+        <!-- Status Selection -->
+        <div class="mt-4">
+            <label for="status" class="block text-sm font-medium text-gray-700">Trạng thái</label>
+            <select id="status" v-model="status"
+                class="block w-1/2 px-4 py-2 mt-1 text-gray-900 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                <option value="completed">Đã hoàn thành</option>
+                <option value="incomplete">Chưa hoàn thành</option>
+            </select>
+        </div>
 
 
         <!-- Paid or Free -->
@@ -37,12 +48,12 @@
         </div>
 
         <!-- Price Input -->
-<div v-if="isPaid" class="mt-4 w-1/2">
-    <label for="price" class="block text-sm font-medium text-gray-700">Giá tiền</label>
-    <input type="number" id="price" v-model="price"
-        class="block w-full px-4 py-2 mt-1 text-gray-900 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-        placeholder="Nhập giá tiền" />
-</div>
+        <div v-if="isPaid" class="mt-4 w-1/2">
+            <label for="price" class="block text-sm font-medium text-gray-700">Giá tiền</label>
+            <input type="number" id="price" v-model="price"
+                class="block w-full px-4 py-2 mt-1 text-gray-900 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                placeholder="Nhập giá tiền" />
+        </div>
 
 
         <!-- Content Area -->
@@ -59,13 +70,3 @@
     </main>
 </template>
 
-<script setup lang="ts">
-import { ref } from 'vue';
-import Tiptap from '../../components/Tiptap.vue';
-
-const title = ref("");
-const status = ref("incomplete");
-const content = ref("");
-const isPaid = ref(false); // Biến để xác định có trả phí hay không
-const price = ref(0); // Giá tiền
-</script>

@@ -1,7 +1,25 @@
+<script setup lang="ts">
+import Ads from '@/components/home/Banner.vue';
+import Breedcrumb from '@/components/home/Breadcrumb.vue';
+interface Tab {
+  name: string;
+  label: string;
+}
+
+const tabs: Tab[] = [
+  { name: 'readinglist', label: 'TRUYỆN ĐANG ĐỌC' },
+  { name: 'bookmark', label: 'BOOKMARK' }
+];
+</script>
 <template>
   <div class="max-w-7xl mx-auto">
+
     <Ads class="my-4" />
-    <div class="flex space-x-4">
+    <Breedcrumb :breadcrumbs="[
+      { label: 'Home', href: '/' },
+      { label: 'Reading List', href: '/list/readinglist', isCurrent: true }
+    ]" />
+    <div class="flex space-x-4 my-2">
       <router-link
         v-for="tab in tabs"
         :key="tab.name"
@@ -22,19 +40,7 @@
   </div>
 </template>
 
-<script setup lang="ts">
-import Ads from '@/components/home/Ads.vue';
 
-interface Tab {
-  name: string;
-  label: string;
-}
-
-const tabs: Tab[] = [
-  { name: 'readinglist', label: 'TRUYỆN ĐANG ĐỌC' },
-  { name: 'bookmark', label: 'BOOKMARK' }
-];
-</script>
 
 <style scoped>
 /* Add custom styles if needed */

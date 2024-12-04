@@ -3,6 +3,8 @@ package com.backend.novelservice.entity;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -14,6 +16,6 @@ public class NovelVolume {
     String volumeName;
     int volumeNumber;
     int chapterCount;
-    String createdAt;
-    String updatedAt;
+    LocalDateTime createdDate;
+    LocalDateTime modifiedDate;
 }

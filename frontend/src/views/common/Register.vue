@@ -1,9 +1,13 @@
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue';
-import { RouterLink } from 'vue-router';
-import { register } from '@/api/user';
-import { useStore } from 'vuex';
-import { useRouter } from 'vue-router';
+import {ref, computed, watch, inject} from 'vue';
+import {RouterLink} from 'vue-router';
+import {register} from '@/api/user';
+import {useStore} from 'vuex';
+import {useRouter} from 'vue-router';
+import ConfirmModal from "@/components/common/ConfirmModal.vue";
+
+const showAlert = inject('showAlert');
+
 // Refs cho input
 const email = ref('');
 const password = ref('');
@@ -12,8 +16,7 @@ const passwordVisible = ref(false);
 const confirmPasswordVisible = ref(false);
 const store = useStore();
 const router = useRouter();
-const registerError = ref('');
-
+const showModal = ref(false);
 // Kiểm tra định dạng email
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const isEmailValid = computed(() => emailRegex.test(email.value));
@@ -35,44 +38,72 @@ const toggleConfirmPasswordVisibility = () => {
 watch(password, () => {
   confirmPassword.value = '';  // Reset confirmPassword when password changes
 });
+const showNotification = (type: string, message: string) => {
+  showAlert(type, message);  // Call the global showAlert function
+};
+// Handle registration
 const handleRegister = async () => {
-  registerError.value = '';
   try {
     const response = await register({
       email: email.value,
       password: password.value
     });
     console.log(response);
-    store.commit('setToken', response.token);
-    const userData = await getMyInfo();
-    store.commit('setUser', userData);
-    console.log('User from store:', store.state.user);
-    console.log('Token from store:', store.state.token);
-    router.push('/');
-  }
-  catch (error: any) {
+    showModal.value = true;  // Show modal after successful registration
+  } catch (error: any) {
     if (error.response) {
-      registerError.value = error.response.data.message || 'Login failed. Please try again.';
+      showNotification('danger', error.response.data.message || 'Registration failed. Please try again.');
     } else if (error.request) {
-      registerError.value = 'No response from server. Please try again.';
+      showNotification('danger', 'No response from server. Please try again.');
     } else {
-      registerError.value = 'An unexpected error occurred. Please try again.';
+      showNotification('danger', 'An unexpected error occurred. Please try again.');
     }
   }
-}
+};
+// Slider logic
+const slides = ref([
+  {id: 1, img: 'https://placehold.co/600x400', content: 'Content for Slide 1'},
+  {id: 2, img: 'https://placehold.co/600x400', content: 'Content for Slide 2'},
+  {id: 3, img: 'https://placehold.co/600x400', content: 'Content for Slide 3'},
+  {id: 4, img: 'https://placehold.co/600x400', content: 'Content for Slide 4'},
+  {id: 5, img: 'https://placehold.co/600x400', content: 'Content for Slide 5'},
+]);
+const currentSlide = ref(0);
+
+// Computed to get the active slide
+const activeSlide = computed(() => slides.value[currentSlide.value]);
+
+// Method to go to a specific slide
+const goToSlide = (index: number) => {
+  currentSlide.value = index;
+};
 </script>
 
 <template>
-  <section class="bg-[#e7f5dc] min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8">
+  <section class="bg-[#F5F4EF] min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8">
     <div class="bg-white flex flex-col md:flex-row rounded-2xl shadow-lg max-w-4xl w-full overflow-hidden">
       <!-- Left Side -->
-      <div class="hidden md:block md:w-1/2 bg-[#b6c99b] text-white p-10">
+      <div class="hidden lg:block lg:w-1/2 bg-[#F0EEE5] text-gray-700 p-10">
         <h2 class="text-2xl font-bold mb-5">Welcome to Our Platform!</h2>
-        <p class="text-sm">
+        <p class="text-sm mb-5">
           Sign up to join our community and explore exclusive content.
         </p>
-        <div class="mt-96 relative z-10">
-          <div class="bubble-effect"></div>
+        <!-- Slider -->
+        <div class="relative w-full overflow-hidden rounded-lg">
+          <!-- Content (Outside of Image) -->
+          <div class="mb-4 p-4 shadow">
+            <p class="text-gray-700 text-sm">{{ activeSlide.content }}</p>
+          </div>
+          <!-- Active Image -->
+          <img :src="activeSlide.img" alt="" class="block w-full h-56 object-cover rounded-lg"/>
+        </div>
+        <!-- Dots -->
+        <div class="flex justify-center mt-4 space-x-3">
+          <button v-for="(slide, index) in slides" :key="slide.id" @click="goToSlide(index)"
+                  class="w-2 h-2 rounded-full" :class="{
+              'bg-gray-700': currentSlide === index,
+              'bg-gray-300': currentSlide !== index,
+            }"></button>
         </div>
       </div>
       <!-- Right Side -->
@@ -84,7 +115,7 @@ const handleRegister = async () => {
           <div>
             <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
             <input v-model="email" type="email" id="email" name="email" placeholder="Enter your email" required
-              class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#889b6c] focus:border-[#889b6c] sm:text-sm" />
+                   class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#889b6c] focus:border-[#889b6c] sm:text-sm"/>
             <p v-if="!isEmailValid && email" class="text-sm text-red-500 mt-1">
               Please enter a valid email address.
             </p>
@@ -95,11 +126,11 @@ const handleRegister = async () => {
 
             <div class="relative">
               <input v-model="password" :type="passwordVisible ? 'text' : 'password'" id="password" name="password"
-                placeholder="Enter your password" required
-                class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#889b6c] focus:border-[#889b6c] sm:text-sm" />
+                     placeholder="Enter your password" required
+                     class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#889b6c] focus:border-[#889b6c] sm:text-sm"/>
               <span @click="togglePasswordVisibility"
-                class="absolute right-3 top-1/2 bottom-[0.05rem] transform -translate-y-1/2 text-gray-500 cursor-pointer">
-                <font-awesome-icon :icon="passwordVisible ? 'fa-regular fa-eye' : 'fa-regular fa-eye-slash'" />
+                    class="absolute right-3 top-1/2 bottom-[0.05rem] transform -translate-y-1/2 text-gray-500 cursor-pointer">
+                <font-awesome-icon :icon="passwordVisible ? 'fa-regular fa-eye' : 'fa-regular fa-eye-slash'"/>
               </span>
             </div>
 
@@ -114,12 +145,12 @@ const handleRegister = async () => {
 
             <div class="relative">
               <input v-model="confirmPassword" :type="confirmPasswordVisible ? 'text' : 'password'"
-                id="confirm-password" name="confirm-password" placeholder="Re-enter your password" required
-                :disabled="!isPasswordValid"
-                class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#889b6c] focus:border-[#889b6c] sm:text-sm" />
+                     id="confirm-password" name="confirm-password" placeholder="Re-enter your password" required
+                     :disabled="!isPasswordValid"
+                     class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#889b6c] focus:border-[#889b6c] sm:text-sm"/>
               <span @click="toggleConfirmPasswordVisibility"
-                class="absolute right-3 top-1/2 bottom-[0.05rem] transform -translate-y-1/2 text-gray-500 cursor-pointer">
-                <font-awesome-icon :icon="confirmPasswordVisible  ? 'fa-regular fa-eye' : 'fa-regular fa-eye-slash'" />
+                    class="absolute right-3 top-1/2 bottom-[0.05rem] transform -translate-y-1/2 text-gray-500 cursor-pointer">
+                <font-awesome-icon :icon="confirmPasswordVisible  ? 'fa-regular fa-eye' : 'fa-regular fa-eye-slash'"/>
               </span>
             </div>
 
@@ -132,8 +163,8 @@ const handleRegister = async () => {
           <!-- Submit Button -->
           <div>
             <button type="submit"
-              class="w-full bg-[#889b6c] text-white py-2 px-4 rounded-md hover:bg-[#728156] focus:ring-2 focus:ring-[#889b6c] focus:outline-none"
-              :disabled="!isEmailValid || !isPasswordValid || !isPasswordMatched">
+                    class="w-full bg-[#C15E3C] text-white py-2 px-4 rounded-md hover:bg-[#d76843] focus:ring-2 focus:ring-[#889b6c] focus:outline-none"
+                    :disabled="!isEmailValid || !isPasswordValid || !isPasswordMatched">
               Sign Up
             </button>
           </div>
@@ -145,17 +176,25 @@ const handleRegister = async () => {
           </div>
           <div class="flex items-center justify-center space-x-2 mt-4">
             <button type="button"
-              class="w-full flex items-center justify-center bg-gray-50 border text-gray-700 py-2 px-4 rounded-md hover:bg-gray-100 focus:ring-2 focus:ring-gray-500 focus:outline-none">
-              <font-awesome-icon :icon="['fab', 'google']" class="mr-2 text-red-600" />
+                    class="w-full flex items-center justify-center bg-gray-50 border text-gray-700 py-2 px-4 rounded-md hover:bg-gray-100 focus:ring-2 focus:ring-gray-500 focus:outline-none">
+              <font-awesome-icon :icon="['fab', 'google']" class="mr-2 text-red-600"/>
               Sign Up with Google
             </button>
           </div>
         </form>
         <p class="text-center text-sm text-gray-600 mt-6">
           Already have an account?
-          <RouterLink to="/login" class="text-[#98a77c] hover:underline">Login</RouterLink>
+          <RouterLink to="/login" class="text-[#C15E3C] hover:underline">Login</RouterLink>
         </p>
       </div>
     </div>
+    <ConfirmModal
+        v-if="showModal"
+        title="Registration Successful"
+        content="You have successfully registered! Please check your email for verification."
+        confirmText="OK"
+        cancelText=""
+        @close="showModal = false"
+    />
   </section>
 </template>
