@@ -1,6 +1,7 @@
 package com.backend.postservice.controller;
 
 import com.backend.dto.response.ApiResponse;
+import com.backend.dto.response.PageResponse;
 import com.backend.postservice.dto.request.PostCategoryRequest;
 import com.backend.postservice.dto.response.PostCategoryResponse;
 import com.backend.postservice.service.PostCategoryService;
@@ -33,6 +34,15 @@ public class PostCategoryController {
                 .build();
     }
     @GetMapping("/all")
+    public ApiResponse<PageResponse<PostCategoryResponse>> getAllPostCategories(
+            @RequestParam(value = "page", required = false, defaultValue = "1") int page,
+            @RequestParam(value = "size", required = false, defaultValue = "10") int size
+    ){
+        return ApiResponse.<PageResponse<PostCategoryResponse>>builder()
+                .result(postCategoryService.getAllPostCategories(page, size))
+                .build();
+    }
+    @GetMapping("/all-without-pagination")
     public ApiResponse<List<PostCategoryResponse>> getAllPostCategories(){
         return ApiResponse.<List<PostCategoryResponse>>builder()
                 .result(postCategoryService.getAllPostCategories())

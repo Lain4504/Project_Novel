@@ -3,7 +3,7 @@ import Ads from "@/components/home/Banner.vue";
 import {ref, computed, onMounted, watch} from 'vue';
 import Breadcrumb from '@/components/home/Breadcrumb.vue';
 import {getPosts} from "@/api/post";
-import {getPostCategories} from "@/api/postcategory";
+import {getPostCategoriesWithoutPagination} from "@/api/postcategory";
 // Logic for post list
 const currentPage = ref(1);
 const totalPages = ref(0);
@@ -49,12 +49,11 @@ const visiblePages = computed(() => {
   return pages;
 });
 const categories = ref<any[]>([]);
-// Chuyên mục đã chọn
 
 // Hàm gọi API để lấy các chuyên mục
 const fetchCategories = async () => {
   try {
-    const result = await getPostCategories();
+    const result = await getPostCategoriesWithoutPagination();
     console.log(result);
     categories.value = result; // Gán kết quả vào categories
   } catch (error) {
@@ -79,10 +78,10 @@ onMounted(() => {
         <!-- Title and Add Button on the same line -->
         <div class="flex justify-between items-center mb-2">
           <h1 class="text-xl font-semibold text-gray-800">Thảo luận</h1>
-          <RouterLink to="/post-create-form"
+          <router-link to="/post-create-form"
               class="flex items-center justify-center w-10 h-10 bg-[#C96442] text-white rounded-full hover:bg-[#BA5B38]">
             <font-awesome-icon :icon="['fas', 'plus']" class="text-lg"/>
-          </RouterLink>
+          </router-link>
         </div>
         <!-- Dropdown -->
         <div class="flex flex-col md:flex-row justify-between items-center">
@@ -114,10 +113,10 @@ onMounted(() => {
         <tr v-for="(item, index) in data" :key="index"
             class="border-t hover:bg-gray-100 transition text-sm">
           <td class="px-4 py-3 flex items-center">
-            <RouterLink :to="{ name: 'postdetail', params: { id: item.id } }" class="text-black font-medium hover:underline">
+            <router-link :to="{ name: 'postdetail', params: { id: item.id } }" class="text-black font-medium hover:underline">
               <i v-if="item.isImportant" class="fas fa-star text-yellow-400 mr-2"></i>
               {{ item.title }}
-            </RouterLink>
+            </router-link>
           </td>
           <!-- Hiển thị "Chuyên mục" dưới "Chủ đề" khi màn hình nhỏ hơn md -->
           <td class="px-4 py-3 block md:hidden">

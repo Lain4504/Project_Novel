@@ -59,7 +59,7 @@ const price = ref(0); // Giá tiền
         <!-- Content Area -->
         <div class="mt-4">
             <label for="content" class="block text-sm font-medium text-gray-700">Nội dung</label>
-            <Tiptap v-model="content" class="mt-1" />
+            <Tiptap v-model="content" @update:content="content = $event" class="mt-1" />
         </div>
         <div class="flex justify-end mt-4">
             <button

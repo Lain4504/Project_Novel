@@ -10,9 +10,14 @@ enum Routes {
   Account = '/author-account',
   Payment = '/payment',
   FAQ = '/faq',
-  Tutorial = '/tutorial',
   BookCategory = '/book-category',
-  PostCategory = '/post-category',
+  BookManagement = '/book-admin',
+  PostManagement = '/post-admin',
+  BookCategoryManagement = '/post-list',
+  PostCategoryManagement = '/post-category-list',
+  AdsManagement = '/ads-admin',
+  UserManagement = '/user-admin',
+  AdminDashboard = '/admin-dashboard',
 }
 
 import NotificationDropdown from '@/components/common/BellNotificationDropdown.vue';
@@ -83,13 +88,40 @@ const MenuItems = [
     isParent: true,
     children: [
       {to: Routes.FAQ, label: 'FAQ', icon: 'fa-solid fa-circle-question'},
+      {to: Routes.BookCategory, label: 'Book Category', icon: 'fa-solid fa-book-open'},
     ]
   }
 ];
 
 const featureMenuItems = [
-  {to: Routes.BookCategory, label: 'Book Category',},
-  {to: Routes.PostCategory, label: 'Post Category'}
+  {
+    to: Routes.BookManagement,
+    label: 'Book Management',
+  },
+  {
+    to: Routes.PostManagement,
+    label: 'Post Management',
+  },
+  {
+    to: Routes.BookCategoryManagement,
+    label: 'Book Category Management',
+  },
+  {
+    to: Routes.PostCategoryManagement,
+    label: 'Post Category Management',
+  },
+  {
+    to: Routes.AdsManagement,
+    label: 'Ads Management',
+  },
+  {
+    to: Routes.UserManagement,
+    label: 'User Management',
+  },
+  {
+    to: Routes.AdminDashboard,
+    label: 'Admin Dashboard',
+  }
 ];
 const dropdownItems = [
   {to: Routes.Account, label: 'Account'},
@@ -125,7 +157,7 @@ const toggleNotificationList = () => {
 <template>
   <div class="w-screen h-screen flex">
     <!-- Sidebar for larger screens -->
-    <div class="w-[260px] h-full bg-gray-200 text-black" v-show="showSide && !isMobile">
+    <div class="w-[260px] h-full bg-gray-200 text-black overflow-y-auto" v-show="showSide && !isMobile">
       <div class="h-[50px] bg-[#F0EEE5] flex justify-start items-center">
         <div class="px-[20px]">
           <h3 class="font-bold text-xl">Admin Panel</h3>
@@ -142,12 +174,12 @@ const toggleNotificationList = () => {
 
                 <!-- Child Items (Menu Links) -->
                 <div v-if="item.isParent" class="flex flex-col justify-between">
-                  <RouterLink v-for="subItem in item.children" :key="subItem.to" :to="subItem.to"
-                              class="inline-flex relative items-center py-[10px] px-[10px] w-full text-sm font-medium rounded-md border-gray-200 transition duration-500 ease-in-out hover:underline"
-                              active-class="bg-[#D4A27F] text-gray-800 font-semibold">
+                  <router-link v-for="subItem in item.children" :key="subItem.to" :to="subItem.to"
+                               class="inline-flex relative items-center py-[10px] px-[10px] w-full text-sm font-medium rounded-md border-gray-200 transition duration-500 ease-in-out hover:underline"
+                               active-class="bg-[#D4A27F] text-gray-800 font-semibold">
                     <font-awesome-icon :icon="subItem.icon" class="mr-2"/>
                     {{ subItem.label }}
-                  </RouterLink>
+                  </router-link>
                 </div>
               </div>
             </div>
@@ -155,20 +187,24 @@ const toggleNotificationList = () => {
             <div class="space-y-2">
               <!-- Tiêu đề chính của dropdown -->
               <div
-                  class="text-sm text-gray-700 font-semibold cursor-pointer flex items-center justify-between py-2 px-3 bg-[#C96442] rounded-md"
+                  class="text-sm text-gray-700 font-semibold cursor-pointer flex justify-between items-center py-2 px-3 bg-[#C96442] rounded-md"
                   @click="toggleDropdown">
-                Features
+                <div class="flex items-center space-x-2">
+                  <font-awesome-icon icon="fa-solid fa-bars-progress" size="lg" class="mx-2 my-[0.2rem]"/>
+                  <span>Advanced Features</span>
+                </div>
                 <span :class="{ 'rotate-180': isDropdownOpen }"
                       class="transform transition-transform duration-300">
-                                    ▼
-                                </span>
+    ▼
+  </span>
               </div>
+
               <div v-if="isDropdownOpen" class="mt-2 flex flex-col space-y-1">
-                <RouterLink v-for="item in featureMenuItems" :key="item.to" :to="item.to"
-                            class="inline-flex items-center py-2 px-3 text-sm font-medium rounded-md border-gray-200 transition duration-500 ease-in-out hover:underline"
-                            active-class="bg-[#D4A27F] text-gray-800 font-semibold" @click="handleItemClick">
+                <router-link v-for="item in featureMenuItems" :key="item.to" :to="item.to"
+                             class="inline-flex items-center py-2 px-3 text-sm font-medium rounded-md border-gray-200 transition duration-500 ease-in-out hover:underline"
+                             active-class="bg-[#D4A27F] text-gray-800 font-semibold" @click="handleItemClick">
                   {{ item.label }}
-                </RouterLink>
+                </router-link>
               </div>
             </div>
           </div>
@@ -177,7 +213,7 @@ const toggleNotificationList = () => {
     </div>
     <!-- Mobile overlay sidebar -->
     <div v-show="showMobileSide" class="fixed inset-0 z-20 bg-gray-900 bg-opacity-50">
-      <div class="w-[250px] h-full bg-[#F0EEE5] text-gray-700 p-4">
+      <div class="w-[250px] h-full bg-[#F0EEE5] text-gray-700 p-4 overflow-y-auto">
         <div class="flex justify-between items-center">
           <h3 class="font-bold text-xl">Admin Panel</h3>
           <button @click="toggleSideBar"
@@ -190,32 +226,32 @@ const toggleNotificationList = () => {
             <div v-for="item in MenuItems" :key="item.label">
 
               <div class="text-sm text-gray-700 font-semibold">{{ item.label }}</div>
-              <RouterLink v-for="subItem in item.children" :key="subItem.to" :to="subItem.to"
-                          class="inline-flex relative items-center py-2 px-3 w-full text-sm font-medium rounded-md transition duration-500 ease-in-out"
-                          active-class="bg-[#D4A27F] text-gray-800 font-semibold" @click="toggleSideBar">
+              <router-link v-for="subItem in item.children" :key="subItem.to" :to="subItem.to"
+                           class="inline-flex relative items-center py-2 px-3 w-full text-sm font-medium rounded-md transition duration-500 ease-in-out"
+                           active-class="bg-[#D4A27F] text-gray-800 font-semibold" @click="toggleSideBar">
                 <font-awesome-icon :icon="subItem.icon" class="mr-2"/>
                 {{ subItem.label }}
-              </RouterLink>
+              </router-link>
             </div>
           </div>
           <div class="space-y-2">
             <!-- Tiêu đề chính của dropdown -->
             <div
-                class="text-xs text-gray-700 font-semibold cursor-pointer flex items-center justify-between py-2 px-3 bg-[#C96442] rounded-md"
+                class="text-xs text-gray-700 font-semibold cursor-pointer flex justify-between items-center py-2 px-3 bg-[#C96442] rounded-md"
                 @click="toggleDropdown">
-              Features
-              <span :class="{ 'rotate-180': isDropdownOpen }"
-                    class="transform transition-transform duration-300">
-                                ▼
-                            </span>
+              <div class="flex items-center space-x-2">
+                <font-awesome-icon icon="fa-solid fa-bars-progress" size="lg" class="mx-2 my-[0.2rem]"/>
+                <span>Advanced Features</span>
+              </div>
+              <span :class="{ 'rotate-180': isDropdownOpen }" class="transform transition-transform duration-300">▼</span>
             </div>
             <!-- Menu items (dropdown content) -->
             <div v-if="isDropdownOpen" class="mt-2 flex flex-col space-y-1">
-              <RouterLink v-for="item in featureMenuItems" :key="item.to" :to="item.to"
-                          class="inline-flex items-center py-2 px-3 text-sm font-medium rounded-md border-gray-200 transition duration-500 ease-in-out hover:bg-gray-100"
-                          active-class="bg-gray-300 text-gray-800 font-semibold" @click="handleItemClick">
+              <router-link v-for="item in featureMenuItems" :key="item.to" :to="item.to"
+                           class="inline-flex items-center py-2 px-3 text-sm font-medium rounded-md border-gray-200 transition duration-500 ease-in-out hover:bg-gray-100"
+                           active-class="bg-gray-300 text-gray-800 font-semibold" @click="handleItemClick">
                 {{ item.label }}
-              </RouterLink>
+              </router-link>
             </div>
           </div>
         </div>
@@ -235,18 +271,13 @@ const toggleNotificationList = () => {
 
         <!-- Dropdown Menu -->
         <div class="relative flex items-center space-x-4 cursor-pointer">
-          <div class="relative mr-1">
-            <RouterLink to="/advanced-management"
-                        class="border border-gray-400 bg-gray-200 rounded-lg p-1 flex items-center text-black hover:underline transition-all duration-300 text-sm">
-              <font-awesome-icon icon="fa-solid fa-bars-progress" size="lg" class="mx-2 my-[0.2rem]"/>
-            </RouterLink>
-          </div>
+
           <div class="relative">
-            <RouterLink to="/"
-                        class="flex items-center text-black hover:underline transition-all duration-300 text-sm">
+            <router-link to="/"
+                         class="flex items-center text-black hover:underline transition-all duration-300 text-sm">
               <!-- Writer Icon -->
               <font-awesome-icon :icon="['fas', 'house']" size="lg"/>
-            </RouterLink>
+            </router-link>
           </div>
           <div class="relative mr-1">
             <div @click="toggleNotificationList" class="relative">
@@ -274,10 +305,10 @@ const toggleNotificationList = () => {
             <div v-show="showDropDown"
                  class="absolute top-full mt-2 right-0 z-10 w-44 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
               <div class="py-1 text-left" role="none">
-                <RouterLink v-for="item in dropdownItems" :key="item.label" :to="item.to ? item.to : ''"
-                            class="text-gray-700 block px-4 py-2 text-sm hover:bg-[#F8F8F7]" role="menuitem">
+                <router-link v-for="item in dropdownItems" :key="item.label" :to="item.to ? item.to : ''"
+                             class="text-gray-700 block px-4 py-2 text-sm hover:bg-[#F8F8F7]" role="menuitem">
                   {{ item.label }}
-                </RouterLink>
+                </router-link>
               </div>
             </div>
           </transition>
@@ -325,12 +356,14 @@ const toggleNotificationList = () => {
   -ms-overflow-style: none; /* Ẩn scrollbar trên Internet Explorer và Edge */
   scrollbar-width: none; /* Ẩn scrollbar trên Firefox */
 }
+
 /* Ẩn scrollbar nhưng vẫn cho phép cuộn */
 .table-container::-webkit-scrollbar {
-    display: none; /* Ẩn scrollbar */
+  display: none; /* Ẩn scrollbar */
 }
+
 .table-container {
-    -ms-overflow-style: none;  /* Ẩn scrollbar trên Internet Explorer và Edge */
-    scrollbar-width: none; /* Ẩn scrollbar trên Firefox */
+  -ms-overflow-style: none; /* Ẩn scrollbar trên Internet Explorer và Edge */
+  scrollbar-width: none; /* Ẩn scrollbar trên Firefox */
 }
 </style>

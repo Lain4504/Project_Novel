@@ -58,7 +58,7 @@ const limitedReadings = computed(() => readings.value.slice(0, 4));
       <section class="p-4 border rounded">
         <div class="flex justify-between items-center">
           <h4 class="text-md font-bold">Bài viết mới nhất</h4>
-          <RouterLink to="#" class="text-[#98a77c] text-sm">Xem tất cả</RouterLink>
+          <router-link to="#" class="text-[#98a77c] text-sm">Xem tất cả</router-link>
         </div>
         <div class="mt-4 text-sm">
           <ul class="space-y-4">
@@ -82,7 +82,7 @@ const limitedReadings = computed(() => readings.value.slice(0, 4));
       <section class="p-4 border rounded">
         <div class="flex justify-between items-center">
           <h4 class="text-md font-bold">Đang đọc</h4>
-          <RouterLink to="/list/readinglist" class="text-[#98a77c] text-sm">Xem tất cả</RouterLink>
+          <router-link to="/list/readinglist" class="text-[#98a77c] text-sm">Xem tất cả</router-link>
         </div>
         <div class="mt-4 text-sm">
           <div class="space-y-4">

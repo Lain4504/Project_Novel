@@ -30,7 +30,7 @@ const fetchCategories = async () => {
   }
 };
 
-const fecchPost = async () => {
+const fetchPost = async () => {
   try {
     const result = await getPost(props.id);
     console.log(result);
@@ -50,7 +50,7 @@ const fecchPost = async () => {
 // Call fetchCategories and fecchPost on component mounted
 onMounted(async () => {
   await fetchCategories(); // Ensure categories are fetched first
-  await fecchPost(); // Fetch post after categories to match categoryName
+  await fetchPost(); // Fetch post after categories to match categoryName
 });
 
 const handleSubmit = async () => {
@@ -67,8 +67,6 @@ const handleSubmit = async () => {
     alert("Có lỗi xảy ra khi cập nhật bài viết");
   }
 };
-
-
 </script>
 
 <template>

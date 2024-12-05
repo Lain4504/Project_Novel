@@ -46,7 +46,8 @@ const logOrder = () => {
       Lưu thứ
         tự
       </button>
-      <button @click="goBack" class="text-sm bg-transparent border-[1px] border-yellow-500 text-yellow-500 hover:border-yellow-700 hover:scale-105 font-medium py-2 px-4 rounded transition-all duration-300">Quay lại</button>
+      <button @click="goBack" class="cursor-pointer text-sm bg-transparent border-[1px] border-red-500 text-red-500 hover:border-red-700 hover:scale-105 font-medium py-2 px-4 rounded transition-all duration-300"
+        >Quay lại</button>
     </div>
   </div>
 </template>

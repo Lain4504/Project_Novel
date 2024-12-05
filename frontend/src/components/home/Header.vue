@@ -144,9 +144,9 @@ const toggleNotificationList = () => {
           <font-awesome-icon icon="fa-solid fa-bars" />
         </button>
         <!-- Logo -->
-        <RouterLink to="/" class="text-black text-xl font-semibold">
+        <router-link to="/" class="text-black text-xl font-semibold">
           LOGO
-        </RouterLink>
+        </router-link>
       </div>
 
       <!-- Desktop Menu -->
@@ -164,17 +164,17 @@ const toggleNotificationList = () => {
                 class="text-black text-sm hover:underline transition-all duration-300">
                 {{ category }}
               </div>
-              <RouterLink to="" class="col-span-3 text-center text-blue-500 text-sm hover:underline">
+              <router-link to="" class="col-span-3 text-center text-blue-500 text-sm hover:underline">
                 <font-awesome-icon icon="fa-solid fa-arrow-up-right-from-square" />
-              </RouterLink>
+              </router-link>
             </div>
           </transition>
         </div>
 
         <!-- Forum, Support, Ranking -->
-        <RouterLink to="/post-forum" class="text-black text-sm hover:underline transition-all duration-300">Forum</RouterLink>
-        <RouterLink to="#" class="text-black text-sm hover:underline transition-all duration-300">Support</RouterLink>
-        <RouterLink to="#" class="text-black text-sm hover:underline transition-all duration-300">Ranking</RouterLink>
+        <router-link to="/post-forum" class="text-black text-sm hover:underline transition-all duration-300">Forum</router-link>
+        <router-link to="#" class="text-black text-sm hover:underline transition-all duration-300">Support</router-link>
+        <router-link to="#" class="text-black text-sm hover:underline transition-all duration-300">Ranking</router-link>
 
         <!-- Search bar -->
         <div class="relative flex items-center">
@@ -186,12 +186,12 @@ const toggleNotificationList = () => {
         <!-- Bell và Avatar -->
         <div v-if="isAuthenticated" class="flex items-center space-x-3">
           <div class="relative">
-            <RouterLink to="/dashboard"
+            <router-link to="/dashboard"
               class="flex items-center text-black hover:underline transition-all duration-300 text-sm">
               <!-- Writer Icon -->
               <font-awesome-icon :icon="['far', 'pen-to-square']" size="lg" class="mr-1" />
               Writting
-            </RouterLink>
+            </router-link>
           </div>
        <!-- Bell -->
 <div class="relative">
@@ -233,7 +233,7 @@ const toggleNotificationList = () => {
                     {{ item.label }}
                   </div>
 
-                  <!-- For other items, use RouterLink as usual -->
+                  <!-- For other items, use router-link as usual -->
                   <router-link v-else :to="item.link" class="flex items-center w-full">
                     <font-awesome-icon :icon="item.icon" class="mr-2" />
                     {{ item.label }}
@@ -245,10 +245,10 @@ const toggleNotificationList = () => {
         </div>
 
         <div v-else>
-          <RouterLink to="/login" class="text-black text-sm hover:underline transition-all duration-300">Login
-          </RouterLink>
-          <RouterLink to="/register" class="text-black text-sm ml-4 hover:underline transition-all duration-300">
-            Register</RouterLink>
+          <router-link to="/login" class="text-black text-sm hover:underline transition-all duration-300">Login
+          </router-link>
+          <router-link to="/register" class="text-black text-sm ml-4 hover:underline transition-all duration-300">
+            Register</router-link>
         </div>
       </div>
 
@@ -258,12 +258,12 @@ const toggleNotificationList = () => {
         <!-- Bell and Account for Authenticated Users -->
         <div v-if="isAuthenticated" class="flex items-center space-x-4">
           <div class="relative">
-            <RouterLink to="/dashboard"
+            <router-link to="/dashboard"
               class="flex items-center text-black hover:underline transition-all duration-300 text-sm">
               <!-- Writer Icon -->
               <font-awesome-icon :icon="['far', 'pen-to-square']" size="lg" class="mr-1" />
               Writting
-            </RouterLink>
+            </router-link>
 
           </div>
              <!-- Bell -->
@@ -307,7 +307,7 @@ const toggleNotificationList = () => {
                     {{ item.label }}
                   </div>
 
-                  <!-- For other items, use RouterLink -->
+                  <!-- For other items, use router-link -->
                   <router-link v-else :to="item.link" class="flex items-center w-full">
                     <font-awesome-icon :icon="item.icon" class="mr-2" />
                     {{ item.label }}
@@ -320,12 +320,12 @@ const toggleNotificationList = () => {
 
         <!-- Login/Register for Mobile -->
         <div v-else class="flex items-center space-x-4">
-          <RouterLink to="/login" class="text-black text-sm hover:underline transition-all duration-300">
+          <router-link to="/login" class="text-black text-sm hover:underline transition-all duration-300">
             Login
-          </RouterLink>
-          <RouterLink to="/register" class="text-black text-sm hover:underline transition-all duration-300">
+          </router-link>
+          <router-link to="/register" class="text-black text-sm hover:underline transition-all duration-300">
             Register
-          </RouterLink>
+          </router-link>
         </div>
     </div>
   </div>
@@ -351,15 +351,15 @@ const toggleNotificationList = () => {
                   class="text-black text-sm hover:underline transition-all duration-300">
                   {{ category }}
                 </div>
-                <RouterLink to="" class="col-span-3 text-center text-blue-500 text-sm hover:underline">
+                <router-link to="" class="col-span-3 text-center text-blue-500 text-sm hover:underline">
                   <font-awesome-icon icon="fa-solid fa-arrow-up-right-from-square" />
-                </RouterLink>
+                </router-link>
               </div>
             </transition>
           </div>
-          <RouterLink to="/post-forum" class="block text-sm hover:underline transition-all duration-300">Forum</RouterLink>
-          <RouterLink to="#" class="block text-sm hover:underline transition-all duration-300">Support</RouterLink>
-          <RouterLink to="#" class="block text-sm hover:underline transition-all duration-300">Ranking</RouterLink>
+          <router-link to="/post-forum" class="block text-sm hover:underline transition-all duration-300">Forum</router-link>
+          <router-link to="#" class="block text-sm hover:underline transition-all duration-300">Support</router-link>
+          <router-link to="#" class="block text-sm hover:underline transition-all duration-300">Ranking</router-link>
         </div>
       </div>
     </transition>

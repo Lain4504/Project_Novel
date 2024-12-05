@@ -5,16 +5,16 @@
     </span>
     <ul class="flex flex-wrap items-center mt-3 text-sm font-medium text-gray-500 dark:text-gray-400 sm:mt-0">
         <li>
-            <RouterLink to="#" class="hover:underline me-4 md:me-6">About</RouterLink>
+            <router-link to="#" class="hover:underline me-4 md:me-6">About</router-link>
         </li>
         <li>
-            <RouterLink to="#" class="hover:underline me-4 md:me-6">Privacy Policy</RouterLink>
+            <router-link to="#" class="hover:underline me-4 md:me-6">Privacy Policy</router-link>
         </li>
         <li>
-            <RouterLink to="#" class="hover:underline me-4 md:me-6">Licensing</RouterLink>
+            <router-link to="#" class="hover:underline me-4 md:me-6">Licensing</router-link>
         </li>
         <li>
-            <RouterLink to="#" class="hover:underline">Contact</RouterLink>
+            <router-link to="#" class="hover:underline">Contact</router-link>
         </li>
     </ul>
     </div>

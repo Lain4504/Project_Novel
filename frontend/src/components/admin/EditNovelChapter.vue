@@ -34,7 +34,7 @@ const handleSubmit = () => {
       </div>
       <div class="mt-4">
         <label for="content" class="block text-sm font-medium text-gray-700">Nội dung</label>
-        <Tiptap v-model="content" class="mt-1"/>
+        <Tiptap :content="content" @update:content="content = $event" class="mt-1" />
       </div>
       <div class="mt-4">
         <button

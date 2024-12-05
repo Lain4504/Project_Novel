@@ -5,20 +5,25 @@ const createPostCategory = (data = {}) => {
   return axios.post(`${POST_CATEGORY_API}/create`, data)
       .then((response) => response.data.result);
 }
-const getPostCategories = () => {
-    return axios.get(`${POST_CATEGORY_API}/all`)
+const getPostCategories = (page : number, size : number) => {
+    return axios
+        .get(`${POST_CATEGORY_API}/all`, { params: { page, size } })
         .then((response) => response.data.result);
+};
+const getPostCategoriesWithoutPagination = () => {
+  return axios.get(`${POST_CATEGORY_API}/all-without-pagination`)
+      .then((response) => response.data.result);
 }
-const getPostCategory = (id : number) => {
+const getPostCategory = (id : string) => {
     return axios.get(`${POST_CATEGORY_API}/${id}`)
         .then((response) => response.data.result);
 }
-const deletePostCategory = (id : number) => {
+const deletePostCategory = (id : string) => {
     return axios.delete(`${POST_CATEGORY_API}/delete/${id}`)
         .then((response) => response.data.result);
 }
-const updatePostCategory = (id : number, data = {}) => {
+const updatePostCategory = (id : string, data = {}) => {
     return axios.put(`${POST_CATEGORY_API}/update/${id}`, data)
         .then((response) => response.data.result);
 }
-export { createPostCategory, getPostCategories, getPostCategory, deletePostCategory, updatePostCategory };
+export { createPostCategory, getPostCategories, getPostCategory, deletePostCategory, updatePostCategory , getPostCategoriesWithoutPagination};

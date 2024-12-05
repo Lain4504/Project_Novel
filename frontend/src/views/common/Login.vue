@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import {computed, ref, inject} from 'vue';
-import {RouterLink} from 'vue-router';
 import {useStore} from 'vuex';
 import {useRouter} from 'vue-router';
 import {login} from '@/api/auth';
@@ -174,9 +173,9 @@ const goToSlide = (index: number) => {
 
         <p class="text-center text-sm text-gray-600 mt-6">
           Don't have an account?
-          <RouterLink to="/register" class="text-[#C15E3C] hover:underline">
+          <router-link to="/register" class="text-[#C15E3C] hover:underline">
             Sign up
-          </RouterLink>
+          </router-link>
         </p>
       </div>
     </div>
