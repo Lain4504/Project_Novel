@@ -18,9 +18,8 @@ import Tab from '@/views/home/TabSwitch.vue';
 import BookMark from '@/components/home/BookMark.vue';
 import ReadingList from '@/components/home/RecentlyReadingList.vue';
 import UserProfile from '@/views/home/UserProfileSetting.vue';
-import Libarary from '@/views/home/Libarary.vue';
+import Library from '@/views/home/Library.vue';
 import History from '@/views/home/TransactionHistory.vue';
-import AdvancedManagement from '@/views/admin/AdvancedManagement.vue';
 import EditNovel from '@/views/admin/NovelAuthorManagement.vue';
 import FAQ from '@/views/common/FAQ.vue';
 import Payment from '@/views/admin/Payment.vue';
@@ -30,6 +29,10 @@ import PostDetail from '@/views/home/PostDetail.vue';
 import PostCreateForm from '@/views/home/PostCreateForm.vue';
 import Activation from "@/views/home/Activation.vue";
 import PostUpdateForm from "@/views/home/PostUpdateForm.vue";
+import PostCategoryNew from "@/components/admin/PostCategoryNew.vue";
+import PostCategoryList from "@/views/admin/PostCategoryList.vue";
+import PostCategoryEdit from "@/components/admin/PostCategoryEdit.vue";
+import PostList from "@/views/admin/PostList.vue";
 const routes: Array<RouteRecordRaw> = [
   { name: 'dashboard', path: '/dashboard', component: Dashboard, 
     children: [
@@ -40,7 +43,11 @@ const routes: Array<RouteRecordRaw> = [
       { name: 'adminnotification', path: '/admin-notification', component: SystemNotification },
       { name: 'editnovel', path: '/edit-novel', component: EditNovel },
       { name: 'payment', path: '/payment', component: Payment },
-      { name: 'authoraccount', path: '/author-account', component: AuthorAccount }
+      { name: 'authoraccount', path: '/author-account', component: AuthorAccount },
+      { name: 'postcategory', path: '/post-category-admin', component: PostCategoryNew },
+      { name: 'postcategorylist', path: '/post-category-list', component: PostCategoryList },
+      { name: 'postcategoryedit', path: '/post-category-edit/:id', component: PostCategoryEdit, props: true },
+        { name: 'postlist', path: '/post-admin', component: PostList },
     ]
   },
   { name: 'login', path: '/login', component: Login },
@@ -73,9 +80,8 @@ const routes: Array<RouteRecordRaw> = [
     ]
   },
   { name: 'userprofile', path: '/user-profile', component: UserProfile },
-  { name: 'library', path: '/library', component: Libarary },
+  { name: 'library', path: '/library', component: Library },
   { name: 'history', path: '/history', component: History },
-  { name: 'advancedmanagement', path: '/advanced-management', component: AdvancedManagement},
   { name: 'faq', path: '/faq', component: FAQ },
   { name: 'postforum', path: '/post-forum', component: PostForum, },
   { name: 'postdetail', path: '/post/:id', component: PostDetail, props: true },

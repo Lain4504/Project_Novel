@@ -159,11 +159,11 @@ const currentTabComponent = computed(() => {
 
           <!-- Discussions -->
           <div class="flex justify-center items-center">
-            <RouterLink to="#"
+            <router-link to="#"
                         class="flex flex-col items-center text-center text-gray-700 hover:text-blue-600">
               <font-awesome-icon :icon="['far', 'comments']"/>
               <span class="text-sm">Bàn luận</span>
-            </RouterLink>
+            </router-link>
           </div>
 
           <!-- Share -->

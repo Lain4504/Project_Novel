@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import {ref, computed, watch, inject} from 'vue';
-import {RouterLink} from 'vue-router';
 import {register} from '@/api/user';
 import {useStore} from 'vuex';
 import {useRouter} from 'vue-router';
@@ -184,7 +183,7 @@ const goToSlide = (index: number) => {
         </form>
         <p class="text-center text-sm text-gray-600 mt-6">
           Already have an account?
-          <RouterLink to="/login" class="text-[#C15E3C] hover:underline">Login</RouterLink>
+          <router-link to="/login" class="text-[#C15E3C] hover:underline">Login</router-link>
         </p>
       </div>
     </div>

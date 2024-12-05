@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import {ref} from "vue";
-import EditContentChapter from "../../components/admin/EditNovelChapter.vue";
-import AddChapter from "../../components/admin/AddNovelChapter.vue";
-import OrderSortChapter from "../../components/admin/OrderSortChapter.vue";
-
+import EditContentChapter from "@/components/admin/EditNovelChapter.vue";
+import AddChapter from "@/components/admin/AddNovelChapter.vue";
+import OrderSortChapter from "@/components/admin/OrderSortChapter.vue";
+import AddNovelVolume from "@/components/admin/AddNovelVolume.vue";
 const activeChapters = ref<Record<string, boolean>>({}); // Trạng thái mở/đóng các chương
 const activeDropdown = ref<string | number | null>(null); // Trạng thái mở/đóng dropdown menu của tập/chương
 
@@ -46,6 +45,10 @@ const volumes = ref([
     ]
   },
 ]);
+const novel = ref({
+      name: "Urasekai Picnic",
+    }
+)
 // State to control the visibility of the dropdown menu
 const isDropdownVisible = ref(false);
 
@@ -75,37 +78,68 @@ const viewChapter = (id: number) => {
   alert(`Xem chương có ID: ${id}`);
 };
 
-
 const deleteChapter = (id: number) => {
   alert(`Xóa chương có ID: ${id}`);
 };
 
-
-const editVolume = (volumeName: string) => {
-  alert(`Sửa tập: ${volumeName}`);
-};
 // Trạng thái hiển thị các component
+const showEditNovel = ref(false);
 const showEditChapter = ref(false);
 const showAddChapter = ref(false);
-const selectedChapterId = ref<number | null>(null);
 const showOrderSortChapter = ref(false);
+const showEditVolume = ref(false);
+const showAddVolume = ref(false);
+
 const sortChapters = (novelId: string) => {
   showOrderSortChapter.value = true;
   showEditChapter.value = false; // Ẩn component chỉnh sửa
   showAddChapter.value = false; // Ẩn component thêm chương
+  showAddVolume.value = false;
+  showEditVolume.value = false;
+  showEditNovel.value = false;
 };
 // Hàm xử lý khi nhấn vào "Chỉnh sửa chương"
 const editChapter = (id: number) => {
-  selectedChapterId.value = id; // Lưu ID chương được chọn
   showEditChapter.value = true; // Hiển thị component chỉnh sửa
   showAddChapter.value = false; // Ẩn component thêm chương
   showOrderSortChapter.value = false;
+  showAddChapter.value = false;
+  showEditVolume.value = false;
 };
 
 // Hàm xử lý khi nhấn vào "Thêm chương"
 const addChapter = (volumeName: string) => {
   showAddChapter.value = true; // Hiển thị component thêm chương
   showEditChapter.value = false; // Ẩn component chỉnh sửa
+  showOrderSortChapter.value = false;
+  showEditVolume.value = false;
+  showAddVolume.value = false;
+  showEditNovel.value = false;
+
+};
+const addVolume = (novelName: string) => {
+  showAddVolume.value = true;
+  showEditVolume.value = false;
+  showEditChapter.value = false;
+  showAddChapter.value = false;
+  showOrderSortChapter.value = false;
+  showEditNovel.value = false;
+
+};
+const editVolume = (novelName: string) => {
+  showEditVolume.value = true;
+  showAddVolume.value = false;
+  showEditChapter.value = false;
+  showAddChapter.value = false;
+  showOrderSortChapter.value = false;
+  showEditNovel.value = false;
+};
+const editNovel = () => {
+  showEditNovel.value = true;
+  showEditVolume.value = false;
+  showAddVolume.value = false;
+  showEditChapter.value = false;
+  showAddChapter.value = false;
   showOrderSortChapter.value = false;
 };
 
@@ -116,15 +150,15 @@ const addChapter = (volumeName: string) => {
     <div class="bg-[#F8F8F7] p-8 rounded-lg shadow-md w-full">
       <p class="text-lg font-bold">Novel Management</p>
       <div class="space-y-4 mt-10">
-        <div class="md:col-span-1">
+        <div class="md:col-span-1 relative">
           <!-- Title -->
           <p class="text-lg font-bold cursor-pointer" @click="toggleDropdownNovel">Urasekai Picnic</p>
           <!-- Dropdown Menu -->
           <div v-if="isDropdownVisible"
                class="absolute z-10 bg-[#F8F8F7] border border-gray-300 rounded-md mt-2 w-36 shadow-md">
-            <div class="p-2 cursor-pointer hover:bg-gray-100 text-sm"
-                 @click="handleOptionClick('Thêm tập')">Thêm tập
-            </div>
+            <button class="p-2 cursor-pointer hover:bg-gray-100 text-sm"
+                 @click="addVolume(novel.name)">Thêm tập
+            </button>
             <div class="p-2 cursor-pointer hover:bg-gray-100 text-sm"
                  @click="handleOptionClick('Xóa novel')">Xóa novel
             </div>
@@ -223,5 +257,6 @@ const addChapter = (volumeName: string) => {
     <EditContentChapter v-if="showEditChapter" class="my-10"/>
     <AddChapter v-if="showAddChapter" class="my-10"/>
     <OrderSortChapter v-if="showOrderSortChapter" class="my-10"/>
+    <AddNovelVolume v-if="showAddVolume" class="my-10"/>
   </div>
 </template>

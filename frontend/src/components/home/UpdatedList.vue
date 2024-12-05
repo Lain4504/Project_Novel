@@ -112,12 +112,12 @@
     .max-w-7xl {
       max-width: 100%;
     }
-  
+
     .px-4 {
       padding-left: 1rem;
       padding-right: 1rem;
     }
-  
+
     .py-2 {
       padding-top: 0.5rem;
       padding-bottom: 0.5rem;
