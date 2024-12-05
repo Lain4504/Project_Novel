@@ -13,5 +13,8 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class PostRequest {
+    String title;
     String content;
+    String userId;
+    String categoryId;
 }

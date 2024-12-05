@@ -1,5 +1,6 @@
 package com.backend.postservice.controller;
 
+import com.backend.dto.response.ApiResponse;
 import com.backend.postservice.dto.request.PostCategoryRequest;
 import com.backend.postservice.dto.response.PostCategoryResponse;
 import com.backend.postservice.service.PostCategoryService;
@@ -20,24 +21,33 @@ import java.util.List;
 public class PostCategoryController {
     PostCategoryService postCategoryService;
     @PostMapping("/create")
-    public ResponseEntity<PostCategoryResponse> createPostCategory(@RequestBody PostCategoryRequest request){
-        return ResponseEntity.ok(postCategoryService.createPostCategory(request));
+    public ApiResponse<PostCategoryResponse> createPostCategory(@RequestBody PostCategoryRequest request){
+        return ApiResponse.<PostCategoryResponse>builder()
+                .result(postCategoryService.createPostCategory(request))
+                .build();
     }
     @PutMapping("/update/{postCategoryId}")
-    public ResponseEntity<PostCategoryResponse> updatePostCategory(@PathVariable("postCategoryId") String postCategory, @RequestBody PostCategoryRequest request){
-        return ResponseEntity.ok(postCategoryService.updatePostCategory(postCategory, request));
+    public ApiResponse<PostCategoryResponse> updatePostCategory(@PathVariable("postCategoryId") String postCategory, @RequestBody PostCategoryRequest request){
+        return ApiResponse.<PostCategoryResponse>builder()
+                .result(postCategoryService.updatePostCategory(postCategory, request))
+                .build();
     }
     @GetMapping("/all")
-    public ResponseEntity<List<PostCategoryResponse>> getAllPostCategories(){
-        return ResponseEntity.ok(postCategoryService.getAllPostCategories());
+    public ApiResponse<List<PostCategoryResponse>> getAllPostCategories(){
+        return ApiResponse.<List<PostCategoryResponse>>builder()
+                .result(postCategoryService.getAllPostCategories())
+                .build();
     }
     @GetMapping("/{postCategoryId}")
-    public ResponseEntity<PostCategoryResponse> getPostCategory(@PathVariable("postCategoryId") String postCategoryId){
-        return ResponseEntity.ok(postCategoryService.getPostCategory(postCategoryId));
+    public ApiResponse<PostCategoryResponse> getPostCategory(@PathVariable("postCategoryId") String postCategoryId){
+        return ApiResponse.<PostCategoryResponse>builder()
+                .result(postCategoryService.getPostCategory(postCategoryId))
+                .build();
     }
     @DeleteMapping("/delete/{postCategoryId}")
-    public ResponseEntity<Void> deletePostCategory(@PathVariable("postCategoryId") String postCategoryId){
+    public ApiResponse<Void> deletePostCategory(@PathVariable("postCategoryId") String postCategoryId){
         postCategoryService.deletePostCategory(postCategoryId);
-        return ResponseEntity.ok().build();
+        return ApiResponse.<Void>builder()
+                .build();
     }
 }

@@ -68,7 +68,7 @@ const goToPage = (n: number) => {
 
 // Top up function (example action when button is clicked)
 const topUp = () => {
-  alert("Nạp Tiền button clicked");
+  window.alert("Nạp Tiền button clicked");
 };
 </script>
 

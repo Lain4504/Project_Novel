@@ -1,61 +1,30 @@
 <script setup lang="ts">
-import { ref } from 'vue';
 import { useEditor, EditorContent } from '@tiptap/vue-3';
 import StarterKit from '@tiptap/starter-kit';
 import Underline from '@tiptap/extension-underline';
 import Image from '@tiptap/extension-image';
-import axios from 'axios';
 
 const props = defineProps({
-    modelValue: String,
+  content: String,
 });
-const emit = defineEmits(['update:modelValue']);
+const emit = defineEmits(['update:content']);
 
 const editor = useEditor({
-    content: props.modelValue,
-    extensions: [
-        StarterKit,
-        Underline,
-        Image.configure({ inline: true }),
-    ],
-    onUpdate({ editor }) {
-        emit('update:modelValue', editor.getHTML());
+  content: props.content,  // Sử dụng giá trị content từ props
+  extensions: [
+    StarterKit,
+    Underline,
+  ],
+  onUpdate({ editor }) {
+    console.log('Current Tiptap Content:', editor.getHTML());
+    emit('update:content', editor.getHTML());  // Phát sự kiện khi có thay đổi
+  },
+  editorProps: {
+    attributes: {
+      class: 'border border-gray-400 rounded p-4 min-h-[12rem] max-h-[12rem] overflow-y-auto outline-none prose max-w-none',
     },
-    editorProps: {
-        attributes: {
-            class: 'border border-gray-400 rounded p-4 min-h-[12rem] max-h-[12rem] overflow-y-auto outline-none prose max-w-none',
-        },
-    },
+  },
 });
-
-const fileInput = ref<HTMLInputElement | null>(null);
-
-const triggerFileInput = () => {
-    fileInput.value?.click();
-};
-
-const uploadImage = async (event: Event) => {
-    const file = (event.target as HTMLInputElement).files?.[0];
-    if (!file) return;
-
-    const formData = new FormData();
-    formData.append('image', file);
-
-    try {
-        const response = await axios.post('http://localhost:3000/upload', formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data',
-            },
-        });
-        const imageUrl = response.data.url;
-
-        // Chèn ảnh vào Tiptap
-        editor.chain().focus().setImage({ src: imageUrl }).run();
-    } catch (error) {
-        console.error('Error uploading image:', error);
-        alert('Failed to upload image. Please try again.');
-    }
-};
 </script>
 
 <template>
@@ -106,11 +75,7 @@ const uploadImage = async (event: Event) => {
                 class="p-1">
                 <font-awesome-icon :icon="['fas', 'minus']" />
             </button>
-            <input type="file" @change="uploadImage" accept="image/*" class="hidden" ref="fileInput" />
-            <button @click="triggerFileInput" class="p-1">
-                <font-awesome-icon :icon="['far', 'image']" />
-            </button>
-            <button @click="editor.chain().focus().undo().run()" 
+            <button @click="editor.chain().focus().undo().run()"
             :disabled="!editor.can().chain().focus().undo().run()"
             class="p-1 disabled:text-gray-400">
             <font-awesome-icon :icon="['fas', 'rotate-left']" />

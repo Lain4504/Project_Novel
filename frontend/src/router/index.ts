@@ -29,6 +29,7 @@ import PostForum from '@/views/home/PostForum.vue';
 import PostDetail from '@/views/home/PostDetail.vue';
 import PostCreateForm from '@/views/home/PostCreateForm.vue';
 import Activation from "@/views/home/Activation.vue";
+import PostUpdateForm from "@/views/home/PostUpdateForm.vue";
 const routes: Array<RouteRecordRaw> = [
   { name: 'dashboard', path: '/dashboard', component: Dashboard, 
     children: [
@@ -76,10 +77,11 @@ const routes: Array<RouteRecordRaw> = [
   { name: 'history', path: '/history', component: History },
   { name: 'advancedmanagement', path: '/advanced-management', component: AdvancedManagement},
   { name: 'faq', path: '/faq', component: FAQ },
-  { name: 'postforum', path: '/post-forum', component: PostForum },
-  { name: 'postdetail', path: '/post-detail', component: PostDetail },
+  { name: 'postforum', path: '/post-forum', component: PostForum, },
+  { name: 'postdetail', path: '/post/:id', component: PostDetail, props: true },
   { name: 'postcreateform', path: '/post-create-form', component: PostCreateForm },
-  { name: 'activation', path: '/activation/:token', component: Activation }
+  { name: 'postupdateform', path: '/post-update-form/:id', component: PostUpdateForm, props: true },
+  { name: 'activation', path: '/activation/:token', component: Activation },
 ];
 
 const router = createRouter({
