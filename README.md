@@ -90,7 +90,7 @@
    ```bash
    cd frontend
    npm install
-   npm run serve
+   npm run dev
 
 ---
 
@@ -107,8 +107,7 @@
 - [ ] Kotlin app
 
 ## Web Application
-- [ ] AdminPanel
-- [ ] NovelMain
+- Base UI : 70%
 
 ## Recommendation System
 - [ ] Personalized recommendations
@@ -132,7 +131,7 @@
 - [ ] Pay-per-chapter system
 
 ## Posting 
-- [ ] Post service
+- [x] Post service
 
 ## Analytics & Reporting
 - [ ] Statistics and reporting system for author
