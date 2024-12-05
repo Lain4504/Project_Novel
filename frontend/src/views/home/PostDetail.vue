@@ -1,7 +1,41 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import {onMounted, ref} from 'vue';
 import Ads from '@/components/home/Banner.vue';
 import Breadcrumb from '@/components/home/Breadcrumb.vue';
+import { getPost } from '@/api/post';
+const props = defineProps({
+    id: {
+        type: String,
+        required: true
+    }
+});
+type Post = {
+  title: string;
+  content: string;
+};
+
+const post = ref<Post>({
+  title: '',
+  content: '',
+});
+const isLoading = ref(false);
+const fetchPost = async () => {
+  isLoading.value = true;
+    try {
+        const result = await getPost(props.id);
+        post.value = result;
+        console.log(result);
+    } catch (error) {
+        console.error('Failed to fetch post:', error);
+    }
+    finally {
+        isLoading.value = false;
+    }
+};
+onMounted(() => {
+    fetchPost();
+  console.log('Post ID:', props.id); // Kiểm tra id nhận được
+});
 // State for storing the comment input
 const comment = ref('');
 </script>
@@ -26,11 +60,12 @@ const comment = ref('');
             </div>
 
             <!-- Title of the Post -->
-            <h1 class="text-3xl font-bold text-gray-800 mb-4">Thảo luận cho tác giả OLN</h1>
+            <h1 class="text-3xl font-bold text-gray-800 mb-4">{{ post.title }}</h1>
 
             <!-- Content Body -->
             <div class="content-body mb-6">
                 <!-- Content here -->
+              <div v-html="post.content"></div>
             </div>
 
             <!-- Comment Section -->

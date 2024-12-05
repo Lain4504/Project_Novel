@@ -44,6 +44,7 @@ const handleSubmit = () => {
       </div>
       <div class="flex justify-end mt-4">
         <button
+            type="submit"
             class="text-sm bg-transparent border-[1px] border-blue-500 text-blue-500 hover:border-blue-700 hover:scale-105 font-medium py-2 px-4 rounded transition-all duration-300">
           Submit
         </button>

@@ -37,7 +37,7 @@ const activate = async () => {
 <template>
   <div>
     <!-- Breadcrumb Component -->
-    <Breadcrumb :items="breadcrumbs"
+    <Breadcrumb :items="breadcrumbs"/>
     <div class="flex justify-center items-center">
       <div class="md:w-1/2 lg:w-1/3 text-center">
         <a-button

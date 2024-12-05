@@ -9,7 +9,7 @@
     "esModuleInterop": true,
     "strict": true,
     "module": "esnext",
-    "lib": ["es2015"],
+    "lib": ["dom", "esnext"],
     "files": [],
     "references": [
       { "path": "./tsconfig.app.json" },

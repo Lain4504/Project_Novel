@@ -2,7 +2,7 @@
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { ref, watch, computed } from 'vue';
 import { useStore } from 'vuex';
-import { logout } from '../../api/auth.ts';
+import { logout } from '@/api/auth';
 import AuthorNotification from '../common/BellNotificationDropdown.vue';
 import NotificationDropdown from '../common/BellNotificationDropdown.vue';
 // Trạng thái cho menu trên mobile

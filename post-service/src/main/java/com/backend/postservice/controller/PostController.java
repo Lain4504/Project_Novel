@@ -50,9 +50,10 @@ public class PostController {
     @GetMapping("/all")
     ApiResponse<PageResponse<PostResponse>> getAllPosts(
             @RequestParam(value = "page", required = false, defaultValue = "1") int page,
-            @RequestParam(value = "size", required = false, defaultValue = "10") int size){
+            @RequestParam(value = "size", required = false, defaultValue = "10") int size,
+            @RequestParam(value = "categoryId", required = false) String categoryId) {
         return ApiResponse.<PageResponse<PostResponse>>builder()
-                .result(postService.getAllPosts(page, size))
+                .result(postService.getAllPosts(page, size, categoryId))
                 .build();
     }
     @DeleteMapping("/delete/{postId}")

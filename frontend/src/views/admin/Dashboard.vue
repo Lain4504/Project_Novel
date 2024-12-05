@@ -325,4 +325,12 @@ const toggleNotificationList = () => {
   -ms-overflow-style: none; /* Ẩn scrollbar trên Internet Explorer và Edge */
   scrollbar-width: none; /* Ẩn scrollbar trên Firefox */
 }
+/* Ẩn scrollbar nhưng vẫn cho phép cuộn */
+.table-container::-webkit-scrollbar {
+    display: none; /* Ẩn scrollbar */
+}
+.table-container {
+    -ms-overflow-style: none;  /* Ẩn scrollbar trên Internet Explorer và Edge */
+    scrollbar-width: none; /* Ẩn scrollbar trên Firefox */
+}
 </style>

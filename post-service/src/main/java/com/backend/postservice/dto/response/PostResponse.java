@@ -1,23 +1,26 @@
 package com.backend.postservice.dto.response;
 
+
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.Instant;
 
-@Data
+@Getter
+@Setter
 @Builder
-@NoArgsConstructor
-@AllArgsConstructor
+@Document(value = "post")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class PostResponse {
     String id;
-    String content;
+    String title;
     String userId;
+    String content;
+    String categoryName;
     String created;
     Instant createdDate;
     Instant modifiedDate;
