@@ -1,13 +1,17 @@
 package com.backend.novelservice.dto.response;
 
+import com.backend.novelservice.entity.NovelCategory;
+import com.backend.novelservice.entity.NovelVolume;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -16,9 +20,9 @@ import java.util.List;
 public class NovelResponse {
     String id;
     String title;
-    List<String> categories;
+    Set<NovelCategory> categories;
     String coverPicture;
-    Long authorId;
+    String authorId;
     String authorName;
     String description;
     Integer score;
@@ -27,6 +31,8 @@ public class NovelResponse {
     Long wordCount;
     Long commentCount;
     Integer isVip;
-    LocalDateTime createdDate;
-    LocalDateTime updateDateTime;
+    String created;
+    Instant createdDate;
+    Instant updateDateTime;
+    List<NovelVolume> volumes;
 }

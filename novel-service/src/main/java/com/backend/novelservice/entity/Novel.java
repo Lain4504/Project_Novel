@@ -1,14 +1,19 @@
 package com.backend.novelservice.entity;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.ManyToMany;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.aggregation.ArrayOperators.In;
 
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.MongoId;
 
@@ -26,7 +31,7 @@ public class Novel {
     @ManyToMany
     Set<NovelCategory> categories;
     String coverPicture;
-    Long authorId;
+    String authorId;
     String authorName;
     String description;
     Integer score;
@@ -35,6 +40,9 @@ public class Novel {
     Long wordCount;
     Long commentCount;
     Integer isVip;
-    LocalDateTime createdDate;
-    LocalDateTime updateDateTime;
+    Instant createdDate;
+    Instant updateDateTime;
+    @DBRef
+    @JsonBackReference
+    private List<NovelVolume> volumes;
 }

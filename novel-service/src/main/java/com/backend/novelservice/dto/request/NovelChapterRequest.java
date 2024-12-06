@@ -1,12 +1,23 @@
 package com.backend.novelservice.dto.request;
 
-import java.time.LocalDateTime;
+import com.backend.novelservice.dto.response.NovelChapterResponse;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDateTime;
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class NovelChapterRequest {
     String volumeId;
-    Integer chapterNumber;
+    int chapterNumber;
     String chapterTitle;
-    Integer wordCount;
+    String content;
+    String status;
+    int wordCount;
     Boolean isVip;
     LocalDateTime createdDate;
     LocalDateTime updateDateTime;

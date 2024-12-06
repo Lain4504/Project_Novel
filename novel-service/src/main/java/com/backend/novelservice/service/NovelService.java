@@ -1,13 +1,19 @@
 package com.backend.novelservice.service;
 
 import com.backend.novelservice.dto.request.NovelCreationRequest;
+import com.backend.novelservice.dto.request.NovelUpdateRequest;
+import com.backend.novelservice.dto.response.NovelCategoryResponse;
 import com.backend.novelservice.dto.response.NovelResponse;
 import com.backend.dto.response.PageResponse;
+import com.backend.novelservice.dto.response.NovelVolumeResponse;
+import com.backend.novelservice.entity.Novel;
 import com.backend.novelservice.entity.NovelCategory;
+import com.backend.novelservice.entity.NovelVolume;
 import com.backend.novelservice.mapper.NovelCategoryMapper;
 import com.backend.novelservice.mapper.NovelMapper;
 import com.backend.novelservice.repository.NovelCategoryRepository;
 import com.backend.novelservice.repository.NovelRepository;
+import com.backend.novelservice.repository.NovelVolumeRepository;
 import com.backend.utils.DateTimeFormatter;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -16,11 +22,14 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -31,6 +40,8 @@ public class NovelService {
     NovelMapper novelMapper;
     NovelCategoryMapper novelCategoryMapper;
     DateTimeFormatter dateTimeFormatter;
+    NovelVolumeRepository novelVolumeRepository;
+
     public NovelResponse createNovel(NovelCreationRequest request) {
         if (novelRepository.existsByTitle(request.getTitle())) {
             throw new IllegalArgumentException("Novel with title " + request.getTitle() + " already exists");
@@ -39,11 +50,13 @@ public class NovelService {
         HashSet<NovelCategory> categories = new HashSet<>();
         novelCategoryRepository.findAllById(request.getCategories()).forEach(categories::add);
         novel.setCategories(categories);
+        novel.setCreatedDate(Instant.now());
+        novel.setUpdateDateTime(Instant.now());
         novel = novelRepository.save(novel);
         return novelMapper.toNovelResponse(novel);
     }
     @PostAuthorize("returnObject.email == authentication.name")
-    public NovelResponse updateNovel(String novelId, NovelCreationRequest request) {
+    public NovelResponse updateNovel(String novelId, NovelUpdateRequest request) {
         var novel = novelRepository.findById(novelId).orElseThrow(() -> new IllegalArgumentException("Novel with id " + novelId + " not found"));
         if (novelRepository.existsByTitle(request.getTitle()) && !novel.getTitle().equals(request.getTitle())) {
             throw new IllegalArgumentException("Novel with title " + request.getTitle() + " already exists");
@@ -52,6 +65,7 @@ public class NovelService {
         var categories = new HashSet<NovelCategory>();
         novelCategoryRepository.findAllById(request.getCategories()).forEach(categories::add);
         novel.setCategories(categories);
+        novel.setUpdateDateTime(Instant.now());
         novel = novelRepository.save(novel);
         return novelMapper.toNovelResponse(novel);
     }
@@ -68,7 +82,7 @@ public class NovelService {
         var pageData = novelRepository.findAll(pageable);
         var novelList = pageData.getContent().stream().map(novel -> {
             var novelResponse = novelMapper.toNovelResponse(novel);
-            novelResponse.setCreatedDate(LocalDateTime.parse(dateTimeFormatter.format(Instant.from(novel.getCreatedDate()))));
+            novelResponse.setCreated(dateTimeFormatter.format(novel.getCreatedDate()));
             return novelResponse;
         }).toList();
         return PageResponse.<NovelResponse>builder()
@@ -79,4 +93,26 @@ public class NovelService {
                 .data(novelList)
                 .build();
     }
+
+    public PageResponse<NovelResponse> getMyNovels(int page, int size) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userId = authentication.getName();
+        Sort sort = Sort.by(Sort.Order.desc("createdDate"));
+        Pageable pageable = PageRequest.of(page - 1, size, sort);
+        var pageData = novelRepository.findByAuthorId(userId, pageable);
+        var novelList = pageData.getContent().stream().map(novel -> {
+            var novelResponse = novelMapper.toNovelResponse(novel);
+            novelResponse.setCreated(dateTimeFormatter.format(novel.getCreatedDate()));
+            return novelResponse;
+        }).toList();
+        return PageResponse.<NovelResponse>builder()
+                .currentPage(page)
+                .pageSize(pageData.getSize())
+                .totalPages(pageData.getTotalPages())
+                .totalElements(pageData.getTotalElements())
+                .data(novelList)
+                .build();
+    }
+
+
 }

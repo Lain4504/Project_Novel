@@ -13,16 +13,18 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/novel-volumes")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class NovelVolumeController {
    NovelVolumeService novelVolumeService;
-   @PostMapping("/create")
-   ApiResponse<NovelVolumeResponse> createNovelVolume(@RequestBody NovelVolumeRequest request) {
+   @PostMapping("/create/{novelId}")
+   ApiResponse<NovelVolumeResponse> createNovelVolume(@PathVariable String novelId, @RequestBody NovelVolumeRequest request) {
        return ApiResponse.<NovelVolumeResponse>builder()
-               .result(novelVolumeService.createNovelVolume(request)).build();
+               .result(novelVolumeService.createNovelVolume(novelId, request)).build();
    }
    @PutMapping("/update/{id}")
    ApiResponse<NovelVolumeResponse> updateNovelVolume(@PathVariable String id, @RequestBody NovelVolumeRequest request) {
@@ -40,11 +42,15 @@ public class NovelVolumeController {
                 .result(novelVolumeService.getNovelVolume(id)).build();
     }
     @GetMapping("/get-all/")
-    ApiResponse<PageResponse<NovelVolumeResponse>> myPosts(
-            @RequestParam(value = "page", required = false, defaultValue = "1") int page,
-            @RequestParam(value = "size", required = false, defaultValue = "10") int size){
-        return ApiResponse.<PageResponse<NovelVolumeResponse>>builder()
-                .result(novelVolumeService.getNovelVolumes(page, size)).build();
+    ApiResponse<List<NovelVolumeResponse>> getNovelVolume() {
+        return ApiResponse.<List<NovelVolumeResponse>>builder()
+                .result(novelVolumeService.getNovelVolumes()).build();
+
+    }
+    @GetMapping("/{novelId}/volumes")
+    ApiResponse<List<NovelVolumeResponse>> getNovelVolumes(@PathVariable("novelId") String novelId) {
+        return ApiResponse.<List<NovelVolumeResponse>>builder()
+                .result(novelVolumeService.getVolumesByNovelId(novelId)).build();
     }
 
 }

@@ -5,6 +5,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.MongoId;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 
 @Data
@@ -13,8 +14,10 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class NovelCategoryResponse {
-    Long id;
+    String id;
     String name;
-    LocalDateTime createdDate;
-    LocalDateTime modifiedDate;
+    String description;
+    String created;
+    Instant createdDate;
+    Instant modifiedDate;
 }

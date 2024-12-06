@@ -5,7 +5,7 @@ import {useStore} from 'vuex';
 import {useRouter} from 'vue-router';
 import ConfirmModal from "@/components/common/ConfirmModal.vue";
 
-const showAlert = inject('showAlert');
+const showAlert = inject('showAlert') as ((type: string, message: string) => void);
 
 // Refs cho input
 const email = ref('');

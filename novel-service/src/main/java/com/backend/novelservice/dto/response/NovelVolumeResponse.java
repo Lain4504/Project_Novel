@@ -7,6 +7,7 @@ import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -15,10 +16,12 @@ import java.time.LocalDateTime;
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class NovelVolumeResponse {
     String id;
-    String novelId;
     String volumeName;
+    String description;
+    String status;
     int volumeNumber;
     int chapterCount;
     LocalDateTime createdDate;
     LocalDateTime modifiedDate;
+    List<NovelChapterResponse> chapters;
 }

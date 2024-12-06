@@ -1,27 +1,24 @@
 package com.backend.novelservice.dto.request;
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Builder;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Set;
 
-@Getter
-@Setter
+@Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
-public class NovelVolumeRequest {
-    String volumeName;
+public class NovelUpdateRequest {
+    String title;
+    List<String> categories;
+    String coverPicture;
+    String authorId;
+    String authorName;
     String description;
-    String status;
-    int volumeNumber;
-    int chapterCount;
-    LocalDateTime createdDate;
-    LocalDateTime modifiedDate;
-    Set<String> chapters;
 }

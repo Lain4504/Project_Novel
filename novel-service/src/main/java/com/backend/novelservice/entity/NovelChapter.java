@@ -1,10 +1,12 @@
 package com.backend.novelservice.entity;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
 import lombok.*;
 
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.MongoId;
 
@@ -21,8 +23,12 @@ public class NovelChapter {
     String volumeId;
     Integer chapterNumber;
     String chapterTitle;
+    String content;
+    String status;
     Integer wordCount;
     Boolean isVip;
     LocalDateTime createdDate;
     LocalDateTime updateDateTime;
+    @DBRef
+    private NovelVolume volume;
 }
