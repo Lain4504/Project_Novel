@@ -2,7 +2,6 @@
 import {inject, PropType, ref} from 'vue';
 import { useRouter } from 'vue-router';
 import Tiptap from '@/components/common/Tiptap.vue';
-import {a} from "vite/dist/node/types.d-aGj9QkWt";
 
 interface Input {
   id: string;

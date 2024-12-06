@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
@@ -20,7 +21,7 @@ public class NovelResponse {
     String title;
     Set<NovelCategory> categories;
     String coverPicture;
-    Long authorId;
+    String authorId;
     String authorName;
     String description;
     Integer score;
@@ -30,6 +31,6 @@ public class NovelResponse {
     Long commentCount;
     Integer isVip;
     String created;
-    LocalDateTime createdDate;
-    LocalDateTime updateDateTime;
+    Instant createdDate;
+    Instant updateDateTime;
 }

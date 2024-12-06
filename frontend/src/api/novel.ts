@@ -16,4 +16,12 @@ const getNovel = (id: string) => {
     return axios.get(`${NOVEL_API}/${id}`)
         .then((response) => response.data.result);
 }
-export { createNovel, updateNovel, deleteNovel, getNovel };
+const getNovels = (page: number, size: number) => {
+    return axios.get(`${NOVEL_API}/all?page=${page}&size=${size}`)
+        .then((response) => response.data.result);
+}
+const getMyNovels = (page: number, size: number) => {
+    return axios.get(`${NOVEL_API}/my-novels?page=${page}&size=${size}`)
+        .then((response) => response.data.result);
+}
+export { createNovel, updateNovel, deleteNovel, getNovel, getNovels, getMyNovels };

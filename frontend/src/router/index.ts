@@ -36,6 +36,7 @@ import PostList from "@/views/admin/PostList.vue";
 import NovelCategoryNew from "@/components/admin/NovelCategoryNew.vue";
 import NovelCategoryList from "@/views/admin/NovelCategoryList.vue";
 import NovelCategoryEdit from "@/components/admin/NovelCategoryEdit.vue";
+import NovelList  from "@/views/admin/NovelList.vue";
 const routes: Array<RouteRecordRaw> = [
   { name: 'dashboard', path: '/dashboard', component: Dashboard, 
     children: [
@@ -44,7 +45,7 @@ const routes: Array<RouteRecordRaw> = [
       { name: 'existednovels', path: '/existing-novels', component: ExistedNovel },
       { name: 'support', path: '/support', component: Support },
       { name: 'adminnotification', path: '/admin-notification', component: SystemNotification },
-      { name: 'editnovel', path: '/edit-novel', component: EditNovel },
+      { name: 'editnovel', path: '/edit-novel/:id', component: EditNovel, props: true },
       { name: 'payment', path: '/payment', component: Payment },
       { name: 'authoraccount', path: '/author-account', component: AuthorAccount },
       { name: 'postcategory', path: '/post-category-admin', component: PostCategoryNew },
@@ -54,6 +55,7 @@ const routes: Array<RouteRecordRaw> = [
       { name: 'novelcategory', path: '/novel-category-admin', component: NovelCategoryNew },
       { name: 'novelcategorylist', path: '/novel-category-list', component: NovelCategoryList },
       { name: 'novelcategoryedit', path: '/novel-category-edit/:id', component: NovelCategoryEdit, props: true },
+      { name: 'novellist', path: '/book-admin', component: NovelList },
 
     ]
   },
@@ -61,7 +63,7 @@ const routes: Array<RouteRecordRaw> = [
   { name: 'register', path: '/register', component: Register },
   { name: 'home', path: '/', component: Home },
   { name: 'chapter', path: '/novel', component: Chapter },
-  { name: 'noveldetail', path: '/noveldetail', component: NovelDetail },
+  { name: 'noveldetail', path: '/noveldetail/:id', component: NovelDetail, props: true },
   { name: 'member', path: '/member', component: Account },
   {
     name: 'list',

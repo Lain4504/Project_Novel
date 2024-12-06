@@ -17,11 +17,14 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -40,6 +43,8 @@ public class NovelService {
         HashSet<NovelCategory> categories = new HashSet<>();
         novelCategoryRepository.findAllById(request.getCategories()).forEach(categories::add);
         novel.setCategories(categories);
+        novel.setCreatedDate(Instant.now());
+        novel.setUpdateDateTime(Instant.now());
         novel = novelRepository.save(novel);
         return novelMapper.toNovelResponse(novel);
     }
@@ -53,6 +58,7 @@ public class NovelService {
         var categories = new HashSet<NovelCategory>();
         novelCategoryRepository.findAllById(request.getCategories()).forEach(categories::add);
         novel.setCategories(categories);
+        novel.setUpdateDateTime(Instant.now());
         novel = novelRepository.save(novel);
         return novelMapper.toNovelResponse(novel);
     }
@@ -69,7 +75,27 @@ public class NovelService {
         var pageData = novelRepository.findAll(pageable);
         var novelList = pageData.getContent().stream().map(novel -> {
             var novelResponse = novelMapper.toNovelResponse(novel);
-            novelResponse.setCreated(dateTimeFormatter.format(Instant.from(novel.getCreatedDate())));
+            novelResponse.setCreated(dateTimeFormatter.format(novel.getCreatedDate()));
+            return novelResponse;
+        }).toList();
+        return PageResponse.<NovelResponse>builder()
+                .currentPage(page)
+                .pageSize(pageData.getSize())
+                .totalPages(pageData.getTotalPages())
+                .totalElements(pageData.getTotalElements())
+                .data(novelList)
+                .build();
+    }
+
+    public PageResponse<NovelResponse> getMyNovels(int page, int size) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userId = authentication.getName();
+        Sort sort = Sort.by(Sort.Order.desc("createdDate"));
+        Pageable pageable = PageRequest.of(page - 1, size, sort);
+        var pageData = novelRepository.findByAuthorId(userId, pageable);
+        var novelList = pageData.getContent().stream().map(novel -> {
+            var novelResponse = novelMapper.toNovelResponse(novel);
+            novelResponse.setCreated(dateTimeFormatter.format(novel.getCreatedDate()));
             return novelResponse;
         }).toList();
         return PageResponse.<NovelResponse>builder()

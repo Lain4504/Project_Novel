@@ -18,8 +18,7 @@ public class NovelUpdateRequest {
     String title;
     List<String> categories;
     String coverPicture;
-    Long authorId;
+    String authorId;
     String authorName;
     String description;
-    LocalDateTime createdDate;
 }

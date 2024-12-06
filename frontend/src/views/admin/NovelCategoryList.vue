@@ -61,7 +61,7 @@ const handlePageChange = (page: number) =>{
   currentPage.value = page;
 }
 const handleEdit = (row: any) =>{
-  router.push({name: 'novelcategoryupdateform', params: {id: row.id}});
+  router.push({name: 'novelcategoryedit', params: {id: row.id}});
 }
 </script>
 

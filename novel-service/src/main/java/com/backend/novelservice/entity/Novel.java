@@ -1,5 +1,6 @@
 package com.backend.novelservice.entity;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.Set;
 
@@ -26,7 +27,7 @@ public class Novel {
     @ManyToMany
     Set<NovelCategory> categories;
     String coverPicture;
-    Long authorId;
+    String authorId;
     String authorName;
     String description;
     Integer score;
@@ -35,6 +36,6 @@ public class Novel {
     Long wordCount;
     Long commentCount;
     Integer isVip;
-    LocalDateTime createdDate;
-    LocalDateTime updateDateTime;
+    Instant createdDate;
+    Instant updateDateTime;
 }

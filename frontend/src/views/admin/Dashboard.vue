@@ -261,7 +261,7 @@ const toggleNotificationList = () => {
     </div>
 
     <!-- Main Content -->
-    <div class="flex-1 h-full bg-gray-400 relative overflow-y-auto">
+    <div class="flex-1 flex flex-col h-screen bg-gray-400 overflow-hidden">
       <div
           class="h-[50px] top-0 sticky bg-[#F0EEE5] flex items-center shadow-sm px-[20px] w-full py-[10px] z-10 border-b justify-between">
         <!-- Toggle Sidebar Button -->
@@ -318,8 +318,8 @@ const toggleNotificationList = () => {
         </div>
       </div>
       <!-- Content Area -->
-      <div class="table-container h-full bg-[#F5F4EF] p-[20px]">
-        <div class=" border-gray-300 h-full">
+      <div class="flex-1 bg-[#F5F4EF] p-[20px] overflow-y-auto">
+        <div class="h-full border-gray-300">
           <RouterView/>
         </div>
       </div>

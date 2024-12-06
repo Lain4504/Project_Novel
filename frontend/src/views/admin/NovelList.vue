@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {onMounted, ref, watch} from "vue";
-import {deleteNovel, getMyNovels} from "@/api/novel";
+import {deleteNovel, getNovels} from "@/api/novel";
 import router from "@/router";
 import ConfirmDeleteModal from "@/components/common/ConfirmDeleteModal.vue";
 import DynamicDataTable from "@/components/common/DynamicDataTable.vue";
@@ -20,7 +20,7 @@ const showConfirmModal = ref(false);
 const rowToDelete = ref<any>(null);
 const fetchNovels = async (page: number, size: number) =>{
   try{
-    const response = await getMyNovels(page, size);
+    const response = await getNovels(page, size);
     novelRows.value = response.data;
     totalPages.value = response.totalPages;
   }
@@ -57,7 +57,7 @@ const handlePageChange = (page: number) =>{
   currentPage.value = page;
 }
 const handleEdit = (row: any) =>{
-  router.push({name: 'editnovel', params: {id: row.id}});
+  router.push({name: 'novelupdateform', params: {id: row.id}});
 }
 const handleView = (row: any) =>{
   router.push({name: 'noveldetail', params: {id: row.id}});
@@ -83,6 +83,6 @@ const handleView = (row: any) =>{
       @edit="handleEdit"
       @view="handleView"
       @delete="handleDelete"
-  />
+      />
 </template>
 
