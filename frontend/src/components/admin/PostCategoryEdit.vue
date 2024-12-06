@@ -1,15 +1,16 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import {ref, onMounted, inject} from 'vue';
 import DynamicFormEdit from "@/components/common/DynamicFormEdit.vue";
 import { updatePostCategory } from "@/api/postcategory";
 import { getPostCategory } from "@/api/postcategory";
 import router from "@/router";
 
+// Inject hàm showAlert từ context
 const fields = {
   title: 'Post Category',
   inputs: [
     { id: 'name', label: 'Name', type: 'text' },
-    { id: 'description', label: 'Description', type: 'text' },
+    { id: 'description', label: 'Description', type: 'tiptap' },
   ],
 };
 
@@ -62,7 +63,5 @@ onMounted(() => {
       :initialData="initialData"
       :onSave="handleSave"
       :onCancel="handleCancel"
-      @success="() => console.log('Update successful!')"
-      @error="() => console.error('Update failed!')"
   />
 </template>

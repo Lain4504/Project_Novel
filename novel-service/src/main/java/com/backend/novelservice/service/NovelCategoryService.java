@@ -3,9 +3,13 @@ package com.backend.novelservice.service;
 import com.backend.novelservice.dto.request.NovelCategoryRequest;
 import com.backend.novelservice.dto.response.NovelCategoryResponse;
 import com.backend.dto.response.PageResponse;
+import com.backend.novelservice.entity.NovelCategory;
 import com.backend.novelservice.mapper.NovelCategoryMapper;
 import com.backend.novelservice.repository.NovelCategoryRepository;
 import com.backend.utils.DateTimeFormatter;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -13,16 +17,25 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class NovelCategoryService {
     NovelCategoryMapper novelCategoryMapper;
     NovelCategoryRepository novelCategoryRepository;
     DateTimeFormatter dateTimeFormatter;
-    public NovelCategoryResponse createNovelCategory(NovelCategoryRequest request) {
-        var category = novelCategoryMapper.toNovel(request);
-        var savedCategory = novelCategoryRepository.save(category);
-        return novelCategoryMapper.toNovelCategoryResponse(savedCategory);
+
+    public NovelCategoryResponse createNovelCategory(NovelCategoryRequest request){
+        NovelCategory newNovelCategory = NovelCategory.builder()
+                .name(request.getName())
+                .description(request.getDescription())
+                .createdDate(Instant.now())
+                .modifiedDate(Instant.now())
+                .build();
+        newNovelCategory = novelCategoryRepository.save(newNovelCategory);
+        return novelCategoryMapper.toNovelCategoryResponse(newNovelCategory);
     }
     public NovelCategoryResponse getNovelCategoryById(String id) {
         var category = novelCategoryRepository.findById(id).orElse(null);
@@ -34,7 +47,7 @@ public class NovelCategoryService {
         var pageData = novelCategoryRepository.findAll(pageable);
         var categoryList = pageData.getContent().stream().map(novelCategory -> {
             var categoryResponse = novelCategoryMapper.toNovelCategoryResponse(novelCategory);
-            categoryResponse.setCreatedDate(LocalDateTime.parse(dateTimeFormatter.format(Instant.from(novelCategory.getCreatedDate()))));
+            categoryResponse.setCreated(dateTimeFormatter.format(novelCategory.getCreatedDate()));
             return categoryResponse;
         }).toList();
         return PageResponse.<NovelCategoryResponse>builder()
@@ -56,5 +69,10 @@ public class NovelCategoryService {
         novelCategoryMapper.updateNovelCategory(category, request);
         var savedCategory = novelCategoryRepository.save(category);
         return novelCategoryMapper.toNovelCategoryResponse(savedCategory);
+    }
+
+    public List<NovelCategoryResponse> getAllNovelCategories() {
+        var categories = novelCategoryRepository.findAll();
+        return categories.stream().map(novelCategoryMapper::toNovelCategoryResponse).toList();
     }
 }

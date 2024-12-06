@@ -13,7 +13,7 @@ enum Routes {
   BookCategory = '/book-category',
   BookManagement = '/book-admin',
   PostManagement = '/post-admin',
-  BookCategoryManagement = '/post-list',
+  BookCategoryManagement = '/novel-category-list',
   PostCategoryManagement = '/post-category-list',
   AdsManagement = '/ads-admin',
   UserManagement = '/user-admin',
@@ -153,18 +153,17 @@ const toggleNotificationList = () => {
   isNotificationListOpen.value = !isNotificationListOpen.value;
 };
 </script>
-
 <template>
   <div class="w-screen h-screen flex">
     <!-- Sidebar for larger screens -->
-    <div class="w-[260px] h-full bg-gray-200 text-black overflow-y-auto" v-show="showSide && !isMobile">
+    <div class="w-[260px] h-full bg-gray-200 text-black overflow-hidden" v-show="showSide && !isMobile">
       <div class="h-[50px] bg-[#F0EEE5] flex justify-start items-center">
         <div class="px-[20px]">
           <h3 class="font-bold text-xl">Admin Panel</h3>
         </div>
       </div>
-      <div class="h-[calc(100vh-50px)] bg-[#F0EEE5] py-[10px] border">
-        <div class="flex flex-col justify-between h-full px-[20px]">
+      <div class="h-[calc(100vh-50px)] bg-[#F0EEE5] overflow-y-auto custom-scrollbar">
+        <div class="py-[10px] px-[20px]">
           <div class="space-y-2">
             <!-- My Book Group -->
             <div class="space-y-2">
@@ -183,8 +182,8 @@ const toggleNotificationList = () => {
                 </div>
               </div>
             </div>
-            <!-- Dropdown menun -->
-            <div class="space-y-2">
+            <!-- Dropdown menu -->
+            <div class="space-y-2 mt-4">
               <!-- Tiêu đề chính của dropdown -->
               <div
                   class="text-sm text-gray-700 font-semibold cursor-pointer flex justify-between items-center py-2 px-3 bg-[#C96442] rounded-md"
@@ -211,52 +210,56 @@ const toggleNotificationList = () => {
         </div>
       </div>
     </div>
-    <!-- Mobile overlay sidebar -->
-    <div v-show="showMobileSide" class="fixed inset-0 z-20 bg-gray-900 bg-opacity-50">
-      <div class="w-[250px] h-full bg-[#F0EEE5] text-gray-700 p-4 overflow-y-auto">
-        <div class="flex justify-between items-center">
-          <h3 class="font-bold text-xl">Admin Panel</h3>
-          <button @click="toggleSideBar"
-                  class="text-black transition-transform duration-200 hover:scale-125 focus:scale-150 active:animate-pulse focus:outline-none">
-            <font-awesome-icon icon="fa-solid fa-xmark" size="lg"/>
-          </button>
-        </div>
-        <div class="space-y-4 mt-3">
-          <div class="space-y-2">
-            <div v-for="item in MenuItems" :key="item.label">
 
-              <div class="text-sm text-gray-700 font-semibold">{{ item.label }}</div>
-              <router-link v-for="subItem in item.children" :key="subItem.to" :to="subItem.to"
-                           class="inline-flex relative items-center py-2 px-3 w-full text-sm font-medium rounded-md transition duration-500 ease-in-out"
-                           active-class="bg-[#D4A27F] text-gray-800 font-semibold" @click="toggleSideBar">
-                <font-awesome-icon :icon="subItem.icon" class="mr-2"/>
-                {{ subItem.label }}
-              </router-link>
-            </div>
+    <!-- Mobile overlay sidebar (remains the same) -->
+    <div v-show="showMobileSide" class="fixed inset-0 z-20 bg-gray-900 bg-opacity-50">
+      <div class="w-[250px] h-full bg-[#F0EEE5] text-gray-700 overflow-y-auto">
+        <div class="p-4">
+          <div class="flex justify-between items-center">
+            <h3 class="font-bold text-xl">Admin Panel</h3>
+            <button @click="toggleSideBar"
+                    class="text-black transition-transform duration-200 hover:scale-125 focus:scale-150 active:animate-pulse focus:outline-none">
+              <font-awesome-icon icon="fa-solid fa-xmark" size="lg"/>
+            </button>
           </div>
-          <div class="space-y-2">
-            <!-- Tiêu đề chính của dropdown -->
-            <div
-                class="text-xs text-gray-700 font-semibold cursor-pointer flex justify-between items-center py-2 px-3 bg-[#C96442] rounded-md"
-                @click="toggleDropdown">
-              <div class="flex items-center space-x-2">
-                <font-awesome-icon icon="fa-solid fa-bars-progress" size="lg" class="mx-2 my-[0.2rem]"/>
-                <span>Advanced Features</span>
+          <div class="space-y-4 mt-3">
+            <div class="space-y-2">
+              <div v-for="item in MenuItems" :key="item.label">
+
+                <div class="text-sm text-gray-700 font-semibold">{{ item.label }}</div>
+                <router-link v-for="subItem in item.children" :key="subItem.to" :to="subItem.to"
+                             class="inline-flex relative items-center py-2 px-3 w-full text-sm font-medium rounded-md transition duration-500 ease-in-out"
+                             active-class="bg-[#D4A27F] text-gray-800 font-semibold" @click="toggleSideBar">
+                  <font-awesome-icon :icon="subItem.icon" class="mr-2"/>
+                  {{ subItem.label }}
+                </router-link>
               </div>
-              <span :class="{ 'rotate-180': isDropdownOpen }" class="transform transition-transform duration-300">▼</span>
             </div>
-            <!-- Menu items (dropdown content) -->
-            <div v-if="isDropdownOpen" class="mt-2 flex flex-col space-y-1">
-              <router-link v-for="item in featureMenuItems" :key="item.to" :to="item.to"
-                           class="inline-flex items-center py-2 px-3 text-sm font-medium rounded-md border-gray-200 transition duration-500 ease-in-out hover:bg-gray-100"
-                           active-class="bg-gray-300 text-gray-800 font-semibold" @click="handleItemClick">
-                {{ item.label }}
-              </router-link>
+            <div class="space-y-2">
+              <!-- Tiêu đề chính của dropdown -->
+              <div
+                  class="text-xs text-gray-700 font-semibold cursor-pointer flex justify-between items-center py-2 px-3 bg-[#C96442] rounded-md"
+                  @click="toggleDropdown">
+                <div class="flex items-center space-x-2">
+                  <font-awesome-icon icon="fa-solid fa-bars-progress" size="lg" class="mx-2 my-[0.2rem]"/>
+                  <span>Advanced Features</span>
+                </div>
+                <span :class="{ 'rotate-180': isDropdownOpen }" class="transform transition-transform duration-300">▼</span>
+              </div>
+              <!-- Menu items (dropdown content) -->
+              <div v-if="isDropdownOpen" class="mt-2 flex flex-col space-y-1">
+                <router-link v-for="item in featureMenuItems" :key="item.to" :to="item.to"
+                             class="inline-flex items-center py-2 px-3 text-sm font-medium rounded-md border-gray-200 transition duration-500 ease-in-out hover:bg-gray-100"
+                             active-class="bg-gray-300 text-gray-800 font-semibold" @click="handleItemClick">
+                  {{ item.label }}
+                </router-link>
+              </div>
             </div>
-          </div>
+            </div>
         </div>
       </div>
     </div>
+
     <!-- Main Content -->
     <div class="flex-1 h-full bg-gray-400 relative overflow-y-auto">
       <div
@@ -325,45 +328,26 @@ const toggleNotificationList = () => {
 </template>
 
 <style scoped>
-/* Animation for dropdown */
-.dropdown-fade-enter-active,
-.dropdown-fade-leave-active {
-  transition: opacity 0.3s ease, transform 0.3s ease;
+/* Custom scrollbar for sidebar */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0,0,0,0.2) transparent;
 }
 
-.dropdown-fade-enter,
-.dropdown-fade-leave-to
-
-  /* .dropdown-fade-leave-active in <2.1.8 */
-{
-  opacity: 0;
-  transform: translateY(10px);
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
 }
 
-/* Thiết lập các kiểu cho bảng */
-.table-container {
-  width: 100%;
-  overflow-x: auto;
-  /* Cho phép cuộn ngang nếu bảng quá rộng */
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
 }
 
-/* Ẩn scrollbar nhưng vẫn cho phép cuộn */
-.table-container::-webkit-scrollbar {
-  display: none; /* Ẩn scrollbar */
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(0,0,0,0.2);
+  border-radius: 4px;
 }
 
-.table-container {
-  -ms-overflow-style: none; /* Ẩn scrollbar trên Internet Explorer và Edge */
-  scrollbar-width: none; /* Ẩn scrollbar trên Firefox */
-}
-
-/* Ẩn scrollbar nhưng vẫn cho phép cuộn */
-.table-container::-webkit-scrollbar {
-  display: none; /* Ẩn scrollbar */
-}
-
-.table-container {
-  -ms-overflow-style: none; /* Ẩn scrollbar trên Internet Explorer và Edge */
-  scrollbar-width: none; /* Ẩn scrollbar trên Firefox */
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0,0,0,0.3);
 }
 </style>

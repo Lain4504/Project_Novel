@@ -1,19 +1,25 @@
 <script setup lang="ts">
-import Ads from '@/components/home/Banner.vue';
-import Breadcrumb from '@/components/home/Breadcrumb.vue';
-import Tiptap from "@/components/common/Tiptap.vue";
-import { updatePost, getPost } from "@/api/post";
-import { reactive, ref, onMounted } from "vue";
-import store from "@/store";
-import { getPostCategories } from "@/api/postcategory";
+import { ref, onMounted } from "vue";
+import DynamicFormEdit from "@/components/common/DynamicFormEdit.vue";
+import { getPost, updatePost } from "@/api/post";
+import router from "@/router";
+import Ads from "@/components/home/Banner.vue";
+import Breadcrumb from "@/components/home/Breadcrumb.vue";
+const fields = {
+  title: "Edit Post",
+  inputs: [
+    { id: "title", label: "Title", type: "text" },
+    { id: "content", label: "Content", type: "tiptap" },
+    {
+      id: "categoryId",
+      label: "Category",
+      type: "select",
+      options: [], // Options sẽ được nạp từ API
+    },
+  ],
+};
 
-const state = reactive({
-  title: "",
-  content: "",
-  categoryId: "",
-  userId: "",
-});
-const categories = ref<any[]>([]); // To store categories
+// Nhận prop `id` từ route hoặc component cha
 const props = defineProps({
   id: {
     type: String,
@@ -21,52 +27,74 @@ const props = defineProps({
   },
 });
 
-const fetchCategories = async () => {
+// Khởi tạo biến chứa dữ liệu ban đầu
+const initialData = ref({});
+
+// Hàm tải danh mục chuyên mục từ API
+const categoryMap = ref(new Map());
+
+const loadCategories = async () => {
   try {
-    const result = await getPostCategories();
-    categories.value = result; // Assume result is an array of categories with { id, name }
+    const categories = await import("@/api/postcategory").then((module) =>
+        module.getPostCategoriesWithoutPagination()
+    );
+    // Tạo map categoryName -> categoryId
+    categoryMap.value = new Map(
+        categories.map((category: { name: string; id: string }) => [category.name, category.id])    );
+
+    // Ánh xạ options cho select
+    const categoryInput = fields.inputs.find((input) => input.id === "categoryId");
+    if (categoryInput) {
+      categoryInput.options = categories.map((category: { name: string; id: string }) => ({
+        value: category.id,
+        label: category.name,
+      }));
+    }
   } catch (error) {
-    console.error("Failed to fetch post categories:", error);
+    console.error("Failed to load categories:", error);
   }
 };
 
-const fetchPost = async () => {
-  try {
-    const result = await getPost(props.id);
-    console.log(result);
-    state.title = result.title;
-    state.content = result.content;
 
-    // Map categoryName to categoryId
-    const matchedCategory = categories.value.find(
-        (category) => category.name === result.categoryName
-    );
-    state.categoryId = matchedCategory ? matchedCategory.id : "";
+// Hàm tải dữ liệu bài viết từ API
+const loadPost = async () => {
+  try {
+    const response = await getPost(props.id);
+
+    // Ánh xạ categoryName sang categoryId
+    if (response.categoryName && categoryMap.value.has(response.categoryName)) {
+      response.categoryId = categoryMap.value.get(response.categoryName);
+    }
+
+    initialData.value = response;
   } catch (error) {
     console.error("Failed to fetch post:", error);
   }
 };
 
-// Call fetchCategories and fecchPost on component mounted
-onMounted(async () => {
-  await fetchCategories(); // Ensure categories are fetched first
-  await fetchPost(); // Fetch post after categories to match categoryName
-});
 
-const handleSubmit = async () => {
-  const data = {
-    title: state.title,
-    content: state.content,
-    categoryId: state.categoryId, // Use the category selected by the user
-    userId: store.getters.getUserId,
-  };
+// Hàm xử lý lưu dữ liệu
+const handleSave = async (id: string, data: Record<string, any>) => {
   try {
-    await updatePost(props.id, data);
-    alert("Bài viết đã được cập nhật thành công");
+    await updatePost(id, data);
+    console.log("Post updated successfully!");
+    router.push({ name: "postlist" });
   } catch (error) {
-    alert("Có lỗi xảy ra khi cập nhật bài viết");
+    console.error("Failed to update post:", error);
+    throw error; // Ném lỗi để component con xử lý
   }
 };
+
+// Hàm xử lý khi người dùng hủy chỉnh sửa
+const handleCancel = () => {
+  router.back();
+};
+
+// Gọi hàm tải dữ liệu khi component được mount
+onMounted(async () => {
+  await loadCategories(); // Load danh mục trước
+  await loadPost(); // Sau đó load bài viết
+});
 </script>
 
 <template>
@@ -79,64 +107,14 @@ const handleSubmit = async () => {
         { label: 'Post', href: '/post', isCurrent: true },
       ]"
     />
-    <form class="max-w-7xl mx-auto my-4" @submit.prevent="handleSubmit">
-      <!-- Tiêu đề -->
-      <div class="mb-6">
-        <label for="title" class="block text-md font-semibold text-gray-800 mb-2"
-        >Tiêu đề *</label
-        >
-        <input
-            v-model="state.title"
-            type="text"
-            id="title"
-            class="w-full border border-gray-300 rounded-lg py-1 px-4 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:text-sm"
-            placeholder="Nhập tiêu đề bài viết"
-        />
-      </div>
 
-      <!-- Nội dung -->
-      <div class="mb-6">
-        <div class="mt-4">
-          <label for="content" class="block text-md font-bold text-gray-700"
-          >Nội dung</label
-          >
-          <Tiptap :content="state.content" @update:content="state.content = $event" class="mt-1" />
-        </div>
-      </div>
-
-      <!-- Chuyên mục -->
-      <div class="mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label for="category" class="block text-md font-semibold text-gray-800 mb-2"
-          >Chọn chuyên mục *</label
-          >
-          <select
-              v-model="state.categoryId"
-              id="category"
-              class="w-full border border-gray-300 rounded-lg py-1 px-4 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            <option
-                v-for="category in categories"
-                :key="category.id"
-                :value="category.id"
-            >
-              {{ category.name }}
-            </option>
-          </select>
-        </div>
-      </div>
-
-      <!-- Nút gửi -->
-      <div class="text-right">
-        <button
-            type="submit"
-            class="cursor-pointer text-sm bg-transparent border-[1px] border-blue-500 text-blue-500 hover:border-blue-700 hover:scale-105 font-medium py-2 px-4 rounded transition-all duration-300"
-        >
-          Submit
-        </button>
-      </div>
-    </form>
+  <DynamicFormEdit
+      :fields="fields"
+      :initialData="initialData"
+      :onSave="handleSave"
+      :onCancel="handleCancel"
+      @success="() => console.log('Update successful!')"
+      @error="() => console.error('Update failed!')"
+  />
   </div>
 </template>
-
-<style scoped></style>

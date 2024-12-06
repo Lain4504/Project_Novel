@@ -13,7 +13,7 @@ const store = useStore();
 const router = useRouter();
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const isEmailValid = computed(() => emailRegex.test(email.value));
-const showAlert = inject('showAlert');
+const showAlert = inject('showAlert') as ((type: string, message: string) => void);
 const showNotification = (type: string, message: string) => {
   showAlert(type, message);  // Call the global showAlert function
 };

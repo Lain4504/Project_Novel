@@ -32,13 +32,18 @@ public class NovelCategoryController {
         return ApiResponse.<PageResponse<NovelCategoryResponse>>builder()
                 .result(novelCategoryService.getNovelCategories(page, size)).build();
     }
+    @GetMapping("/all-without-pagination")
+    ApiResponse<List<NovelCategoryResponse>> getAllCategoriesWithoutPaginations() {
+        return ApiResponse.<List<NovelCategoryResponse>>builder()
+                .result(novelCategoryService.getAllNovelCategories()).build();
+    }
     @GetMapping("/{categoryId}")
-    ApiResponse<NovelCategoryResponse> getCategory(String categoryId) {
+    ApiResponse<NovelCategoryResponse> getCategory(@PathVariable("categoryId") String categoryId) {
         return ApiResponse.<NovelCategoryResponse>builder()
                 .result(novelCategoryService.getNovelCategoryById(categoryId)).build();
     }
     @DeleteMapping("/delete/{categoryId}")
-    ApiResponse<Void> deleteCategory(String categoryId) {
+    ApiResponse<Void> deleteCategory(@PathVariable("categoryId") String categoryId) {
         novelCategoryService.deleteNovelCategory(categoryId);
         return ApiResponse.<Void>builder().build();
     }

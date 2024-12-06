@@ -1,10 +1,6 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import { useRouter } from 'vue-router';
 import DynamicFormNew from "@/components/common/DynamicFormNew.vue";
 import { createPostCategory} from "@/api/postcategory";
-
-// Define the inputs for the form
 const collectionInputs = [
   {
     id: 'name',
@@ -15,7 +11,7 @@ const collectionInputs = [
   {
     id: 'description',
     label: 'Description',
-    type: 'text',
+    type: 'tiptap',
     placeholder: 'Enter category description',
   },
 ];
@@ -38,6 +34,6 @@ const location = '/post-category-list';
       :inputs="collectionInputs"
        title="Create Post Category"
       :handleAdd="handleCreatePostCategory"
-  :location="location"
+      :location="location"
   />
 </template>

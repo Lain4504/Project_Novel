@@ -2,6 +2,7 @@ package com.backend.novelservice.controller;
 
 import com.backend.dto.response.ApiResponse;
 import com.backend.novelservice.dto.request.NovelCreationRequest;
+import com.backend.novelservice.dto.request.NovelUpdateRequest;
 import com.backend.novelservice.dto.response.NovelResponse;
 import com.backend.dto.response.PageResponse;
 import com.backend.novelservice.service.NovelService;
@@ -23,7 +24,7 @@ public class NovelController {
                 .result(novelService.createNovel(request)).build();
     }
     @PutMapping("/update/{novelId}")
-    ApiResponse<NovelResponse> updateNovel(@PathVariable("novelId") String novelId, @RequestBody NovelCreationRequest request) {
+    ApiResponse<NovelResponse> updateNovel(@PathVariable("novelId") String novelId, @RequestBody NovelUpdateRequest request) {
         return ApiResponse.<NovelResponse>builder()
                 .result(novelService.updateNovel(novelId, request)).build();
     }

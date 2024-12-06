@@ -33,6 +33,9 @@ import PostCategoryNew from "@/components/admin/PostCategoryNew.vue";
 import PostCategoryList from "@/views/admin/PostCategoryList.vue";
 import PostCategoryEdit from "@/components/admin/PostCategoryEdit.vue";
 import PostList from "@/views/admin/PostList.vue";
+import NovelCategoryNew from "@/components/admin/NovelCategoryNew.vue";
+import NovelCategoryList from "@/views/admin/NovelCategoryList.vue";
+import NovelCategoryEdit from "@/components/admin/NovelCategoryEdit.vue";
 const routes: Array<RouteRecordRaw> = [
   { name: 'dashboard', path: '/dashboard', component: Dashboard, 
     children: [
@@ -47,7 +50,11 @@ const routes: Array<RouteRecordRaw> = [
       { name: 'postcategory', path: '/post-category-admin', component: PostCategoryNew },
       { name: 'postcategorylist', path: '/post-category-list', component: PostCategoryList },
       { name: 'postcategoryedit', path: '/post-category-edit/:id', component: PostCategoryEdit, props: true },
-        { name: 'postlist', path: '/post-admin', component: PostList },
+      { name: 'postlist', path: '/post-admin', component: PostList },
+      { name: 'novelcategory', path: '/novel-category-admin', component: NovelCategoryNew },
+      { name: 'novelcategorylist', path: '/novel-category-list', component: NovelCategoryList },
+      { name: 'novelcategoryedit', path: '/novel-category-edit/:id', component: NovelCategoryEdit, props: true },
+
     ]
   },
   { name: 'login', path: '/login', component: Login },

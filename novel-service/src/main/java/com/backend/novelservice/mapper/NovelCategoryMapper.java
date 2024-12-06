@@ -7,10 +7,11 @@ import com.backend.novelservice.dto.response.NovelResponse;
 import com.backend.novelservice.entity.Novel;
 import com.backend.novelservice.entity.NovelCategory;
 import org.mapstruct.Mapper;
+import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring")
 public interface NovelCategoryMapper {
     NovelCategory toNovel(NovelCategoryRequest request);
     NovelCategoryResponse toNovelCategoryResponse(NovelCategory novelCategory);
-    void updateNovelCategory(NovelCategory novelCategory, NovelCategoryRequest request);
+    void updateNovelCategory(@MappingTarget NovelCategory novelCategory, NovelCategoryRequest request);
 }

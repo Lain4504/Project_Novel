@@ -1,6 +1,7 @@
 package com.backend.novelservice.service;
 
 import com.backend.novelservice.dto.request.NovelCreationRequest;
+import com.backend.novelservice.dto.request.NovelUpdateRequest;
 import com.backend.novelservice.dto.response.NovelResponse;
 import com.backend.dto.response.PageResponse;
 import com.backend.novelservice.entity.NovelCategory;
@@ -43,7 +44,7 @@ public class NovelService {
         return novelMapper.toNovelResponse(novel);
     }
     @PostAuthorize("returnObject.email == authentication.name")
-    public NovelResponse updateNovel(String novelId, NovelCreationRequest request) {
+    public NovelResponse updateNovel(String novelId, NovelUpdateRequest request) {
         var novel = novelRepository.findById(novelId).orElseThrow(() -> new IllegalArgumentException("Novel with id " + novelId + " not found"));
         if (novelRepository.existsByTitle(request.getTitle()) && !novel.getTitle().equals(request.getTitle())) {
             throw new IllegalArgumentException("Novel with title " + request.getTitle() + " already exists");
@@ -68,7 +69,7 @@ public class NovelService {
         var pageData = novelRepository.findAll(pageable);
         var novelList = pageData.getContent().stream().map(novel -> {
             var novelResponse = novelMapper.toNovelResponse(novel);
-            novelResponse.setCreatedDate(LocalDateTime.parse(dateTimeFormatter.format(Instant.from(novel.getCreatedDate()))));
+            novelResponse.setCreated(dateTimeFormatter.format(Instant.from(novel.getCreatedDate())));
             return novelResponse;
         }).toList();
         return PageResponse.<NovelResponse>builder()

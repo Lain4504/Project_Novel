@@ -3,6 +3,7 @@ import { ref, onMounted, watch } from 'vue';
 import DynamicDataTable from "@/components/common/DynamicDataTable.vue";
 import { getPostCategories, deletePostCategory } from "@/api/postcategory";
 import router from "@/router";
+import ConfirmDeleteModal from "@/components/common/ConfirmDeleteModal.vue"; // Import modal component
 
 // Define columns for the data table
 const postCategoryColumns = [
@@ -77,42 +78,33 @@ const handlePageChange = (page: number) => {
   currentPage.value = page;
 };
 const handleEdit = (row: any) => {
-  router.push({ name: 'postupdateform', params: { id: row.id } });
+  router.push({ name: 'postcategoryedit', params: { id: row.id } });
 };
-
 </script>
 
 <template>
   <h3 class="text-2xl font-bold text-left py-2">Post Category Management</h3>
 
-  <!-- Modal Confirm Delete -->
-  <div v-if="showConfirmModal" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-10">
-    <div class="bg-white p-6 rounded-lg shadow-lg w-1/3">
-      <h4 class="text-xl font-semibold mb-4">Bạn có chắc chắn muốn xóa không?</h4>
-      <div class="flex justify-end space-x-4">
-        <!-- Cancel Button -->
-        <button @click="cancelDelete" class="px-[1.2rem] py-[0.4rem] border border-gray-400 text-gray-700 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500">
-          Cancel
-        </button>
-        <!-- Confirm Delete Button -->
-        <button @click="confirmDelete" class="px-[1.2rem] py-[0.4rem] border border-red-500 text-red-500 rounded-md hover:bg-red-600 hover:text-white focus:outline-none focus:ring-2 focus:ring-red-500">
-          Delete
-        </button>
-      </div>
-
-    </div>
-  </div>
+  <!-- Pass the show prop to display the modal -->
+  <ConfirmDeleteModal
+      :show="showConfirmModal"
+      title="Bạn có chắc chắn muốn xóa không?"
+      message="Việc xóa sẽ không thể khôi phục lại được!"
+      confirmText="Xóa"
+      @confirm="confirmDelete"
+      @cancel="cancelDelete"
+  />
 
   <!-- Pass the fetched rows and columns to the DynamicDataTable component -->
-    <DynamicDataTable
-        :columns="postCategoryColumns"
-        :rows="postRows"
-        :currentPage="currentPage"
-        :totalPages="totalPages"
-        :createPath="createPath"
-        :emits="['page-change', 'delete', 'edit']"
-    @page-change="handlePageChange"
-    @edit="handleEdit"
-    @delete="handleDelete"
-    />
-  </template>
+  <DynamicDataTable
+      :columns="postCategoryColumns"
+      :rows="postRows"
+      :currentPage="currentPage"
+      :totalPages="totalPages"
+      :createPath="createPath"
+      :emits="['page-change', 'delete', 'edit']"
+      @page-change="handlePageChange"
+      @edit="handleEdit"
+      @delete="handleDelete"
+  />
+</template>
