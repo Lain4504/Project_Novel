@@ -1,6 +1,7 @@
 package com.backend.novelservice.dto.response;
 
 import com.backend.novelservice.entity.NovelCategory;
+import com.backend.novelservice.entity.NovelVolume;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -33,4 +34,5 @@ public class NovelResponse {
     String created;
     Instant createdDate;
     Instant updateDateTime;
+    List<NovelVolume> volumes;
 }

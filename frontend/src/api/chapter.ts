@@ -1,7 +1,7 @@
 import axios from "@/utils/axiosInstance";
 const CHAPTER_API = "/novel/novel-chapters";
-const createChapter = (data = {}) => {
-    return axios.post(`${CHAPTER_API}/create`, data)
+const createChapter = (volumeId: string, data = {}) => {
+    return axios.post(`${CHAPTER_API}/create/${volumeId}`, data)
         .then((response) => response.data.result);
 }
 const getChapter = (id: string) => {
@@ -16,5 +16,9 @@ const deleteChapter = (id: string) => {
     return axios.delete(`${CHAPTER_API}/delete/${id}`)
         .then((response) => response.data.result);
 }
-export { createChapter, getChapter, updateChapter, deleteChapter };
+const getChapterByVolumeId = (volumeId: string) => {
+    return axios.get(`${CHAPTER_API}/${volumeId}/chapters`)
+        .then((response) => response.data.result);
+}
+export { createChapter, getChapter, updateChapter, deleteChapter, getChapterByVolumeId };
 

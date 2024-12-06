@@ -9,16 +9,19 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
 @RestController
 @RequestMapping("/novel-chapters")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class NovelChapterController {
     NovelChapterService novelChapterService;
-    @PostMapping("/create")
-    ApiResponse<NovelChapterResponse> createChapter(@RequestBody NovelChapterRequest request) {
+    @PostMapping("/create/{volumeId}")
+    ApiResponse<NovelChapterResponse> createChapter( @PathVariable("volumeId") String volumeId,  @RequestBody NovelChapterRequest request) {
         return ApiResponse.<NovelChapterResponse>builder()
-                .result(novelChapterService.createChapter(request)).build();
+                .result(novelChapterService.createChapter(volumeId, request)).build();
     }
     @PutMapping("/update/{chapterId}")
     ApiResponse<NovelChapterResponse> updateChapter(@PathVariable("chapterId") String chapterId, @RequestBody NovelChapterRequest request) {
@@ -42,7 +45,13 @@ public class NovelChapterController {
         return ApiResponse.<PageResponse<NovelChapterResponse>>builder()
                 .result(novelChapterService.getChapters(page, size)).build();
     }
-
+    @GetMapping("/{volumeId}/chapters")
+    ApiResponse<List<NovelChapterResponse>> getChaptersByVolumeId(
+            @PathVariable("volumeId") String volumeId
+           ){
+        return ApiResponse.<List<NovelChapterResponse>>builder()
+                .result(novelChapterService.getChaptersByVolumeId(volumeId)).build();
+    }
 
 
 }

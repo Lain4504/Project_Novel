@@ -7,6 +7,8 @@ import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -14,10 +16,12 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class NovelVolumeRequest {
-    String novelId;
     String volumeName;
+    String description;
+    String status;
     int volumeNumber;
     int chapterCount;
     LocalDateTime createdDate;
     LocalDateTime modifiedDate;
+    Set<String> chapters;
 }

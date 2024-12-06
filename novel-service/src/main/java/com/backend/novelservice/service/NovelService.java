@@ -2,13 +2,18 @@ package com.backend.novelservice.service;
 
 import com.backend.novelservice.dto.request.NovelCreationRequest;
 import com.backend.novelservice.dto.request.NovelUpdateRequest;
+import com.backend.novelservice.dto.response.NovelCategoryResponse;
 import com.backend.novelservice.dto.response.NovelResponse;
 import com.backend.dto.response.PageResponse;
+import com.backend.novelservice.dto.response.NovelVolumeResponse;
+import com.backend.novelservice.entity.Novel;
 import com.backend.novelservice.entity.NovelCategory;
+import com.backend.novelservice.entity.NovelVolume;
 import com.backend.novelservice.mapper.NovelCategoryMapper;
 import com.backend.novelservice.mapper.NovelMapper;
 import com.backend.novelservice.repository.NovelCategoryRepository;
 import com.backend.novelservice.repository.NovelRepository;
+import com.backend.novelservice.repository.NovelVolumeRepository;
 import com.backend.utils.DateTimeFormatter;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +40,8 @@ public class NovelService {
     NovelMapper novelMapper;
     NovelCategoryMapper novelCategoryMapper;
     DateTimeFormatter dateTimeFormatter;
+    NovelVolumeRepository novelVolumeRepository;
+
     public NovelResponse createNovel(NovelCreationRequest request) {
         if (novelRepository.existsByTitle(request.getTitle())) {
             throw new IllegalArgumentException("Novel with title " + request.getTitle() + " already exists");
@@ -106,4 +113,6 @@ public class NovelService {
                 .data(novelList)
                 .build();
     }
+
+
 }

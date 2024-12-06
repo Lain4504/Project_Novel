@@ -6,6 +6,8 @@ import com.backend.novelservice.dto.request.NovelUpdateRequest;
 import com.backend.novelservice.dto.response.NovelCategoryResponse;
 import com.backend.novelservice.dto.response.NovelResponse;
 import com.backend.dto.response.PageResponse;
+import com.backend.novelservice.dto.response.NovelVolumeResponse;
+import com.backend.novelservice.entity.NovelVolume;
 import com.backend.novelservice.service.NovelService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
