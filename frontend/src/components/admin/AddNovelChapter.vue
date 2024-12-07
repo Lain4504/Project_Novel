@@ -1,8 +1,15 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import {inject, ref} from 'vue';
 import Tiptap from '@/components/common/Tiptap.vue';
 import { createChapter } from '@/api/chapter';
-
+const showAlert = inject('showAlert') as ((type: string, message: string) => void);
+const showNotification = (type: string, message: string) => {
+  if (showAlert) {
+    showAlert(type, message); // Gọi hàm showAlert toàn cục
+  } else {
+    console.error('showAlert is not available in this context');
+  }
+};
 const props = defineProps({
   volumeId: {
     type: String,
@@ -28,7 +35,7 @@ const handleSubmit = async () => {
       isPaid: isPaid.value,
       price: isPaid.value ? price.value : 0
     });
-    alert("Chapter created successfully");
+    showNotification('success', 'Chapter created successfully.');
     emit('chapter-added');
 
     // Reset form fields
@@ -37,9 +44,15 @@ const handleSubmit = async () => {
     content.value = ""; // Reset Tiptap content
     isPaid.value = false;
     price.value = 0;
-  } catch (error) {
-    console.error("Error creating chapter:", error);
-    alert("Failed to create chapter.");
+  } catch (error: any) {
+    console.error('Failed to create chapter:', error);
+    if (error.response) {
+      showNotification('danger', error.response.data.message || 'Chapter creation failed. Please try again.');
+    } else if (error.request) {
+      showNotification('danger', 'No response from server. Please try again.');
+    } else {
+      showNotification('danger', 'An unexpected error occurred. Please try again.');
+    }
   }
 };
 </script>

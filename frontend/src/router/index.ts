@@ -37,6 +37,8 @@ import NovelCategoryNew from "@/components/admin/NovelCategoryNew.vue";
 import NovelCategoryList from "@/views/admin/NovelCategoryList.vue";
 import NovelCategoryEdit from "@/components/admin/NovelCategoryEdit.vue";
 import NovelList  from "@/views/admin/NovelList.vue";
+import NovelCategoryForAuthor from "@/views/admin/NovelCategoryForAuthor.vue";
+import PostCategoryForAuthor from "@/views/admin/PostCategoryForAuthor.vue";
 const routes: Array<RouteRecordRaw> = [
   { name: 'dashboard', path: '/dashboard', component: Dashboard, 
     children: [
@@ -56,6 +58,8 @@ const routes: Array<RouteRecordRaw> = [
       { name: 'novelcategorylist', path: '/novel-category-list', component: NovelCategoryList },
       { name: 'novelcategoryedit', path: '/novel-category-edit/:id', component: NovelCategoryEdit, props: true },
       { name: 'novellist', path: '/book-admin', component: NovelList },
+      { name: 'novelcategoryforauthor', path: '/novel-category-for-author', component: NovelCategoryForAuthor},
+      { name: 'postcategoryforauthor', path: '/post-category-for-author', component: PostCategoryForAuthor},
 
     ]
   },

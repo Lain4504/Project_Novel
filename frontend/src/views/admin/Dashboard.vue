@@ -10,7 +10,8 @@ enum Routes {
   Account = '/author-account',
   Payment = '/payment',
   FAQ = '/faq',
-  BookCategory = '/book-category',
+  PostCategory = '/post-category-for-author',
+  BookCategory = '/novel-category-for-author',
   BookManagement = '/book-admin',
   PostManagement = '/post-admin',
   BookCategoryManagement = '/novel-category-list',
@@ -89,6 +90,7 @@ const MenuItems = [
     children: [
       {to: Routes.FAQ, label: 'FAQ', icon: 'fa-solid fa-circle-question'},
       {to: Routes.BookCategory, label: 'Book Category', icon: 'fa-solid fa-book-open'},
+      {to: Routes.PostCategory, label: 'Post Category', icon: 'fa-solid fa-newspaper'},
     ]
   }
 ];

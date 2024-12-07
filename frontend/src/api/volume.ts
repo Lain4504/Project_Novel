@@ -21,4 +21,8 @@ const updateVolume = (id: string, data = {}) => {
     return axios.put(`${VOLUME_API}/update/${id}`, data)
         .then((response) => response.data.result);
 }
-export { createVolume, getVolumes, getVolume, updateVolume, getVolumesByNovelId };
+const deleteVolume = (id: string) => {
+    return axios.delete(`${VOLUME_API}/${id}`)
+        .then((response) => response.data.result);
+}
+export { createVolume, getVolumes, getVolume, updateVolume, getVolumesByNovelId, deleteVolume };

@@ -1,8 +1,15 @@
 <script setup lang="ts">
-import {reactive, ref} from 'vue';
+import {inject, reactive, ref} from 'vue';
 import {createVolume} from "@/api/volume";
 import Tiptap from "@/components/common/Tiptap.vue";
-
+const showAlert = inject('showAlert') as ((type: string, message: string) => void);
+const showNotification = (type: string, message: string) => {
+  if (showAlert) {
+    showAlert(type, message); // Gọi hàm showAlert toàn cục
+  } else {
+    console.error('showAlert is not available in this context');
+  }
+};
 const props = defineProps({
   novelId: {
     type: String,
@@ -15,7 +22,7 @@ const state = reactive({
   description: "",
   status: "ongoing"
 });
-
+const emit = defineEmits(['volume-added']);
 const handleSubmit = async () => {
   try {
     await createVolume(props.novelId, {
@@ -23,10 +30,17 @@ const handleSubmit = async () => {
       description: state.description,
       status: state.status
     });
-    alert("Volume created successfully");
-  } catch (error) {
-    console.error("Error creating volume:", error);
-    alert("Failed to create volume.");
+    emit('volume-added');
+    showNotification('success', 'Volume created successfully.');
+  } catch (error: any) {
+    console.error('Failed to create volume:', error);
+    if (error.response) {
+      showNotification('danger', error.response.data.message || 'Volume creation failed. Please try again.');
+    } else if (error.request) {
+      showNotification('danger', 'No response from server. Please try again.');
+    } else {
+      showNotification('danger', 'An unexpected error occurred. Please try again.');
+    }
   }
 };
 </script>

@@ -1,6 +1,7 @@
 package com.backend.novelservice.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.mongodb.core.mapping.DBRef;
@@ -26,8 +27,9 @@ public class NovelVolume {
     LocalDateTime createdDate;
     LocalDateTime modifiedDate;
     @DBRef
+    @JsonBackReference
     private Novel novel;
     @DBRef
-    @JsonBackReference
+    @JsonIgnore // Không trả danh sách chapters khi gọi API `getNovel`
     private List<NovelChapter> chapters;
 }

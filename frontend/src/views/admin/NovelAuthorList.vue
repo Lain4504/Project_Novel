@@ -21,6 +21,7 @@ const rowToDelete = ref<any>(null);
 const fetchNovels = async (page: number, size: number) =>{
   try{
     const response = await getMyNovels(page, size);
+    console.log(response);
     novelRows.value = response.data;
     totalPages.value = response.totalPages;
   }
