@@ -1,5 +1,6 @@
 package com.backend.novelservice.dto.response;
 
+import com.backend.novelservice.entity.Image;
 import com.backend.novelservice.entity.NovelCategory;
 import com.backend.novelservice.entity.NovelVolume;
 import lombok.AccessLevel;
@@ -21,7 +22,6 @@ public class NovelResponse {
     String id;
     String title;
     Set<NovelCategory> categories;
-    String coverPicture;
     String authorId;
     String authorName;
     String description;
@@ -35,4 +35,5 @@ public class NovelResponse {
     Instant createdDate;
     Instant updateDateTime;
     List<NovelVolume> volumes;
+    Image image;
 }

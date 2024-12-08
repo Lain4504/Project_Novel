@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import {ref, onMounted, inject} from "vue";
-import {deleteNovel, getNovel} from "@/api/novel";
+import { ref, onMounted, inject } from "vue";
+import { deleteNovel, getNovel } from "@/api/novel";
 import EditContentChapter from "@/components/admin/EditNovelChapter.vue";
 import AddChapter from "@/components/admin/AddNovelChapter.vue";
 import OrderSortChapter from "@/components/admin/OrderSortChapter.vue";
 import AddNovelVolume from "@/components/admin/AddNovelVolume.vue";
 import EditNovelVolume from "@/components/admin/EditNovelVolume.vue";
 import { useRoute } from "vue-router";
-import {deleteVolume, getVolumesByNovelId} from "@/api/volume";
-import {deleteChapter, getChapterByVolumeId} from "@/api/chapter";
+import { deleteVolume, getVolumesByNovelId } from "@/api/volume";
+import { deleteChapter, getChapterByVolumeId } from "@/api/chapter";
 import router from "@/router";
 import ConfirmDeleteModal from "@/components/common/ConfirmDeleteModal.vue";
 import NovelEdit from "@/components/admin/NovelEdit.vue";
@@ -32,6 +32,12 @@ interface Novel {
   bookStatus: string;
   categories: Array<{ name: string }>;
   coverPicture: string;
+  image: {
+    id: string;
+    name: string;
+    type: string;
+    data: string;
+  };
 }
 
 const activeChapters = ref<Record<string, boolean>>({});
@@ -57,7 +63,6 @@ const id = Array.isArray(route.params.id) ? route.params.id[0] : route.params.id
 const fetchChaptersForVolume = async (volumeId: string) => {
   try {
     const response = await getChapterByVolumeId(volumeId);
-    console.log("Chapters:", response);
     const chapters = response.map((chapter: any) => ({
       id: chapter.id,
       chapterTitle: chapter.chapterTitle,
@@ -78,13 +83,20 @@ const fetchChaptersForVolume = async (volumeId: string) => {
     }
   }
 };
+
 const refreshNovelData = async () => {
-  const id = Array.isArray(route.params.id) ? route.params.id[0] : route.params.id;
   try {
     const novelData = await getNovel(id);
-    console.log(novelData);
-    novel.value.id = novelData.id;
-    novel.value.title = novelData.title;
+    novel.value = {
+      id: novelData.id,
+      title: novelData.title,
+      authorName: novelData.authorName,
+      description: novelData.description,
+      bookStatus: novelData.bookStatus,
+      categories: novelData.categories,
+      coverPicture: novelData.coverPicture,
+      image: novelData.image,
+    };
 
     const volumeData = await getVolumesByNovelId(id);
     volumes.value = volumeData;
@@ -129,10 +141,12 @@ const toggleChapterDropdown = (chapterId: string) => {
   isDropdownVisible.value = false;
 };
 
-const viewChapter = (id: string) => {
-  alert(`Xem chương có ID: ${id}`);
+const viewChapter = ( chapterId: string) => {
+  router.push(`/novel/${chapterId}`);
 };
-
+const viewNovel = ( novelId: string) => {
+  router.push(`/noveldetail/${novelId}`);
+};
 const showModal = (modalName: string) => {
   showEditNovel.value = false;
   showEditVolume.value = false;
@@ -202,7 +216,9 @@ const handleDelete = (id: string, type: string) => {
   itemToDelete.value = { id, type };
   showConfirmModal.value = true;
 };
-
+const handleNovelUpdated = async () => {
+  await refreshNovelData();
+};
 const showNotification = (type: string, message: string) => {
   if (showAlert) {
     showAlert(type, message);
@@ -266,6 +282,7 @@ onMounted(() => {
         <div class="md:col-span-1 relative">
           <p class="text-lg font-bold cursor-pointer" @click="toggleDropdownNovel">{{ novel.title }}</p>
           <div v-if="isDropdownVisible" class="absolute z-10 bg-[#F8F8F7] border border-gray-300 rounded-md mt-2 w-36 shadow-md">
+            <button class="block w-full p-2 cursor-pointer hover:bg-gray-100 text-sm" @click="viewNovel(novel.id)">Xem tiểu thuyết</button>
             <button class="block w-full p-2 cursor-pointer hover:bg-gray-100 text-sm" @click="addVolume(novel.title)">Thêm tập</button>
             <button class="block w-full p-2 cursor-pointer hover:bg-gray-100 text-sm" @click="editNovel">Sửa tiểu thuyết</button>
             <button class="block w-full p-2 cursor-pointer hover:bg-gray-100 text-sm" @click="() => { handleDelete(novel.id, 'novel'); }">Xóa tiểu thuyết</button>
@@ -297,14 +314,14 @@ onMounted(() => {
                     <button @click="toggleChapterDropdown(chapter.id)" class="text-sm text-blue-600 hover:underline">{{ chapter.chapterTitle }}</button>
                     <div v-if="activeDropdown === chapter.id" class="z-10 absolute left-0 mt-2 bg-[#F8F8F7] border border-gray-300 rounded-md shadow-lg">
                       <ul class="py-1 text-sm text-gray-700">
-                        <li><button @click="() => { viewChapter(chapter.id) }" class="block w-full px-4 py-2 hover:bg-gray-100">Xem chương</button></li>
+                        <li><button @click="() => { viewChapter(chapter.id)}" class="block w-full px-4 py-2 hover:bg-gray-100">Xem chương</button></li>
                         <li><button @click="() => { editChapter(chapter)}" class="block w-full px-4 py-2 hover:bg-gray-100">Chỉnh sửa chương</button></li>
                         <li><button @click="() => { handleDelete(chapter.id, 'chapter')}" class="block w-full px-4 py-2 text-red-600 hover:bg-gray-100">Xóa chương</button></li>
                       </ul>
                     </div>
                   </div>
                 </div>
-              </div>    
+              </div>
             </li>
           </ul>
         </div>
@@ -317,6 +334,6 @@ onMounted(() => {
     <OrderSortChapter v-if="showOrderSortChapter" class="my-10"/>
     <AddNovelVolume v-if="showAddVolume" :novelId="novel.id" class="my-10" @volume-added="handleVolumeCreated"/>
     <EditNovelVolume v-if="showEditVolume" :volumeData="selectedVolumeData" @volume-updated="handleVolumeUpdated" class="my-10"/>
-    <NovelEdit v-if="showEditNovel" :novel="novel" class="my-10"/>
+    <NovelEdit v-if="showEditNovel" :novel="novel" class="my-10" @novel-updated="handleNovelUpdated"/>
   </div>
 </template>

@@ -1,17 +1,19 @@
 <script setup lang="ts">
-import {reactive, ref, onMounted, inject} from 'vue';
+import { reactive, ref, onMounted, inject } from 'vue';
 import { updateNovel } from "@/api/novel";
 import Tiptap from "@/components/common/Tiptap.vue";
 import store from "@/store";
-import {getNovelCategoriesWithoutPagination} from "@/api/novelcategory";
+import { getNovelCategoriesWithoutPagination } from "@/api/novelcategory";
+
 const showAlert = inject('showAlert') as ((type: string, message: string) => void);
 const showNotification = (type: string, message: string) => {
   if (showAlert) {
-    showAlert(type, message); // Gọi hàm showAlert toàn cục
+    showAlert(type, message);
   } else {
     console.error('showAlert is not available in this context');
   }
 };
+
 const props = defineProps({
   novel: {
     type: Object,
@@ -20,12 +22,13 @@ const props = defineProps({
 });
 
 const state = reactive({
+  id: props.novel.id || "",
   title: props.novel.title || "",
   author: props.novel.authorName || "",
   description: props.novel.description || "",
   status: props.novel.bookStatus || "ongoing",
   categories: props.novel.categories || [],
-  imageUrl: props.novel.coverPicture || ""
+  imageUrl: props.novel.image ? `/images/${props.novel.image.id}` : ""
 });
 
 const selectedCategories = ref<string[]>(state.categories.map((cat: { name: string }) => cat.name));
@@ -62,17 +65,23 @@ const getCategoryIds = () => {
 const handleSubmit = async () => {
   const categoryIds = getCategoryIds();
   const novelData = {
+    id: state.id,
     title: state.title,
     authorId: store.getters.getUserId,
     authorName: state.author,
-    image: state.imageUrl,
     description: state.description,
     categories: categoryIds,
     status: state.status
   };
 
+  const formData = new FormData();
+  formData.append("novel", new Blob([JSON.stringify(novelData)], { type: "application/json" }));
+  if (selectedImage.value) {
+    formData.append("image", selectedImage.value);
+  }
+
   try {
-    await updateNovel(props.novel.id, novelData);
+    await updateNovel(state.id, formData);
     emit('novel-updated');
     showNotification('success', 'Novel updated successfully.');
   } catch (error: any) {
@@ -86,10 +95,12 @@ const handleSubmit = async () => {
     }
   }
 };
+const selectedImage = ref<File | null>(null);
 
 const handleImageChange = (event: Event) => {
   const file = (event.target as HTMLInputElement).files?.[0];
   if (file) {
+    selectedImage.value = file;
     state.imageUrl = URL.createObjectURL(file);
   }
 };
@@ -128,7 +139,7 @@ onMounted(() => {
       <div class="mt-4">
         <label for="file_input" class="block text-sm font-medium text-gray-800">Upload File</label>
         <input type="file" id="file_input" @change="handleImageChange"
-               class="block w-full text-sm text-gray-900 border rounded-lg cursor-pointer bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"/>
+               class="bg-white block w-full text-sm text-gray-900 border rounded-lg cursor-pointer bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:text-gray-400 dark:bg-gray-800 dark:border-gray-600 dark:focus:ring-blue-400 dark:focus:border-blue-400 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" />
         <p class="text-sm text-gray-500">SVG, PNG, JPG, or GIF (MAX. 800x400px)</p>
         <div v-if="state.imageUrl" class="mt-4">
           <img :src="state.imageUrl" alt="Selected image" class="object-cover w-32 h-32 rounded-lg border border-gray-300 shadow-sm"/>

@@ -1,8 +1,8 @@
-package com.backend.service;
-import com.backend.entity.Image;
+package com.backend.novelservice.service;
 import com.backend.exception.AppException;
 import com.backend.exception.ErrorCode;
-import com.backend.repository.ImageRepository;
+import com.backend.novelservice.entity.Image;
+import com.backend.novelservice.repository.ImageRepository;
 import com.backend.utils.FileUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -12,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -20,9 +21,6 @@ public class ImageService {
     private final ImageRepository imageRepository;
     private final FileUtils fileUtils;
 
-    public List<Image> getAllImage() {
-        return imageRepository.findByOrderByCreatedAtDesc();
-    }
 
     public Image getImage(String id) {
         return imageRepository.findById(id).orElseThrow(() -> {
@@ -30,12 +28,15 @@ public class ImageService {
         });
     }
 
-    public Image uploadImage(MultipartFile file) {
+    public Image uploadImage(String novelId, MultipartFile file) {
         fileUtils.validateFile(file);
 
         try {
-            String fileName = StringUtils.cleanPath(file.getOriginalFilename());
-            Image image = new Image(fileName, file.getContentType(), file.getBytes());
+            String fileName = UUID.randomUUID().toString() + "_" + StringUtils.cleanPath(file.getOriginalFilename());
+            Image image = new Image();
+            image.setName(fileName);
+            image.setType(file.getContentType());
+            image.setData(file.getBytes());
             image.setCreatedAt(Instant.now());
             return imageRepository.save(image);
         } catch (Exception e) {

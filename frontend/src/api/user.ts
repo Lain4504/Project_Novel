@@ -18,7 +18,7 @@ const getMyInfo = () => {
 };
 
 const getUserProfile = (id: string) => {
-    return axios.get(`${USER_API}/${id}`)
+    return axios.get(`${PROFILE_API}/${id}`)
         .then(response => response.data.result);
 };
 

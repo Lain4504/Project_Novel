@@ -38,6 +38,7 @@ public class NovelChapterService {
         NovelVolume volume = novelVolumeRepository.findById(volumeId).orElseThrow(() -> new RuntimeException("Novel not found"));
         // Map the request to a NovelVolume entity
         NovelChapter novelChapter = novelChapterMapper.toNovelChapter(request);
+        novelChapter.setCreatedDate(Instant.now());
         novelChapter.setVolume(volume);
         // Save the new volume
         NovelChapter savedChapter = novelChapterRepository.save(novelChapter);
@@ -63,17 +64,20 @@ public class NovelChapterService {
         var chapter = novelChapterRepository.findById(chapterId).orElseThrow(() -> new RuntimeException("Chapter not found"));
         novelChapterRepository.delete(chapter);
     }
-    public NovelChapterResponse getChapter(String chapterId) {
-        var chapter = novelChapterRepository.findById(chapterId).orElseThrow(() -> new RuntimeException("Chapter not found"));
-        return novelChapterMapper.toNovelChapterResponse(chapter);
-    }
+   public NovelChapterResponse getChapter(String chapterId) {
+    var chapter = novelChapterRepository.findById(chapterId)
+            .orElseThrow(() -> new RuntimeException("Chapter not found"));
+    var chapterResponse = novelChapterMapper.toNovelChapterResponse(chapter);
+    chapterResponse.setCreated(dateTimeFormatter.format(Instant.from(chapter.getCreatedDate())));
+    return chapterResponse;
+}
     public PageResponse<NovelChapterResponse> getChapters(int page, int size) {
         Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
         Pageable pageable = PageRequest.of(page - 1, size, sort);
         var pageData = novelChapterRepository.findAll(pageable);
         var chapterList = pageData.getContent().stream().map(novelChapter -> {
             var chapterResponse = novelChapterMapper.toNovelChapterResponse(novelChapter);
-            chapterResponse.setCreatedDate(LocalDateTime.parse(dateTimeFormatter.format(Instant.from(novelChapter.getCreatedDate()))));
+            chapterResponse.setCreated(dateTimeFormatter.format(Instant.from(novelChapter.getCreatedDate())));
             return chapterResponse;
         }).toList();
         return PageResponse.<NovelChapterResponse>builder()

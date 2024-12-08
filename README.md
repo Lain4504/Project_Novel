@@ -128,17 +128,55 @@
 ## Authentication & Email
 - [x] User authentication system
 - [x] Send email functionality
-
+- [ ] OAuth2 integration
 ## Reading & Writing Novel & Paid Content
 - [ ] Read novel feature
-- [ ] Write novel service
+- [x] Write novel service
 - [ ] Pay-per-chapter system
+- [x] Novel categories
+- [x] Upload Image
+- [ ] Setup for reading novels settings 
 
 ## Posting 
 - [x] Post service
-
-## Analytics & Reporting
-- [ ] Statistics and reporting system for author
+- [x] Post management system
+- [x] Post categories
+- [ ] Post tags
+## Search
+- [ ] Search system
+- [ ] Advanced search system
+- [ ] Search settings
+- [ ] Search filters
+- [ ] Search categories
+- [ ] Search by author
+- [ ] Search by tags
+## Author Dashboard
+- [x] Author dashboard
+- [ ] Earnings and revenue system
+- [ ] Author statistics
+- [ ] Author profile
+- [ ] Author settings
+- [ ] Author notifications
+- [ ] Author payment system
+## Admin Dashboard
+- [ ] Admin dashboard
+- [ ] User management
+- [x] Novel management
+- [x] Post management
+- [ ] Revenue management
+- [ ] Analytics and statistics
+- [ ] Payment system
+- [ ] Notification system
+- [ ] Settings
+- [ ] User roles
+- [ ] User permissions
+## Notifications
+- [ ] Notification system
+- [x] Email notifications
+- [ ] In-app notifications
+- [ ] Push notifications
+- [ ] Notification settings
+- [ ] Notification management
 
 ---TO BE COUNTINUED---
 

@@ -10,17 +10,17 @@ import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring")
 public interface NovelMapper {
-    // Ánh xạ NovelCreationRequest sang Novel, bỏ qua volumes và categories
+    // Map NovelCreationRequest to Novel, ignoring volumes and categories
     @Mapping(target = "volumes", ignore = true)
     @Mapping(target = "categories", ignore = true)
     Novel toNovel(NovelCreationRequest request);
 
-    // Ánh xạ Novel sang NovelResponse, bỏ qua danh sách chapters trong NovelVolume
+    // Map Novel to NovelResponse, including image
     @Mapping(target = "volumes", source = "volumes")
-    @Mapping(target = "volumes.chapters", ignore = true) // Quan trọng
+    @Mapping(target = "volumes.chapters", ignore = true) // Important
     NovelResponse toNovelResponse(Novel novel);
 
-    // Cập nhật Novel với NovelUpdateRequest, bỏ qua volumes và categories
+    // Update Novel with NovelUpdateRequest, ignoring volumes and categories
     @Mapping(target = "volumes", ignore = true)
     @Mapping(target = "categories", ignore = true)
     void updateNovel(@MappingTarget Novel novel, NovelUpdateRequest request);

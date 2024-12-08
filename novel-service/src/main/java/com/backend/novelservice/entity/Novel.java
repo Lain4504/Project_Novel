@@ -30,7 +30,6 @@ public class Novel {
     String title;
     @ManyToMany
     Set<NovelCategory> categories;
-    String coverPicture;
     String authorId;
     String authorName;
     String description;
@@ -45,4 +44,6 @@ public class Novel {
     @DBRef
     @JsonBackReference
     private List<NovelVolume> volumes;
+    @DBRef
+    private Image image;
 }

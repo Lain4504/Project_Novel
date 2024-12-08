@@ -1,12 +1,18 @@
 import axios from "@/utils/axiosInstance";
 const NOVEL_API = "/novel/novels";
-const createNovel = (data = {}) => {
-    return axios.post(`${NOVEL_API}/create`, data)
-        .then((response) => response.data.result);
+const createNovel = (data: FormData) => {
+    return axios.post(`${NOVEL_API}/create`, data, {
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        }
+    }).then((response) => response.data.result);
 }
-const updateNovel = (id: string, data: Record<string, any>) => {
-    return axios.put(`${NOVEL_API}/update/${id}`, data)
-        .then((response) => response.data.result);
+const updateNovel = (id: string, data: FormData) => {
+    return axios.put(`${NOVEL_API}/update/${id}`, data, {
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        }
+    }).then((response) => response.data.result);
 };
 const deleteNovel = (id: string) => {
     return axios.delete(`${NOVEL_API}/delete/${id}`)

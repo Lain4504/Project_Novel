@@ -21,6 +21,8 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
 import static java.util.stream.Collectors.toList;
 
 @Service
@@ -53,10 +55,8 @@ public class NovelVolumeService {
         // Add the new volume to the list
         volumes.add(savedVolume);
         novel.setVolumes(volumes);
-
         // Save the updated novel with the added volume
         novelRepository.save(novel);
-
         // Map and return the response
         return novelVolumeMapper.toNovelVolumeResponse(novelVolume);
     }
@@ -65,9 +65,15 @@ public class NovelVolumeService {
     public List<NovelVolumeResponse> getVolumesByNovelId(String novelId) {
         Novel novel = novelRepository.findById(novelId)
                 .orElseThrow(() -> new RuntimeException("Novel not found"));
-        return novel.getVolumes().stream()
+
+        List<NovelVolume> volumes = novel.getVolumes();
+        if (volumes == null) {
+            volumes = new ArrayList<>();
+        }
+
+        return volumes.stream()
                 .map(novelVolumeMapper::toNovelVolumeResponse)
-                .collect(toList());
+                .collect(Collectors.toList());
     }
 
     public NovelVolumeResponse updateNovelVolume(String novelVolumeId, NovelVolumeRequest request){

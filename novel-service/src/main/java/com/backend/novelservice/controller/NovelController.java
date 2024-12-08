@@ -13,6 +13,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -24,14 +25,14 @@ public class NovelController {
     NovelService novelService;
 
     @PostMapping("/create")
-    ApiResponse<NovelResponse> createNovel(@RequestBody NovelCreationRequest request) {
+    ApiResponse<NovelResponse> createNovel(@RequestPart("novel") NovelCreationRequest request, @RequestPart("image") MultipartFile imageFile) {
         return ApiResponse.<NovelResponse>builder()
-                .result(novelService.createNovel(request)).build();
+                .result(novelService.createNovel(request, imageFile)).build();
     }
     @PutMapping("/update/{novelId}")
-    ApiResponse<NovelResponse> updateNovel(@PathVariable("novelId") String novelId, @RequestBody NovelUpdateRequest request) {
+    ApiResponse<NovelResponse> updateNovel(@PathVariable("novelId") String novelId, @RequestPart("novel") NovelUpdateRequest request, @RequestPart("image") MultipartFile imageFile) {
         return ApiResponse.<NovelResponse>builder()
-                .result(novelService.updateNovel(novelId, request)).build();
+                .result(novelService.updateNovel(novelId, request, imageFile)).build();
     }
     @DeleteMapping("/delete/{novelId}")
     ApiResponse<Void> deleteNovel(@PathVariable("novelId") String novelId) {

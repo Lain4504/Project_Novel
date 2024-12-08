@@ -6,6 +6,7 @@ import com.backend.novelservice.dto.response.NovelCategoryResponse;
 import com.backend.novelservice.dto.response.NovelResponse;
 import com.backend.dto.response.PageResponse;
 import com.backend.novelservice.dto.response.NovelVolumeResponse;
+import com.backend.novelservice.entity.Image;
 import com.backend.novelservice.entity.Novel;
 import com.backend.novelservice.entity.NovelCategory;
 import com.backend.novelservice.entity.NovelVolume;
@@ -25,6 +26,7 @@ import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -41,8 +43,8 @@ public class NovelService {
     NovelCategoryMapper novelCategoryMapper;
     DateTimeFormatter dateTimeFormatter;
     NovelVolumeRepository novelVolumeRepository;
-
-    public NovelResponse createNovel(NovelCreationRequest request) {
+    ImageService imageService;
+    public NovelResponse createNovel(NovelCreationRequest request,  MultipartFile imageFile) {
         if (novelRepository.existsByTitle(request.getTitle())) {
             throw new IllegalArgumentException("Novel with title " + request.getTitle() + " already exists");
         }
@@ -52,23 +54,35 @@ public class NovelService {
         novel.setCategories(categories);
         novel.setCreatedDate(Instant.now());
         novel.setUpdateDateTime(Instant.now());
-        novel = novelRepository.save(novel);
-        return novelMapper.toNovelResponse(novel);
-    }
-    @PostAuthorize("returnObject.email == authentication.name")
-    public NovelResponse updateNovel(String novelId, NovelUpdateRequest request) {
-        var novel = novelRepository.findById(novelId).orElseThrow(() -> new IllegalArgumentException("Novel with id " + novelId + " not found"));
-        if (novelRepository.existsByTitle(request.getTitle()) && !novel.getTitle().equals(request.getTitle())) {
-            throw new IllegalArgumentException("Novel with title " + request.getTitle() + " already exists");
+        if (imageFile != null && !imageFile.isEmpty()) {
+            Image image = imageService.uploadImage(novel.getId(), imageFile);
+            novel.setImage(image);
         }
-        novelMapper.updateNovel(novel, request);
-        var categories = new HashSet<NovelCategory>();
-        novelCategoryRepository.findAllById(request.getCategories()).forEach(categories::add);
-        novel.setCategories(categories);
-        novel.setUpdateDateTime(Instant.now());
         novel = novelRepository.save(novel);
         return novelMapper.toNovelResponse(novel);
     }
+   public NovelResponse updateNovel(String novelId, NovelUpdateRequest request, MultipartFile imageFile) {
+    var novel = novelRepository.findById(novelId).orElseThrow(() -> new IllegalArgumentException("Novel with id " + novelId + " not found"));
+    if (novelRepository.existsByTitle(request.getTitle()) && !novel.getTitle().equals(request.getTitle())) {
+        throw new IllegalArgumentException("Novel with title " + request.getTitle() + " already exists");
+    }
+    novelMapper.updateNovel(novel, request);
+    var categories = new HashSet<NovelCategory>();
+    novelCategoryRepository.findAllById(request.getCategories()).forEach(categories::add);
+    novel.setCategories(categories);
+    novel.setUpdateDateTime(Instant.now());
+
+    if (imageFile != null && !imageFile.isEmpty()) {
+        if (novel.getImage() != null) {
+            imageService.deleteImage(novel.getImage().getId());
+        }
+        Image newImage = imageService.uploadImage(novel.getId(), imageFile);
+        novel.setImage(newImage);
+    }
+
+    novel = novelRepository.save(novel);
+    return novelMapper.toNovelResponse(novel);
+}
     public void deleteNovel(String novelId) {
         novelRepository.deleteById(novelId);
     }
