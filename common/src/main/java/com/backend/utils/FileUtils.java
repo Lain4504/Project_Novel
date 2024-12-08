@@ -16,7 +16,6 @@ public class FileUtils {
         if(fileName == null || fileName.isEmpty()) {
             throw new AppException(ErrorCode.FILE_NAME_IS_EMPTY);
         }
-
         // image.png -> png
         // avatar.jpg -> jpg
         // Kiểm tra đuôi file (jpg, png, jpeg)

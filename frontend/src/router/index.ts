@@ -66,8 +66,8 @@ const routes: Array<RouteRecordRaw> = [
   { name: 'login', path: '/login', component: Login },
   { name: 'register', path: '/register', component: Register },
   { name: 'home', path: '/', component: Home },
-  { name: 'chapter', path: '/novel', component: Chapter },
-  { name: 'noveldetail', path: '/noveldetail/:id', component: NovelDetail, props: true },
+  { name: 'chapter', path: '/novel/:id', component: Chapter},
+  { name: 'noveldetail', path: '/noveldetail/:id', component: NovelDetail},
   { name: 'member', path: '/member', component: Account },
   {
     name: 'list',

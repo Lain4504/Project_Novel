@@ -4,6 +4,7 @@ import com.backend.novelservice.dto.response.NovelChapterResponse;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 @Getter
 @Setter
@@ -19,6 +20,6 @@ public class NovelChapterRequest {
     String status;
     int wordCount;
     Boolean isVip;
-    LocalDateTime createdDate;
-    LocalDateTime updateDateTime;
+    Instant createdDate;
+    Instant updateDateTime;
 }

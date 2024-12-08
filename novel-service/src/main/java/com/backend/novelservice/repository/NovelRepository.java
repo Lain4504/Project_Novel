@@ -16,4 +16,5 @@ public interface NovelRepository extends MongoRepository<Novel, String> {
     Optional<Novel> findByTitle(String title);
 
     Page<Novel> findByAuthorId(String authorId, Pageable pageable);
+    Novel getNovelById(String novelId);
 }

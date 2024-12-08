@@ -1,6 +1,6 @@
-package com.backend.controller;
-import com.backend.entity.Image;
-import com.backend.service.ImageService;
+package com.backend.novelservice.controller;
+import com.backend.novelservice.entity.Image;
+import com.backend.novelservice.service.ImageService;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.core.io.ByteArrayResource;
@@ -18,12 +18,6 @@ import org.springframework.web.multipart.MultipartFile;
 public class ImageController {
     ImageService imageService;
 
-    // Lấy danh sách ảnh
-    @GetMapping()
-    public ResponseEntity<?> getAllImage() {
-        return ResponseEntity.ok(imageService.getAllImage());
-    }
-
     // Xem ảnh
     @GetMapping("/{id}")
     public ResponseEntity<?> readImage(@PathVariable String id) {
@@ -32,13 +26,6 @@ public class ImageController {
                 .contentType(MediaType.parseMediaType(image.getType()))
                 .body(image.getData());
     }
-
-    // Upload ảnh
-    @PostMapping("/upload")
-    public ResponseEntity<?> uploadImage(@ModelAttribute("file") MultipartFile file) {
-        return new ResponseEntity<>(imageService.uploadImage(file), HttpStatus.CREATED);
-    }
-
     // Download ảnh
     @GetMapping("/download/{id}")
     public ResponseEntity<?> downloadImage(@PathVariable String id) {
