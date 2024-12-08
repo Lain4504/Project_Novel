@@ -7,7 +7,7 @@ const createNovel = (data = {}) => {
 const updateNovel = (id: string, data: Record<string, any>) => {
     return axios.put(`${NOVEL_API}/update/${id}`, data)
         .then((response) => response.data.result);
-}
+};
 const deleteNovel = (id: string) => {
     return axios.delete(`${NOVEL_API}/delete/${id}`)
         .then((response) => response.data.result);

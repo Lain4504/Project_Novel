@@ -1,18 +1,63 @@
 <script setup lang="ts">
-import {reactive, ref} from 'vue';
+import {inject, reactive, watch} from 'vue';
 import Tiptap from "@/components/common/Tiptap.vue";
-const state = reactive({
-  title : "",
-  description: "",
-  image: "",
-  status: "ongoing",
-})
-const handleSubmit = () => {
+import { updateVolume } from '@/api/volume';
+const showAlert = inject('showAlert') as ((type: string, message: string) => void);
+const showNotification = (type: string, message: string) => {
+  if (showAlert) {
+    showAlert(type, message); // Gọi hàm showAlert toàn cục
+  } else {
+    console.error('showAlert is not available in this context');
+  }
 };
+const props = defineProps({
+  volumeData: {
+    type: Object,
+    required: true
+  }
+});
+const emit = defineEmits(['volume-updated']);
+
+const state = reactive({
+  title: props.volumeData.volumeName || "",
+  description: props.volumeData.description || "",
+  image: props.volumeData.image || "",
+  status: props.volumeData.status || "ongoing",
+});
+
+const handleSubmit = async () => {
+  try {
+    await updateVolume(props.volumeData.id, {
+      volumeName: state.title,
+      description: state.description,
+      image: state.image,
+      status: state.status
+    });
+    showNotification('success', 'Volume updated successfully.');
+    emit('volume-updated');
+  } catch (error: any) {
+    console.error('Failed to update volume:', error);
+    if (error.response) {
+      showNotification('danger', error.response.data.message || 'Volume update failed. Please try again.');
+    } else if (error.request) {
+      showNotification('danger', 'No response from server. Please try again.');
+    } else {
+      showNotification('danger', 'An unexpected error occurred. Please try again.');
+    }
+  }
+};
+
+watch(() => props.volumeData, (newData) => {
+  state.title = newData.volumeName || "";
+  state.description = newData.description || "";
+  state.image = newData.image || "";
+  state.status = newData.status || "ongoing";
+}, { immediate: true });
 </script>
+
 <template>
   <main class="flex-1 p-6 bg-[#f8f8f7] shadow-sm">
-    <h1>Add Novel Volume</h1>
+    <h1>Edit Novel Volume</h1>
     <!-- Title Input -->
     <div class="mt-4">
       <label for="title" class="block text-sm font-medium text-gray-700">Title</label>
@@ -32,8 +77,8 @@ const handleSubmit = () => {
       <Tiptap :content="state.description" @update:content="state.description = $event"/>
     </div>
     <div class="flex justify-end mt-4">
-      <button
-          class="text-sm bg-transparent border-[1px] border-blue-500 text-blue-500 hover:border-blue-700 hover:scale-105 font-medium py-2 px-4 rounded transition-all duration-300">
+      <button @click="handleSubmit"
+              class="text-sm bg-transparent border-[1px] border-blue-500 text-blue-500 hover:border-blue-700 hover:scale-105 font-medium py-2 px-4 rounded transition-all duration-300">
         Submit
       </button>
     </div>
