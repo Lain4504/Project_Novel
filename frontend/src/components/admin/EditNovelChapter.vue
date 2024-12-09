@@ -21,11 +21,14 @@ const emit = defineEmits(['chapter-updated']);
 const title = ref(props.chapterData.chapterTitle || "");
 const status = ref(props.chapterData.status || "incomplete");
 const content = ref(props.chapterData.content || "");
+const chapterNumber = ref<number | null>(null);
 
 const handleSubmit = async () => {
   try {
+    const chapterTitle = `Chapter ${chapterNumber.value} - ${title.value}`;
     await updateChapter(props.chapterData.id, {
-      chapterTitle: title.value,
+      chapterNumber: chapterNumber.value,
+      chapterTitle,
       status: status.value,
       content: content.value
     });
@@ -58,6 +61,11 @@ watch(() => props.chapterData, (newData) => {
         <label for="title" class="block text-sm font-medium text-gray-700">Tiêu đề</label>
         <input type="text" id="title" v-model="title"
                class="block w-2/3 px-4 py-2 mt-1 text-gray-900 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"/>
+      </div>
+      <div class="mt-4">
+        <label for="chapterNumber" class="block text-sm font-medium text-gray-700">Số chương</label>
+        <input type="number" id="chapterNumber" v-model="chapterNumber"
+               class="block w-full px-4 py-2 mt-1 text-gray-900 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
       </div>
       <div class="mt-4">
         <label for="status" class="block text-sm font-medium text-gray-700">Trạng thái</label>

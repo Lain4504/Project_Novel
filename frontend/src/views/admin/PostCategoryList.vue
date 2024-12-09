@@ -106,5 +106,6 @@ const handleEdit = (row: any) => {
       @page-change="handlePageChange"
       @edit="handleEdit"
       @delete="handleDelete"
+      :show-go-to-page="false"
   />
 </template>

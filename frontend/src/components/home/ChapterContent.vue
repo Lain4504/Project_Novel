@@ -1,31 +1,25 @@
 <script setup lang="ts">
-import {onMounted, reactive, ref} from 'vue';
-import {getChapter} from "@/api/chapter";
+import { defineProps, ref, defineEmits } from 'vue';
+
 const props = defineProps<{
-  chapterId: string;
+  chapter: {
+    title: string;
+    content: string;
+    created: string;
+    chapterNumber: string;
+    volumeId: string;
+  };
 }>();
 
-const chapter = reactive({
-  title: '',
-  content: ``,
-  created: '',
-});
-const fetchChapter = async () => {
-  const response = await getChapter(props.chapterId);
-  console.log(response);
-  chapter.title = response.chapterTitle;
-  chapter.content = response.content;
-  chapter.created = response.created;
-};
-onMounted(fetchChapter);
+const emits = defineEmits(['previous-chapter', 'next-chapter']);
 
 const author = 'Nguyễn Văn A';
-const previousChapter = null;
+const previousChapter = 'chapter-0';
 const nextChapter = 'chapter-2';
 
-const wordCount = chapter.content.replace(/<[^>]*>/g, '').split(/\s+/).length;
+const wordCount = props.chapter.content.replace(/<[^>]*>/g, '').split(/\s+/).length;
 
-const comments = reactive<string[]>([
+const comments = ref<string[]>([
   "This is a very interesting chapter! I can't wait to read more.",
   "I love how the story is developing. Keep up the great work!",
   "The world-building in this chapter is fantastic, I feel immersed!",
@@ -35,38 +29,51 @@ const sidebarOpen = ref(false);
 const toggleSidebar = () => {
   sidebarOpen.value = !sidebarOpen.value;
 };
-const navigateToChapter = (chapterId: string | null) => {
-  if (chapterId) {
-    console.log(`Chuyển tới chương ${chapterId}`);
-  }
-};
 </script>
+
 <template>
   <div class="bg-gray-50 text-gray-800 relative">
-    <!-- Nút mở menu -->
-    <div
+    <div class="fixed top-28 right-4 z-50">
+      <div
         @click="toggleSidebar"
-        class="fixed top-28 right-4 w-10 h-10 bg-green-500 hover:bg-green-600 text-white p-3 rounded-full cursor-pointer shadow-lg z-50 flex items-center justify-center"
-    >
-      <font-awesome-icon :icon="sidebarOpen ? ['fas', 'xmark'] : ['fas', 'feather-pointed']" />
+        class="w-12 h-12 bg-gradient-to-br from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white rounded-full cursor-pointer shadow-xl transition-all duration-300 ease-in-out transform hover:scale-105 active:scale-95 flex items-center justify-center"
+      >
+        <font-awesome-icon
+          :icon="sidebarOpen ? ['fas', 'xmark'] : ['fas', 'feather-pointed']"
+          class="text-lg"
+        />
+      </div>
+      <transition
+        enter-active-class="transition ease-out duration-300"
+        enter-from-class="opacity-0 translate-y-2"
+        enter-to-class="opacity-100 translate-y-0"
+        leave-active-class="transition ease-in duration-200"
+        leave-from-class="opacity-100 translate-y-0"
+        leave-to-class="opacity-0 translate-y-2"
+      >
+        <div
+          v-if="sidebarOpen"
+          class="absolute top-16 right-0 flex flex-col space-y-3 w-12"
+        >
+          <button
+            class="w-12 h-12 bg-gradient-to-br from-sky-500 to-sky-600 hover:from-sky-600 hover:to-sky-700 text-white rounded-full shadow-lg transition-all duration-300 ease-in-out transform hover:scale-105 active:scale-95 flex items-center justify-center"
+          >
+            <font-awesome-icon :icon="['fas', 'cog']" class="text-base" />
+          </button>
+          <button
+            class="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white rounded-full shadow-lg transition-all duration-300 ease-in-out transform hover:scale-105 active:scale-95 flex items-center justify-center"
+          >
+            <font-awesome-icon :icon="['fas', 'bookmark']" class="text-base" />
+          </button>
+          <button
+            class="w-12 h-12 bg-gradient-to-br from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white rounded-full shadow-lg transition-all duration-300 ease-in-out transform hover:scale-105 active:scale-95 flex items-center justify-center"
+          >
+            <font-awesome-icon :icon="['fas', 'list']" class="text-base" />
+          </button>
+        </div>
+      </transition>
     </div>
-
-    <!-- Menu dạng tròn xổ dọc -->
-    <div v-if="sidebarOpen" class="fixed top-40 right-4 flex flex-col justify-center items-center space-y-4 z-50">
-      <button class="w-10 h-10 bg-green-600 hover:bg-green-700 text-white rounded-full flex items-center justify-center shadow-lg">
-        <font-awesome-icon :icon="['fas', 'cog']" />
-      </button>
-      <button class="w-10 h-10 bg-green-600 hover:bg-green-700 text-white rounded-full flex items-center justify-center shadow-lg">
-        <font-awesome-icon :icon="['fas', 'bookmark']" />
-      </button>
-      <button class="w-10 h-10 bg-green-600 hover:bg-green-700 text-white rounded-full flex items-center justify-center shadow-lg">
-        <font-awesome-icon :icon="['fas', 'list']" />
-      </button>
-    </div>
-
-    <!-- Nội dung chương -->
     <main class="container mx-auto px-4 py-6 max-w-5xl">
-      <!-- Thông tin chương -->
       <div class="text-center mb-6">
         <h2 class="text-2xl font-semibold mb-2">{{ chapter.title }}</h2>
         <p class="text-gray-600 text-sm">Author: {{ author }}</p>
@@ -76,27 +83,29 @@ const navigateToChapter = (chapterId: string | null) => {
           <p class="text-gray-600 text-sm">Updated: {{ chapter.created }}</p>
         </div>
       </div>
-
       <div class="prose prose-blue mx-auto max-w-none" v-html="chapter.content"></div>
-
       <div class="flex justify-between mt-8">
         <button
-            @click="navigateToChapter(previousChapter)"
-            :class="[
-            'w-28 h-10 rounded text-sm flex items-center justify-center',
-            previousChapter ? 'bg-green-600 hover:bg-green-700 text-gray-700' : 'bg-gray-200 text-gray-400 cursor-not-allowed',
+          @click="$emit('previous-chapter')"
+          :class="[
+            'px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 ease-in-out',
+            previousChapter
+              ? 'bg-sky-500 text-white hover:bg-sky-600 shadow-md hover:shadow-lg active:scale-95 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-opacity-50'
+              : 'bg-gray-300 text-gray-500 cursor-not-allowed opacity-60'
           ]"
-            :disabled="!previousChapter"
+          :disabled="!previousChapter"
         >
           Previous Chapter
         </button>
         <button
-            @click="navigateToChapter(nextChapter)"
-            :class="[
-            'w-28 h-10 rounded text-sm flex items-center justify-center',
-            nextChapter ? 'bg-green-600 hover:bg-green-700 text-gray-700' : 'bg-gray-200 text-gray-400 cursor-not-allowed',
+          @click="$emit('next-chapter')"
+          :class="[
+            'px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 ease-in-out',
+            nextChapter
+              ? 'bg-sky-500 text-white hover:bg-sky-600 shadow-md hover:shadow-lg active:scale-95 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-opacity-50'
+              : 'bg-gray-300 text-gray-500 cursor-not-allowed opacity-60'
           ]"
-            :disabled="!nextChapter"
+          :disabled="!nextChapter"
         >
           Next Chapter
         </button>
@@ -104,4 +113,3 @@ const navigateToChapter = (chapterId: string | null) => {
     </main>
   </div>
 </template>
-

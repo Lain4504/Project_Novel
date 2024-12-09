@@ -1,3 +1,46 @@
+<script setup lang="ts">
+import { ref } from 'vue';
+
+// Define the data structure for the books
+interface Book {
+  hinhanh: string;
+  tentruyen: string;
+  dadoc: number;
+  total: number;
+}
+
+// Sample data for books
+const limitedBooks = ref<Book[]>([
+  {
+    hinhanh: '/path/to/image1.jpg',
+    tentruyen: 'Làm Sao Rồi, Tình Dịch Liên Không Thể Biến Thành Lão Bà Sao?',
+    dadoc: 321,
+    total: 400
+  },
+  {
+    hinhanh: '/path/to/image2.jpg',
+    tentruyen: 'Chí Quái Thư',
+    dadoc: 280,
+    total: 306
+  },
+  {
+    hinhanh: '/path/to/image3.jpg',
+    tentruyen: 'Trận Hồi Trường Sinh',
+    dadoc: 900,
+    total: 1368
+  },
+  {
+    hinhanh: '/path/to/image4.jpg',
+    tentruyen: 'Hoàng Hôn Phân Giới',
+    dadoc: 813,
+    total: 896
+  }
+]);
+</script>
+
+<style scoped>
+</style>
+
 <template>
     <section class="p-4 border rounded">
       
@@ -24,48 +67,3 @@
       </div>
     </section>
   </template>
-  
-  <script setup lang="ts">
-  import { ref } from 'vue';
-  
-  // Define the data structure for the books
-  interface Book {
-    hinhanh: string;
-    tentruyen: string;
-    dadoc: number;
-    total: number;
-  }
-  
-  // Sample data for books
-  const limitedBooks = ref<Book[]>([
-    {
-      hinhanh: '/path/to/image1.jpg',
-      tentruyen: 'Làm Sao Rồi, Tình Dịch Liên Không Thể Biến Thành Lão Bà Sao?',
-      dadoc: 321,
-      total: 400
-    },
-    {
-      hinhanh: '/path/to/image2.jpg',
-      tentruyen: 'Chí Quái Thư',
-      dadoc: 280,
-      total: 306
-    },
-    {
-      hinhanh: '/path/to/image3.jpg',
-      tentruyen: 'Trận Hồi Trường Sinh',
-      dadoc: 900,
-      total: 1368
-    },
-    {
-      hinhanh: '/path/to/image4.jpg',
-      tentruyen: 'Hoàng Hôn Phân Giới',
-      dadoc: 813,
-      total: 896
-    }
-  ]);
-  </script>
-  
-  <style scoped>
-  /* Add any custom styles if needed */
-  </style>
-  

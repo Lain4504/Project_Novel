@@ -8,6 +8,7 @@ import Breadcrumb from '@/components/home/Breadcrumb.vue';
 import { getNovel } from '@/api/novel';
 
 interface Chapter {
+  id: string;
   chapterTitle: string;
 }
 interface Category {
@@ -211,14 +212,15 @@ const currentTabComponent = computed(() => {
         <div v-show="volume.expanded" class="transition-all duration-300 ease-in-out">
           <div class="p-4">
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              <div v-for="(chapter, chapterIndex) in volume.chapters.slice(0, volume.showMore ? undefined : 6)" :key="chapterIndex" class="group relative">
+              <router-link v-for="(chapter, chapterIndex) in volume.chapters.slice(0, volume.showMore ? undefined : 6)" :key="chapterIndex"       :to="{ name: 'chapter', params: { novelId: novel.id, chapterId: chapter.id } }"
+                           class="group relative">
                 <div class="p-3 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow border border-gray-100 hover:border-gray-200">
                   <span class="text-sm text-gray-700 truncate block">{{ chapter.chapterTitle }}</span>
                   <div class="absolute left-1/2 transform -translate-x-1/2 bottom-full mb-2 hidden group-hover:block z-10 bg-black text-white text-xs py-1 px-2 rounded">
                     {{ chapter.chapterTitle }}
                   </div>
                 </div>
-              </div>
+              </router-link>
             </div>
             <div v-if="volume.chapters.length > 6" class="mt-4 text-center">
               <button @click="toggleShowMore(volumeIndex)" class="inline-flex items-center justify-center gap-2 px-4 py-2 text-sm text-gray-600 hover:text-gray-800 transition-colors">

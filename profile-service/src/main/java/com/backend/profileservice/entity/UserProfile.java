@@ -1,5 +1,6 @@
 package com.backend.profileservice.entity;
 
+import java.time.Instant;
 import java.time.LocalDate;
 
 import lombok.*;
@@ -17,10 +18,10 @@ public class UserProfile {
     @MongoId
     String id;
     String userId;
-    String firstName;
-    String lastName;
+    String username;
     LocalDate dateOfBirth;
-    String ward;
-    String district;
-    String province;
+    String bio;
+    String gender;
+    String avatar;
+    Instant createdAt;
 }

@@ -1,297 +1,257 @@
 <script setup lang="ts">
-import {ref, watch, computed} from 'vue';
-import Breadcrumb from '@/components/home/Breadcrumb.vue';
-import Ads from '@/components/home/Banner.vue';
-// Data for profile, passwords, and settings
+import { ref, computed, onMounted } from 'vue';
+import { getUserProfile, updateUserProfile } from "@/api/user";
+import { changePassword } from "@/api/auth";
+import store from "@/store";
+import Banner from "@/components/home/Banner.vue";
+import Tiptap from "@/components/common/Tiptap.vue";
+
 const profile = ref({
+  id: '',
+  avatar: '',
   username: '',
-  email: '',
-  gender: 'male',
-  dob: '',
+  gender: '',
+  dateOfBirth: '',
+  bio: '',
 });
 
+const email = store.getters.getEmail;
+
 const passwords = ref({
-  currentPassword: '',
+  oldPassword: '',
   newPassword: '',
   confirmPassword: '',
 });
 
-const settings = ref({
-  theme: localStorage.getItem('theme') || 'light',
-  emailNotifications: true,
-  smsNotifications: false,
-});
+const activeTab = ref('profile');
+const isDarkMode = ref(localStorage.getItem('theme') === 'dark');
 
-// Computed class for dark/light theme
-const themeClass = computed(() => {
-  return settings.value.theme === 'dark' ? 'dark' : '';
-});
-
-// Watch to persist theme setting in localStorage
-watch(() => settings.value.theme, (newTheme) => {
-  localStorage.setItem('theme', newTheme);
-});
-
-// Handle profile form submission
-const handleProfileSubmit = () => {
-  console.log('Profile Updated:', profile.value);
-  console.log('Password Updated:', passwords.value);
-  console.log('Settings Updated:', settings.value);
-
-  // Example of changing password logic
-  if (passwords.value.newPassword !== passwords.value.confirmPassword) {
-    alert('Passwords do not match!');
-  } else {
-    alert('Profile and Password Updated!');
+const fetchUserProfile = async () => {
+  try {
+    const userProfile = await getUserProfile(store.getters.getUserId);
+    profile.value = userProfile;
+  } catch (error) {
+    console.error(error);
   }
-};
+}
+
+const handleProfileSubmit = async () => {
+  try {
+    await updateUserProfile(profile.value.id, profile.value);
+    alert('Profile Updated Successfully!');
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+const handleChangePassword = async () => {
+  if (passwords.value.newPassword !== passwords.value.confirmPassword) {
+    alert('New password and confirm password do not match!');
+    return;
+  }
+
+  try {
+    await changePassword(JSON.stringify({
+      oldPassword: passwords.value.oldPassword,
+      newPassword: passwords.value.newPassword,
+      token: store.getters.getToken,
+    }));
+
+    // Reset password fields
+    passwords.value = {
+      oldPassword: '',
+      newPassword: '',
+      confirmPassword: ''
+    };
+
+    alert('Password Changed Successfully!');
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+const toggleTheme = () => {
+  isDarkMode.value = !isDarkMode.value;
+  const theme = isDarkMode.value ? 'dark' : 'light';
+  localStorage.setItem('theme', theme);
+  document.documentElement.classList.toggle('dark', isDarkMode.value);
+}
+
+const formattedDateOfBirth = computed({
+  get() {
+    return profile.value.dateOfBirth ? profile.value.dateOfBirth.split('T')[0] : '';
+  },
+  set(value) {
+    profile.value.dateOfBirth = value;
+  }
+});
+
+onMounted(() => {
+  fetchUserProfile();
+  // Initial theme setup
+  document.documentElement.classList.toggle('dark', isDarkMode.value);
+});
 </script>
+
 <template>
-  <div class="max-w-7xl mx-auto p-6">
-    <Ads class="my-4"/>
-    <Breadcrumb :breadcrumbs="[
-            { label: 'Home', href: '/' },
-            { label: 'Account', href: '/account' },
-            { label: 'Setting', href: '/setting', isCurrent: true }
-        ]"/>
-    <section class="p-5 my-2">
-      <h1 class="text-2xl font-semibold mb-4">Profile Settings</h1>
-      <!-- Profile Form -->
-      <form @submit.prevent="handleProfileSubmit">
-        <div class="space-y-6 p-4 rounded-lg">
-          <!-- Avatar và User Information Section -->
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
-            <!-- Avatar -->
-            <div class="flex justify-center md:col-span-1">
-              <div class="relative w-24 h-24">
-                <input type="file" @change="handleAvatarChange" id="avatar"
-                       class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"/>
-                <div class="relative w-full h-full overflow-hidden bg-gray-100 rounded-full">
-                  <img :src="profile.avatar || 'default-avatar.png'" alt="Avatar"
-                       class="w-full h-full object-cover"/>
-                  <div
-                      class="absolute inset-0 bg-gray-800 bg-opacity-30 flex items-center justify-center opacity-0 hover:opacity-100 transition">
-                    <svg class="w-6 h-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
-                         viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M15.172 7l-6.414 6.414M7 7h.01M13 13l4 4m0 0l-4-4m4 4H7"/>
-                    </svg>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <!-- User Information -->
-            <div
-                class="border shadow-sm p-2 bg-gray-50 md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
-              <!-- Username -->
-              <div class="relative z-0 w-full my-6 group">
-                <input type="text" name="username" id="username"
-                       class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                       v-model="profile.username" placeholder=" " required/>
-                <label for="username"
-                       class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Username</label>
-              </div>
-
-              <!-- Email -->
-              <div class="relative z-0 w-full my-6 group">
-                <input type="email" name="email" id="email"
-                       class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                       v-model="profile.email" placeholder=" " required/>
-                <label for="email"
-                       class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Email</label>
-              </div>
-
-
-              <div class="relative z-0 w-full my-6 group">
-                <select name="gender" id="gender"
-                        class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                        v-model="profile.gender" required>
-                  <option value="" disabled>Select Gender</option>
-                  <option value="male">Male</option>
-                  <option value="female">Female</option>
-                  <option value="other">Other</option>
-                </select>
-                <label for="gender"
-                       class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Gender</label>
-              </div>
-
-              <!-- Date of Birth -->
-              <div class="relative z-0 w-full my-6 group">
-                <input type="date" name="dob" id="dob"
-                       class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                       v-model="profile.dob" placeholder=" " required/>
-                <label for="dob"
-                       class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Date
-                  of Birth</label>
-              </div>
-
-            </div>
+  <Banner class="max-w-7xl mx-auto mt-5"/>
+  <div class="container mx-auto px-4 py-8 max-w-5xl min-h-screen">
+    <div class="bg-white dark:bg-gray-800 shadow-2xl rounded-2xl overflow-hidden">
+      <!-- Tab Navigation -->
+      <!-- Tab Navigation -->
+      <div class="flex bg-gray-100 dark:bg-gray-700 rounded-full p-1 mx-4 mt-4 mb-2">
+        <button
+            @click="activeTab = 'profile'"
+            class="flex-1 py-2 px-4 rounded-full text-center transition-all duration-300"
+            :class="{
+      'bg-white dark:bg-gray-800 shadow-md text-blue-600 dark:text-blue-400': activeTab === 'profile',
+      'text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-600': activeTab !== 'profile'
+    }"
+        >
+          <font-awesome-icon :icon="['fas', 'user']" class="inline-block mr-2"/> Profile
+        </button>
+        <button
+            @click="activeTab = 'security'"
+            class="flex-1 py-2 px-4 rounded-full text-center transition-all duration-300"
+            :class="{
+      'bg-white dark:bg-gray-800 shadow-md text-blue-600 dark:text-blue-400': activeTab === 'security',
+      'text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-600': activeTab !== 'security'
+    }"
+        >
+          <font-awesome-icon :icon="['fas', 'key']" class="inline-block mr-2"/> Security
+        </button>
+        <button
+            @click="activeTab = 'theme'"
+            class="flex-1 py-2 px-4 rounded-full text-center transition-all duration-300"
+            :class="{
+      'bg-white dark:bg-gray-800 shadow-md text-blue-600 dark:text-blue-400': activeTab === 'theme',
+      'text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-600': activeTab !== 'theme'
+    }"
+        >
+          <font-awesome-icon :icon="['fas', 'sun']" v-if="!isDarkMode" class="inline-block mr-2"/>
+          <font-awesome-icon :icon="['fas', 'moon']" v-else class="inline-block mr-2"/> Theme
+        </button>
+      </div>
+      <!-- Profile Tab -->
+      <div v-if="activeTab === 'profile'" class="p-6 space-y-6">
+        <div class="flex items-center space-x-6">
+          <div class="relative">
+            <img
+                :src="profile.avatar || 'default-avatar.png'"
+                alt="Profile Avatar"
+                class="w-24 h-24 rounded-full object-cover border-4 border-blue-500"
+            />
+            <input
+                type="file"
+                class="absolute inset-0 opacity-0 cursor-pointer"
+            />
           </div>
-
-          <!-- Bio -->
-          <div class="relative z-0 w-full my-6 group">
-    <textarea name="bio" id="bio"
-              class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-              v-model="profile.bio" placeholder=" " required></textarea>
-            <label for="bio"
-                   class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Bio</label>
-          </div>
-
-
-        </div>
-        <div>
-          <h2 class="text-lg font-semibold mt-7 mb-4">Notification Settings</h2>
-          <!-- Sử dụng flex và chia thành hai cột -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label class="inline-flex items-center">
-                <input type="checkbox" v-model="settings.newRead" class="form-checkbox"/>
-                <span class="ml-2 text-sm">Mới đọc</span>
-              </label>
-            </div>
-            <div>
-              <label class="inline-flex items-center">
-                <input type="checkbox" v-model="settings.newMarked" class="form-checkbox"/>
-                <span class="ml-2 text-sm">Sắp xếp truyện đánh dấu</span>
-              </label>
-            </div>
-            <div>
-              <label class="inline-flex items-center">
-                <input type="checkbox" v-model="settings.newSaved" class="form-checkbox"/>
-                <span class="ml-2 text-sm">Mới lưu</span>
-              </label>
-            </div>
-            <div>
-              <label class="inline-flex items-center">
-                <input type="checkbox" v-model="settings.chapterNotifications" class="form-checkbox"/>
-                <span class="ml-2 text-sm">Thông báo chương mới</span>
-              </label>
-            </div>
-            <div>
-              <label class="inline-flex items-center">
-                <input type="checkbox" v-model="settings.interactionNotifications"
-                       class="form-checkbox"/>
-                <span class="ml-2 text-sm">Thông báo tương tác</span>
-              </label>
-            </div>
-          </div>
-        </div>
-
-        <div>
-          <h2 class="text-lg font-semibold mt-6 mb-4">Preferences</h2>
           <div>
-            <label class="inline-flex items-center cursor-pointer">
-              <!-- Toggle switch -->
-              <input type="checkbox" v-model="settings.theme" class="sr-only peer"
-                     :checked="settings.theme === 'dark'"
-                     @change="settings.theme = $event.target.checked ? 'dark' : 'light'">
-
-              <div
-                  class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600">
-              </div>
-
-              <span class="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">Toggle
-                                Theme</span>
-            </label>
+            <h2 class="text-2xl font-bold dark:text-white">{{ profile.username }}</h2>
+            <p class="text-gray-500">{{ email }}</p>
           </div>
+        </div>
 
-        </div>
-        <div class="flex justify-end mt-4">
-          <button
-              class="text-sm bg-transparent border-[1px] border-blue-500 text-blue-500 hover:border-blue-700 hover:scale-105 font-medium py-2 px-4 rounded transition-all duration-300 flex items-center justify-center">
-            Save Changes
-          </button>
-        </div>
-      </form>
-      <!-- Change Password Form -->
-      <div class="max-w-md">
-        <form>
-          <div>
-            <h2 class="text-lg font-semibold mt-6 mb-4">Change Password</h2>
-            <div class="grid grid-cols-1 gap-4">
-              <div>
-                <label for="currentPassword" class="block text-sm font-medium text-gray-700">Current
-                  Password</label>
-                <input type="password" v-model="passwords.currentPassword" id="currentPassword"
-                       class="mt-1 block w-full p-2 border rounded-md" required/>
-              </div>
-              <div>
-                <label for="newPassword" class="block text-sm font-medium text-gray-700">New
-                  Password</label>
-                <input type="password" v-model="passwords.newPassword" id="newPassword"
-                       class="mt-1 block w-full p-2 border rounded-md" required/>
-              </div>
-              <div>
-                <label for="confirmPassword" class="block text-sm font-medium text-gray-700">Confirm New
-                  Password</label>
-                <input type="password" v-model="passwords.confirmPassword" id="confirmPassword"
-                       class="mt-1 block w-full p-2 border rounded-md" required/>
-              </div>
+        <form @submit.prevent="handleProfileSubmit" class="grid md:grid-cols-2 gap-6">
+          <div class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium dark:text-gray-300">Username</label>
+              <input
+                  v-model="profile.username"
+                  type="text"
+                  class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#889b6c] focus:border-[#889b6c] sm:text-sm"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium dark:text-gray-300">Gender</label>
+              <select
+                  v-model="profile.gender"
+                  class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#889b6c] focus:border-[#889b6c] sm:text-sm"
+              >
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="other">Other</option>
+              </select>
             </div>
           </div>
-          <div class="flex justify-end mt-4">
-            <button
-                class="text-sm bg-transparent border-[1px] border-blue-500 text-blue-500 hover:border-blue-700 hover:scale-105 font-medium py-2 px-4 rounded transition-all duration-300 flex items-center justify-center">
-              Save Changes
+          <div class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium dark:text-gray-300">Date of Birth</label>
+              <input
+                  v-model="formattedDateOfBirth"
+                  type="date"
+                  class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#889b6c] focus:border-[#889b6c] sm:text-sm"
+              />
+            </div>
+          </div>
+          <div class="md:col-span-2 space-y-4">
+            <div>
+              <label class="block text-sm font-medium dark:text-gray-300">Bio</label>
+              <Tiptap :content="profile.bio" @update:content="profile.bio = $event"/>
+            </div>
+          </div>
+          <div class="md:col-span-2 flex justify-end">
+            <button type="submit" class="px-4 py-2 text-sm font-medium text-blue-500 transition-all duration-300 border-[1px] border-blue-500 rounded hover:border-blue-700 hover:scale-105">
+              Update Profile
             </button>
           </div>
         </form>
       </div>
-      <div class="bg-white p-6 rounded-lg shadow-md mt-6">
-        <h2 class="text-xl font-semibold mb-4">Login Activity</h2>
-        <table class="min-w-full table-auto border-collapse">
-          <thead>
-          <tr class="bg-gray-100">
-            <th class="px-4 py-2 border text-left text-sm font-medium text-gray-700">Login Time</th>
-            <th class="px-4 py-2 border text-left text-sm font-medium text-gray-700">Location</th>
-            <th class="px-4 py-2 border text-left text-sm font-medium text-gray-700">Device</th>
-            <th class="px-4 py-2 border text-left text-sm font-medium text-gray-700">IP Address</th>
-          </tr>
-          </thead>
-          <tbody>
-          <tr>
-            <td class="px-4 py-2 border text-sm text-gray-900">2024-11-28 14:30</td>
-            <td class="px-4 py-2 border text-sm text-gray-900">New York, USA</td>
-            <td class="px-4 py-2 border text-sm text-gray-900">Chrome on Windows 10</td>
-            <td class="px-4 py-2 border text-sm text-gray-900">192.168.1.1</td>
-          </tr>
-          <tr>
-            <td class="px-4 py-2 border text-sm text-gray-900">2024-11-28 13:15</td>
-            <td class="px-4 py-2 border text-sm text-gray-900">London, UK</td>
-            <td class="px-4 py-2 border text-sm text-gray-900">Safari on macOS</td>
-            <td class="px-4 py-2 border text-sm text-gray-900">203.0.113.0</td>
-          </tr>
-          <tr>
-            <td class="px-4 py-2 border text-sm text-gray-900">2024-11-27 09:45</td>
-            <td class="px-4 py-2 border text-sm text-gray-900">Tokyo, Japan</td>
-            <td class="px-4 py-2 border text-sm text-gray-900">Firefox on Linux</td>
-            <td class="px-4 py-2 border text-sm text-gray-900">198.51.100.2</td>
-          </tr>
-          </tbody>
-        </table>
+
+      <!-- Security Tab -->
+      <div v-else-if="activeTab === 'security'" class="p-6 space-y-6">
+        <form @submit.prevent="handleChangePassword" class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium dark:text-gray-300">Current Password</label>
+            <input
+                v-model="passwords.oldPassword"
+                type="password"
+                class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#889b6c] focus:border-[#889b6c] sm:text-sm"
+            />
+          </div>
+          <div>
+            <label class="block text-sm font-medium dark:text-gray-300">New Password</label>
+            <input
+                v-model="passwords.newPassword"
+                type="password"
+                class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#889b6c] focus:border-[#889b6c] sm:text-sm"
+            />
+          </div>
+          <div>
+            <label class="block text-sm font-medium dark:text-gray-300">Confirm New Password</label>
+            <input
+                v-model="passwords.confirmPassword"
+                type="password"
+                class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#889b6c] focus:border-[#889b6c] sm:text-sm"
+            />
+          </div>
+          <div class="flex justify-end">
+            <button
+                type="submit"
+                class="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
+            >
+              Change Password
+            </button>
+          </div>
+        </form>
       </div>
 
-    </section>
+      <!-- Theme Tab -->
+      <div v-else-if="activeTab === 'theme'" class="p-6 space-y-6">
+        <div class="flex justify-between items-center">
+          <div>
+            <h3 class="text-lg font-medium dark:text-white">Theme</h3>
+            <p class="text-sm text-gray-500">Switch between light and dark modes</p>
+          </div>
+          <button
+              @click="toggleTheme"
+              class="p-2 rounded-full w-10 h-10 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+          >
+            <font-awesome-icon :icon="['fas', 'sun']" v-if="!isDarkMode" class="text-yellow-500"/>
+            <font-awesome-icon :icon="['fas', 'moon']"v-else class="text-indigo-500"/>
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
-
-
-
-<style scoped>
-/* Cấu hình theme tối */
-.dark {
-  background-color: #1a202c;
-  color: white;
-}
-
-.dark input,
-.dark select {
-  background-color: #2d3748;
-  color: white;
-  border-color: #4a5568;
-}
-
-button {
-  cursor: pointer;
-}
-</style>

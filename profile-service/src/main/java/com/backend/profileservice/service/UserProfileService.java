@@ -1,5 +1,6 @@
 package com.backend.profileservice.service;
 
+import java.time.Instant;
 import java.util.List;
 
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -27,13 +28,14 @@ public class UserProfileService {
 
     public UserProfileResponse createProfile(ProfileCreationRequest request) {
         UserProfile userProfile = userProfileMapper.toUserProfile(request);
+        userProfile.setCreatedAt(Instant.now());
         userProfile = userProfileRepository.save(userProfile);
         return userProfileMapper.toUserProfileResponse(userProfile);
     }
 
-    public UserProfileResponse getProfile(String id) {
+    public UserProfileResponse getProfile(String userId) {
         UserProfile userProfile =
-                userProfileRepository.findById(id).orElseThrow(() -> new RuntimeException("Profile not found"));
+                userProfileRepository.findByUserId((userId)).orElseThrow(() -> new RuntimeException("Profile not found"));
         return userProfileMapper.toUserProfileResponse(userProfile);
     }
 

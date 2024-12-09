@@ -14,10 +14,9 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ProfileCreationRequest {
     String userId;
-    String firstName;
-    String lastName;
+    String username;
     LocalDate dateOfBirth;
-    String ward;
-    String district;
-    String province;
+    String bio;
+    String gender;
+    String avatar;
 }

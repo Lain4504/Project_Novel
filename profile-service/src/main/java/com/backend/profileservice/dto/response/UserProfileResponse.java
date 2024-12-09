@@ -1,5 +1,6 @@
 package com.backend.profileservice.dto.response;
 
+import java.time.Instant;
 import java.time.LocalDate;
 
 import lombok.AccessLevel;
@@ -14,11 +15,11 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserProfileResponse {
     String id;
-    String firstName;
-    String lastName;
+    String userId;
+    String username;
     LocalDate dateOfBirth;
-    String street;
-    String ward;
-    String district;
-    String province;
+    String bio;
+    String gender;
+    String avatar;
+    Instant createdAt;
 }

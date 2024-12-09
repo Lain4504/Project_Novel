@@ -1,7 +1,7 @@
 import axios from '../utils/axiosInstance';
 
 const USER_API = '/identity/users';
-const PROFILE_API = '/profile';
+const PROFILE_API = '/profile/users';
 interface AccountRequest {
     email: string;
     password: string;
@@ -17,9 +17,12 @@ const getMyInfo = () => {
         .then(response => response.data.result);
 };
 
-const getUserProfile = (id: string) => {
-    return axios.get(`${PROFILE_API}/${id}`)
+const getUserProfile = (userId: string) => {
+    return axios.get(`${PROFILE_API}/${userId}`)
         .then(response => response.data.result);
 };
-
-export {register, getMyInfo, getUserProfile};
+const updateUserProfile = (id: string, data: any) => {
+    return axios.put(`${PROFILE_API}/${id}`, data)
+        .then(response => response.data.result);
+}
+export {register, getMyInfo, getUserProfile, updateUserProfile};
