@@ -7,7 +7,7 @@ const createNovel = (data: FormData) => {
         }
     }).then((response) => response.data.result);
 }
-const updateNovel = (id: string, data: FormData) => {
+const updateNovel = (id: string, data: FormData | null) => {
     return axios.put(`${NOVEL_API}/update/${id}`, data, {
         headers: {
             'Content-Type': 'multipart/form-data'

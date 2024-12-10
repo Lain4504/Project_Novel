@@ -55,13 +55,13 @@ public class NovelService {
         novel.setCreatedDate(Instant.now());
         novel.setUpdateDateTime(Instant.now());
         if (imageFile != null && !imageFile.isEmpty()) {
-            Image image = imageService.uploadImage(novel.getId(), imageFile);
+            Image image = imageService.uploadImage(imageFile);
             novel.setImage(image);
         }
         novel = novelRepository.save(novel);
         return novelMapper.toNovelResponse(novel);
     }
-   public NovelResponse updateNovel(String novelId, NovelUpdateRequest request, MultipartFile imageFile) {
+public NovelResponse updateNovel(String novelId, NovelUpdateRequest request, MultipartFile imageFile) {
     var novel = novelRepository.findById(novelId).orElseThrow(() -> new IllegalArgumentException("Novel with id " + novelId + " not found"));
     if (novelRepository.existsByTitle(request.getTitle()) && !novel.getTitle().equals(request.getTitle())) {
         throw new IllegalArgumentException("Novel with title " + request.getTitle() + " already exists");
@@ -73,17 +73,19 @@ public class NovelService {
     novel.setUpdateDateTime(Instant.now());
 
     if (imageFile != null && !imageFile.isEmpty()) {
-        if (novel.getImage() != null) {
+        if (novel.getImage() != null && !novel.getImage().getPath().equals(request.getImageUrl())) {
             imageService.deleteImage(novel.getImage().getId());
+            Image newImage = imageService.uploadImage(imageFile);
+            novel.setImage(newImage);
         }
-        Image newImage = imageService.uploadImage(novel.getId(), imageFile);
+    } else if (novel.getImage() == null || !novel.getImage().getPath().equals(request.getImageUrl())) {
+        Image newImage = imageService.uploadImage(imageFile);
         novel.setImage(newImage);
     }
 
     novel = novelRepository.save(novel);
     return novelMapper.toNovelResponse(novel);
-}
-    public void deleteNovel(String novelId) {
+}    public void deleteNovel(String novelId) {
         novelRepository.deleteById(novelId);
     }
     public NovelResponse getNovel(String novelId) {

@@ -21,6 +21,6 @@ public class Image {
      String id;
      String name;
      String type;
-     byte[] data;
+     String path;
      Instant createdAt;
 }

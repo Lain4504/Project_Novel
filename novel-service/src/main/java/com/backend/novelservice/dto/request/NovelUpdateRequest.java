@@ -17,7 +17,7 @@ import java.util.List;
 public class NovelUpdateRequest {
     String title;
     List<String> categories;
-    String coverPicture;
+    String imageUrl;
     String authorId;
     String authorName;
     String description;
