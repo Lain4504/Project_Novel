@@ -15,7 +15,7 @@ const gameAds = ref<GameAd[]>([
   {
     id: 1,
     title: "TRỞ LẠI 1982",
-    subtitle: "LÀNG CHÀI NHỎ",
+    subtitle: "LÀM TRÙM XÃ HỘI ĐEN",
     backgroundImage: "/path-to-banner-bg.jpg",
     logo: "/path-to-game-logo.png",
     className: "font-game" // Custom class for game-style font

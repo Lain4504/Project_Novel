@@ -103,5 +103,6 @@ const viewPost = (row: any) => {
       @edit="handleEdit"
       @delete="handleDelete"
       @view="viewPost"
+      :show-go-to-page="true"
   />
 </template>

@@ -53,6 +53,9 @@ const store = createStore({
         },
         getUserId(state): string | null {
             return state.user ? state.user.id : null;
+        },
+        getEmail(state): string | null {
+            return state.user ? state.user.email : null;
         }
     }
 });

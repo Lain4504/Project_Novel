@@ -83,6 +83,7 @@ const handleView = (row: any) =>{
       @edit="handleEdit"
       @view="handleView"
       @delete="handleDelete"
-      />
+      :show-go-to-page="true"
+  />
 </template>
 

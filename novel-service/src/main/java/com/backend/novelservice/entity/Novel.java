@@ -41,9 +41,7 @@ public class Novel {
     Integer isVip;
     Instant createdDate;
     Instant updateDateTime;
+    List<String> volumeIds;
     @DBRef
-    @JsonBackReference
-    private List<NovelVolume> volumes;
-    @DBRef
-    private Image image;
+    Image image;
 }

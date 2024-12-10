@@ -7,6 +7,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.MongoId;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
@@ -24,12 +25,8 @@ public class NovelVolume {
     String status;
     int volumeNumber;
     int chapterCount;
-    LocalDateTime createdDate;
-    LocalDateTime modifiedDate;
-    @DBRef
-    @JsonBackReference
-    private Novel novel;
-    @DBRef
-    @JsonIgnore // Không trả danh sách chapters khi gọi API `getNovel`
-    private List<NovelChapter> chapters;
+    Instant createdDate;
+    Instant modifiedDate;
+    String novelId;
+    List<String> chapterIds;
 }

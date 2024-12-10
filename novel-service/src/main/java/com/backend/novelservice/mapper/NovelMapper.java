@@ -11,17 +11,11 @@ import org.mapstruct.MappingTarget;
 @Mapper(componentModel = "spring")
 public interface NovelMapper {
     // Map NovelCreationRequest to Novel, ignoring volumes and categories
-    @Mapping(target = "volumes", ignore = true)
     @Mapping(target = "categories", ignore = true)
     Novel toNovel(NovelCreationRequest request);
-
-    // Map Novel to NovelResponse, including image
-    @Mapping(target = "volumes", source = "volumes")
-    @Mapping(target = "volumes.chapters", ignore = true) // Important
     NovelResponse toNovelResponse(Novel novel);
 
     // Update Novel with NovelUpdateRequest, ignoring volumes and categories
-    @Mapping(target = "volumes", ignore = true)
     @Mapping(target = "categories", ignore = true)
     void updateNovel(@MappingTarget Novel novel, NovelUpdateRequest request);
 }

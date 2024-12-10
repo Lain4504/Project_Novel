@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
@@ -21,7 +22,8 @@ public class NovelVolumeRequest {
     String status;
     int volumeNumber;
     int chapterCount;
-    LocalDateTime createdDate;
-    LocalDateTime modifiedDate;
+    Instant createdDate;
+    Instant modifiedDate;
+    String novelId;
     Set<String> chapters;
 }

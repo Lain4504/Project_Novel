@@ -30,6 +30,4 @@ public class NovelChapter {
     Boolean isVip;
     Instant createdDate;
     Instant updateDateTime;
-    @DBRef
-    private NovelVolume volume;
 }

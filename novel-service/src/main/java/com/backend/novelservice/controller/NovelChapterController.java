@@ -4,6 +4,7 @@ import com.backend.dto.response.ApiResponse;
 import com.backend.dto.response.PageResponse;
 import com.backend.novelservice.dto.request.NovelChapterRequest;
 import com.backend.novelservice.dto.response.NovelChapterResponse;
+import com.backend.novelservice.entity.NovelChapter;
 import com.backend.novelservice.service.NovelChapterService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +12,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/novel-chapters")
@@ -52,6 +54,27 @@ public class NovelChapterController {
         return ApiResponse.<List<NovelChapterResponse>>builder()
                 .result(novelChapterService.getChaptersByVolumeId(volumeId)).build();
     }
+    @GetMapping("/{volumeId}/{chapterNumber}")
+    public ApiResponse<NovelChapter> getChapter(@PathVariable String volumeId, @PathVariable Integer chapterNumber) {
+        Optional<NovelChapter> chapter = novelChapterService.getChapterByNumber(volumeId, chapterNumber);
+        return ApiResponse.<NovelChapter>builder()
+                .result(chapter.orElse(null)).build();
+    }
 
+    // API lấy chapter trước đó
+    @GetMapping("/{volumeId}/{chapterNumber}/previous")
+    public ApiResponse<NovelChapter> getPreviousChapter(@PathVariable String volumeId, @PathVariable Integer chapterNumber) {
+        Optional<NovelChapter> previousChapter = novelChapterService.getPreviousChapter(volumeId, chapterNumber);
+        return ApiResponse.<NovelChapter>builder()
+                .result(previousChapter.orElse(null)).build();
+    }
+
+    // API lấy chapter sau đó
+    @GetMapping("/{volumeId}/{chapterNumber}/next")
+    public ApiResponse<NovelChapter> getNextChapter(@PathVariable String volumeId, @PathVariable Integer chapterNumber) {
+        Optional<NovelChapter> nextChapter = novelChapterService.getNextChapter(volumeId, chapterNumber);
+        return ApiResponse.<NovelChapter>builder()
+                .result(nextChapter.orElse(null)).build();
+    }
 
 }

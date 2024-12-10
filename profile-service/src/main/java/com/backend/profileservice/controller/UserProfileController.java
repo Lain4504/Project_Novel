@@ -17,30 +17,31 @@ import lombok.experimental.FieldDefaults;
 @RestController
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@RequestMapping("/users")
 public class UserProfileController {
     UserProfileService userProfileService;
 
-    @GetMapping("/users/{profileId}")
-    ApiResponse<UserProfileResponse> getUserProfile(@PathVariable String profileId) {
+    @GetMapping("/{userId}")
+    ApiResponse<UserProfileResponse> getUserProfile(@PathVariable String userId) {
         return ApiResponse.<UserProfileResponse>builder()
-                .result(userProfileService.getProfile(profileId)).
+                .result(userProfileService.getProfile(userId)).
                 build();
     }
 
-    @DeleteMapping("/users/{profileId}")
+    @DeleteMapping("/{profileId}")
     ApiResponse<Void> deleteUserProfile(@PathVariable String profileId) {
         userProfileService.deleteProfile(profileId);
         return ApiResponse.<Void>builder().build();
     }
 
-    @PutMapping("/users/{profileId}")
+    @PutMapping("/{profileId}")
     ApiResponse<UserProfileResponse> updateUserProfile(
             @PathVariable String profileId, @RequestBody UserProfileUpdateRequest request) {
       return ApiResponse.<UserProfileResponse>builder()
               .result(userProfileService.updateProfile(profileId, request)).build();
     }
 
-    @GetMapping("/users")
+    @GetMapping("/getall")
     ApiResponse<List<UserProfileResponse>> getAllProfiles() {
         return ApiResponse.<List<UserProfileResponse>>builder().result(userProfileService.getAllProfiles()).build();
     }
