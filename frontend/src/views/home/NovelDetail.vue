@@ -29,7 +29,7 @@ interface Novel {
     id: string;
     name: string;
     type: string;
-    data: string;
+    path: string;
   };
 }
 const novel = ref<Novel | Record<string, any>>({});
@@ -137,7 +137,7 @@ const currentTabComponent = computed(() => {
   <div class="bg-gray-50 p-6 rounded-lg shadow-lg max-w-7xl mx-auto">
     <div class="flex flex-col lg:flex-row items-center space-y-6 lg:space-y-0 lg:space-x-8">
       <div class="w-full lg:w-1/4 flex justify-center">
-        <img src="/src/assets/logo.jpg" class="w-56 h-72 object-cover rounded-lg shadow-lg" alt="Novel Cover" />
+        <img :src="novel.image?.path" class="w-56 h-72 object-cover rounded-lg shadow-lg" alt="Novel Cover" />
       </div>
       <div class="w-full lg:w-3/4 space-y-4 text-left lg:text-left">
         <h1 class="text-xl font-semibold text-gray-800 hover:text-[#728156]">{{ novel.title }}</h1>
@@ -241,7 +241,6 @@ const currentTabComponent = computed(() => {
     </div>
   </div>
 </template>
-
 <style scoped>
 .sharing-box {
   display: none;

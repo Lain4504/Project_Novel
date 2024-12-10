@@ -30,7 +30,7 @@ public class NovelController {
                 .result(novelService.createNovel(request, imageFile)).build();
     }
     @PutMapping("/update/{novelId}")
-    ApiResponse<NovelResponse> updateNovel(@PathVariable("novelId") String novelId, @RequestPart("novel") NovelUpdateRequest request, @RequestPart("image") MultipartFile imageFile) {
+    ApiResponse<NovelResponse> updateNovel(@PathVariable("novelId") String novelId, @RequestPart("novel") NovelUpdateRequest request, @RequestPart(value= "image", required = false) MultipartFile imageFile) {
         return ApiResponse.<NovelResponse>builder()
                 .result(novelService.updateNovel(novelId, request, imageFile)).build();
     }

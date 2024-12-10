@@ -28,7 +28,7 @@ const state = reactive({
   description: props.novel.description || "",
   status: props.novel.bookStatus || "ongoing",
   categories: props.novel.categories || [],
-  imageUrl: props.novel.image ? `/images/${props.novel.image.id}` : ""
+  imageUrl: props.novel.image.path || ""
 });
 
 const selectedCategories = ref<string[]>(state.categories.map((cat: { name: string }) => cat.name));
@@ -71,7 +71,8 @@ const handleSubmit = async () => {
     authorName: state.author,
     description: state.description,
     categories: categoryIds,
-    status: state.status
+    status: state.status,
+    imageUrl: state.imageUrl // Include the old image URL
   };
 
   const formData = new FormData();
@@ -109,7 +110,6 @@ onMounted(() => {
   loadCategories();
 });
 </script>
-
 <template>
   <main class="flex-1 p-6 bg-[#f8f8f7] shadow-sm">
     <h1>Edit Novel</h1>
@@ -142,7 +142,7 @@ onMounted(() => {
                class="bg-white block w-full text-sm text-gray-900 border rounded-lg cursor-pointer bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:text-gray-400 dark:bg-gray-800 dark:border-gray-600 dark:focus:ring-blue-400 dark:focus:border-blue-400 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" />
         <p class="text-sm text-gray-500">SVG, PNG, JPG, or GIF (MAX. 800x400px)</p>
         <div v-if="state.imageUrl" class="mt-4">
-          <img :src="state.imageUrl" alt="Selected image" class="object-cover w-32 h-32 rounded-lg border border-gray-300 shadow-sm"/>
+          <img :src="state.imageUrl" alt="Selected image" class="object-cover w-48 h-60 rounded-lg border border-gray-300 shadow-sm"/>
         </div>
       </div>
       <div class="mt-4 relative">

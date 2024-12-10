@@ -73,18 +73,16 @@ const saveNovel = async () => {
     console.log("Novel saved successfully:", novelResponse);
     showNotification("success", "Novel saved successfully.");
   } catch (error: any) {
-    console.error('Failed to update novel:', error);
+    console.error('Failed to save novel:', error);
     if (error.response) {
-      showNotification('danger', error.response.data.message || 'Novel update failed. Please try again.');
+      showNotification('danger', error.response.data.message || 'Novel save failed. Please try again.');
     } else if (error.request) {
       showNotification('danger', 'No response from server. Please try again.');
     } else {
       showNotification('danger', 'An unexpected error occurred. Please try again.');
     }
   }
-};
-
-const isSelected = (category: string) => {
+};const isSelected = (category: string) => {
   const selectedCategory = categories.value.find(cat => cat.value === category)?.label;
   return selectedCategories.value.includes(selectedCategory || '');
 };
@@ -146,7 +144,7 @@ onMounted(() => {
           <p class="text-sm text-gray-500">SVG, PNG, JPG, or GIF (MAX. 800x400px)</p>
           <div v-if="selectedImage" class="mt-4">
             <div
-                class="relative w-32 h-32 overflow-hidden rounded-lg border border-gray-300 shadow-sm">
+                class="relative w-48 h-60 overflow-hidden rounded-lg border border-gray-300 shadow-sm">
               <img :src="imageUrl" alt="Selected image" class="object-cover w-full h-full" />
             </div>
           </div>

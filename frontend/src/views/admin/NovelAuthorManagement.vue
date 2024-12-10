@@ -36,7 +36,7 @@ interface Novel {
     id: string;
     name: string;
     type: string;
-    data: string;
+    path: string;
   };
 }
 
@@ -87,6 +87,7 @@ const fetchChaptersForVolume = async (volumeId: string) => {
 const refreshNovelData = async () => {
   try {
     const novelData = await getNovel(id);
+    console.log(novelData);
     novel.value = {
       id: novelData.id,
       title: novelData.title,
@@ -94,7 +95,6 @@ const refreshNovelData = async () => {
       description: novelData.description,
       bookStatus: novelData.bookStatus,
       categories: novelData.categories,
-      coverPicture: novelData.coverPicture,
       image: novelData.image,
     };
 

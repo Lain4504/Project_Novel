@@ -1,26 +1,34 @@
 package com.backend.novelservice.service;
+
 import com.backend.exception.AppException;
 import com.backend.exception.ErrorCode;
+import com.backend.novelservice.service.httpclient.ImgurClient;
+import com.backend.novelservice.service.httpclient.ImgurResponse;
 import com.backend.novelservice.entity.Image;
 import com.backend.novelservice.repository.ImageRepository;
 import com.backend.utils.FileUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.Instant;
-import java.util.List;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE, makeFinal = true)
 public class ImageService {
-    private final ImageRepository imageRepository;
-    private final FileUtils fileUtils;
+    ImageRepository imageRepository;
+    FileUtils fileUtils;
+    ImgurClient imgurClient;
 
+    @Value("${imgur.client-id}")
+    @NonFinal
+    protected String clientId;
 
     public Image getImage(String id) {
         return imageRepository.findById(id).orElseThrow(() -> {
@@ -28,19 +36,22 @@ public class ImageService {
         });
     }
 
-    public Image uploadImage(String novelId, MultipartFile file) {
+    public Image uploadImage(MultipartFile file) {
         fileUtils.validateFile(file);
 
         try {
-            String fileName = UUID.randomUUID().toString() + "_" + StringUtils.cleanPath(file.getOriginalFilename());
+            String authorization = "Client-ID " + clientId;
+            ImgurResponse response = imgurClient.uploadImage(authorization, file);
+            ImgurResponse.Data data = response.getData();
+
             Image image = new Image();
-            image.setName(fileName);
-            image.setType(file.getContentType());
-            image.setData(file.getBytes());
+            image.setName(data.getId());
+            image.setType(data.getType());
+            image.setPath(data.getLink());
             image.setCreatedAt(Instant.now());
             return imageRepository.save(image);
         } catch (Exception e) {
-            throw new RuntimeException("Upload image error");
+            throw new RuntimeException("Upload image error", e);
         }
     }
 
