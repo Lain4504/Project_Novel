@@ -40,9 +40,7 @@ public class NovelService {
     NovelRepository novelRepository;
     NovelCategoryRepository novelCategoryRepository;
     NovelMapper novelMapper;
-    NovelCategoryMapper novelCategoryMapper;
     DateTimeFormatter dateTimeFormatter;
-    NovelVolumeRepository novelVolumeRepository;
     ImageService imageService;
     public NovelResponse createNovel(NovelCreationRequest request,  MultipartFile imageFile) {
         if (novelRepository.existsByTitle(request.getTitle())) {

@@ -5,6 +5,8 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.MongoId;
 
+import java.time.Instant;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -17,4 +19,6 @@ public class UserReview {
     String userId;
     String novelId;
     String review;
+    Instant createdAt;
+    Instant updatedAt;
 }

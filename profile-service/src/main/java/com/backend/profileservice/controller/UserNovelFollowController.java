@@ -19,8 +19,7 @@ public class UserNovelFollowController {
     UserNovelFollowService userNovelFollowService;
     @PostMapping("/follow")
     public ApiResponse<UserNovelFollowResponse> followNovel(@RequestBody UserNovelFollowRequest request) {
-        userNovelFollowService.followNovel(request);
-        return ApiResponse.<UserNovelFollowResponse>builder().build();
+        return ApiResponse.<UserNovelFollowResponse>builder().result(userNovelFollowService.followNovel(request)).build();
     }
     @PostMapping("/unfollow")
     public ApiResponse<Void> unfollowNovel(@RequestBody UserNovelFollowRequest request) {
