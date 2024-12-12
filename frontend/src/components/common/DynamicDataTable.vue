@@ -85,36 +85,40 @@ const inputPage = ref<number | null>(null);
           </th>
         </tr>
         </thead>
-        <tbody>
-        <tr v-for="(row, rowIndex) in props.rows" :key="rowIndex"
-            class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-          <td v-for="column in props.columns" :key="column.field" class="py-4 px-6 dark:text-white">
-            <template v-if="column.isAction">
-              <div class="flex justify-center items-center space-x-3">
-                <button v-if="props.emits.includes('view')" @click="$emit('view', row)"
-                        class="bg-transparent border-[1px] border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-white font-medium py-2 px-3 rounded transition duration-300 flex items-center">
-                  <font-awesome-icon :icon="['far', 'eye']"/>
-                </button>
-                <button v-if="props.emits.includes('edit')" @click="$emit('edit', row)"
-                        class="bg-transparent border-[1px] border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white font-medium py-2 px-3 rounded transition duration-300 flex items-center">
-                  <font-awesome-icon :icon="['fas', 'pen']"/>
-                </button>
-                <button v-if="props.emits.includes('delete')" @click="$emit('delete', row)"
-                        class="bg-transparent border-[1px] border-red-500 text-red-500 hover:bg-red-500 hover:text-white font-medium py-2 px-3 rounded transition duration-300 flex items-center">
-                  <font-awesome-icon :icon="['fas', 'trash']"/>
-                </button>
-              </div>
-            </template>
-            <template v-else-if="column.renderCell">
-              {{ column.renderCell(row) }}
-            </template>
-            <template v-else>
-              {{ row[column.field] }}
-            </template>
-          </td>
-        </tr>
-        </tbody>
-      </table>
+<tbody>
+  <tr v-if="props.rows.length === 0" class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+    <td :colspan="props.columns.length" class="py-4 px-6 text-center text-gray-500 dark:text-gray-400">
+      Không có dữ liệu
+    </td>
+  </tr>
+  <tr v-else v-for="(row, rowIndex) in props.rows" :key="rowIndex"
+      class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+    <td v-for="column in props.columns" :key="column.field" class="py-4 px-6 dark:text-white">
+      <template v-if="column.isAction">
+        <div class="flex justify-center items-center space-x-3">
+          <button v-if="props.emits.includes('view')" @click="$emit('view', row)"
+                  class="bg-transparent border-[1px] border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-white font-medium py-2 px-3 rounded transition duration-300 flex items-center">
+            <font-awesome-icon :icon="['far', 'eye']"/>
+          </button>
+          <button v-if="props.emits.includes('edit')" @click="$emit('edit', row)"
+                  class="bg-transparent border-[1px] border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white font-medium py-2 px-3 rounded transition duration-300 flex items-center">
+            <font-awesome-icon :icon="['fas', 'pen']"/>
+          </button>
+          <button v-if="props.emits.includes('delete')" @click="$emit('delete', row)"
+                  class="bg-transparent border-[1px] border-red-500 text-red-500 hover:bg-red-500 hover:text-white font-medium py-2 px-3 rounded transition duration-300 flex items-center">
+            <font-awesome-icon :icon="['fas', 'trash']"/>
+          </button>
+        </div>
+      </template>
+      <template v-else-if="column.renderCell">
+        {{ column.renderCell(row) }}
+      </template>
+      <template v-else>
+        {{ row[column.field] }}
+      </template>
+    </td>
+  </tr>
+</tbody>      </table>
     </div>
 
     <!-- Pagination -->

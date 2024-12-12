@@ -8,7 +8,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.MongoId;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Setter
 @Getter
@@ -16,12 +16,11 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 @Document(value = "user_book_follow")
-public class UserBookFollow {
+public class UserNovelFollow {
     @MongoId
     String id;
     String userId;
     String novelId;
-    LocalDateTime createdDate;
-    LocalDateTime modifiedDate;
-    boolean isNotify;
+    Instant createdDate;
+    Instant modifiedDate;
 }

@@ -2,9 +2,10 @@
 import Ads from '@/components/home/Banner.vue';
 import Breadcrumb from '@/components/home/Breadcrumb.vue';
 
-import { ref, onMounted } from 'vue';
+import {ref, onMounted, reactive} from 'vue';
 import { getUserProfile } from '@/api/user';
 import store from '@/store';
+import {getNovelsByAuthorId} from "@/api/novel";
 
 const userProfile = ref({
   id: '',
@@ -20,6 +21,20 @@ const userProfile = ref({
   ratings: '',
   publishedNovels: '',
 });
+const novels = ref<any[]>([]);
+const currentPage = ref(1);
+const pageSize = 3;
+const totalPages = ref(1);
+
+const fetchNovelsData = async (page: number, size: number) => {
+  try {
+    const novelsData = await getNovelsByAuthorId(store.getters.getUserId, page, size);
+    novels.value = novelsData.data;
+    totalPages.value = novelsData.totalPages;
+  } catch (error) {
+    console.error('Error fetching novels data:', error);
+  }
+};
 
 const fetchUserProfile = async () => {
   try {
@@ -30,32 +45,18 @@ const fetchUserProfile = async () => {
   }
 };
 
-onMounted(fetchUserProfile);
-
-const publishedNovels = ref([
-  {
-    id: 1,
-    title: 'The Dark Chronicles',
-    image: 'https://via.placeholder.com/150',
-    description: 'A dark and mysterious adventure of epic proportions.',
-    author: 'John Doe',
-    genre: 'Fantasy',
-    lastUpdated: '2024-11-25',
-    chapters: 1304
-  },
-  {
-    id: 2,
-    title: 'Journey of the Lost Kingdom',
-    image: 'https://via.placeholder.com/150',
-    description: 'Follow the journey of a young prince to reclaim his kingdom.',
-    author: 'Jane Smith',
-    genre: 'Adventure',
-    lastUpdated: '2024-11-20',
-    chapters: 876
+const goToPage = (page: number) => {
+  if (page > 0 && page <= totalPages.value) {
+    currentPage.value = page;
+    fetchNovelsData(page, pageSize);
   }
-]);
-</script>
+};
 
+onMounted(() => {
+  fetchNovelsData(currentPage.value, pageSize);
+  fetchUserProfile();
+});
+</script>
 <template>
   <div class="bg-gray-50 min-h-screen">
     <div class="max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8">
@@ -109,12 +110,12 @@ const publishedNovels = ref([
 
           <div class="space-y-6">
             <div
-                v-for="novel in publishedNovels"
+                v-for="novel in novels"
                 :key="novel.id"
                 class="flex items-center space-x-6 pb-6 border-b last:border-b-0 hover:bg-gray-50 p-4 rounded-lg transition-all"
             >
               <img
-                  :src="novel.image"
+                  :src="novel.image.path"
                   alt="Novel Cover"
                   class="w-32 h-48 object-cover rounded-lg shadow-md"
               />
@@ -122,18 +123,41 @@ const publishedNovels = ref([
                 <h3 class="text-xl font-bold text-gray-900 mb-2">{{ novel.title }}</h3>
                 <div class="space-y-2 mb-4">
                   <p class="text-sm text-gray-600">
-                    <span class="font-semibold">Author:</span> {{ novel.author }}
+                    <span class="font-semibold">Author:</span> {{ novel.authorName }}
                   </p>
-                  <p class="text-sm text-gray-600">
-                    <span class="font-semibold">Genre:</span> {{ novel.genre }}
+                  <p class="text-sm text-gray-600 font-semibold">
+                    Genres:
+                    <span class="font-normal"
+                          v-for="(category, index) in novel.categories"
+                          :key="index"
+                    >{{ category.name }}{{ index < novel.categories.length - 1 ? ', ' : '' }}</span>
                   </p>
-                  <p class="text-sm text-gray-500 italic">{{ novel.description }}</p>
+                  <p v-html="novel.description" class="text-sm text-gray-500 italic"/>
                 </div>
                 <div class="flex justify-between text-sm text-gray-500">
                   <span>{{ novel.chapters }} Chapters</span>
-                  <span>Last Updated: {{ novel.lastUpdated }}</span>
+                  <span>Last Updated: {{ novel.created }}</span>
                 </div>
               </div>
+            </div>
+          </div>
+
+          <!-- Pagination -->
+          <div class="flex flex-col items-center my-4">
+            <div class="flex justify-center mb-2">
+              <button @click="goToPage(1)" :disabled="currentPage === 1"
+                      class="px-3 py-1 mx-1 text-sm text-gray-400 rounded hover:bg-[#BA5B38]">
+                Đầu
+              </button>
+              <button v-for="page in totalPages" :key="page" @click="goToPage(page)"
+                      class="px-3 py-1 mx-1 text-sm rounded hover:bg-[#BA5B38] hover:text-[#F8F8F7]"
+                      :class="{'bg-[#C96442] text-white': page === currentPage, 'text-[#BA5B38]': page !== currentPage}">
+                {{ page }}
+              </button>
+              <button @click="goToPage(totalPages)" :disabled="currentPage === totalPages"
+                      class="px-3 py-1 mx-1 text-sm text-gray-400 rounded hover:bg-[#BA5B38]">
+                Cuối
+              </button>
             </div>
           </div>
         </div>
@@ -141,7 +165,3 @@ const publishedNovels = ref([
     </div>
   </div>
 </template>
-
-<style scoped>
-/* Additional custom styles can be added here if needed */
-</style>

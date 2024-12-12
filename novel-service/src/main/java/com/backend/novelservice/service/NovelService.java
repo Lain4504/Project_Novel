@@ -131,4 +131,21 @@ public NovelResponse updateNovel(String novelId, NovelUpdateRequest request, Mul
     }
 
 
+    public PageResponse<NovelResponse> getNovelsByAuthor(String authorId, int page, int size) {
+        Sort sort = Sort.by(Sort.Order.desc("createdDate"));
+        Pageable pageable = PageRequest.of(page - 1, size, sort);
+        var pageData = novelRepository.findByAuthorId(authorId, pageable);
+        var novelList = pageData.getContent().stream().map(novel -> {
+            var novelResponse = novelMapper.toNovelResponse(novel);
+            novelResponse.setCreated(dateTimeFormatter.format(novel.getCreatedDate()));
+            return novelResponse;
+        }).toList();
+        return PageResponse.<NovelResponse>builder()
+                .currentPage(page)
+                .pageSize(pageData.getSize())
+                .totalPages(pageData.getTotalPages())
+                .totalElements(pageData.getTotalElements())
+                .data(novelList)
+                .build();
+    }
 }

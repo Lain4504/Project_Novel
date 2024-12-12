@@ -7,11 +7,13 @@ import com.backend.novelservice.dto.response.NovelCategoryResponse;
 import com.backend.novelservice.dto.response.NovelResponse;
 import com.backend.dto.response.PageResponse;
 import com.backend.novelservice.dto.response.NovelVolumeResponse;
+import com.backend.novelservice.entity.Novel;
 import com.backend.novelservice.entity.NovelVolume;
 import com.backend.novelservice.service.NovelService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -59,5 +61,15 @@ public class NovelController {
     {
         return ApiResponse.<PageResponse<NovelResponse>>builder()
                 .result(novelService.getMyNovels(page, size)).build();
+    }
+    @GetMapping("author/{authorId}")
+    ApiResponse<PageResponse<NovelResponse>> getNovelsByAuthor(
+            @PathVariable("authorId") String authorId,
+            @RequestParam(value = "page", required = false, defaultValue = "1") int page,
+            @RequestParam(value = "size", required = false, defaultValue = "10") int size
+    )
+    {
+        return ApiResponse.<PageResponse<NovelResponse>>builder()
+                .result(novelService.getNovelsByAuthor(authorId, page, size)).build();
     }
 }
