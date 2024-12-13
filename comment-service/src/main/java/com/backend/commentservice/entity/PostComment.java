@@ -6,20 +6,21 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.MongoId;
 
 import java.time.LocalDateTime;
+
 @Getter
 @Setter
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
-@Document(value = "comment_reply")
-public class CommentReply {
+@FieldDefaults(level = lombok.AccessLevel.PRIVATE)
+@Builder
+@Document(value = "post_comment")
+public class PostComment {
     @MongoId
     String id;
-    String commentId;
+    String postId;
     String userId;
-    String replyContent;
-    String replyTo;
+    String content;
+    Integer replyCount;
     LocalDateTime createdDate;
     LocalDateTime updateDateTime;
 }
