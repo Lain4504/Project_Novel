@@ -18,5 +18,5 @@ public class UserProfileUpdateRequest {
     LocalDate dateOfBirth;
     String bio;
     String gender;
-    String avatar;
+    String imageUrl;
 }

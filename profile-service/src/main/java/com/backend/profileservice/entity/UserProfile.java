@@ -5,6 +5,7 @@ import java.time.LocalDate;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.MongoId;
 
@@ -22,6 +23,7 @@ public class UserProfile {
     LocalDate dateOfBirth;
     String bio;
     String gender;
-    String avatar;
+    @DBRef
+    Image image;
     Instant createdAt;
 }

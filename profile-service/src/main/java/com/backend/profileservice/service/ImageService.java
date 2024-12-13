@@ -1,11 +1,11 @@
-package com.backend.novelservice.service;
+package com.backend.profileservice.service;
 
 import com.backend.exception.AppException;
 import com.backend.exception.ErrorCode;
-import com.backend.novelservice.repository.httpclient.ImgurClient;
-import com.backend.novelservice.repository.httpclient.ImgurResponse;
-import com.backend.novelservice.entity.Image;
-import com.backend.novelservice.repository.ImageRepository;
+import com.backend.profileservice.entity.Image;
+import com.backend.profileservice.repository.ImageRepository;
+import com.backend.profileservice.repository.httpclient.ImgurClient;
+import com.backend.profileservice.repository.httpclient.ImgurResponse;
 import com.backend.utils.FileUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;

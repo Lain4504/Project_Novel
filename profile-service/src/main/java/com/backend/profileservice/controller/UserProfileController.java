@@ -13,6 +13,7 @@ import com.backend.profileservice.dto.response.UserProfileResponse;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
@@ -27,20 +28,20 @@ public class UserProfileController {
                 .result(userProfileService.getProfile(userId)).
                 build();
     }
-
     @DeleteMapping("/{profileId}")
     ApiResponse<Void> deleteUserProfile(@PathVariable String profileId) {
         userProfileService.deleteProfile(profileId);
         return ApiResponse.<Void>builder().build();
     }
-
     @PutMapping("/{profileId}")
     ApiResponse<UserProfileResponse> updateUserProfile(
-            @PathVariable String profileId, @RequestBody UserProfileUpdateRequest request) {
+            @PathVariable String profileId,
+            @RequestPart("profile") UserProfileUpdateRequest request,
+            @RequestPart("image") MultipartFile imageFile )
+    {
       return ApiResponse.<UserProfileResponse>builder()
-              .result(userProfileService.updateProfile(profileId, request)).build();
+              .result(userProfileService.updateProfile(profileId, request, imageFile)).build();
     }
-
     @GetMapping("/getall")
     ApiResponse<List<UserProfileResponse>> getAllProfiles() {
         return ApiResponse.<List<UserProfileResponse>>builder().result(userProfileService.getAllProfiles()).build();
