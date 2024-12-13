@@ -120,7 +120,9 @@ onMounted(() => {
                   class="w-32 h-48 object-cover rounded-lg shadow-md"
               />
               <div class="flex-1">
+                <router-link :to='`noveldetail/${novel.id}`'>
                 <h3 class="text-xl font-bold text-gray-900 mb-2">{{ novel.title }}</h3>
+                </router-link>
                 <div class="space-y-2 mb-4">
                   <p class="text-sm text-gray-600">
                     <span class="font-semibold">Author:</span> {{ novel.authorName }}

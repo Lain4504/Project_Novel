@@ -39,7 +39,7 @@ const loadNovelCategory = async () => {
 const handleSave = async (id: string, data: Record<string, any>) =>{
   try{
     await updateNovelCategory(id, data);
-    router.push({name: 'novelcategorylist'});
+    router.push({name: 'novelCategoryList'});
   }
   catch (error){
     console.error('Failed to update novel category:', error);

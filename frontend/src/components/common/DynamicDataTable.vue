@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { defineProps, defineEmits, computed, ref } from 'vue';
+import { defineProps, defineEmits, computed, ref, watch } from 'vue';
 
 const props = defineProps<{
   columns: Column[];
@@ -63,6 +63,15 @@ const goToPage = (page: number) => {
 };
 
 const inputPage = ref<number | null>(null);
+
+const checkAndAdjustPage = () => {
+  if (props.rows.length === 0 && props.currentPage > 1) {
+    emit('page-change', props.currentPage - 1);
+  }
+};
+
+// Watch for changes in rows and adjust page if necessary
+watch(() => props.rows, checkAndAdjustPage, { immediate: true });
 </script>
 
 <template>

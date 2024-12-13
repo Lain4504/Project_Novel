@@ -2,18 +2,18 @@
 import {ref, onMounted, onBeforeUnmount} from 'vue';
 
 enum Routes {
-  NewNovel = '/new-novel',
-  ExistingNovels = '/existing-novels',
+  NewNovel = '/create-novel',
+  ExistingNovels = '/novels-of-author',
   Analytics = '/analytics',
   Support = '/support',
-  AdminNotification = '/admin-notification',
+  AdminNotification = '/system-notification',
   Account = '/author-account',
   Payment = '/payment',
   FAQ = '/faq',
   PostCategory = '/post-category-for-author',
   BookCategory = '/novel-category-for-author',
-  BookManagement = '/book-admin',
-  PostManagement = '/post-admin',
+  BookManagement = '/novel-list',
+  PostManagement = '/post-list',
   BookCategoryManagement = '/novel-category-list',
   PostCategoryManagement = '/post-category-list',
   AdsManagement = '/ads-admin',

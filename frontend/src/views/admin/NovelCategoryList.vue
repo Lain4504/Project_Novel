@@ -21,7 +21,7 @@ const currentPage = ref(1);
 const novelCategoryRows = ref<any[]>([]);
 const showConfirmModal = ref(false);
 const rowToDelete = ref<any>(null);
-const createPath = '/novel-category-admin';
+const createPath = '/create-novel-category';
 const fetchNovelCategories = async (page: number, size: number) =>{
   try{
     const response = await getNovelCategories(page, size);
@@ -61,7 +61,7 @@ const handlePageChange = (page: number) =>{
   currentPage.value = page;
 }
 const handleEdit = (row: any) =>{
-  router.push({name: 'novelcategoryedit', params: {id: row.id}});
+  router.push({name: 'updateNovelCategory', params: {id: row.id}});
 }
 </script>
 

@@ -39,7 +39,7 @@ const handleSave = async (id: string, data: Record<string, any>) => {
   try {
     await updatePostCategory(id, data);
     console.log('Post category updated successfully!');
-    router.push({ name: 'postcategorylist' });
+    router.push({ name: 'postCategoryList' });
   } catch (error) {
     console.error('Failed to update post category:', error);
     throw error; // Ném lỗi để component con xử lý
