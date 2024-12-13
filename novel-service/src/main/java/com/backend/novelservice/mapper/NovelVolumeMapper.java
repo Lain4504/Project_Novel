@@ -9,10 +9,12 @@ import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring")
 public interface NovelVolumeMapper {
-    @Mapping(target = "chapters", ignore = true)
+    // Bỏ qua chapters khi ánh xạ NovelVolumeRequest sang NovelVolume
     NovelVolume toNovelVolume(NovelVolumeRequest request);
-    @Mapping(target = "chapters", source = "chapters")
+
+    // Không ánh xạ chapters khi trả về NovelVolumeResponse
     NovelVolumeResponse toNovelVolumeResponse(NovelVolume novelVolume);
-    @Mapping(target = "chapters", ignore = true)
+
+    // Cập nhật NovelVolume với NovelVolumeRequest, bỏ qua chapters
     void updateNovelVolume(@MappingTarget NovelVolume novelVolume, NovelVolumeRequest request);
 }

@@ -10,12 +10,12 @@ import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring")
 public interface NovelMapper {
-    @Mapping(target = "volumes", ignore = true)
+    // Map NovelCreationRequest to Novel, ignoring volumes and categories
     @Mapping(target = "categories", ignore = true)
     Novel toNovel(NovelCreationRequest request);
-    @Mapping(target = "volumes", source = "volumes")
     NovelResponse toNovelResponse(Novel novel);
-    @Mapping(target = "volumes", ignore = true)
+
+    // Update Novel with NovelUpdateRequest, ignoring volumes and categories
     @Mapping(target = "categories", ignore = true)
     void updateNovel(@MappingTarget Novel novel, NovelUpdateRequest request);
 }

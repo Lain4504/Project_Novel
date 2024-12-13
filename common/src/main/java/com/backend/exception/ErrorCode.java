@@ -18,9 +18,12 @@ public enum ErrorCode {
     INCORRECT_CREDENTIALS("1009", "Incorrect email or password", HttpStatus.BAD_REQUEST),
     INACTIVE_USER("1010", "Account isn't active", HttpStatus.BAD_REQUEST),
     INVALID_REFRESH_TOKEN("1011", "Refresh token isn't invalid", HttpStatus.BAD_REQUEST),
+    FILE_NAME_IS_EMPTY("1012", "File name must not be null", HttpStatus.BAD_REQUEST),
+    FILE_EXTENSION_INVALID("1013", "File extension is invalid", HttpStatus.BAD_REQUEST),
+    FILE_SIZE_INVALID("1014", "File size is invalid", HttpStatus.BAD_REQUEST),
+    IMAGE_NOT_FOUND("1015", "Image not found", HttpStatus.NOT_FOUND),
 
-    ;
-
+;
     ErrorCode(String code, String message, HttpStatusCode statusCode) {
         this.code = code;
         this.message = message;

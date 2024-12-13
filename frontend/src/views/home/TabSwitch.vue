@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import Ads from '@/components/home/Banner.vue';
 import Breedcrumb from '@/components/home/Breadcrumb.vue';
-interface Tab {
+interface TabSwitch {
   name: string;
   label: string;
 }
 
-const tabs: Tab[] = [
+const tabs: TabSwitch[] = [
   { name: 'readinglist', label: 'TRUYỆN ĐANG ĐỌC' },
   { name: 'bookmark', label: 'BOOKMARK' }
 ];

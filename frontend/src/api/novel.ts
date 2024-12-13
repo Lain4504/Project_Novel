@@ -1,13 +1,19 @@
 import axios from "@/utils/axiosInstance";
 const NOVEL_API = "/novel/novels";
-const createNovel = (data = {}) => {
-    return axios.post(`${NOVEL_API}/create`, data)
-        .then((response) => response.data.result);
+const createNovel = (data: FormData) => {
+    return axios.post(`${NOVEL_API}/create`, data, {
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        }
+    }).then((response) => response.data.result);
 }
-const updateNovel = (id: string, data: Record<string, any>) => {
-    return axios.put(`${NOVEL_API}/update/${id}`, data)
-        .then((response) => response.data.result);
-}
+const updateNovel = (id: string, data: FormData | null) => {
+    return axios.put(`${NOVEL_API}/update/${id}`, data, {
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        }
+    }).then((response) => response.data.result);
+};
 const deleteNovel = (id: string) => {
     return axios.delete(`${NOVEL_API}/delete/${id}`)
         .then((response) => response.data.result);
@@ -24,4 +30,8 @@ const getMyNovels = (page: number, size: number) => {
     return axios.get(`${NOVEL_API}/my-novels?page=${page}&size=${size}`)
         .then((response) => response.data.result);
 }
-export { createNovel, updateNovel, deleteNovel, getNovel, getNovels, getMyNovels };
+const getNovelsByAuthorId = (authorId: string, page: number, size: number) => {
+    return axios.get(`${NOVEL_API}/author/${authorId}?page=${page}&size=${size}`)
+        .then((response) => response.data.result);
+}
+export { createNovel, updateNovel, deleteNovel, getNovel, getNovels, getMyNovels, getNovelsByAuthorId };

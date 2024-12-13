@@ -2,17 +2,18 @@
 import {ref, onMounted, onBeforeUnmount} from 'vue';
 
 enum Routes {
-  NewNovel = '/new-novel',
-  ExistingNovels = '/existing-novels',
+  NewNovel = '/create-novel',
+  ExistingNovels = '/novels-of-author',
   Analytics = '/analytics',
   Support = '/support',
-  AdminNotification = '/admin-notification',
+  AdminNotification = '/system-notification',
   Account = '/author-account',
   Payment = '/payment',
   FAQ = '/faq',
-  BookCategory = '/book-category',
-  BookManagement = '/book-admin',
-  PostManagement = '/post-admin',
+  PostCategory = '/post-category-for-author',
+  BookCategory = '/novel-category-for-author',
+  BookManagement = '/novel-list',
+  PostManagement = '/post-list',
   BookCategoryManagement = '/novel-category-list',
   PostCategoryManagement = '/post-category-list',
   AdsManagement = '/ads-admin',
@@ -89,6 +90,7 @@ const MenuItems = [
     children: [
       {to: Routes.FAQ, label: 'FAQ', icon: 'fa-solid fa-circle-question'},
       {to: Routes.BookCategory, label: 'Book Category', icon: 'fa-solid fa-book-open'},
+      {to: Routes.PostCategory, label: 'Post Category', icon: 'fa-solid fa-newspaper'},
     ]
   }
 ];

@@ -3,6 +3,7 @@ package com.backend.novelservice.dto.response;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.Set;
 
@@ -21,6 +22,6 @@ public class NovelChapterResponse {
     Integer wordCount;
     Boolean isVip;
     String created;
-    LocalDateTime createdDate;
-    LocalDateTime updateDateTime;
+    Instant createdDate;
+    Instant updateDateTime;
 }

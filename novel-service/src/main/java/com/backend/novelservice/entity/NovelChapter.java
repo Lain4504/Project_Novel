@@ -1,5 +1,6 @@
 package com.backend.novelservice.entity;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.Set;
 
@@ -27,8 +28,6 @@ public class NovelChapter {
     String status;
     Integer wordCount;
     Boolean isVip;
-    LocalDateTime createdDate;
-    LocalDateTime updateDateTime;
-    @DBRef
-    private NovelVolume volume;
+    Instant createdDate;
+    Instant updateDateTime;
 }

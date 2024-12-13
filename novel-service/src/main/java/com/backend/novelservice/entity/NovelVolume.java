@@ -1,11 +1,13 @@
 package com.backend.novelservice.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.MongoId;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
@@ -23,11 +25,8 @@ public class NovelVolume {
     String status;
     int volumeNumber;
     int chapterCount;
-    LocalDateTime createdDate;
-    LocalDateTime modifiedDate;
-    @DBRef
-    private Novel novel;
-    @DBRef
-    @JsonBackReference
-    private List<NovelChapter> chapters;
+    Instant createdDate;
+    Instant modifiedDate;
+    String novelId;
+    List<String> chapterIds;
 }

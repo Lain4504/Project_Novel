@@ -24,7 +24,7 @@ const pageSize = ref(10);
 const totalPages = ref(1);
 const postRows = ref<any[]>([]);
 
-const createPath = '/post-category-admin'; // Create path for new post category
+const createPath = '/create-post-category'; // Create path for new post category
 
 // Reactive variable for showing the delete confirmation modal
 const showConfirmModal = ref(false);
@@ -78,7 +78,7 @@ const handlePageChange = (page: number) => {
   currentPage.value = page;
 };
 const handleEdit = (row: any) => {
-  router.push({ name: 'postcategoryedit', params: { id: row.id } });
+  router.push({ name: 'updatePostCategory', params: { id: row.id } });
 };
 </script>
 
@@ -106,5 +106,6 @@ const handleEdit = (row: any) => {
       @page-change="handlePageChange"
       @edit="handleEdit"
       @delete="handleDelete"
+      :show-go-to-page="false"
   />
 </template>

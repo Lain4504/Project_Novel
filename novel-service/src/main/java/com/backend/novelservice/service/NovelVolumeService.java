@@ -18,9 +18,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
 import static java.util.stream.Collectors.toList;
 
 @Service
@@ -33,41 +34,35 @@ public class NovelVolumeService {
     NovelRepository novelRepository;
 
     public NovelVolumeResponse createNovelVolume(String novelId, NovelVolumeRequest request) {
-        // Retrieve the Novel by ID
         Novel novel = novelRepository.findById(novelId)
                 .orElseThrow(() -> new RuntimeException("Novel not found"));
-
-        // Map the request to a NovelVolume entity
         NovelVolume novelVolume = novelVolumeMapper.toNovelVolume(request);
-        novelVolume.setNovel(novel);
-
-        // Save the new volume
+        novelVolume.setNovelId(novelId);
         NovelVolume savedVolume = novelVolumeRepository.save(novelVolume);
-
-        // Ensure the volumes list is initialized
-        List<NovelVolume> volumes = novel.getVolumes();
-        if (volumes == null) {
-            volumes = new ArrayList<>(); // Initialize if null
+        List<String> volumeIds = novel.getVolumeIds();
+        if (volumeIds == null) {
+            volumeIds = new ArrayList<>();
         }
-
-        // Add the new volume to the list
-        volumes.add(savedVolume);
-        novel.setVolumes(volumes);
-
-        // Save the updated novel with the added volume
+        volumeIds.add(savedVolume.getId());
+        novel.setVolumeIds(volumeIds);
         novelRepository.save(novel);
-
-        // Map and return the response
-        return novelVolumeMapper.toNovelVolumeResponse(novelVolume);
+        return novelVolumeMapper.toNovelVolumeResponse(savedVolume);
     }
-
 
     public List<NovelVolumeResponse> getVolumesByNovelId(String novelId) {
         Novel novel = novelRepository.findById(novelId)
                 .orElseThrow(() -> new RuntimeException("Novel not found"));
-        return novel.getVolumes().stream()
+        // Lấy danh sách volumeIds từ Novel
+        List<String> volumeIds = novel.getVolumeIds();
+        if (volumeIds == null || volumeIds.isEmpty()) {
+            return List.of(); // Trả về danh sách rỗng nếu không có volumeIds
+        }
+        // Truy vấn các NovelVolume từ repository bằng danh sách volumeIds
+        List<NovelVolume> volumes = novelVolumeRepository.findAllById(volumeIds);
+        // Chuyển đổi các đối tượng NovelVolume thành NovelVolumeResponse
+        return volumes.stream()
                 .map(novelVolumeMapper::toNovelVolumeResponse)
-                .collect(toList());
+                .collect(Collectors.toList());
     }
 
     public NovelVolumeResponse updateNovelVolume(String novelVolumeId, NovelVolumeRequest request){

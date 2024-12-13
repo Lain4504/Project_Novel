@@ -8,6 +8,7 @@ import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 @Data
 @Builder
@@ -17,7 +18,7 @@ import java.util.List;
 public class NovelUpdateRequest {
     String title;
     List<String> categories;
-    String coverPicture;
+    String imageUrl;
     String authorId;
     String authorName;
     String description;

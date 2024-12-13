@@ -7,7 +7,7 @@ import DynamicDataTable from "@/components/common/DynamicDataTable.vue";
 
 const novelColumns = [
   { field: "id", headerName: "ID", width: 70},
-  { field: "name", headerName: "Tiêu đề", width: 200},
+  { field: "title", headerName: "Tiêu đề", width: 200},
   { field: "authorName", headerName: "Tác giả", width: 200},
   { field: "created", headerName: "Thời gian tạo", width: 200},
   { field: "actions", headerName: "Hành động", width: 200, isAction: true}
@@ -83,6 +83,7 @@ const handleView = (row: any) =>{
       @edit="handleEdit"
       @view="handleView"
       @delete="handleDelete"
-      />
+      :show-go-to-page="true"
+  />
 </template>
 

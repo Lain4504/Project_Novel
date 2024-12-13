@@ -13,7 +13,6 @@ import java.util.Optional;
 @Repository
 public interface NovelRepository extends MongoRepository<Novel, String> {
     boolean existsByTitle(String title);
-    Optional<Novel> findByTitle(String title);
 
     Page<Novel> findByAuthorId(String authorId, Pageable pageable);
 }

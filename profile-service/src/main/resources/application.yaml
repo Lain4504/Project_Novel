@@ -13,3 +13,6 @@ spring:
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+imgur:
+  client-id: 5797e36b930c74e
+  client-secret: df8d93bbe36be2d30905605215152b92b7e96c97

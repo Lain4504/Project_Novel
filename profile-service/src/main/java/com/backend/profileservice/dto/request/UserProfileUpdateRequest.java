@@ -13,10 +13,10 @@ import lombok.experimental.FieldDefaults;
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserProfileUpdateRequest {
-    String firstName;
-    String lastName;
+    String userId;
+    String username;
     LocalDate dateOfBirth;
-    String ward;
-    String district;
-    String province;
+    String bio;
+    String gender;
+    String imageUrl;
 }

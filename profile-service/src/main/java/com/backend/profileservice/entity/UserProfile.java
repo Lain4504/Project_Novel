@@ -1,9 +1,11 @@
 package com.backend.profileservice.entity;
 
+import java.time.Instant;
 import java.time.LocalDate;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.MongoId;
 
@@ -17,10 +19,11 @@ public class UserProfile {
     @MongoId
     String id;
     String userId;
-    String firstName;
-    String lastName;
+    String username;
     LocalDate dateOfBirth;
-    String ward;
-    String district;
-    String province;
+    String bio;
+    String gender;
+    @DBRef
+    Image image;
+    Instant createdAt;
 }

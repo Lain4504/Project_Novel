@@ -7,7 +7,7 @@ import DynamicDataTable from "@/components/common/DynamicDataTable.vue";
 
 const novelColumns = [
   { field: "id", headerName: "ID", width: 70},
-  { field: "name", headerName: "Tiêu đề", width: 200},
+  { field: "title", headerName: "Tiêu đề", width: 200},
   { field: "authorName", headerName: "Tác giả", width: 200},
   { field: "created", headerName: "Thời gian tạo", width: 200},
   { field: "actions", headerName: "Hành động", width: 200, isAction: true}
@@ -21,6 +21,7 @@ const rowToDelete = ref<any>(null);
 const fetchNovels = async (page: number, size: number) =>{
   try{
     const response = await getMyNovels(page, size);
+    console.log(response);
     novelRows.value = response.data;
     totalPages.value = response.totalPages;
   }
@@ -57,7 +58,7 @@ const handlePageChange = (page: number) =>{
   currentPage.value = page;
 }
 const handleEdit = (row: any) =>{
-  router.push({name: 'editnovel', params: {id: row.id}});
+  router.push({name: 'novelAuthorManagement', params: {id: row.id}});
 }
 const handleView = (row: any) =>{
   router.push({name: 'noveldetail', params: {id: row.id}});
