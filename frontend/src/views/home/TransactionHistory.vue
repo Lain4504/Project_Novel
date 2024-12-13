@@ -78,7 +78,7 @@ const topUp = () => {
         <Breadcrumb :breadcrumbs="[
             { label: 'Home', href: '/' },
             { label: 'Account', href: '/templates' },
-            { label: 'Transaction History', href: '/flowbite', isCurrent: true }
+            { label: 'Transaction TransactionHistory', href: '/flowbite', isCurrent: true }
         ]" />
         <div>
             <div class="flex justify-between items-center my-2">

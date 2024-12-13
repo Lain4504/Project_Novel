@@ -201,39 +201,41 @@ const currentTabComponent = computed(() => {
       <h3 class="font-bold text-md items-start justify-start flex">Description:</h3>
       <p v-html="novel.description" class="text-md text-gray-600 mt-4 text-left" />
     </div>
-  <div class="w-full max-w-7xl mx-auto mt-10">
-    <h2 class="text-xl font-semibold text-gray-800 mb-6">Chapter List</h2>
-    <div class="space-y-6">
-      <div v-for="(volume, volumeIndex) in volumes" :key="volumeIndex" class="border border-gray-200 rounded-lg overflow-hidden">
-        <button @click="toggleVolume(volumeIndex, volume.id)" class="w-full px-4 py-3 bg-gray-50 flex items-center justify-between hover:bg-gray-100 transition-colors">
-          <h3 class="text-lg font-medium text-gray-800">{{ volume.volumeName }}</h3>
-          <font-awesome-icon :icon="volume.expanded ? 'fa-solid fa-sort-up' : 'fa-solid fa-sort-down'" />
-        </button>
-        <div v-show="volume.expanded" class="transition-all duration-300 ease-in-out">
-          <div class="p-4">
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              <router-link v-for="(chapter, chapterIndex) in volume.chapters.slice(0, volume.showMore ? undefined : 6)" :key="chapterIndex"       :to="{ name: 'chapter', params: { novelId: novel.id, chapterId: chapter.id } }"
-                           class="group relative">
-                <div class="p-3 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow border border-gray-100 hover:border-gray-200">
-                  <span class="text-sm text-gray-700 truncate block">{{ chapter.chapterTitle }}</span>
-                  <div class="absolute left-1/2 transform -translate-x-1/2 bottom-full mb-2 hidden group-hover:block z-10 bg-black text-white text-xs py-1 px-2 rounded">
-                    {{ chapter.chapterTitle }}
+    <div class="w-full max-w-7xl mx-auto mt-10">
+      <h2 class="text-xl font-semibold text-gray-800 mb-6">Chapter List</h2>
+      <div class="space-y-6">
+        <div v-for="(volume, volumeIndex) in volumes" :key="volumeIndex" class="border border-gray-200 rounded-lg overflow-hidden">
+          <button @click="toggleVolume(volumeIndex, volume.id)" class="w-full px-4 py-3 bg-gray-50 flex items-center justify-between hover:bg-gray-100 transition-colors">
+            <h3 class="text-lg font-medium text-gray-800">{{ volume.volumeName }}</h3>
+            <font-awesome-icon :icon="volume.expanded ? 'fa-solid fa-sort-up' : 'fa-solid fa-sort-down'" />
+          </button>
+          <div v-show="volume.expanded" class="transition-all duration-300 ease-in-out">
+            <div class="p-4">
+              <div v-if="volume.chapters.length === 0" class="text-center text-gray-600">
+                Không có chapter
+              </div>
+              <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <router-link v-for="(chapter, chapterIndex) in volume.chapters.slice(0, volume.showMore ? undefined : 6)" :key="chapterIndex" :to="{ name: 'chapter', params: { novelId: novel.id, chapterId: chapter.id } }" class="group relative">
+                  <div class="p-3 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow border border-gray-100 hover:border-gray-200">
+                    <span class="text-sm text-gray-700 truncate block">{{ chapter.chapterTitle }}</span>
+                    <div class="absolute left-1/2 transform -translate-x-1/2 bottom-full mb-2 hidden group-hover:block z-10 bg-black text-white text-xs py-1 px-2 rounded">
+                      {{ chapter.chapterTitle }}
+                    </div>
                   </div>
-                </div>
-              </router-link>
-            </div>
-            <div v-if="volume.chapters.length > 6" class="mt-4 text-center">
-              <button @click="toggleShowMore(volumeIndex)" class="inline-flex items-center justify-center gap-2 px-4 py-2 text-sm text-gray-600 hover:text-gray-800 transition-colors">
-                <span>{{ volume.showMore ? 'Show Less' : 'Show More' }}</span>
-                <font-awesome-icon :icon="volume.showMore ? 'fa-solid fa-angles-up' : 'fa-solid fa-angles-down'" />
-              </button>
+                </router-link>
+              </div>
+              <div v-if="volume.chapters.length > 6" class="mt-4 text-center">
+                <button @click="toggleShowMore(volumeIndex)" class="inline-flex items-center justify-center gap-2 px-4 py-2 text-sm text-gray-600 hover:text-gray-800 transition-colors">
+                  <span>{{ volume.showMore ? 'Show Less' : 'Show More' }}</span>
+                  <font-awesome-icon :icon="volume.showMore ? 'fa-solid fa-angles-up' : 'fa-solid fa-angles-down'" />
+                </button>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
- <div class="container mx-auto p-4">
+    <div class="container mx-auto p-4">
       <div class="flex space-x-4 border-b mb-4">
         <button v-for="(tab, index) in tabs" :key="index" :class="['px-4 py-2 text-sm font-semibold', currentTab === tab ? 'border-b-2 border-blue-500 text-blue-500' : 'text-gray-600']" @click="currentTab = tab">
           {{ tab }}

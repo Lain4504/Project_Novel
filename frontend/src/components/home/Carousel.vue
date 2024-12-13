@@ -15,19 +15,19 @@ const currentSlide = ref(0);
 const banners = ref<BannerItem[]>([
   {
     id: 1,
-    title: 'Vợ Nhỏ Nhút Nhát, Chồng À!',
-    subtitle: 'Anh Đừng Qua Đây',
-    category: 'tiểu cam cam',
-    description: 'Nghe đồn hắn là 1 lão già không thích phụ nữ lại có số thích bệnh hoạn. Đời có chắc chắn rơi vào bị kịch rồi',
+    title: 'Vda À!',
+    subtitle: 'Anh ĐasdĐây',
+    category: 'tiểuad cam',
+    description: 'Nghad badsbị kịch rồi',
     coverImage: '/src/assets/logo.jpg',
     status: 'Còn tiếp'
   },
   {
     id: 1,
-    title: 'Vợ Nhỏ Nhút Nhát, Chồng À!',
-    subtitle: 'Anh Đừng Qua Đây',
-    category: 'tiểu cam cam',
-    description: 'Nghe đồn hắn là 1 lão già không thích phụ nữ lại có số thích bệnh hoạn. Đời có chắc chắn rơi vào bị kịch rồi',
+    title: 'daaaaaaaaaaaaaaaaaaaaaaaa!',
+    subtitle: 'adddddddddddd',
+    category: 'tiểaddddddd cam',
+    description: 'Ngdaddsch bệd kịch dsadss',
     coverImage: '/banner1.jpg',
     status: 'Còn tiếp'
   },
@@ -42,8 +42,8 @@ const nextSlide = () => {
 };
 
 const prevSlide = () => {
-  currentSlide.value = currentSlide.value === 0 
-    ? banners.value.length - 1 
+  currentSlide.value = currentSlide.value === 0
+    ? banners.value.length - 1
     : currentSlide.value - 1;
 };
 
@@ -76,36 +76,36 @@ onMounted(() => {
             :alt="banner.title"
             class="w-full h-full object-cover"
           />
-          
+
           <!-- Gradient Overlay -->
           <div class="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent"></div>
-          
+
           <!-- Content -->
           <div class="absolute inset-0 flex items-center p-8 md:p-16">
             <div class="max-w-2xl text-white">
               <!-- Status Badge -->
-              <div 
+              <div
                 v-if="banner.status"
                 class="inline-block px-4 py-1 mb-4 text-sm bg-amber-600 rounded-full"
               >
                 {{ banner.status }}
               </div>
-              
+
               <!-- Title -->
               <h2 class="text-3xl md:text-4xl font-bold mb-2">
                 {{ banner.title }}
               </h2>
-              
+
               <!-- Subtitle -->
               <h3 class="text-xl md:text-2xl font-semibold mb-2 text-green-400 italic">
                 {{ banner.subtitle }}
               </h3>
-              
+
               <!-- Category -->
               <div class="text-sm text-gray-300 mb-4">
                 - {{ banner.category }} -
               </div>
-              
+
               <!-- Description -->
               <p class="text-sm md:text-base text-gray-200">
                 {{ banner.description }}

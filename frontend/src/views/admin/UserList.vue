@@ -1,15 +1,14 @@
 <script setup lang="ts">
 import {onMounted, ref, watch} from "vue";
-import {deleteNovel, getMyNovels} from "@/api/novel";
 import router from "@/router";
 import ConfirmDeleteModal from "@/components/common/ConfirmDeleteModal.vue";
 import DynamicDataTable from "@/components/common/DynamicDataTable.vue";
 
 const novelColumns = [
   { field: "id", headerName: "ID", width: 70},
-  { field: "title", headerName: "Tiêu đề", width: 200},
-  { field: "authorName", headerName: "Tác giả", width: 200},
-  { field: "created", headerName: "Thời gian tạo", width: 200},
+  { field: "username", headerName: "UserName", width: 200},
+  { field: "email", headerName: "Email", width: 200},
+  { field: "role", headerName: "Role", width: 200},
   { field: "actions", headerName: "Hành động", width: 200, isAction: true}
 ];
 const totalPages = ref(1);
@@ -20,8 +19,7 @@ const showConfirmModal = ref(false);
 const rowToDelete = ref<any>(null);
 const fetchNovels = async (page: number, size: number) =>{
   try{
-    const response = await getMyNovels(page, size);
-    console.log(response);
+    const response = await getNovels(page, size);
     novelRows.value = response.data;
     totalPages.value = response.totalPages;
   }
@@ -36,7 +34,7 @@ const handleDelete = (row: any) =>{
 const confirmDelete = async () =>{
   if (rowToDelete.value){
     try{
-      await deleteNovel(rowToDelete.value.id);
+      await InactiveUser(rowToDelete.value.id);
       fetchNovels(currentPage.value, pageSize.value);
     }
     catch (error){
@@ -58,7 +56,7 @@ const handlePageChange = (page: number) =>{
   currentPage.value = page;
 }
 const handleEdit = (row: any) =>{
-  router.push({name: 'novelAuthorManagement', params: {id: row.id}});
+  router.push({name: 'novelupdateform', params: {id: row.id}});
 }
 const handleView = (row: any) =>{
   router.push({name: 'noveldetail', params: {id: row.id}});
@@ -84,6 +82,7 @@ const handleView = (row: any) =>{
       @edit="handleEdit"
       @view="handleView"
       @delete="handleDelete"
+      :show-go-to-page="true"
   />
 </template>
 

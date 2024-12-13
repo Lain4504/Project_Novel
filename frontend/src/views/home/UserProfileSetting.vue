@@ -97,8 +97,8 @@ onMounted(() => {
   <Banner class="max-w-7xl mx-auto mt-5"/>
   <div class="container mx-auto px-4 py-8 max-w-5xl min-h-screen">
     <div class="bg-white dark:bg-gray-800 shadow-2xl rounded-2xl overflow-hidden">
-      <!-- Tab Navigation -->
-      <!-- Tab Navigation -->
+      <!-- TabSwitch Navigation -->
+      <!-- TabSwitch Navigation -->
       <div class="flex bg-gray-100 dark:bg-gray-700 rounded-full p-1 mx-4 mt-4 mb-2">
         <button
             @click="activeTab = 'profile'"
@@ -132,7 +132,7 @@ onMounted(() => {
           <font-awesome-icon :icon="['fas', 'moon']" v-else class="inline-block mr-2"/> Theme
         </button>
       </div>
-      <!-- Profile Tab -->
+      <!-- Profile TabSwitch -->
       <div v-if="activeTab === 'profile'" class="p-6 space-y-6">
         <div class="flex items-center space-x-6">
           <div class="relative">
@@ -198,7 +198,7 @@ onMounted(() => {
         </form>
       </div>
 
-      <!-- Security Tab -->
+      <!-- Security TabSwitch -->
       <div v-else-if="activeTab === 'security'" class="p-6 space-y-6">
         <form @submit.prevent="handleChangePassword" class="space-y-4">
           <div>
@@ -236,7 +236,7 @@ onMounted(() => {
         </form>
       </div>
 
-      <!-- Theme Tab -->
+      <!-- Theme TabSwitch -->
       <div v-else-if="activeTab === 'theme'" class="p-6 space-y-6">
         <div class="flex justify-between items-center">
           <div>

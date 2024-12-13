@@ -7,8 +7,8 @@ import ScrollToTop from '@/components/common/ScrollToTop.vue';
 import Footer from '@/components/common/Footer.vue';
 const route = useRoute(); // Lấy route hiện tại
 
-const routesIncludeHome = ['home', 'chapter', 'noveldetail', 'userprofile', 'member', 'list', 'bookmark', 'readinglist', 'library', 'history', 'faq', 'postforum',
-  'postdetail', 'postcreateform', 'activation/:token', "postupdateform"
+const routesIncludeHome = ['home', 'chapter', 'noveldetail', 'userprofile', 'account', 'list', 'bookmark', 'readinglist', 'library', 'history', 'faq', 'postforum',
+  'postdetail', 'postcreateform', 'activation/:token', "postupdateform", 'filterbycategory', "searchadvanced", "notificationlist"
 ]; // Thêm các route bạn muốn hiển thị Header
 const showAdmin = computed(() => {
   // Kiểm tra xem route hiện tại có nằm trong danh sách các route cần hiển thị Header hay không

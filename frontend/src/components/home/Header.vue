@@ -69,7 +69,7 @@ const dropdownMenu = [
   {
     label: 'User Profile',
     icon: 'fa-solid fa-user',
-    link: '/member',
+    link: '/account',
   },
   {
     label: 'Bookmark',
@@ -87,7 +87,7 @@ const dropdownMenu = [
     link: '/user-profile',
   },
   {
-    label: 'Transaction History',
+    label: 'Transaction TransactionHistory',
     icon: 'fa-solid fa-money-bill',
     link: '/history',
   },
