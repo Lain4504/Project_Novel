@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.util.List;
 
 import com.backend.profileservice.entity.Image;
+import com.backend.utils.DateTimeFormatter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
@@ -28,6 +29,8 @@ public class UserProfileService {
     UserProfileRepository userProfileRepository;
     UserProfileMapper userProfileMapper;
     ImageService imageService;
+     DateTimeFormatter dateTimeFormatter;
+
     public UserProfileResponse createProfile(ProfileCreationRequest request) {
         UserProfile userProfile = userProfileMapper.toUserProfile(request);
         userProfile.setCreatedAt(Instant.now());
@@ -38,31 +41,37 @@ public class UserProfileService {
     public UserProfileResponse getProfile(String userId) {
         UserProfile userProfile =
                 userProfileRepository.findByUserId((userId)).orElseThrow(() -> new RuntimeException("Profile not found"));
-        return userProfileMapper.toUserProfileResponse(userProfile);
+        UserProfileResponse response = userProfileMapper.toUserProfileResponse(userProfile);
+        response.setCreated(dateTimeFormatter.format(userProfile.getCreatedAt()));
+        return response;
     }
 
     public void deleteProfile(String id) {
         userProfileRepository.deleteById(id);
     }
 
-    public UserProfileResponse updateProfile(String id, UserProfileUpdateRequest request, MultipartFile imageFile) {
-        UserProfile userProfile =
-                userProfileRepository.findById(id).orElseThrow(() -> new RuntimeException("Profile not found"));
-        userProfileMapper.updateUserProfile(userProfile, request);
-        if (imageFile != null && !imageFile.isEmpty()) {
-            if (userProfile.getImage() != null && !userProfile.getImage().getPath().equals(request.getImageUrl())) {
-                imageService.deleteImage(userProfile.getImage().getId());
-                Image newImage = imageService.uploadImage(imageFile);
-                userProfile.setImage(newImage);
-            }
-        } else if (userProfile.getImage() == null || !userProfile.getImage().getPath().equals(request.getImageUrl())) {
-            Image newImage = imageService.uploadImage(imageFile);
+public UserProfileResponse updateProfile(String id, UserProfileUpdateRequest request, MultipartFile imageFile) {
+    UserProfile userProfile = userProfileRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Profile not found"));
+    userProfileMapper.updateUserProfile(userProfile, request);
+
+    if (imageFile != null && !imageFile.isEmpty()) {
+        if (userProfile.getImage() != null && !userProfile.getImage().getPath().equals(request.getImageUrl())) {
+            imageService.deleteImage(userProfile.getImage().getId());
+        }
+        Image newImage = imageService.uploadImage(imageFile);
+        userProfile.setImage(newImage);
+    } else if (userProfile.getImage() == null || !userProfile.getImage().getPath().equals(request.getImageUrl())) {
+        if (request.getImageUrl() != null && !request.getImageUrl().isEmpty()) {
+            Image newImage = new Image();
+            newImage.setPath(request.getImageUrl());
             userProfile.setImage(newImage);
         }
-        userProfile = userProfileRepository.save(userProfile);
-        return userProfileMapper.toUserProfileResponse(userProfile);
     }
 
+    userProfile = userProfileRepository.save(userProfile);
+    return userProfileMapper.toUserProfileResponse(userProfile);
+}
     @PreAuthorize("hasRole('ADMIN')")
     public List<UserProfileResponse> getAllProfiles() {
         var userProfiles = userProfileRepository.findAll();

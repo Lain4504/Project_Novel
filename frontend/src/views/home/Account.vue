@@ -9,7 +9,7 @@ import {getNovelsByAuthorId} from "@/api/novel";
 
 const userProfile = ref({
   id: '',
-  avatar: '',
+  image: '',
   username: '',
   gender: '',
   dateOfBirth: '',
@@ -20,6 +20,7 @@ const userProfile = ref({
   comments: '',
   ratings: '',
   publishedNovels: '',
+  created: ''
 });
 const novels = ref<any[]>([]);
 const currentPage = ref(1);
@@ -40,6 +41,7 @@ const fetchUserProfile = async () => {
   try {
     const userProfileData = await getUserProfile(store.getters.getUserId);
     userProfile.value = userProfileData;
+    userProfile.value.image = userProfileData.image.path;
   } catch (error) {
     console.error('Error fetching user profile:', error);
   }
@@ -79,7 +81,7 @@ onMounted(() => {
           <div class="flex items-center space-x-6 mb-6">
             <img
                 class="w-20 h-20 rounded-full object-cover ring-4 ring-blue-100 shadow-md"
-                :src="userProfile?.avatar || 'https://via.placeholder.com/150'"
+                :src="userProfile?.image || 'https://via.placeholder.com/150'"
                 alt="User Profile Picture"
             />
             <div>
@@ -89,17 +91,30 @@ onMounted(() => {
           </div>
 
           <div class="space-y-4">
-            <div v-for="(detail, key) in {
-              'Date Join': userProfile?.dateCreated,
-              'Bio': userProfile?.bio || 'No bio available',
-              'Read': `${userProfile?.readNovels || '0'} novels`,
-              'Marked': userProfile?.marked || '0',
-              'Recommended': userProfile?.recommended || '0',
-              'Comments': userProfile?.comments || '0',
-              'Ratings': userProfile?.ratings || '0'
-            }" :key="key" class="flex justify-between border-b py-2 last:border-b-0">
+            <div
+                v-for="(detail, key) in {
+      'Date Join': userProfile?.created || 'No date available',
+      'Bio': userProfile?.bio || 'No bio available',
+      'Read': `${userProfile?.readNovels || '0'} novels`,
+      'Marked': userProfile?.marked || '0',
+      'Recommended': userProfile?.recommended || '0',
+      'Comments': userProfile?.comments || '0',
+      'Ratings': userProfile?.ratings || '0'
+    }"
+                :key="key"
+                class="flex justify-between border-b py-2 last:border-b-0"
+            >
               <span class="text-gray-600 font-medium">{{ key }}:</span>
-              <span class="text-gray-800 font-semibold">{{ detail }}</span>
+              <span
+                  v-if="key === 'Bio'"
+                  class="text-gray-800 font-semibold"
+                  v-html="detail">
+    </span>
+              <span
+                  v-else
+                  class="text-gray-800 font-semibold">
+      {{ detail }}
+    </span>
             </div>
           </div>
         </div>

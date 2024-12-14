@@ -3,6 +3,7 @@ package com.backend.profileservice.dto.response;
 import java.time.Instant;
 import java.time.LocalDate;
 
+import com.backend.profileservice.entity.Image;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -20,6 +21,7 @@ public class UserProfileResponse {
     LocalDate dateOfBirth;
     String bio;
     String gender;
-    String avatar;
+    Image image;
+    String created;
     Instant createdAt;
 }
