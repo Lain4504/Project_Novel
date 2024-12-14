@@ -1,5 +1,6 @@
 package com.backend.commentservice.entity;
 
+import com.backend.commentservice.repository.httpclient.UserProfileResponse;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -23,4 +24,6 @@ public class PostComment {
     Integer replyCount;
     LocalDateTime createdDate;
     LocalDateTime updateDateTime;
+    String username;
+    String userAvatar;
 }

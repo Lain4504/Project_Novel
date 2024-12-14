@@ -41,12 +41,6 @@ public class PostCommentController {
     public ResponseEntity<List<PostCommentReply>> getAllRepliesByCommentId(@PathVariable String commentId) {
         return ResponseEntity.ok(postCommentService.getAllRepliesByCommentId(commentId));
     }
-
-    @GetMapping("/replies/parent/{parentReplyId}")
-    public ResponseEntity<List<PostCommentReply>> getAllRepliesByParentReplyId(@PathVariable String parentReplyId) {
-        return ResponseEntity.ok(postCommentService.getAllRepliesByParentReplyId(parentReplyId));
-    }
-
     @PostMapping("/replies")
     public ResponseEntity<PostCommentReply> createReply(@RequestBody PostCommentReply postCommentReply) {
         return ResponseEntity.ok(postCommentService.createReply(postCommentReply));

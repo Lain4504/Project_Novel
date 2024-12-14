@@ -11,11 +11,11 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/reviews")
+@RequestMapping("/user-novel-review")
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE, makeFinal = true)
-public class NovelReviewController {
+public class UserNovelReviewController {
     UserReviewService userReviewService;
-    @PostMapping("/novel")
+    @PostMapping("/create")
     public ApiResponse<UserReviewResponse> createReview(@RequestBody UserReviewRequest request) {
         return ApiResponse.<UserReviewResponse>builder().result(userReviewService.createReview(request)).build();
     }
@@ -30,11 +30,20 @@ public class NovelReviewController {
     }
     @GetMapping("/novel/{novelId}")
     public ApiResponse<PageResponse<UserReviewResponse>> getReviewsByNovelId(@PathVariable Long novelId,
-                                                                            @RequestParam(value = "page", required = false, defaultValue = "1") int page,
-                                                                            @RequestParam(value = "size", required = false, defaultValue = "10") int size
+                         @RequestParam(value = "page", required = false, defaultValue = "1") int page,
+                         @RequestParam(value = "size", required = false, defaultValue = "10") int size
     ) {
         return ApiResponse.<PageResponse<UserReviewResponse>>builder()
                 .result(userReviewService.getReviewsByNovelId(novelId, page, size))
+                .build();
+    }
+    @GetMapping("/get-latest")
+    public ApiResponse<PageResponse<UserReviewResponse>> getReviewsByUserId(
+                        @RequestParam(value = "page", required = false, defaultValue = "1") int page,
+                        @RequestParam(value = "size", required = false, defaultValue = "10") int size
+    ) {
+        return ApiResponse.<PageResponse<UserReviewResponse>>builder()
+                .result(userReviewService.getLatestReview(page, size))
                 .build();
     }
 }

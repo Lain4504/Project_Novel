@@ -23,4 +23,6 @@ public class PostCommentReply {
     String replyTo;
     LocalDateTime createdDate;
     LocalDateTime updateDateTime;
+    String username;
+    String userAvatar;
 }

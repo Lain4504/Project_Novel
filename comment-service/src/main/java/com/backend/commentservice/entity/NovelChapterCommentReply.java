@@ -6,6 +6,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -17,6 +19,6 @@ public class NovelChapterCommentReply {
     String userId;
     String replyContent;
     String replyTo;
-    String createdDate;
-    String updateDateTime;
+    LocalDateTime createdDate;
+    LocalDateTime updateDateTime;
 }
