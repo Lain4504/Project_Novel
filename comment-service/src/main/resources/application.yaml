@@ -1,0 +1,10 @@
+server:
+  port: 8085
+  servlet:
+    context-path: /comment
+spring:
+  application:
+    name: comment-service
+  data:
+    mongodb:
+      uri: mongodb://root:root@localhost:27017/comment-service?authSource=admin
