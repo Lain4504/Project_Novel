@@ -2,19 +2,14 @@ package com.backend.novelservice.service;
 
 import com.backend.novelservice.dto.request.NovelCreationRequest;
 import com.backend.novelservice.dto.request.NovelUpdateRequest;
-import com.backend.novelservice.dto.response.NovelCategoryResponse;
+import com.backend.novelservice.dto.response.NovelDetailsResponse;
 import com.backend.novelservice.dto.response.NovelResponse;
 import com.backend.dto.response.PageResponse;
-import com.backend.novelservice.dto.response.NovelVolumeResponse;
 import com.backend.novelservice.entity.Image;
-import com.backend.novelservice.entity.Novel;
 import com.backend.novelservice.entity.NovelCategory;
-import com.backend.novelservice.entity.NovelVolume;
-import com.backend.novelservice.mapper.NovelCategoryMapper;
 import com.backend.novelservice.mapper.NovelMapper;
 import com.backend.novelservice.repository.NovelCategoryRepository;
 import com.backend.novelservice.repository.NovelRepository;
-import com.backend.novelservice.repository.NovelVolumeRepository;
 import com.backend.utils.DateTimeFormatter;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +17,6 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -32,6 +26,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -145,5 +140,15 @@ public NovelResponse updateNovel(String novelId, NovelUpdateRequest request, Mul
                 .totalElements(pageData.getTotalElements())
                 .data(novelList)
                 .build();
+    }
+    public List<NovelDetailsResponse> getNovelDetails(List<String> novelIds) {
+        return novelRepository.findAllById(novelIds).stream()
+                .map(novel -> new NovelDetailsResponse(
+                        novel.getId(),
+                        novel.getTitle(),
+                        novel.getAuthorName(),
+                        novel.getChapterCount() // Lấy số chapter
+                ))
+                .collect(Collectors.toList());
     }
 }

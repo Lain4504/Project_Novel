@@ -58,12 +58,12 @@ public class ImageService {
             throw new AppException(ErrorCode.IMAGE_NOT_FOUND);
         });
 
-        try {
-            String authorization = "Client-ID " + clientId;
-            imgurClient.deleteImage(authorization, image.getName());
-        } catch (Exception e) {
-            throw new RuntimeException("Delete image error", e);
-        }
+//        try {
+//            String authorization = "Client-ID " + clientId;
+//            imgurClient.deleteImage(authorization, image.getName());
+//        } catch (Exception e) {
+//            throw new RuntimeException("Delete image error", e);
+//        }
 
         imageRepository.delete(image);
     }

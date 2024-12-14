@@ -17,6 +17,4 @@ public class UserNovelFollowResponse {
     String id;
     String userId;
     String novelId;
-    Instant createdDate;
-    Instant modifiedDate;
 }

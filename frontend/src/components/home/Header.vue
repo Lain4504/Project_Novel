@@ -4,6 +4,7 @@ import {ref, watch, computed, onMounted, onUnmounted} from 'vue';
 import {useStore} from 'vuex';
 import {logout} from '@/api/auth';
 import NotificationDropdown from '../common/BellNotificationDropdown.vue';
+import {getUserProfile} from "@/api/user";
 
 const isAccountMenuOpen = ref(false);
 const isCategoryMenuOpen = ref(false);
@@ -13,7 +14,23 @@ const categories = [
   "Action", "Fantasy", "Romance",
   "Horror", "Adventure", "Comedy",
 ];
-
+const userProfile = ref({
+  id: '',
+  image: '',
+  username: '',
+});
+const fetchUserProfile = async () => {
+  try {
+    const userProfileData = await getUserProfile(store.getters.getUserId);
+    userProfile.value = userProfileData;
+    userProfile.value.image = userProfileData.image.path;
+  } catch (error) {
+    console.error('Error fetching user profile:', error);
+  }
+};
+onMounted(() => {
+  fetchUserProfile();
+});
 watch(isMobileMenuOpen, (newVal) => {
   if (newVal) {
     isAccountMenuOpen.value = false;
@@ -87,7 +104,7 @@ const dropdownMenu = [
     link: '/user-profile',
   },
   {
-    label: 'Transaction TransactionHistory',
+    label: 'Transaction History',
     icon: 'fa-solid fa-money-bill',
     link: '/history',
   },
@@ -218,7 +235,7 @@ onUnmounted(() => {
           <div class="relative dropdown">
             <img
                 class="w-10 h-10 rounded-full border-2 border-gray-50 transition-transform duration-200 hover:scale-110 hover:border-blue-500 cursor-pointer"
-                src="\src\assets\logo.jpg" alt="" @click="isAccountMenuOpen = !isAccountMenuOpen"/>
+                :src="userProfile.image" alt="" @click="isAccountMenuOpen = !isAccountMenuOpen"/>
             <transition name="fade">
               <div v-if="isAccountMenuOpen"
                    class="absolute right-0 mt-2 w-[10rem] bg-white shadow-lg rounded-lg border border-gray-200 text-sm z-10">
@@ -275,12 +292,10 @@ onUnmounted(() => {
               </div>
             </transition>
           </div>
-
           <div class="relative dropdown">
             <img
                 class="w-10 h-10 rounded-full border-2 border-gray-50 transition-transform duration-200 hover:scale-110 hover:border-blue-500 cursor-pointer"
-                src="\src\assets\logo.jpg" @click="isAccountMenuOpen = !isAccountMenuOpen"/>
-
+                :src="userProfile.image" @click="isAccountMenuOpen = !isAccountMenuOpen"/>
             <transition name="fade">
               <div v-if="isAccountMenuOpen"
                    class="absolute right-0 mt-2 w-[10rem] bg-white shadow-lg rounded-lg border border-gray-200 text-sm z-10">

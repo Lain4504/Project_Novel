@@ -44,4 +44,5 @@ public class Novel {
     List<String> volumeIds;
     @DBRef
     Image image;
+    Integer chapterCount;
 }

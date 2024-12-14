@@ -37,7 +37,7 @@ public class UserProfileController {
     ApiResponse<UserProfileResponse> updateUserProfile(
             @PathVariable String profileId,
             @RequestPart("profile") UserProfileUpdateRequest request,
-            @RequestPart("image") MultipartFile imageFile )
+            @RequestPart(value= "image", required = false) MultipartFile imageFile )
     {
       return ApiResponse.<UserProfileResponse>builder()
               .result(userProfileService.updateProfile(profileId, request, imageFile)).build();

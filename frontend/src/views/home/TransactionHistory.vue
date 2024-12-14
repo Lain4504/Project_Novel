@@ -76,9 +76,9 @@ const topUp = () => {
     <div class="max-w-7xl mx-auto">
         <Ads class="my-4" />
         <Breadcrumb :breadcrumbs="[
-            { label: 'Home', href: '/' },
-            { label: 'Account', href: '/templates' },
-            { label: 'Transaction TransactionHistory', href: '/flowbite', isCurrent: true }
+            { label: 'Home', to: '/' },
+            { label: 'Account', to: '/templates' },
+            { label: 'Transaction History', to: '/flowbite', isCurrent: true }
         ]" />
         <div>
             <div class="flex justify-between items-center my-2">
