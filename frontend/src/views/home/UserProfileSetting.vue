@@ -8,7 +8,7 @@ import Tiptap from "@/components/common/Tiptap.vue";
 
 const profile = ref({
   id: '',
-  avatar: '',
+  image: '',
   username: '',
   gender: '',
   dateOfBirth: '',
@@ -30,20 +30,35 @@ const fetchUserProfile = async () => {
   try {
     const userProfile = await getUserProfile(store.getters.getUserId);
     profile.value = userProfile;
+    profile.value.image = userProfile.image?.path || 'default-avatar.png'; // Use default image if none exists
   } catch (error) {
     console.error(error);
   }
 }
+const selectedImage = ref<File | null>(null);
 
 const handleProfileSubmit = async () => {
+  const profileData = {
+    id: profile.value.id,
+    username: profile.value.username,
+    userId: store.getters.getUserId,
+    dateOfBirth: profile.value.dateOfBirth,
+    bio: profile.value.bio,
+    gender: profile.value.gender,
+    imageUrl: selectedImage.value ? '' : profile.value.image // Send empty string if new image is selected
+  };
+  const formData = new FormData();
+  formData.append("profile", new Blob([JSON.stringify(profileData)], { type: "application/json" }));
+  if (selectedImage.value) {
+    formData.append("image", selectedImage.value);
+  }
   try {
-    await updateUserProfile(profile.value.id, profile.value);
+    await updateUserProfile(profile.value.id, formData);
     alert('Profile Updated Successfully!');
   } catch (error) {
     console.error(error);
   }
 }
-
 const handleChangePassword = async () => {
   if (passwords.value.newPassword !== passwords.value.confirmPassword) {
     alert('New password and confirm password do not match!');
@@ -76,7 +91,13 @@ const toggleTheme = () => {
   localStorage.setItem('theme', theme);
   document.documentElement.classList.toggle('dark', isDarkMode.value);
 }
-
+const handleImageChange = (event: Event) => {
+  const file = (event.target as HTMLInputElement).files?.[0];
+  if (file) {
+    selectedImage.value = file;
+    profile.value.image = URL.createObjectURL(file);
+  }
+};
 const formattedDateOfBirth = computed({
   get() {
     return profile.value.dateOfBirth ? profile.value.dateOfBirth.split('T')[0] : '';
@@ -137,12 +158,13 @@ onMounted(() => {
         <div class="flex items-center space-x-6">
           <div class="relative">
             <img
-                :src="profile.avatar || 'default-avatar.png'"
-                alt="Profile Avatar"
+                :src="profile.image || 'default-avatar.png'"
+                alt=""
                 class="w-24 h-24 rounded-full object-cover border-4 border-blue-500"
             />
             <input
                 type="file"
+                @change="handleImageChange"
                 class="absolute inset-0 opacity-0 cursor-pointer"
             />
           </div>

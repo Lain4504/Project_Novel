@@ -22,6 +22,8 @@ enum Routes {
 }
 
 import NotificationDropdown from '@/components/common/BellNotificationDropdown.vue';
+import {getUserProfile} from "@/api/user";
+import store from "@/store";
 
 const showDropDown = ref<boolean>(false);
 const showSide = ref<boolean>(true);
@@ -154,6 +156,23 @@ const notifications = ref([
 const toggleNotificationList = () => {
   isNotificationListOpen.value = !isNotificationListOpen.value;
 };
+const userProfile = ref({
+  id: '',
+  image: '',
+  username: '',
+});
+const fetchUserProfile = async () => {
+  try {
+    const userProfileData = await getUserProfile(store.getters.getUserId);
+    userProfile.value = userProfileData;
+    userProfile.value.image = userProfileData.image.path;
+  } catch (error) {
+    console.error('Error fetching user profile:', error);
+  }
+};
+onMounted(() => {
+  fetchUserProfile();
+});
 </script>
 <template>
   <div class="w-screen h-screen flex">
@@ -305,7 +324,7 @@ const toggleNotificationList = () => {
           </div>
           <img
               class="w-10 h-10 rounded-full border-2 border-gray-50 ml-[-4px] transition-transform duration-200 hover:scale-110 hover:border-blue-500"
-              src="\src\assets\logo.jpg" alt="" @click="toggleDropdownMenu"/>
+              :src="userProfile.image" alt="" @click="toggleDropdownMenu"/>
           <transition name="dropdown-fade">
             <div v-show="showDropDown"
                  class="absolute top-full mt-2 right-0 z-10 w-44 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">

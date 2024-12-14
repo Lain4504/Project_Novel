@@ -4,6 +4,7 @@ import com.backend.dto.response.ApiResponse;
 import com.backend.novelservice.dto.request.NovelCreationRequest;
 import com.backend.novelservice.dto.request.NovelUpdateRequest;
 import com.backend.novelservice.dto.response.NovelCategoryResponse;
+import com.backend.novelservice.dto.response.NovelDetailsResponse;
 import com.backend.novelservice.dto.response.NovelResponse;
 import com.backend.dto.response.PageResponse;
 import com.backend.novelservice.dto.response.NovelVolumeResponse;
@@ -71,5 +72,9 @@ public class NovelController {
     {
         return ApiResponse.<PageResponse<NovelResponse>>builder()
                 .result(novelService.getNovelsByAuthor(authorId, page, size)).build();
+    }
+    @PostMapping("/details")
+    public List<NovelDetailsResponse> getNovelDetails(@RequestBody List<String> novelIds) {
+        return novelService.getNovelDetails(novelIds);
     }
 }
