@@ -24,4 +24,8 @@ public class InternalUserProfileController {
                 .result(userProfileService.createProfile(request))
                 .build();
     }
+    @GetMapping("/internal/users/{userId}")
+    UserProfileResponse getUserProfile(@PathVariable String userId) {
+        return userProfileService.getProfile(userId);
+    }
 }
