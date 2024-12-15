@@ -5,6 +5,7 @@ import { getUserProfile } from "@/api/user";
 
 interface Comment {
   id: string;
+  userId: string;
   username: string;
   userAvatar: string;
   content: string;
@@ -25,12 +26,16 @@ interface PostCommentReply {
   replyContent: string;
   userId: string;
   replyTo: string;
+  postName?: string;
+  userIdOfReplyTo?: string;
 }
 
 const props = defineProps<{
   itemId: string;
   itemType: 'post' | 'novel' | 'chapter';
   comments: Comment[];
+  ownerId?: string;
+  postName?: string;
   createCommentApi: (data: any) => Promise<any>;
   createReplyApi: (data: any) => Promise<any>;
   getAllRepliesApi: (commentId: string) => Promise<any>;
@@ -77,6 +82,8 @@ const addComment = async () => {
       const commentData: any = {
         content: newComment.value,
         userId: store.getters.getUserId,
+        ownerId: props.ownerId,
+        postName: props.postName,
         replies: []
       };
       if (props.itemType === 'post') {
@@ -106,7 +113,9 @@ const submitReply = async (commentId: string) => {
         commentId,
         replyContent: replyText.value[commentId],
         userId: store.getters.getUserId,
-        replyTo: comment ? comment.username : ''
+        replyTo: comment ? comment.username : '',
+        userIdOfReplyTo: comment ? comment.userId : '',
+        postName: props.postName
       };
       await props.createReplyApi(replyData);
       replyText.value[commentId] = '';

@@ -117,7 +117,9 @@ public enum NotificationTemplate {
         </div>
         </body>
         </html>
-        """);
+        """),
+    COMMENT_OWNER_NOTIFICATION("You have a new comment from %s on your post in %s: \"%s\""),
+    COMMENT_REPLY_NOTIFICATION("You have a new reply from %s on your comment in %s: \"%s\"");
 
     private final String template;
 

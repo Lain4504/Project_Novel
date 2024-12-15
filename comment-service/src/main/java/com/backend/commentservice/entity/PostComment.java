@@ -19,6 +19,7 @@ public class PostComment {
     @MongoId
     String id;
     String postId;
+    String postName;
     String userId;
     String content;
     Integer replyCount;
@@ -26,4 +27,5 @@ public class PostComment {
     LocalDateTime updateDateTime;
     String username;
     String userAvatar;
+    String ownerId;
 }

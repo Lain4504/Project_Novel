@@ -70,7 +70,6 @@ public class UserService {
                 .build();
         //Publish message to kafka
         kafkaTemplate.send("onboard-successfully", event);
-
         return userMapper.toUserResponse(user);
     }
     @PostAuthorize("returnObject.email == authentication.name")

@@ -6,6 +6,7 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.MongoId;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Document(value = "user_profile")
@@ -18,7 +19,4 @@ public class UserProfile {
     @MongoId
     String id;
     String userId;
-    @DBRef
-    @JsonBackReference
-    List<Notification> notifications;
 }

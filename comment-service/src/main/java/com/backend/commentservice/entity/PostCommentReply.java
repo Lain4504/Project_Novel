@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 public class PostCommentReply {
     @MongoId
     String id;
+    String postName;
     String commentId;
     String parentReplyId;
     String userId;
@@ -25,4 +26,5 @@ public class PostCommentReply {
     LocalDateTime updateDateTime;
     String username;
     String userAvatar;
+    String userIdOfReplyTo;
 }
