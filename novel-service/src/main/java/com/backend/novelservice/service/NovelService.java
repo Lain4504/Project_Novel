@@ -122,8 +122,6 @@ public NovelResponse updateNovel(String novelId, NovelUpdateRequest request, Mul
                 .data(novelList)
                 .build();
     }
-
-
     public PageResponse<NovelResponse> getNovelsByAuthor(String authorId, int page, int size) {
         Sort sort = Sort.by(Sort.Order.desc("createdDate"));
         Pageable pageable = PageRequest.of(page - 1, size, sort);

@@ -111,7 +111,7 @@
 - [ ] Kotlin app
 
 ## Web Application
-- Base UI : 70%
+- Base UI : 85%
 
 ## Recommendation System
 - [ ] Personalized recommendations
@@ -120,17 +120,17 @@
 
 ## Social Features
 - [x] User profiles
-- [ ] Follow system
-- [ ] Commenting system
+- [x] Follow system
+- [x] Commenting system
 - [ ] Likes and ratings
 - [ ] Activity feed
 
 ## Authentication & Email
 - [x] User authentication system
 - [x] Send email functionality
-- [ ] OAuth2 integration
+- [x] OAuth2 integration
 ## Reading & Writing Novel & Paid Content
-- [ ] Read novel feature
+- [x] Read novel feature
 - [x] Write novel service
 - [ ] Pay-per-chapter system
 - [x] Novel categories
@@ -144,36 +144,30 @@
 - [ ] Post tags
 ## Search
 - [ ] Search system
-- [ ] Advanced search system
-- [ ] Search settings
-- [ ] Search filters
-- [ ] Search categories
-- [ ] Search by author
-- [ ] Search by tags
+- [ ] Advanced search system(by author, by description, by category, by status)
 ## Author Dashboard
 - [x] Author dashboard
 - [ ] Earnings and revenue system
 - [ ] Author statistics
-- [ ] Author profile
-- [ ] Author settings
+- [x] Author profile
+- [x] Author settings
 - [ ] Author notifications
 - [ ] Author payment system
 ## Admin Dashboard
 - [ ] Admin dashboard
-- [ ] User management
+- [x] User management
 - [x] Novel management
 - [x] Post management
 - [ ] Revenue management
 - [ ] Analytics and statistics
 - [ ] Payment system
 - [ ] Notification system
-- [ ] Settings
-- [ ] User roles
-- [ ] User permissions
+- [x] Settings
+- [x] User roles
+- [x] User permissions
 ## Notifications
 - [ ] Notification system
 - [x] Email notifications
-- [ ] In-app notifications
 - [ ] Push notifications
 - [ ] Notification settings
 - [ ] Notification management
