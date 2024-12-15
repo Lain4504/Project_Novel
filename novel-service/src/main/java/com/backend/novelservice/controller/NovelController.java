@@ -77,4 +77,5 @@ public class NovelController {
     public List<NovelDetailsResponse> getNovelDetails(@RequestBody List<String> novelIds) {
         return novelService.getNovelDetails(novelIds);
     }
+
 }

@@ -1,9 +1,15 @@
 <script setup lang="ts">
-import { onMounted, reactive } from 'vue';
+import {onMounted, reactive, ref} from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { getChapter, getPreviousChapter, getNextChapter } from '@/api/chapter';
 import ChapterContent from '@/components/home/ChapterContent.vue';
-import Comment from '@/components/home/CommentSection.vue';
+import {
+  createChapterComment,
+  createChapterReply,
+  getAllChapterComments,
+  getAllRepliesByChapterCommentId
+} from "@/api/novelcomment";
+import CommentSection from "@/components/home/CommentSection.vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -38,10 +44,29 @@ const fetchNextChapter = async () => {
   router.push({ name: 'chapter', params: { id: response.id } });
 };
 
-onMounted(() => fetchChapter(chapterId));
+
+const comments = ref([]);
+const fetchComments = async () => {
+  try {
+    const result = await getAllChapterComments(chapterId);
+    comments.value = result;
+  } catch (error) {
+    console.error('Failed to fetch comments:', error);
+  }
+}
+const handleCommentAdded = () => {
+  fetchComments();
+};
+onMounted(() =>{
+  fetchChapter(chapterId);
+  fetchComments();
+});
 </script>
 
 <template>
   <ChapterContent :chapter="chapter" @previous-chapter="fetchPreviousChapter" @next-chapter="fetchNextChapter" />
-  <Comment />
+  <CommentSection :itemId="chapterId" itemType="chapter" :comments="comments" @commentAdded="handleCommentAdded"
+                  :create-comment-api="createChapterComment"
+                  :create-reply-api="createChapterReply"
+                  :get-all-replies-api="getAllRepliesByChapterCommentId"/>
 </template>
