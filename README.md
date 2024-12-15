@@ -111,7 +111,7 @@
 - [ ] Kotlin app
 
 ## Web Application
-- Base UI : 70%
+- Base UI : 85%
 
 ## Recommendation System
 - [ ] Personalized recommendations
@@ -120,8 +120,8 @@
 
 ## Social Features
 - [x] User profiles
-- [ ] Follow system
-- [ ] Commenting system
+- [x] Follow system
+- [x] Commenting system
 - [ ] Likes and ratings
 - [ ] Activity feed
 
@@ -154,22 +154,22 @@
 - [x] Author dashboard
 - [ ] Earnings and revenue system
 - [ ] Author statistics
-- [ ] Author profile
-- [ ] Author settings
+- [x] Author profile
+- [x] Author settings
 - [ ] Author notifications
 - [ ] Author payment system
 ## Admin Dashboard
 - [ ] Admin dashboard
-- [ ] User management
+- [x] User management
 - [x] Novel management
 - [x] Post management
 - [ ] Revenue management
 - [ ] Analytics and statistics
 - [ ] Payment system
 - [ ] Notification system
-- [ ] Settings
-- [ ] User roles
-- [ ] User permissions
+- [x] Settings
+- [x] User roles
+- [x] User permissions
 ## Notifications
 - [ ] Notification system
 - [x] Email notifications
