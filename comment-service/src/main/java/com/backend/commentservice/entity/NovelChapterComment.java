@@ -21,4 +21,6 @@ public class NovelChapterComment {
     Integer replyCount;
     LocalDateTime createdDate;
     LocalDateTime updateDateTime;
+    String username;
+    String userAvatar;
 }

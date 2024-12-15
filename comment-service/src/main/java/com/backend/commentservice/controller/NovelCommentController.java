@@ -3,7 +3,6 @@ package com.backend.commentservice.controller;
 import com.backend.commentservice.entity.NovelComment;
 import com.backend.commentservice.entity.NovelCommentReply;
 import com.backend.commentservice.service.NovelCommentService;
-import com.backend.commentservice.service.PostCommentService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -19,9 +18,9 @@ import java.util.List;
 public class NovelCommentController {
     NovelCommentService novelCommentService;
 
-    @GetMapping("/{postId}")
-    public ResponseEntity<List<NovelComment>> getAllComments(@PathVariable String postId) {
-        return ResponseEntity.ok(novelCommentService.getAllComments(postId));
+    @GetMapping("/{novelId}")
+    public ResponseEntity<List<NovelComment>> getAllComments(@PathVariable String novelId) {
+        return ResponseEntity.ok(novelCommentService.getAllComments(novelId));
     }
 
     @PostMapping

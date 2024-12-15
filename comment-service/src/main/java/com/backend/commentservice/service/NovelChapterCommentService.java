@@ -3,16 +3,17 @@ package com.backend.commentservice.service;
 import com.backend.commentservice.entity.NovelChapterComment;
 import com.backend.commentservice.entity.NovelChapterCommentReply;
 import com.backend.commentservice.repository.NovelChapterCommentReplyRepository;
-import com.backend.commentservice.repository.NovelCommentReplyRepository;
 import com.backend.commentservice.repository.NovelChapterCommentRepository;
+import com.backend.commentservice.repository.httpclient.UserProfileClient;
+import com.backend.commentservice.repository.httpclient.UserProfileResponse;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -20,8 +21,11 @@ import java.util.List;
 public class NovelChapterCommentService {
     NovelChapterCommentRepository novelChapterCommentRepository;
     NovelChapterCommentReplyRepository novelChapterCommentReplyRepository;
+    UserProfileClient userProfileClient;
     public List<NovelChapterComment> getAllComments(String chapterId) {
-        return novelChapterCommentRepository.findAllByChapterId(chapterId);
+        return novelChapterCommentRepository.findAllByChapterId(chapterId).stream()
+                .map(this::enrichCommentWithUserProfile)
+                .collect(Collectors.toList());
     }
     public NovelChapterComment createComment(NovelChapterComment novelChapterComment) {
         novelChapterComment.setCreatedDate(LocalDateTime.now());
@@ -41,7 +45,9 @@ public class NovelChapterCommentService {
         novelChapterCommentRepository.deleteById(id);
     }
     public List<NovelChapterCommentReply> getAllRepliesByCommentId(String commentId) {
-        return novelChapterCommentReplyRepository.findAllByCommentId(commentId);
+        return novelChapterCommentReplyRepository.findAllByCommentId(commentId).stream()
+                .map(this::enrichReplyWithUserProfile)
+                .collect(Collectors.toList());
     }
     public NovelChapterCommentReply createReply(NovelChapterCommentReply novelCommentReply) {
         novelCommentReply.setCreatedDate(LocalDateTime.now());
@@ -60,5 +66,27 @@ public class NovelChapterCommentService {
 
     public void deleteReply(String id) {
         novelChapterCommentReplyRepository.deleteById(id);
+    }
+    
+    NovelChapterComment enrichCommentWithUserProfile(NovelChapterComment comment) {
+        UserProfileResponse userProfile = userProfileClient.getUserProfile(comment.getUserId());
+        comment.setUsername(userProfile.getUsername());
+        if (userProfile.getImage() != null) {
+            comment.setUserAvatar(userProfile.getImage().getPath());
+        } else {
+            comment.setUserAvatar(null); // or set a default value if needed
+        }
+        return comment;
+    }
+
+     NovelChapterCommentReply enrichReplyWithUserProfile(NovelChapterCommentReply reply) {
+        UserProfileResponse userProfile = userProfileClient.getUserProfile(reply.getUserId());
+        reply.setUsername(userProfile.getUsername());
+        if (userProfile.getImage() != null) {
+            reply.setUserAvatar(userProfile.getImage().getPath());
+        } else {
+            reply.setUserAvatar(null); // or set a default value if needed
+        }
+        return reply;
     }
 }

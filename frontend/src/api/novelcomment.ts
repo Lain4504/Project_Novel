@@ -31,40 +31,40 @@ interface NovelChapterCommentReply{
     replyTo: string;
     content: string;
 }
-const getAllComments = (novelId: string) => {
+const getAllNovelComments = (novelId: string) => {
     return axios.get(`${NOVEL_COMMENT_API}/${novelId}`)
         .then(response => response.data);
 };
-const createComment = (data: NovelComment) => {
+const createNovelComment = (data: NovelComment) => {
     return axios.post(NOVEL_COMMENT_API, data)
         .then(response => response.data);
 };
-const updateComment = (id: string, data: NovelComment) => {
+const updateNovelComment = (id: string, data: NovelComment) => {
     return axios.put(`${NOVEL_COMMENT_API}/${id}`, data)
         .then(response => response.data);
 };
-const deleteComment = (id: string) => {
+const deleteNovelComment = (id: string) => {
     return axios.delete(`${NOVEL_COMMENT_API}/${id}`)
         .then(response => response.data);
 };
-const getAllRepliesByCommentId = (commentId: string) => {
+const getAllNovelRepliesByCommentId = (commentId: string) => {
     return axios.get(`${NOVEL_COMMENT_API}/replies/${commentId}`)
         .then(response => response.data);
 };
-const createReply = (data: NovelCommentReply) => {
+const createNovelReply = (data: NovelCommentReply) => {
     return axios.post(`${NOVEL_COMMENT_API}/replies`, data)
         .then(response => response.data);
 };
-const updateReply = (id: string, data: NovelCommentReply) => {
+const updateNovelReply = (id: string, data: NovelCommentReply) => {
     return axios.put(`${NOVEL_COMMENT_API}/replies/${id}`, data)
         .then(response => response.data);
 };
-const deleteReply = (id: string) => {
+const deleteNovelReply = (id: string) => {
     return axios.delete(`${NOVEL_COMMENT_API}/replies/${id}`)
         .then(response => response.data);
 };
-const getAllChapterComments = (novelId: string, chapterId: string) => {
-    return axios.get(`${NOVEL_CHAPTER_API}/${novelId}/${chapterId}`)
+const getAllChapterComments = (chapterId: string) => {
+    return axios.get(`${NOVEL_CHAPTER_API}/${chapterId}`)
         .then(response => response.data);
 }
 const createChapterComment = (data: NovelChapterComment) => {
@@ -95,4 +95,4 @@ const deleteChapterReply = (id: string) => {
     return axios.delete(`${NOVEL_CHAPTER_API}/replies/${id}`)
         .then(response => response.data);
 }
-export { getAllChapterComments, createChapterComment, updateChapterComment, deleteChapterComment, getAllRepliesByChapterCommentId, createChapterReply, updateChapterReply, deleteChapterReply };
+export { getAllNovelComments, createNovelComment, updateNovelComment, deleteNovelComment, getAllNovelRepliesByCommentId, createNovelReply, updateNovelReply, deleteNovelReply, getAllChapterComments, createChapterComment, updateChapterComment, deleteChapterComment, getAllRepliesByChapterCommentId, createChapterReply, updateChapterReply, deleteChapterReply };

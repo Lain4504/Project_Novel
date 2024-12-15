@@ -18,9 +18,9 @@ import java.util.List;
 public class NovelChapterCommentController {
     NovelChapterCommentService novelChapterCommentService;
 
-    @GetMapping("/{postId}")
-    public ResponseEntity<List<NovelChapterComment>> getAllComments(@PathVariable String postId) {
-        return ResponseEntity.ok(novelChapterCommentService.getAllComments(postId));
+    @GetMapping("/{chapterId}")
+    public ResponseEntity<List<NovelChapterComment>> getAllComments(@PathVariable String chapterId) {
+        return ResponseEntity.ok(novelChapterCommentService.getAllComments(chapterId));
     }
 
     @PostMapping
