@@ -52,4 +52,22 @@ public class UserReviewService {
                 .data(novelReviews)
                 .build();
     }
+
+    public PageResponse<UserReviewResponse> getLatestReview(int page, int size) {
+        Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
+        Pageable pageable = PageRequest.of(page - 1, size, sort);
+        var pageData = userReviewRepository.findAll(pageable);
+        var novelReviews = pageData.getContent().stream().map(novelReview ->{
+            var userReviewResponse = userReviewMapper.toUserReviewResponse(novelReview);
+            userReviewResponse.setCreated(dateTimeFormatter.format(novelReview.getCreatedAt()));
+            return userReviewResponse;
+        }).toList();
+        return PageResponse.<UserReviewResponse>builder()
+                .currentPage(page)
+                .pageSize(pageData.getSize())
+                .totalPages(pageData.getTotalPages())
+                .totalElements(pageData.getTotalElements())
+                .data(novelReviews)
+                .build();
+    }
 }
