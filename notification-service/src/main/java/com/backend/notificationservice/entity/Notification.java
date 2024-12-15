@@ -5,6 +5,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.MongoId;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 
 @NoArgsConstructor
@@ -17,9 +18,10 @@ import java.time.LocalDateTime;
 public class Notification {
     @MongoId
     String id;
-    String userId;
+    String title;
     String content;
     Boolean isRead;
-    LocalDateTime createdDate;
-    String contentType;
+    String NotificationType;
+    String userId;
+    Instant createdDate;
 }
