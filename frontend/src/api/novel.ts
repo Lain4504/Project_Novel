@@ -26,6 +26,10 @@ const getNovels = (page: number, size: number) => {
     return axios.get(`${NOVEL_API}/all?page=${page}&size=${size}`)
         .then((response) => response.data.result);
 }
+const getLatestNovels = (page: number, size: number) => {
+    return axios.get(`${NOVEL_API}/latest-novels?page=${page}&size=${size}`)
+        .then((response) => response.data.result);
+}
 const getMyNovels = (page: number, size: number) => {
     return axios.get(`${NOVEL_API}/my-novels?page=${page}&size=${size}`)
         .then((response) => response.data.result);
@@ -34,4 +38,8 @@ const getNovelsByAuthorId = (authorId: string, page: number, size: number) => {
     return axios.get(`${NOVEL_API}/author/${authorId}?page=${page}&size=${size}`)
         .then((response) => response.data.result);
 }
-export { createNovel, updateNovel, deleteNovel, getNovel, getNovels, getMyNovels, getNovelsByAuthorId };
+const getNovelsByStatus = (status: string, page: number, size: number) => {
+    return axios.get(`${NOVEL_API}/find-by-status/${status}?page=${page}&size=${size}`)
+        .then((response) => response.data.result);
+}
+export { createNovel, updateNovel, deleteNovel, getNovel, getNovels, getMyNovels, getNovelsByAuthorId, getLatestNovels, getNovelsByStatus };

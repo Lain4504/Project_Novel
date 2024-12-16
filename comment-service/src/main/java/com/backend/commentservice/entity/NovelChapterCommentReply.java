@@ -25,4 +25,6 @@ public class NovelChapterCommentReply {
     LocalDateTime updateDateTime;
     String username;
     String userAvatar;
+    String userOfReplyTo;
+    String chapterName;
 }

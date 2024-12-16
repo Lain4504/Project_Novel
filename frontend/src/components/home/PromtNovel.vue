@@ -11,9 +11,8 @@ interface Novel {
 }
 
 const tabs = [
-  { label: 'SÁCH MỚI', value: 'new', sort: 'new' },
-  { label: 'SÁCH BÁN CHẠY', value: 'bestseller', sort: 'bestseller' },
-  { label: 'HOT DEALS', value: 'hotdeals', sort: 'hotdeals' },
+  { label: 'TOP THÁNG', value: 'top', sort: '' },
+  { label: 'ĐỀ CỬ', value: 'recommentation', sort: 'recommentation' },
 ];
 
 const activeTab = ref(tabs[0].value);

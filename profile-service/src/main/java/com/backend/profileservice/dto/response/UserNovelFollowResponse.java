@@ -13,7 +13,6 @@ import java.time.Instant;
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 @Builder
 public class UserNovelFollowResponse {
-    @MongoId
     String id;
     String userId;
     String novelId;

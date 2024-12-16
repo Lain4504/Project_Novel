@@ -29,7 +29,7 @@ public class UserNovelReviewController {
         return ApiResponse.<Void>builder().build();
     }
     @GetMapping("/novel/{novelId}")
-    public ApiResponse<PageResponse<UserReviewResponse>> getReviewsByNovelId(@PathVariable Long novelId,
+    public ApiResponse<PageResponse<UserReviewResponse>> getReviewsByNovelId(@PathVariable String novelId,
                          @RequestParam(value = "page", required = false, defaultValue = "1") int page,
                          @RequestParam(value = "size", required = false, defaultValue = "10") int size
     ) {

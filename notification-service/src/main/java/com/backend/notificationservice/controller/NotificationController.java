@@ -26,7 +26,7 @@ import java.util.List;
 public class NotificationController {
     @Autowired
     NotificationService notificationService;
-    @KafkaListener(topics = "post-comment-notification")
+    @KafkaListener(topics = "comment-notification")
     public void listen(NotificationEvent message) {
         log.info("Received message: {}", message);
         try {

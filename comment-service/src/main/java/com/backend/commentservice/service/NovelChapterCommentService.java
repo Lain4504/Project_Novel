@@ -6,13 +6,16 @@ import com.backend.commentservice.repository.NovelChapterCommentReplyRepository;
 import com.backend.commentservice.repository.NovelChapterCommentRepository;
 import com.backend.commentservice.repository.httpclient.UserProfileClient;
 import com.backend.commentservice.repository.httpclient.UserProfileResponse;
+import com.backend.event.NotificationEvent;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -21,6 +24,7 @@ import java.util.stream.Collectors;
 public class NovelChapterCommentService {
     NovelChapterCommentRepository novelChapterCommentRepository;
     NovelChapterCommentReplyRepository novelChapterCommentReplyRepository;
+    KafkaTemplate<String, Object> kafkaTemplate;
     UserProfileClient userProfileClient;
     public List<NovelChapterComment> getAllComments(String chapterId) {
         return novelChapterCommentRepository.findAllByChapterId(chapterId).stream()
@@ -30,6 +34,19 @@ public class NovelChapterCommentService {
     public NovelChapterComment createComment(NovelChapterComment novelChapterComment) {
         novelChapterComment.setCreatedDate(LocalDateTime.now());
         novelChapterComment.setUpdateDateTime(LocalDateTime.now());
+        novelChapterComment.setUsername(userProfileClient.getUserProfile(novelChapterComment.getUserId()).getUsername());
+        if (!novelChapterComment.getOwnerId().equals(novelChapterComment.getUserId())) {
+            NotificationEvent event = NotificationEvent
+                    .builder()
+                    .channel("NOVEL_CHAPTER")
+                    .recipient(novelChapterComment.getOwnerId())
+                    .templateCode("NOVEL_CHAPTER_COMMENT_OWNER_NOTIFICATION")
+                    .param(Map.of("fromUser", novelChapterComment.getUsername(), "inLocation", novelChapterComment.getChapterName(),
+                            "content", novelChapterComment.getContent()))
+                    .build();
+            //Publish message to kafka
+            kafkaTemplate.send("comment-notification", event);
+        }
         return novelChapterCommentRepository.save(novelChapterComment);
     }
     public NovelChapterComment updateComment(String id, NovelChapterComment novelChapterComment) {
@@ -52,6 +69,19 @@ public class NovelChapterCommentService {
     public NovelChapterCommentReply createReply(NovelChapterCommentReply novelCommentReply) {
         novelCommentReply.setCreatedDate(LocalDateTime.now());
         novelCommentReply.setUpdateDateTime(LocalDateTime.now());
+        novelCommentReply.setUsername(userProfileClient.getUserProfile(novelCommentReply.getUserId()).getUsername());
+        if (!novelCommentReply.getUserOfReplyTo().equals(novelCommentReply.getUserId())) {
+            NotificationEvent event = NotificationEvent
+                    .builder()
+                    .channel("NOVEL_CHAPTER")
+                    .recipient(novelCommentReply.getUserOfReplyTo())
+                    .templateCode("NOVEL_CHAPTER_COMMENT_REPLY_NOTIFICATION")
+                    .param(Map.of("fromUser", novelCommentReply.getUsername(), "inLocation", novelCommentReply.getChapterName(),
+                            "content", novelCommentReply.getReplyContent()))
+                    .build();
+            //Publish message to kafka
+            kafkaTemplate.send("comment-notification", event);
+        }
         return novelChapterCommentReplyRepository.save(novelCommentReply);
     }
     public NovelChapterCommentReply updateReply(String id, NovelChapterCommentReply novelCommentReply) {

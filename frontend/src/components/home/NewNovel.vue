@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
-import { getNovels } from '@/api/novel';
+import {getLatestNovels, getNovels} from '@/api/novel';
+import {get} from "axios";
 
 interface Novel {
   id: string;
@@ -33,8 +34,8 @@ const fetchTrendingNovels = async () => {
   try {
     const page = 1;
     const size = 6;
-    const response = await getNovels(page, size);
-    console.log('Latest novels:', response);
+    const response = await getLatestNovels(page, size);
+    console.log('Trending novels:', response);
     trendingBooks.value = response.data.map((novel: any) => ({
       id: novel.id,
       title: novel.title,

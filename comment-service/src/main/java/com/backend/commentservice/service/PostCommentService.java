@@ -40,16 +40,18 @@ public class PostCommentService {
         postComment.setUpdateDateTime(LocalDateTime.now());
         UserProfileResponse userProfile = userProfileClient.getUserProfile(postComment.getUserId());
         postComment.setUsername(userProfile.getUsername());
-        NotificationEvent event = NotificationEvent
-                .builder()
-                .channel("PUSH_NOTIFICATION")
-                .recipient(postComment.getOwnerId())
-                .templateCode("COMMENT_OWNER_NOTIFICATION")
-                .param(Map.of("fromUser", postComment.getUsername(), "inLocation", postComment.getPostName(),
-                        "content", postComment.getContent()))
-                .build();
-        //Publish message to kafka
-        kafkaTemplate.send("post-comment-notification", event);
+        if (!postComment.getOwnerId().equals(postComment.getUserId())) {
+            NotificationEvent event = NotificationEvent
+                    .builder()
+                    .channel("POST")
+                    .recipient(postComment.getOwnerId())
+                    .templateCode("POST_COMMENT_OWNER_NOTIFICATION")
+                    .param(Map.of("fromUser", postComment.getUsername(), "inLocation", postComment.getPostName(),
+                            "content", postComment.getContent()))
+                    .build();
+            //Publish message to kafka
+            kafkaTemplate.send("comment-notification", event);
+        }
         return postCommentRepository.save(postComment);
     }
 
@@ -77,16 +79,18 @@ public class PostCommentService {
         postCommentReply.setCreatedDate(LocalDateTime.now());
         postCommentReply.setUpdateDateTime(LocalDateTime.now());
         postCommentReply.setUsername(userProfileClient.getUserProfile(postCommentReply.getUserId()).getUsername());
-        NotificationEvent event = NotificationEvent
-                .builder()
-                .channel("PUSH_NOTIFICATION")
-                .recipient(postCommentReply.getUserIdOfReplyTo())
-                .templateCode("COMMENT_REPLY_NOTIFICATION")
-                .param(Map.of("fromUser", postCommentReply.getUsername(), "inLocation", postCommentReply.getPostName(),
-                        "content", postCommentReply.getReplyContent()))
-                .build();
-        //Publish message to kafka
-        kafkaTemplate.send("post-comment-notification", event);
+        if (!postCommentReply.getUserIdOfReplyTo().equals(postCommentReply.getUserId())) {
+            NotificationEvent event = NotificationEvent
+                    .builder()
+                    .channel("POST")
+                    .recipient(postCommentReply.getUserIdOfReplyTo())
+                    .templateCode("POST_COMMENT_REPLY_NOTIFICATION")
+                    .param(Map.of("fromUser", postCommentReply.getUsername(), "inLocation", postCommentReply.getPostName(),
+                            "content", postCommentReply.getReplyContent()))
+                    .build();
+            //Publish message to kafka
+            kafkaTemplate.send("comment-notification", event);
+        }
         return postCommentReplyRepository.save(postCommentReply);
     }
 

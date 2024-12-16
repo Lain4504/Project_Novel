@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue';
-import { getMyNovels } from "@/api/novel";
+import { getNovelsByStatus } from "@/api/novel";
 
 interface Novel {
   id: number;
@@ -15,7 +15,8 @@ const novels = ref<Novel[]>([]);
 
 const getCompleteNovels = async (page: number, size: number) => {
   try {
-    const response = await getMyNovels(page, size); // Adjust for 0-based index
+    const status = 'COMPLETED';
+    const response = await getNovelsByStatus(status, page, size);
     console.log("Complete novels:", response);
     novels.value = response.data.map((novel: any) => ({
       id: novel.id,

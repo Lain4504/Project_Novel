@@ -21,7 +21,7 @@ public class Notification {
     String title;
     String content;
     Boolean isRead;
-    String NotificationType;
+    String notificationType;
     String userId;
     Instant createdDate;
 }
