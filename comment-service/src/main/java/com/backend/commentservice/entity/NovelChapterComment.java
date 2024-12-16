@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.mongodb.core.mapping.MongoId;
 
 import java.time.LocalDateTime;
 
@@ -14,6 +15,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class NovelChapterComment {
+    @MongoId
     String id;
     String chapterId;
     String userId;
@@ -21,4 +23,8 @@ public class NovelChapterComment {
     Integer replyCount;
     LocalDateTime createdDate;
     LocalDateTime updateDateTime;
+    String username;
+    String userAvatar;
+    String ownerId;
+    String chapterName;
 }

@@ -23,4 +23,9 @@ public class NovelCommentReply {
     String replyTo;
     LocalDateTime createdDate;
     LocalDateTime updateDateTime;
+    String username;
+    String userAvatar;
+    String userOfReplyTo;
+    String NovelName;
+
 }

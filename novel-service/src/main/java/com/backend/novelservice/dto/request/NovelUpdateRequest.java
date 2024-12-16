@@ -22,4 +22,5 @@ public class NovelUpdateRequest {
     String authorId;
     String authorName;
     String description;
+    String status;
 }

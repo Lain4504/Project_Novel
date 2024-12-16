@@ -3,6 +3,7 @@ package com.backend.profileservice.service;
 import com.backend.dto.response.PageResponse;
 import com.backend.profileservice.dto.request.UserReviewRequest;
 import com.backend.profileservice.dto.response.UserReviewResponse;
+import com.backend.profileservice.entity.UserReview;
 import com.backend.profileservice.mapper.UserReviewMapper;
 import com.backend.profileservice.repository.UserReviewRepository;
 import com.backend.utils.DateTimeFormatter;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
 import java.sql.Time;
+import java.time.Instant;
 
 @Service
 @RequiredArgsConstructor
@@ -26,7 +28,10 @@ public class UserReviewService {
     private final RestClient.Builder builder;
 
     public UserReviewResponse createReview(UserReviewRequest request) {
-        return userReviewMapper.toUserReviewResponse(userReviewRepository.save(userReviewMapper.toUserReview(request)));
+        UserReview userReview = userReviewMapper.toUserReview(request);
+        userReview.setCreatedAt(Instant.now());
+        userReviewRepository.save(userReview);
+        return userReviewMapper.toUserReviewResponse(userReview);
     }
     public UserReviewResponse updateReview(UserReviewRequest request) {
         userReviewMapper.updateUserReview(userReviewRepository.findByUserIdAndNovelId(request.getUserId(), request.getNovelId()), request);
@@ -35,7 +40,7 @@ public class UserReviewService {
     public void deleteReview(UserReviewRequest request) {
         userReviewRepository.deleteByUserIdAndNovelId(request.getUserId(), request.getNovelId());
     }
-    public PageResponse<UserReviewResponse> getReviewsByNovelId(Long novelId, int page, int size) {
+    public PageResponse<UserReviewResponse> getReviewsByNovelId(String novelId, int page, int size) {
         Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
         Pageable pageable = PageRequest.of(page - 1, size, sort);
         var pageData = userReviewRepository.findAllByNovelId(novelId, pageable);

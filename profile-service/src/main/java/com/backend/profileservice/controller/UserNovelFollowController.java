@@ -34,8 +34,8 @@ public class UserNovelFollowController {
                 .result(userNovelFollowService.isFollowingNovel(request))
                 .build();
     }
-    @GetMapping("/get-my-following")
-    ApiResponse<List<NovelDetailsResponse>> getFollowingNovelDetails(@RequestParam String userId) {
+    @GetMapping("/followed-novels/{userId}")
+    ApiResponse<List<NovelDetailsResponse>> getFollowingNovelDetails(@PathVariable("userId") String userId) {
         return ApiResponse.<List<NovelDetailsResponse>>builder()
                 .result(userNovelFollowService.getFollowingNovelsWithDetails(userId))
                 .build();

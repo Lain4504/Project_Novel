@@ -136,12 +136,10 @@
 - [x] Novel categories
 - [x] Upload Image
 - [ ] Setup for reading novels settings 
-
 ## Posting 
 - [x] Post service
 - [x] Post management system
 - [x] Post categories
-- [ ] Post tags
 ## Search
 - [ ] Search system
 - [ ] Advanced search system(by author, by description, by category, by status)
@@ -151,7 +149,7 @@
 - [ ] Author statistics
 - [x] Author profile
 - [x] Author settings
-- [ ] Author notifications
+- [x] Author notifications
 - [ ] Author payment system
 ## Admin Dashboard
 - [ ] Admin dashboard
@@ -161,16 +159,16 @@
 - [ ] Revenue management
 - [ ] Analytics and statistics
 - [ ] Payment system
-- [ ] Notification system
+- [x] Notification system
 - [x] Settings
 - [x] User roles
 - [x] User permissions
 ## Notifications
-- [ ] Notification system
+- [x] Notification system
 - [x] Email notifications
-- [ ] Push notifications
+- [x] Push notifications
 - [ ] Notification settings
-- [ ] Notification management
+- [x] Notification management
 
 ---TO BE COUNTINUED---
 

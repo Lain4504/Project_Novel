@@ -23,4 +23,8 @@ public class NovelComment {
     Integer replyCount;
     LocalDateTime createdDate;
     LocalDateTime updateDateTime;
+    String username;
+    String userAvatar;
+    String novelName;
+    String ownerId;
 }

@@ -50,7 +50,8 @@ public class NovelController {
     @GetMapping("/all")
     ApiResponse<PageResponse<NovelResponse>> getAllNovels(
             @RequestParam(value = "page", required = false, defaultValue = "1") int page,
-            @RequestParam(value = "size", required = false, defaultValue = "10") int size){
+            @RequestParam(value = "size", required = false, defaultValue = "10") int size
+            ){
         return ApiResponse.<PageResponse<NovelResponse>>builder()
                 .result(novelService.getNovels(page, size)).build();
     }
@@ -62,6 +63,14 @@ public class NovelController {
     {
         return ApiResponse.<PageResponse<NovelResponse>>builder()
                 .result(novelService.getMyNovels(page, size)).build();
+    }
+    @GetMapping("/latest-novels")
+    ApiResponse<PageResponse<NovelResponse>> getLatestNovels(
+            @RequestParam(value = "page", required = false, defaultValue = "1") int page,
+            @RequestParam(value = "size", required = false, defaultValue = "10") int size)
+    {
+        return ApiResponse.<PageResponse<NovelResponse>>builder()
+                .result(novelService.getLatestNovels(page, size)).build();
     }
     @GetMapping("author/{authorId}")
     ApiResponse<PageResponse<NovelResponse>> getNovelsByAuthor(
@@ -77,5 +86,14 @@ public class NovelController {
     public List<NovelDetailsResponse> getNovelDetails(@RequestBody List<String> novelIds) {
         return novelService.getNovelDetails(novelIds);
     }
-
+    @GetMapping("/find-by-status/{status}")
+    public ApiResponse<PageResponse<NovelResponse>> getNovelsByStatus(
+            @PathVariable("status") String status,
+            @RequestParam(value = "page", required = false, defaultValue = "1") int page,
+            @RequestParam(value = "size", required = false, defaultValue = "10") int size
+    )
+    {
+        return ApiResponse.<PageResponse<NovelResponse>>builder()
+                .result(novelService.getNovelsByStatus(status, page, size)).build();
+    }
 }

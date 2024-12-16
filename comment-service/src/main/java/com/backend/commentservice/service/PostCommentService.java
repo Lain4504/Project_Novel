@@ -6,22 +6,28 @@ import com.backend.commentservice.repository.PostCommentReplyRepository;
 import com.backend.commentservice.repository.PostCommentRepository;
 import com.backend.commentservice.repository.httpclient.UserProfileClient;
 import com.backend.commentservice.repository.httpclient.UserProfileResponse;
+import com.backend.event.NotificationEvent;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class PostCommentService {
     PostCommentReplyRepository postCommentReplyRepository;
     PostCommentRepository postCommentRepository;
     UserProfileClient userProfileClient;
+    KafkaTemplate<String, Object> kafkaTemplate;
 
     public List<PostComment> getAllComments(String postId) {
         return postCommentRepository.findAllByPostId(postId).stream()
@@ -32,6 +38,20 @@ public class PostCommentService {
     public PostComment createComment(PostComment postComment) {
         postComment.setCreatedDate(LocalDateTime.now());
         postComment.setUpdateDateTime(LocalDateTime.now());
+        UserProfileResponse userProfile = userProfileClient.getUserProfile(postComment.getUserId());
+        postComment.setUsername(userProfile.getUsername());
+        if (!postComment.getOwnerId().equals(postComment.getUserId())) {
+            NotificationEvent event = NotificationEvent
+                    .builder()
+                    .channel("POST")
+                    .recipient(postComment.getOwnerId())
+                    .templateCode("POST_COMMENT_OWNER_NOTIFICATION")
+                    .param(Map.of("fromUser", postComment.getUsername(), "inLocation", postComment.getPostName(),
+                            "content", postComment.getContent()))
+                    .build();
+            //Publish message to kafka
+            kafkaTemplate.send("comment-notification", event);
+        }
         return postCommentRepository.save(postComment);
     }
 
@@ -58,6 +78,19 @@ public class PostCommentService {
     public PostCommentReply createReply(PostCommentReply postCommentReply) {
         postCommentReply.setCreatedDate(LocalDateTime.now());
         postCommentReply.setUpdateDateTime(LocalDateTime.now());
+        postCommentReply.setUsername(userProfileClient.getUserProfile(postCommentReply.getUserId()).getUsername());
+        if (!postCommentReply.getUserIdOfReplyTo().equals(postCommentReply.getUserId())) {
+            NotificationEvent event = NotificationEvent
+                    .builder()
+                    .channel("POST")
+                    .recipient(postCommentReply.getUserIdOfReplyTo())
+                    .templateCode("POST_COMMENT_REPLY_NOTIFICATION")
+                    .param(Map.of("fromUser", postCommentReply.getUsername(), "inLocation", postCommentReply.getPostName(),
+                            "content", postCommentReply.getReplyContent()))
+                    .build();
+            //Publish message to kafka
+            kafkaTemplate.send("comment-notification", event);
+        }
         return postCommentReplyRepository.save(postCommentReply);
     }
 

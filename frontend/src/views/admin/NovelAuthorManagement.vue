@@ -93,7 +93,7 @@ const refreshNovelData = async () => {
       title: novelData.title,
       authorName: novelData.authorName,
       description: novelData.description,
-      bookStatus: novelData.bookStatus,
+      bookStatus: novelData.status,
       categories: novelData.categories,
       image: novelData.image,
     };

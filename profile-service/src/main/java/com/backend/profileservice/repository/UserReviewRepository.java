@@ -11,5 +11,5 @@ public interface UserReviewRepository extends MongoRepository<UserReview, String
     UserReview findByUserIdAndNovelId(String userId, String novelId);
     void deleteByUserIdAndNovelId(String userId, String novelId);
 
-    Page<UserReview> findAllByNovelId(Long novelId, Pageable pageable);
+    Page<UserReview> findAllByNovelId(String novelId, Pageable pageable);
 }
