@@ -36,9 +36,11 @@ const fetchUserProfile = async () => {
 const fetchNotifications = async () => {
   try {
     const userId = store.getters.getUserId;
-    const notificationData = await getNotificationByUserId(userId);
-    notifications.value = notificationData;
-    unreadNotifications.value = notificationData.length;
+    const page = 1;
+    const size = 5;
+    const notificationData = await getNotificationByUserId(userId, page, size);
+    notifications.value = notificationData.data;
+    unreadNotifications.value = notificationData.data.length;
   } catch (error) {
     console.error('Error fetching notifications:', error);
   }

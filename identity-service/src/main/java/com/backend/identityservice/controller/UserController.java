@@ -1,6 +1,7 @@
 package com.backend.identityservice.controller;
 
 import com.backend.dto.response.ApiResponse;
+import com.backend.dto.response.PageResponse;
 import com.backend.identityservice.dto.request.UserCreationRequest;
 import com.backend.identityservice.dto.request.UserUpdateRequest;
 import com.backend.identityservice.dto.response.UserResponse;
@@ -25,10 +26,15 @@ public class UserController {
         return ApiResponse.<UserResponse>builder().result(userService.createUser(request)).build();
     }
     @GetMapping
-    ApiResponse<List<UserResponse>> getUsers()
+    ApiResponse<PageResponse<UserResponse>> getUsers(
+            @RequestParam(value = "page", required = false, defaultValue = "1") int page,
+            @RequestParam(value = "size", required = false, defaultValue = "10") int size
+    )
     {
 
-        return ApiResponse.<List<UserResponse>>builder().result(userService.getAllUsers()).build();
+        return ApiResponse.<PageResponse<UserResponse>>builder()
+                .result(userService.getAllUsers(page, size))
+                .build();
     }
     @GetMapping("/{userId}")
     ApiResponse<UserResponse> getUser(@PathVariable("userId") String userId) {

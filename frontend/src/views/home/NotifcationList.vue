@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import {onMounted, ref} from 'vue';
+import {onMounted, ref, computed} from 'vue';
 import Banner from "@/components/home/Banner.vue";
 import store from "@/store";
 import {getNotificationByUserId} from "@/api/notification";
+
 interface Notification {
   id: string;
   title: string;
@@ -10,20 +11,52 @@ interface Notification {
   isRead: boolean;
   NotificationType: string;
   userId: string;
-  createdDate: string;
+  created: string;
 }
+
 const notifications = ref<Notification[]>([]);
-const fetchNotifications = async () => {
+const currentPage = ref(1);
+const totalPages = ref(0);
+const pageSize = 10;
+
+const fetchNotifications = async (page: number) => {
   try {
     const userId = store.getters.getUserId;
-    notifications.value = await getNotificationByUserId(userId);
+    const response = await getNotificationByUserId(userId, page, pageSize);
+    notifications.value = response.data;
+    totalPages.value = response.totalPages;
+    currentPage.value = response.currentPage;
   } catch (error) {
     console.error('Failed to fetch notifications:', error);
   }
 }
+
 onMounted(() => {
-  fetchNotifications();
+  fetchNotifications(currentPage.value);
 });
+
+const goToPage = (page: number) => {
+  if (page >= 1 && page <= totalPages.value) {
+    fetchNotifications(page);
+  }
+};
+
+const visiblePages = computed(() => {
+  const pages = [];
+  const maxVisible = 5;
+  let start = Math.max(1, currentPage.value - Math.floor(maxVisible / 2));
+  let end = Math.min(totalPages.value, start + maxVisible - 1);
+
+  if (end - start + 1 < maxVisible) {
+    start = Math.max(1, end - maxVisible + 1);
+  }
+
+  for (let i = start; i <= end; i++) {
+    pages.push(i);
+  }
+  return pages;
+});
+
 const showDropdown = ref(false);
 const toggleDropdown = () => {
   showDropdown.value = !showDropdown.value;
@@ -57,6 +90,18 @@ const toggleDropdown = () => {
         </div>
         <div class="text-sm text-gray-500">{{ new Date(notification.createdDate).toLocaleDateString() }}</div>
       </div>
+    </div>
+    <!-- Pagination -->
+    <div class="flex justify-center mt-4">
+      <button @click="goToPage(1)" :disabled="currentPage === 1" class="px-3 py-1 mx-1 text-sm text-gray-400 rounded hover:bg-gray-200">
+        First
+      </button>
+      <button v-for="page in visiblePages" :key="page" @click="goToPage(page)" class="px-3 py-1 mx-1 text-sm rounded hover:bg-gray-200" :class="{'bg-gray-300': page === currentPage, 'text-gray-700': page !== currentPage}">
+        {{ page }}
+      </button>
+      <button @click="goToPage(totalPages)" :disabled="currentPage === totalPages" class="px-3 py-1 mx-1 text-sm text-gray-400 rounded hover:bg-gray-200">
+        Last
+      </button>
     </div>
   </div>
 </template>

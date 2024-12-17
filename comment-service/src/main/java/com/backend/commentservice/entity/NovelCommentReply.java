@@ -5,6 +5,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.MongoId;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 
 @Getter
@@ -12,7 +13,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
-@Document(value = "comment_reply")
+@Document(value = "novel_scomment_reply")
 @Builder
 public class NovelCommentReply {
     @MongoId
@@ -21,11 +22,11 @@ public class NovelCommentReply {
     String userId;
     String replyContent;
     String replyTo;
-    LocalDateTime createdDate;
-    LocalDateTime updateDateTime;
+    Instant createdDate;
+    Instant updateDateTime;
     String username;
     String userAvatar;
-    String userOfReplyTo;
-    String NovelName;
-
+    String novelName;
+    String novelId;
+    String userIdOfReplyTo;
 }

@@ -10,6 +10,7 @@ interface Novel {
   novelName: string;
   author: string;
   chapterCount: number | null;
+  image: string;
 }
 
 const novels = ref<Novel[]>([]);
@@ -19,7 +20,7 @@ const fetchFollowNovels = async () => {
     const userId = store.getters.getUserId;
     const result = await getMyFollowedNovels(userId);
     console.log("Followed novels:", result);
-    novels.value = result;
+    novels.value = result.data;
   } catch (error) {
     console.error("Failed to fetch followed novels:", error);
   }
@@ -44,8 +45,8 @@ onMounted(() => {
                 :key="index"
                 class="flex items-center space-x-4"
             >
-              <img
-                  src="@/assets/logo.jpg"
+              <imgv
+                  :src="item.image"
                   alt="Book Image"
                   class="w-14 h-20 object-cover"
               />

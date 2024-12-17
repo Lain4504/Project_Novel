@@ -46,6 +46,7 @@ interface Category {
 interface Novel {
   id: string;
   title: string;
+  authorId: string;
   authorName: string;
   description: string;
   bookStatus: string;
@@ -88,7 +89,7 @@ const fetchNovelData = async () => {
 const fetchComments = async () => {
   try {
     const result = await getAllNovelComments(novelId);
-    comments.value = result;
+    comments.value = result.data;
   } catch (error) {
     console.error('Failed to fetch comments:', error);
   }
@@ -97,7 +98,7 @@ const fetchComments = async () => {
 const fetchReviews = async () => {
   try {
     const result = await getReviewList(novelId, 1, 10);
-    reviews.value = result;
+    reviews.value = result.data;
   } catch (error) {
     console.error('Failed to fetch reviews:', error);
   }
@@ -287,7 +288,8 @@ onMounted(() => {
               <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 <router-link
                   v-for="(chapter, chapterIndex) in volume.chapters.slice(0, volume.showMore ? undefined : 6)"
-                  :key="chapterIndex" :to="{ name: 'chapter', params: { novelId: novel.id, chapterId: chapter.id } }"
+                  :key="chapterIndex"
+                  :to="{ name: 'chapter', params: { id: chapter.id } }"
                   class="group relative">
                   <div
                     class="p-3 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow border border-gray-100 hover:border-gray-200">
@@ -319,12 +321,12 @@ onMounted(() => {
           {{ tab }}
         </button>
       </div>
-      <component :is="currentTabComponent" :itemId="novel.id" :reviews="reviews.data" @reviewCreated="handleReviewCreated"
+      <component :is="currentTabComponent" :itemId="novel.id" :reviews="reviews" @reviewCreated="handleReviewCreated"
                  :comments="comments" @commentAdded="handleCommentAdded"
                  :create-comment-api="createNovelComment"
                  :create-reply-api="createNovelReply"
                  :get-all-replies-api="getAllNovelRepliesByCommentId"
-      />
+                 itemType="novel" :owner-id="novel.authorId" :item-name="novel.title" />
     </div>
   </div>
 </template>

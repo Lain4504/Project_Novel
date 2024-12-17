@@ -1,6 +1,7 @@
 package com.backend.profileservice.controller;
 
 import com.backend.dto.response.ApiResponse;
+import com.backend.dto.response.PageResponse;
 import com.backend.profileservice.dto.request.UserNovelFollowRequest;
 import com.backend.profileservice.dto.response.UserNovelFollowResponse;
 import com.backend.profileservice.repository.httpclient.NovelDetailsResponse;
@@ -35,9 +36,12 @@ public class UserNovelFollowController {
                 .build();
     }
     @GetMapping("/followed-novels/{userId}")
-    ApiResponse<List<NovelDetailsResponse>> getFollowingNovelDetails(@PathVariable("userId") String userId) {
-        return ApiResponse.<List<NovelDetailsResponse>>builder()
-                .result(userNovelFollowService.getFollowingNovelsWithDetails(userId))
+    ApiResponse<PageResponse<NovelDetailsResponse>> getFollowingNovelDetails(
+            @PathVariable("userId") String userId,
+            @RequestParam(value = "page", required = false, defaultValue = "1") int page,
+            @RequestParam(value = "size", required = false, defaultValue = "10") int size){
+        return ApiResponse.<PageResponse<NovelDetailsResponse>>builder()
+                .result(userNovelFollowService.getFollowingNovelsWithDetails(userId, page, size))
                 .build();
     }
 

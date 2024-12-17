@@ -18,24 +18,17 @@ interface Reply {
   userAvatar: string;
   replyContent: string;
   replyTo: string;
+  userIdOfReplyTo: string;
+  userId: string;
 }
 
-interface PostCommentReply {
-  commentId: string;
-  parentReplyId?: string;
-  replyContent: string;
-  userId: string;
-  replyTo: string;
-  postName?: string;
-  userIdOfReplyTo?: string;
-}
 
 const props = defineProps<{
   itemId: string;
   itemType: 'post' | 'novel' | 'chapter';
   comments: Comment[];
   ownerId?: string;
-  postName?: string;
+  itemName?: string;
   createCommentApi: (data: any) => Promise<any>;
   createReplyApi: (data: any) => Promise<any>;
   getAllRepliesApi: (commentId: string) => Promise<any>;
@@ -68,7 +61,7 @@ const fetchReplies = async (commentId: string) => {
     const replies = await props.getAllRepliesApi(commentId);
     const comment = props.comments.find(comment => comment.id === commentId);
     if (comment) {
-      comment.replies = replies;
+      comment.replies = replies.data;
     }
     showReplies.value[commentId] = true;
   } catch (error) {
@@ -83,15 +76,16 @@ const addComment = async () => {
         content: newComment.value,
         userId: store.getters.getUserId,
         ownerId: props.ownerId,
-        postName: props.postName,
-        replies: []
       };
       if (props.itemType === 'post') {
         commentData.postId = props.itemId;
+        commentData.postName = props.itemName;
       } else if (props.itemType === 'novel') {
         commentData.novelId = props.itemId;
+        commentData.novelName = props.itemName;
       } else if (props.itemType === 'chapter') {
         commentData.chapterId = props.itemId;
+        commentData.chapterName = props.itemName;
       }
       await props.createCommentApi(commentData);
       newComment.value = '';
@@ -109,14 +103,24 @@ const submitReply = async (commentId: string) => {
   if (replyText.value[commentId]?.trim()) {
     try {
       const comment = props.comments.find(comment => comment.id === commentId);
-      const replyData: PostCommentReply = {
+      const replyData: any = {
         commentId,
         replyContent: replyText.value[commentId],
         userId: store.getters.getUserId,
         replyTo: comment ? comment.username : '',
         userIdOfReplyTo: comment ? comment.userId : '',
-        postName: props.postName
       };
+      if (props.itemType === 'post') {
+        replyData.postId = props.itemId;
+        replyData.postName = props.itemName;
+      } else if (props.itemType === 'novel') {
+        replyData.novelId = props.itemId;
+        replyData.novelName = props.itemName;
+      } else if (props.itemType === 'chapter') {
+        replyData.chapterId = props.itemId;
+        replyData.chapterName = props.itemName;
+      }
+      console.log(replyData);
       await props.createReplyApi(replyData);
       replyText.value[commentId] = '';
       fetchReplies(commentId);
@@ -135,13 +139,23 @@ const submitReplyForReply = async (replyId: string, commentId: string) => {
     try {
       const comment = props.comments.find(comment => comment.id === commentId);
       const reply = comment?.replies?.find(reply => reply.id === replyId);
-      const replyData: PostCommentReply = {
+      const replyData: any = {
         commentId,
-        parentReplyId: replyId,
         replyContent: replyText.value[replyId],
         userId: store.getters.getUserId,
-        replyTo: reply ? reply.username : ''
+        replyTo: reply ? reply.username : '',
+        userIdOfReplyTo: reply ? reply.userId : '',
       };
+      if (props.itemType === 'post') {
+        replyData.postId = props.itemId;
+        replyData.postName = props.itemName;
+      } else if (props.itemType === 'novel') {
+        replyData.novelId = props.itemId;
+        replyData.novelName = props.itemName;
+      } else if (props.itemType === 'chapter') {
+        replyData.chapterId = props.itemId;
+        replyData.chapterName = props.itemName;
+      }
       await props.createReplyApi(replyData);
       replyText.value[replyId] = '';
       fetchReplies(commentId);

@@ -6,6 +6,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.MongoId;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 
 @Getter
@@ -19,13 +20,13 @@ public class PostComment {
     @MongoId
     String id;
     String postId;
-    String postName;
+    String postName; // lấy từ client
     String userId;
+    String username; // lấy từ profile-service
     String content;
     Integer replyCount;
-    LocalDateTime createdDate;
-    LocalDateTime updateDateTime;
-    String username;
-    String userAvatar;
+    Instant createdDate;
+    Instant updateDateTime;
+    String userAvatar; // từ profle-service
     String ownerId;
 }

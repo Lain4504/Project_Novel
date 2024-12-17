@@ -24,4 +24,5 @@ public class Notification {
     String notificationType;
     String userId;
     Instant createdDate;
+    String created;
 }

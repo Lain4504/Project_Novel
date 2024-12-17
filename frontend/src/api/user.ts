@@ -10,7 +10,7 @@ interface AccountRequest {
 }
 interface UserNovelFollowRequest {
     userId: string;
-    noveId: string;
+    novelId: string;
 }
 const register = (data: AccountRequest) => {
     return axios.post(`${USER_API}/registration`, data)

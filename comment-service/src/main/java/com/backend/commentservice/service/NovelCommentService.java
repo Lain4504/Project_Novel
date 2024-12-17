@@ -1,22 +1,34 @@
 package com.backend.commentservice.service;
 
+import com.backend.commentservice.dto.request.NovelCommentReplyRequest;
+import com.backend.commentservice.dto.request.NovelCommentRequest;
+import com.backend.commentservice.dto.response.NovelCommentReplyResponse;
+import com.backend.commentservice.dto.response.NovelCommentResponse;
 import com.backend.commentservice.entity.NovelComment;
 import com.backend.commentservice.entity.NovelCommentReply;
 import com.backend.commentservice.entity.NovelComment;
 import com.backend.commentservice.entity.NovelCommentReply;
+import com.backend.commentservice.mapper.NovelCommentMapper;
+import com.backend.commentservice.mapper.NovelCommentReplyMapper;
 import com.backend.commentservice.repository.NovelCommentReplyRepository;
 import com.backend.commentservice.repository.NovelCommentRepository;
 import com.backend.commentservice.repository.PostCommentReplyRepository;
 import com.backend.commentservice.repository.PostCommentRepository;
 import com.backend.commentservice.repository.httpclient.UserProfileClient;
 import com.backend.commentservice.repository.httpclient.UserProfileResponse;
+import com.backend.dto.response.PageResponse;
 import com.backend.event.NotificationEvent;
+import com.backend.utils.DateTimeFormatter;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -28,16 +40,36 @@ import java.util.stream.Collectors;
 public class NovelCommentService {
     NovelCommentRepository novelCommentRepository;
     NovelCommentReplyRepository novelCommentReplyRepository;
+    NovelCommentMapper novelCommentMapper;
+    NovelCommentReplyMapper novelCommentReplyMapper;
     UserProfileClient userProfileClient;
+    DateTimeFormatter dateTimeFormatter;
     KafkaTemplate<String, Object> kafkaTemplate;
-    public List<NovelComment> getAllComments(String novelId) {
-        return novelCommentRepository.findAllByNovelId(novelId).stream()
-                .map(this::enrichCommentWithUserProfile)
+    public PageResponse<NovelCommentResponse> getAllComments(String novelId, int page, int size){
+        Sort sort = Sort.by(Sort.Order.desc("createdDate"));
+        Pageable pageable = PageRequest.of(page - 1, size, sort);
+        var pageData = novelCommentRepository.findAllByNovelId(novelId, pageable);
+        var commentList = pageData.getContent().stream()
+                .map((this::enrichCommentWithUserProfile))
+                .map(novelComment -> {
+                    NovelCommentResponse response = novelCommentMapper.toNovelCommentResponse(novelComment);
+                    response.setCreated(dateTimeFormatter.format(novelComment.getCreatedDate()));
+                    return response;
+                })
                 .collect(Collectors.toList());
+        return PageResponse.<NovelCommentResponse>builder()
+                .currentPage(page)
+                .totalPages(pageData.getTotalPages())
+                .pageSize(pageData.getSize())
+                .totalElements(pageData.getTotalElements())
+                .data(commentList)
+                .build();
+
     }
-    public NovelComment createComment(NovelComment novelComment) {
-        novelComment.setCreatedDate(LocalDateTime.now());
-        novelComment.setUpdateDateTime(LocalDateTime.now());
+    public NovelCommentResponse createComment(NovelCommentRequest request) {
+        NovelComment novelComment = novelCommentMapper.toNovelComment(request);
+        novelComment.setCreatedDate(Instant.now());
+        novelComment.setUpdateDateTime(Instant.now());
         novelComment.setUsername(userProfileClient.getUserProfile(novelComment.getUserId()).getUsername());
         if (!novelComment.getOwnerId().equals(novelComment.getUserId())) {
             NotificationEvent event = NotificationEvent
@@ -51,47 +83,66 @@ public class NovelCommentService {
             //Publish message to kafka
             kafkaTemplate.send("comment-notification", event);
         }
-        return novelCommentRepository.save(novelComment);
+        return novelCommentMapper.toNovelCommentResponse(novelCommentRepository.save(novelComment));
     }
-    public NovelComment updateComment(String id, NovelComment novelComment) {
+
+    public NovelCommentResponse updateComment(String id, NovelCommentRequest request) {
         return novelCommentRepository.findById(id)
                 .map(existingComment -> {
-                    existingComment.setContent(novelComment.getContent());
-                    existingComment.setUpdateDateTime(LocalDateTime.now());
-                    return novelCommentRepository.save(existingComment);
+                    novelCommentMapper.updateNovelCommentFromRequest(existingComment, request);
+                    existingComment.setUpdateDateTime(Instant.now());
+                    return novelCommentMapper.toNovelCommentResponse(novelCommentRepository.save(existingComment));
                 })
                 .orElseThrow(() -> new RuntimeException("Comment not found"));
     }
+
     public void deleteComment(String id) {
         novelCommentRepository.deleteById(id);
     }
-    public List<NovelCommentReply> getAllRepliesByCommentId(String commentId) {
-        return novelCommentReplyRepository.findAllByCommentId(commentId).stream()
+
+    public PageResponse<NovelCommentReplyResponse> getAllRepliesByCommentId(String commentId, int page, int size) {
+       Sort sort = Sort.by(Sort.Order.desc("createDate"));
+       Pageable pageable = PageRequest.of(page - 1, size, sort);
+       var pageData = novelCommentReplyRepository.findAllByCommentId(commentId, pageable);
+         var replyList = pageData.getContent().stream()
                 .map(this::enrichReplyWithUserProfile)
+                .map(reply ->{
+                    NovelCommentReplyResponse response = novelCommentReplyMapper.toNovelCommentReplyResponse(reply);
+                    response.setCreated(dateTimeFormatter.format(reply.getCreatedDate()));
+                    return response;
+                })
                 .collect(Collectors.toList());
+         return PageResponse.<NovelCommentReplyResponse>builder()
+                 .currentPage(page)
+                 .pageSize(pageData.getSize())
+                 .totalPages(pageData.getTotalPages())
+                 .totalElements(pageData.getTotalElements())
+                 .data(replyList)
+                 .build();
     }
-    public NovelCommentReply createReply(NovelCommentReply novelCommentReply) {
-        novelCommentReply.setCreatedDate(LocalDateTime.now());
-        novelCommentReply.setUpdateDateTime(LocalDateTime.now());
+    public NovelCommentReplyResponse createReply(NovelCommentReplyRequest request) {
+        NovelCommentReply novelCommentReply = novelCommentReplyMapper.toNovelCommentReply(request);
+        novelCommentReply.setCreatedDate(Instant.now());
+        novelCommentReply.setUpdateDateTime(Instant.now());
         novelCommentReply.setUsername(userProfileClient.getUserProfile(novelCommentReply.getUserId()).getUsername());
-        if (!novelCommentReply.getUserOfReplyTo().equals(novelCommentReply.getUserId())) {
+        if (!novelCommentReply.getUserIdOfReplyTo().equals(novelCommentReply.getUserId())) {
             NotificationEvent event = NotificationEvent.builder()
                     .channel("NOVEL")
-                    .recipient(novelCommentReply.getUserOfReplyTo())
+                    .recipient(novelCommentReply.getUserIdOfReplyTo())
                     .templateCode("NOVEL_COMMENT_REPLY_NOTIFICATION")
                     .param(Map.of("fromUser", novelCommentReply.getUsername(), "inLocation", novelCommentReply.getNovelName(),
                             "content", novelCommentReply.getReplyContent())).build();
             //Publish message to kafka
             kafkaTemplate.send("comment-notification", event);
         }
-        return novelCommentReplyRepository.save(novelCommentReply);
+        return novelCommentReplyMapper.toNovelCommentReplyResponse(novelCommentReplyRepository.save(novelCommentReply));
     }
-    public NovelCommentReply updateReply(String id, NovelCommentReply novelCommentReply) {
+    public NovelCommentReplyResponse updateReply(String id, NovelCommentReplyRequest request) {
         return novelCommentReplyRepository.findById(id)
                 .map(existingReply -> {
-                    existingReply.setReplyContent(novelCommentReply.getReplyContent());
-                    existingReply.setUpdateDateTime(LocalDateTime.now());
-                    return novelCommentReplyRepository.save(existingReply);
+                    novelCommentReplyMapper.updateNovelCommentReplyFromRequest(existingReply, request);
+                    existingReply.setUpdateDateTime(Instant.now());
+                    return novelCommentReplyMapper.toNovelCommentReplyResponse(novelCommentReplyRepository.save(existingReply));
                 })
                 .orElseThrow(() -> new RuntimeException("Reply not found"));
     }

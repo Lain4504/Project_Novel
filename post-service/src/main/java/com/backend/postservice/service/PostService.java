@@ -118,7 +118,6 @@ public class PostService {
                 category = postCategoryRepository.findById(post.getCategoryId())
                         .orElse(null);  // Tránh ném ngoại lệ
             }
-
             // Kiểm tra xem có category không, nếu không có thì để null hoặc gán giá trị mặc định
             var postResponse = postMapper.toPostResponse(post, category);
             postResponse.setCreated(dateTimeFormatter.format(post.getCreatedDate()));
