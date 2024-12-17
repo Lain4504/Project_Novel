@@ -154,7 +154,8 @@ public class NovelService {
                         novel.getId(),
                         novel.getTitle(),
                         novel.getAuthorName(),
-                        novel.getChapterCount() // Lấy số chapter
+                        novel.getChapterCount(),
+                        novel.getImage() != null ? novel.getImage().getPath() : null
                 ))
                 .collect(Collectors.toList());
     }

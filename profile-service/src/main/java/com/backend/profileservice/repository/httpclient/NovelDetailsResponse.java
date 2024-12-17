@@ -12,6 +12,8 @@ public class NovelDetailsResponse {
     private String novelName;
     private String author;
     private Integer chapterCount;
+    private String image;
+
 }
 
 

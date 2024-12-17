@@ -76,6 +76,11 @@ public class NovelChapterService {
             .orElseThrow(() -> new RuntimeException("Chapter not found"));
     var chapterResponse = novelChapterMapper.toNovelChapterResponse(chapter);
     chapterResponse.setCreated(dateTimeFormatter.format(chapter.getCreatedDate()));
+    var volume = novelVolumeRepository.findById(chapter.getVolumeId())
+               .orElseThrow(() -> new RuntimeException("Volume not found"));
+    var novel = novelRepository.findById(volume.getNovelId())
+               .orElseThrow(() -> new RuntimeException("Novel not found"));
+    chapterResponse.setAuthorId(novel.getAuthorId());
     return chapterResponse;
 }
     public PageResponse<NovelChapterResponse> getChapters(int page, int size) {

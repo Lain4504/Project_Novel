@@ -11,7 +11,6 @@ interface PostComment {
 interface PostCommentReply {
     id?: string;
     commentId: string;
-    parentReplyId?: string;
     userId: string;
     replyTo: string;
     content: string;

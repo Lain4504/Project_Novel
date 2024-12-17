@@ -11,7 +11,6 @@ interface NovelComment {
 interface NovelCommentReply {
     id?: string;
     commentId: string;
-    parentReplyId?: string;
     userId: string;
     replyTo: string;
     content: string;
@@ -26,7 +25,6 @@ interface NovelChapterComment{
 interface NovelChapterCommentReply{
     id?: string;
     commentId: string;
-    parentReplyId?: string;
     userId: string;
     replyTo: string;
     content: string;

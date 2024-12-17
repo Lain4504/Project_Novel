@@ -1,5 +1,6 @@
 package com.backend.commentservice.entity;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 
 import lombok.*;
@@ -11,7 +12,7 @@ import org.springframework.data.mongodb.core.mapping.MongoId;
 @NoArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 @Builder
-@Document(value = "comment")
+@Document(value = "novel_comment")
 @Getter
 @Setter
 public class NovelComment {
@@ -21,8 +22,8 @@ public class NovelComment {
     String userId;
     String content;
     Integer replyCount;
-    LocalDateTime createdDate;
-    LocalDateTime updateDateTime;
+    Instant createdDate;
+    Instant updateDateTime;
     String username;
     String userAvatar;
     String novelName;

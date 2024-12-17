@@ -5,6 +5,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.MongoId;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 @Getter
 @Setter
@@ -16,14 +17,14 @@ import java.time.LocalDateTime;
 public class PostCommentReply {
     @MongoId
     String id;
+    String postId;
     String postName;
     String commentId;
-    String parentReplyId;
     String userId;
     String replyContent;
     String replyTo;
-    LocalDateTime createdDate;
-    LocalDateTime updateDateTime;
+    Instant createdDate;
+    Instant updateDateTime;
     String username;
     String userAvatar;
     String userIdOfReplyTo;

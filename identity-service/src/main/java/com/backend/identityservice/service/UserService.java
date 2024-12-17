@@ -1,5 +1,6 @@
 package com.backend.identityservice.service;
 
+import com.backend.dto.response.PageResponse;
 import com.backend.exception.AppException;
 import com.backend.exception.ErrorCode;
 import com.backend.identityservice.enums.UserState;
@@ -20,6 +21,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.validator.internal.engine.messageinterpolation.parser.MessageDescriptorFormatException;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -87,8 +90,17 @@ public class UserService {
         return userMapper.toUserResponse(user);
     }
     @PreAuthorize("hasRole('ADMIN')")
-    public List<UserResponse> getAllUsers() {
-        return userRepository.findAll().stream().map(userMapper::toUserResponse).collect(Collectors.toList());
+    public PageResponse<UserResponse> getAllUsers(int page, int size) {
+        Sort sort = Sort.by(Sort.Order.desc("createdDate"));
+        var pageData = userRepository.findAll(PageRequest.of(page - 1, size, sort));
+        var userList = pageData.getContent().stream().map(userMapper::toUserResponse).collect(Collectors.toList());
+        return PageResponse.<UserResponse>builder()
+                .currentPage(page)
+                .pageSize(pageData.getSize())
+                .totalPages(pageData.getTotalPages())
+                .totalElements(pageData.getTotalElements())
+                .data(userList)
+                .build();
     }
     @PreAuthorize("hasRole('ADMIN')")
     public UserResponse getUserById(String userId) {

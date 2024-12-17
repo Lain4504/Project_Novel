@@ -24,12 +24,30 @@ enum Routes {
 import NotificationDropdown from '@/components/common/BellNotificationDropdown.vue';
 import {getUserProfile} from "@/api/user";
 import store from "@/store";
+import {getNotificationByUserId} from "@/api/notification";
 
 const showDropDown = ref<boolean>(false);
 const showSide = ref<boolean>(true);
 const isMobile = ref<boolean>(false);
 const showMobileSide = ref<boolean>(false);
 const isDropdownOpen = ref<boolean>(false);
+const notifications = ref([]);
+const unreadNotifications = ref(0);
+const fetchNotifications = async () => {
+  try {
+    const userId = store.getters.getUserId;
+    const page = 1;
+    const size = 5;
+    const notificationData = await getNotificationByUserId(userId, page, size);
+    notifications.value = notificationData.data;
+    unreadNotifications.value = notificationData.data.length;
+  } catch (error) {
+    console.error('Error fetching notifications:', error);
+  }
+};
+onMounted(() => {
+  fetchNotifications();
+});
 
 const toggleDropdown = (): void => {
   isDropdownOpen.value = !isDropdownOpen.value;
@@ -134,23 +152,6 @@ const dropdownItems = [
 ];
 
 const isNotificationListOpen = ref(false);
-const unreadNotifications = ref(1); // Số thông báo chưa đọc
-const notifications = ref([
-  {
-    id: 1,
-    user: "Jese Leos",
-    message: 'Hey, what\'s up? All set for the presentation?',
-    time: 'a few moments ago',
-    iconColor: 'bg-blue-600',
-  },
-  {
-    id: 2,
-    user: "Joseph Mcfall",
-    message: 'and 5 others started following you.',
-    time: '10 minutes ago',
-    iconColor: 'bg-gray-900',
-  },
-]); // Danh sách thông báo mẫu
 
 // Phương thức toggle
 const toggleNotificationList = () => {
@@ -310,7 +311,7 @@ onMounted(() => {
                                  class="cursor-pointer w-[30px] text-gray-700 hover:text-black transition-transform duration-200 hover:scale-110 focus:scale-125 active:animate-pulse focus:outline-none"/>
               <span
                   className='absolute right-[-5px] bottom-[-5px] w-4 text-center leading-4 bg-black text-white aspect-square rounded-full text-[8px]'>
-                                1
+                                {{ unreadNotifications }}
                             </span>
             </div>
             <!-- Notification List -->

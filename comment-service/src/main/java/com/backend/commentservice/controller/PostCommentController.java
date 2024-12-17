@@ -1,8 +1,13 @@
 package com.backend.commentservice.controller;
+import com.backend.commentservice.dto.request.PostCommentReplyRequest;
+import com.backend.commentservice.dto.request.PostCommentRequest;
+import com.backend.commentservice.dto.response.PostCommentReplyResponse;
+import com.backend.commentservice.dto.response.PostCommentResponse;
 import com.backend.commentservice.entity.PostComment;
 import com.backend.commentservice.entity.PostCommentReply;
 import com.backend.commentservice.service.PostCommentService;
 import com.backend.dto.response.ApiResponse;
+import com.backend.dto.response.PageResponse;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -18,23 +23,27 @@ public class PostCommentController {
     PostCommentService postCommentService;
 
     @GetMapping("/{postId}")
-    public ApiResponse<List<PostComment>> getAllComments(@PathVariable String postId) {
-        return ApiResponse.<List<PostComment>>builder()
-                .result(postCommentService.getAllComments(postId))
+    public ApiResponse<PageResponse<PostCommentResponse>> getAllComments(
+            @PathVariable("postId") String postId,
+            @RequestParam(value = "page", required = false, defaultValue = "1") int page,
+            @RequestParam(value = "size", required = false, defaultValue = "10") int size
+         ) {
+        return ApiResponse.<PageResponse<PostCommentResponse>>builder()
+                .result(postCommentService.getAllComments(postId, page, size))
                 .build();
     }
 
     @PostMapping
-    public ApiResponse<PostComment> createComment(@RequestBody PostComment postComment) {
-        return ApiResponse.<PostComment>builder()
-                .result(postCommentService.createComment(postComment))
+    public ApiResponse<PostCommentResponse> createComment(@RequestBody PostCommentRequest request) {
+        return ApiResponse.<PostCommentResponse>builder()
+                .result(postCommentService.createComment(request))
                 .build();
     }
 
     @PutMapping("/{id}")
-    public ApiResponse<PostComment> updateComment(@PathVariable String id, @RequestBody PostComment postComment) {
-        return ApiResponse.<PostComment>builder()
-                .result(postCommentService.updateComment(id, postComment))
+    public ApiResponse<PostCommentResponse> updateComment(@PathVariable String id, @RequestBody PostCommentRequest request) {
+        return ApiResponse.<PostCommentResponse>builder()
+                .result(postCommentService.updateComment(id, request))
                 .build();
     }
 
@@ -45,22 +54,27 @@ public class PostCommentController {
     }
 
     @GetMapping("/replies/{commentId}")
-    public ApiResponse<List<PostCommentReply>> getAllRepliesByCommentId(@PathVariable String commentId) {
-        return ApiResponse.<List<PostCommentReply>>builder()
-                .result(postCommentService.getAllRepliesByCommentId(commentId))
+    public ApiResponse<PageResponse<PostCommentReplyResponse>> getAllRepliesByCommentId(
+            @PathVariable String commentId,
+            @RequestParam(value = "page", required = false, defaultValue = "1") int page,
+            @RequestParam(value = "size", required = false, defaultValue = "10") int size
+
+    ) {
+        return ApiResponse.<PageResponse<PostCommentReplyResponse>>builder()
+                .result(postCommentService.getAllRepliesByCommentId(commentId, page, size))
                 .build();
     }
     @PostMapping("/replies")
-    public ApiResponse<PostCommentReply> createReply(@RequestBody PostCommentReply postCommentReply) {
-        return ApiResponse.<PostCommentReply>builder()
-                .result(postCommentService.createReply(postCommentReply))
+    public ApiResponse<PostCommentReplyResponse> createReply(@RequestBody PostCommentReplyRequest request) {
+        return ApiResponse.<PostCommentReplyResponse>builder()
+                .result(postCommentService.createReply(request))
                 .build();
     }
 
     @PutMapping("/replies/{id}")
-    public ApiResponse<PostCommentReply> updateReply(@PathVariable String id, @RequestBody PostCommentReply postCommentReply) {
-        return ApiResponse.<PostCommentReply>builder()
-                .result(postCommentService.updateReply(id, postCommentReply))
+    public ApiResponse<PostCommentReplyResponse> updateReply(@PathVariable String id, @RequestBody PostCommentReplyRequest request) {
+        return ApiResponse.<PostCommentReplyResponse>builder()
+                .result(postCommentService.updateReply(id, request))
                 .build();
     }
 

@@ -1,12 +1,17 @@
 package com.backend.notificationservice.service;
 
+import com.backend.dto.response.PageResponse;
 import com.backend.event.NotificationEvent;
 import com.backend.notificationservice.entity.Notification;
 import com.backend.notificationservice.enums.NotificationTemplate;
 import com.backend.notificationservice.repository.NotificationRepository;
+import com.backend.utils.DateTimeFormatter;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -17,6 +22,7 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class NotificationService {
     NotificationRepository notificationRepository;
+    DateTimeFormatter dateTimeFormatter;
     public void sendNotification(NotificationEvent message) {
               String template;
         switch (message.getTemplateCode()) {
@@ -58,7 +64,20 @@ public class NotificationService {
                 .build();
         notificationRepository.save(notification);
     }
-    public List<Notification> getNotifications(String userId) {
-        return notificationRepository.findAllByUserId(userId);
+    public PageResponse<Notification> getNotifications(String userId, int page, int size) {
+        Sort sort = Sort.by(Sort.Order.desc("createdDate"));
+        Pageable pageable = PageRequest.of(page - 1, size, sort);
+        var pageData = notificationRepository.findAllByUserId(userId, pageable);
+        var notificationList = pageData.getContent().stream().map(notification -> {
+            notification.setCreated(dateTimeFormatter.format(notification.getCreatedDate()));
+            return notification;
+        }).toList();
+            return PageResponse.<Notification>builder()
+                    .currentPage(page)
+                    .pageSize(pageData.getSize())
+                    .totalPages(pageData.getTotalPages())
+                    .totalElements(pageData.getTotalElements())
+                    .data(notificationList)
+                    .build();
     }
 }

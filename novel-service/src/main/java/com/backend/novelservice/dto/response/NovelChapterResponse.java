@@ -24,4 +24,5 @@ public class NovelChapterResponse {
     String created;
     Instant createdDate;
     Instant updateDateTime;
+    String authorId;
 }

@@ -1,5 +1,6 @@
 package com.backend.profileservice.service;
 
+import com.backend.dto.response.PageResponse;
 import com.backend.profileservice.dto.request.UserNovelFollowRequest;
 import com.backend.profileservice.dto.response.UserNovelFollowResponse;
 import com.backend.profileservice.entity.UserNovelFollow;
@@ -33,17 +34,33 @@ public class UserNovelFollowService {
         return userNovelFollowRepository.findByUserIdAndNovelId(request.getUserId(), request.getNovelId()) != null;
     }
 
-    public List<String> getFollowingNovelIds(String userId) {
+     List<String> getFollowingNovelIds(String userId) {
         List<UserNovelFollow> userNovelFollows = userNovelFollowRepository.findAllByUserId(userId);
         return userNovelFollows.stream()
                 .map(UserNovelFollow::getNovelId) //  Chỉ trích xuất novelId
                 .toList();
     }
-    public List<NovelDetailsResponse> getFollowingNovelsWithDetails(String userId) {
+    public PageResponse<NovelDetailsResponse> getFollowingNovelsWithDetails(String userId, int page, int size) {
         List<String> novelIds = getFollowingNovelIds(userId);
         if (novelIds.isEmpty()) {
-            return Collections.emptyList();
+            return PageResponse.<NovelDetailsResponse>builder()
+                    .currentPage(page)
+                    .pageSize(size)
+                    .totalPages(0)
+                    .totalElements(0)
+                    .data(Collections.emptyList())
+                    .build();
         }
-        return novelServiceClient.getNovelDetails(novelIds);
+        List<NovelDetailsResponse> novelDetails = novelServiceClient.getNovelDetails(novelIds);
+        int start = Math.min((page - 1) * size, novelDetails.size());
+        int end = Math.min(start + size, novelDetails.size());
+        List<NovelDetailsResponse> pagedNovelDetails = novelDetails.subList(start, end);
+        return PageResponse.<NovelDetailsResponse>builder()
+                .currentPage(page)
+                .pageSize(size)
+                .totalPages((int) Math.ceil((double) novelDetails.size() / size))
+                .totalElements(novelDetails.size())
+                .data(pagedNovelDetails)
+                .build();
     }
 }

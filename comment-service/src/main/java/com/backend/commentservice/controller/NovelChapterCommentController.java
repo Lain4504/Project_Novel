@@ -1,9 +1,14 @@
 package com.backend.commentservice.controller;
 
+import com.backend.commentservice.dto.request.NovelChapterCommentReplyRequest;
+import com.backend.commentservice.dto.request.NovelChapterCommentRequest;
+import com.backend.commentservice.dto.response.NovelChapterCommentReplyResponse;
+import com.backend.commentservice.dto.response.NovelChapterCommentResponse;
 import com.backend.commentservice.entity.NovelChapterComment;
 import com.backend.commentservice.entity.NovelChapterCommentReply;
 import com.backend.commentservice.service.NovelChapterCommentService;
 import com.backend.dto.response.ApiResponse;
+import com.backend.dto.response.PageResponse;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -20,23 +25,27 @@ public class NovelChapterCommentController {
     NovelChapterCommentService novelChapterCommentService;
 
     @GetMapping("/{chapterId}")
-    public ApiResponse<List<NovelChapterComment>> getAllComments(@PathVariable String chapterId) {
-        return ApiResponse.<List<NovelChapterComment>>builder()
-                .result(novelChapterCommentService.getAllComments(chapterId))
+    public ApiResponse<PageResponse<NovelChapterCommentResponse>> getAllComments(
+            @PathVariable String chapterId,
+            @RequestParam(value = "page", required = false, defaultValue = "1") int page,
+            @RequestParam(value = "size", required = false, defaultValue = "10") int size
+            ) {
+        return ApiResponse.<PageResponse<NovelChapterCommentResponse>>builder()
+                .result(novelChapterCommentService.getAllComments(chapterId, page, size))
                 .build();
     }
 
     @PostMapping
-    public ApiResponse<NovelChapterComment> createComment(@RequestBody NovelChapterComment novelChapterComment) {
-        return ApiResponse.<NovelChapterComment>builder()
-                .result(novelChapterCommentService.createComment(novelChapterComment))
+    public ApiResponse<NovelChapterCommentResponse> createComment(@RequestBody NovelChapterCommentRequest request) {
+        return ApiResponse.<NovelChapterCommentResponse>builder()
+                .result(novelChapterCommentService.createComment(request))
                 .build();
     }
 
     @PutMapping("/{id}")
-    public ApiResponse<NovelChapterComment> updateComment(@PathVariable String id, @RequestBody NovelChapterComment novelChapterComment) {
-        return ApiResponse.<NovelChapterComment>builder()
-                .result(novelChapterCommentService.updateComment(id, novelChapterComment))
+    public ApiResponse<NovelChapterCommentResponse> updateComment(@PathVariable String id, @RequestBody NovelChapterCommentRequest request) {
+        return ApiResponse.<NovelChapterCommentResponse>builder()
+                .result(novelChapterCommentService.updateComment(id, request))
                 .build();
     }
 
@@ -47,16 +56,16 @@ public class NovelChapterCommentController {
     }
 
     @PostMapping("/replies")
-    public ApiResponse<NovelChapterCommentReply> createReply(@RequestBody NovelChapterCommentReply novelChapterCommentReply) {
-        return ApiResponse.<NovelChapterCommentReply>builder()
-                .result(novelChapterCommentService.createReply(novelChapterCommentReply))
+    public ApiResponse<NovelChapterCommentReplyResponse> createReply(@RequestBody NovelChapterCommentReplyRequest request) {
+        return ApiResponse.<NovelChapterCommentReplyResponse>builder()
+                .result(novelChapterCommentService.createReply(request))
                 .build();
     }
 
     @PutMapping("/replies/{id}")
-    public ApiResponse<NovelChapterCommentReply> updateReply(@PathVariable String id, @RequestBody NovelChapterCommentReply novelChapterCommentReply) {
-        return ApiResponse.<NovelChapterCommentReply>builder()
-                .result(novelChapterCommentService.updateReply(id, novelChapterCommentReply))
+    public ApiResponse<NovelChapterCommentReplyResponse> updateReply(@PathVariable String id, @RequestBody NovelChapterCommentReplyRequest request) {
+        return ApiResponse.<NovelChapterCommentReplyResponse>builder()
+                .result(novelChapterCommentService.updateReply(id, request))
                 .build();
     }
 
@@ -66,9 +75,13 @@ public class NovelChapterCommentController {
         return ApiResponse.<Void>builder().build();
     }
     @GetMapping("/replies/{commentId}")
-    public ApiResponse<List<NovelChapterCommentReply>> getAllRepliesByCommentId(@PathVariable String commentId) {
-        return ApiResponse.<List<NovelChapterCommentReply>>builder()
-                .result(novelChapterCommentService.getAllRepliesByCommentId(commentId))
+    public ApiResponse<PageResponse<NovelChapterCommentReplyResponse>> getAllRepliesByCommentId(
+            @PathVariable String commentId,
+            @RequestParam(value = "page", required = false, defaultValue = "1") int page,
+            @RequestParam(value = "size", required = false, defaultValue = "10") int size
+            ) {
+        return ApiResponse.<PageResponse<NovelChapterCommentReplyResponse>>builder()
+                .result(novelChapterCommentService.getAllRepliesByCommentId(commentId, page, size))
                 .build();
     }
 }
