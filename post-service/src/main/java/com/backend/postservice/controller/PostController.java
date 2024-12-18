@@ -5,6 +5,7 @@ import com.backend.dto.response.PageResponse;
 import com.backend.postservice.dto.request.PostRequest;
 import com.backend.postservice.dto.response.PostResponse;
 import com.backend.postservice.service.PostService;
+import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -21,7 +22,7 @@ public class PostController {
     PostService postService;
 
     @PostMapping("/create")
-    ApiResponse<PostResponse> createPost(@RequestBody PostRequest request){
+    ApiResponse<PostResponse> createPost(@Valid @RequestBody PostRequest request){
         return ApiResponse.<PostResponse>builder()
                 .result(postService.createPost(request))
                 .build();
@@ -36,7 +37,7 @@ public class PostController {
                 .build();
     }
     @PutMapping("/update/{postId}")
-    ApiResponse<PostResponse> updatePost(@PathVariable("postId") String postId, @RequestBody PostRequest request){
+    ApiResponse<PostResponse> updatePost(@PathVariable("postId") String postId, @Valid  @RequestBody PostRequest request){
         return ApiResponse.<PostResponse>builder()
                 .result(postService.updatePost(postId, request))
                 .build();
