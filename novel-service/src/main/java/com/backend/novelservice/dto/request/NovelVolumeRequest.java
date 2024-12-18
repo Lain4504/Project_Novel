@@ -1,5 +1,7 @@
 package com.backend.novelservice.dto.request;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,13 +19,14 @@ import java.util.Set;
 @AllArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class NovelVolumeRequest {
+    @NotBlank(message = "Volume name is mandatory")
     String volumeName;
     String description;
+    @NotBlank(message = "Status is mandatory")
     String status;
+    @Positive(message = "Volume number must be positive")
     int volumeNumber;
-    int chapterCount;
-    Instant createdDate;
-    Instant modifiedDate;
+    @NotBlank(message = "Novel ID is mandatory")
     String novelId;
     Set<String> chapters;
 }

@@ -1,4 +1,4 @@
-package com.backend.postservice.configuration;
+package com.backend.searchservice.configuration;
 
 import com.backend.dto.response.ApiResponse;
 import com.backend.exception.AppException;

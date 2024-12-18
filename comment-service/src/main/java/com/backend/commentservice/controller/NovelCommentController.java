@@ -9,6 +9,7 @@ import com.backend.commentservice.entity.NovelCommentReply;
 import com.backend.commentservice.service.NovelCommentService;
 import com.backend.dto.response.ApiResponse;
 import com.backend.dto.response.PageResponse;
+import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -36,14 +37,14 @@ public class NovelCommentController {
     }
 
     @PostMapping
-    public ApiResponse<NovelCommentResponse> createComment(@RequestBody NovelCommentRequest request) {
+    public ApiResponse<NovelCommentResponse> createComment(@Valid @RequestBody NovelCommentRequest request) {
         return ApiResponse.<NovelCommentResponse>builder()
                 .result(novelCommentService.createComment(request))
                 .build();
     }
 
     @PutMapping("/{id}")
-    public ApiResponse<NovelCommentResponse> updateComment(@PathVariable String id, @RequestBody NovelCommentRequest request) {
+    public ApiResponse<NovelCommentResponse> updateComment(@PathVariable String id, @Valid @RequestBody NovelCommentRequest request) {
         return ApiResponse.<NovelCommentResponse>builder()
                 .result(novelCommentService.updateComment(id, request))
                 .build();
@@ -56,14 +57,14 @@ public class NovelCommentController {
     }
 
     @PostMapping("/replies")
-    public ApiResponse<NovelCommentReplyResponse> createReply(@RequestBody NovelCommentReplyRequest request) {
+    public ApiResponse<NovelCommentReplyResponse> createReply(@Valid @RequestBody NovelCommentReplyRequest request) {
         return ApiResponse.<NovelCommentReplyResponse>builder()
                 .result(novelCommentService.createReply(request))
                 .build();
     }
 
     @PutMapping("/replies/{id}")
-    public ApiResponse<NovelCommentReplyResponse> updateReply(@PathVariable String id, @RequestBody NovelCommentReplyRequest request) {
+    public ApiResponse<NovelCommentReplyResponse> updateReply(@PathVariable String id,@Valid @RequestBody NovelCommentReplyRequest request) {
         return ApiResponse.<NovelCommentReplyResponse>builder()
                 .result(novelCommentService.updateReply(id, request))
                 .build();

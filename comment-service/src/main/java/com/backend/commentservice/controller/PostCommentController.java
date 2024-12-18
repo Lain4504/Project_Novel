@@ -8,6 +8,7 @@ import com.backend.commentservice.entity.PostCommentReply;
 import com.backend.commentservice.service.PostCommentService;
 import com.backend.dto.response.ApiResponse;
 import com.backend.dto.response.PageResponse;
+import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -34,14 +35,14 @@ public class PostCommentController {
     }
 
     @PostMapping
-    public ApiResponse<PostCommentResponse> createComment(@RequestBody PostCommentRequest request) {
+    public ApiResponse<PostCommentResponse> createComment(@Valid @RequestBody PostCommentRequest request) {
         return ApiResponse.<PostCommentResponse>builder()
                 .result(postCommentService.createComment(request))
                 .build();
     }
 
     @PutMapping("/{id}")
-    public ApiResponse<PostCommentResponse> updateComment(@PathVariable String id, @RequestBody PostCommentRequest request) {
+    public ApiResponse<PostCommentResponse> updateComment(@PathVariable String id, @Valid @RequestBody PostCommentRequest request) {
         return ApiResponse.<PostCommentResponse>builder()
                 .result(postCommentService.updateComment(id, request))
                 .build();
@@ -65,14 +66,14 @@ public class PostCommentController {
                 .build();
     }
     @PostMapping("/replies")
-    public ApiResponse<PostCommentReplyResponse> createReply(@RequestBody PostCommentReplyRequest request) {
+    public ApiResponse<PostCommentReplyResponse> createReply(@Valid @RequestBody PostCommentReplyRequest request) {
         return ApiResponse.<PostCommentReplyResponse>builder()
                 .result(postCommentService.createReply(request))
                 .build();
     }
 
     @PutMapping("/replies/{id}")
-    public ApiResponse<PostCommentReplyResponse> updateReply(@PathVariable String id, @RequestBody PostCommentReplyRequest request) {
+    public ApiResponse<PostCommentReplyResponse> updateReply(@PathVariable String id, @Valid @RequestBody PostCommentReplyRequest request) {
         return ApiResponse.<PostCommentReplyResponse>builder()
                 .result(postCommentService.updateReply(id, request))
                 .build();
