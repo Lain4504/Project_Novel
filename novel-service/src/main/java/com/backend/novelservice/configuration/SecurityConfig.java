@@ -15,11 +15,7 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableMethodSecurity
 public class SecurityConfig {
 
-    private static final String[] PUBLIC_ENDPOINTS_POST = {
-
-    };
-    private static final String[] PUBLIC_ENDPOINTS_GET = {
-            "/novel-volumes/**", "/novel-chapters/**", "/novel-categories/**", "/novels/**",
+    private static final String[] PUBLIC_ENDPOINTS = {
     };
     private final CustomJwtDecoder customJwtDecoder;
 
@@ -30,8 +26,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.authorizeHttpRequests(request -> request
-                .requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS_POST).permitAll()
-                .requestMatchers(HttpMethod.GET, PUBLIC_ENDPOINTS_GET).permitAll()
+                .requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS).permitAll()
                 .anyRequest().authenticated());
         httpSecurity.oauth2ResourceServer(oauth2 -> oauth2.jwt(jwtConfigurer -> jwtConfigurer
                         .decoder(customJwtDecoder)

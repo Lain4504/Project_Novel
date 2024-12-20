@@ -1,6 +1,8 @@
 package com.backend.novelservice.service;
 
 import com.backend.enums.NovelStatusEnum;
+import com.backend.event.NotificationEvent;
+import com.backend.event.NovelDataSenderEvent;
 import com.backend.novelservice.dto.request.NovelCreationRequest;
 import com.backend.novelservice.dto.request.NovelUpdateRequest;
 import com.backend.novelservice.dto.response.NovelDetailsResponse;
@@ -19,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -27,6 +30,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 @Slf4j
 @Service
@@ -38,6 +42,7 @@ public class NovelService {
     NovelMapper novelMapper;
     DateTimeFormatter dateTimeFormatter;
     ImageService imageService;
+    KafkaTemplate<String, Object> kafkaTemplate;
 
     public NovelResponse createNovel(NovelCreationRequest request, MultipartFile imageFile) {
         if (novelRepository.existsByTitle(request.getTitle())) {
@@ -54,6 +59,13 @@ public class NovelService {
             novel.setImage(image);
         }
         novel = novelRepository.save(novel);
+        NovelDataSenderEvent event = NovelDataSenderEvent
+                .builder()
+                .channel("NOVEL")
+                .param(Map.of("data", novel))
+                .build();
+        //Publish message to kafka
+        kafkaTemplate.send("novel-create", event);
         return novelMapper.toNovelResponse(novel);
     }
 
@@ -80,11 +92,26 @@ public class NovelService {
         }
 
         novel = novelRepository.save(novel);
+        NovelDataSenderEvent event = NovelDataSenderEvent
+                .builder()
+                .channel("NOVEL")
+                .param(Map.of("data", novel))
+                .build();
+        //Publish message to kafka
+        kafkaTemplate.send("novel-update", event);
         return novelMapper.toNovelResponse(novel);
     }
 
     public void deleteNovel(String novelId) {
+        var novel = novelRepository.findById(novelId).orElseThrow(() -> new IllegalArgumentException("Novel with id " + novelId + " not found"));
         novelRepository.deleteById(novelId);
+        NovelDataSenderEvent event = NovelDataSenderEvent
+                .builder()
+                .channel("NOVEL")
+                .param(Map.of("data", novel))
+                .build();
+        //Publish message to kafka
+        kafkaTemplate.send("novel-delete", event);
     }
 
     public NovelResponse getNovel(String novelId) {
