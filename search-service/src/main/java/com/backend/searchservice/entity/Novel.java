@@ -1,9 +1,9 @@
 package com.backend.searchservice.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 import org.springframework.data.elasticsearch.annotations.Document;
 
-import java.time.Instant;
 import java.util.List;
 import java.util.Set;
 
@@ -14,6 +14,7 @@ import java.util.Set;
 @Document(indexName = "novel")
 @Builder
 @ToString
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Novel {
      String id;
      String title;
@@ -27,13 +28,10 @@ public class Novel {
      Long wordCount;
      Long commentCount;
      Integer isVip;
-     Instant createdDate;
-     Instant updateDateTime;
      List<String> volumeIds;
      String imageUrl;
      Integer chapterCount;
      String latestChapterTitle;
      String latestChapterId;
-     Instant latestChapterTime;
      String status;
 }
