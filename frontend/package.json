@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@ant-design/icons-vue": "^7.0.1",
     "@fortawesome/fontawesome-svg-core": "^6.7.1",
     "@fortawesome/free-brands-svg-icons": "^6.7.1",
     "@fortawesome/free-regular-svg-icons": "^6.7.1",
@@ -19,6 +20,7 @@
     "@tiptap/pm": "^2.10.3",
     "@tiptap/starter-kit": "^2.10.3",
     "@tiptap/vue-3": "^2.10.3",
+    "ant-design-vue": "^4.2.6",
     "axios": "^1.7.8",
     "vue": "^3.5.12",
     "vue-router": "^4.4.5",

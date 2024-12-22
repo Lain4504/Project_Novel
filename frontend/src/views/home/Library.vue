@@ -1,83 +1,111 @@
-<script setup lang="ts">
-import {ref} from 'vue';
-import Ads from '@/components/home/Banner.vue';
-
-// Define the data structure for the books
-interface Book {
-  hinhanh: string;
-  tentruyen: string;
-  dadoc: number;
-  total: number;
-}
-
-// Sample data for books
-const limitedBooks = ref<Book[]>([
-  {
-    hinhanh: '/path/to/image1.jpg', // Replace with actual image paths
-    tentruyen: 'Làm Sao Rồi, Tình Dịch Liên Không Thể Biến Thành Lão Bà Sao?',
-    dadoc: 321,
-    total: 400
-  },
-  {
-    hinhanh: '/path/to/image2.jpg', // Replace with actual image paths
-    tentruyen: 'Chí Quái Thư',
-    dadoc: 280,
-    total: 306
-  },
-  {
-    hinhanh: '/path/to/image3.jpg', // Replace with actual image paths
-    tentruyen: 'Trận Hồi Trường Sinh',
-    dadoc: 900,
-    total: 1368
-  },
-  {
-    hinhanh: '/path/to/image4.jpg', // Replace with actual image paths
-    tentruyen: 'Hoàng Hôn Phân Giới',
-    dadoc: 813,
-    total: 896
-  }
-]);
-</script>
 <template>
-  <div class="max-w-7xl mx-auto">
-
-    <Ads class="my-4"/>
-    <div class=" max-w-7xl mx-auto ">
+  <div class="container max-w-7xl mx-auto min-h-screen flex flex-col">
+    <Ads class="my-4" />
+    <Breadcrumb class="mb-6">
+      <Breadcrumb.Item v-for="(item, index) in breadcrumbItems" :key="index">
+        <router-link v-if="item.path" :to="item.path">{{ item.title }}</router-link>
+        <span v-else>{{ item.title }}</span>
+      </Breadcrumb.Item>
+    </Breadcrumb>
+    <div class="content flex-1">
       <div class="flex justify-between items-center my-2">
         <h4 class="text-lg font-semibold">TIỂU THUYẾT ĐÁNH DẤU CỦA BẠN</h4>
       </div>
       <section class="p-4 border rounded my-2">
-
         <div class="mt-4 text-sm">
           <div class="space-y-4">
             <div
-                v-for="(item, index) in limitedBooks"
+                v-for="(item, index) in novels"
                 :key="index"
                 class="flex items-center space-x-4"
             >
               <img
-                  :src="item.hinhanh"
+                  :src="item.image"
                   alt="Book Image"
                   class="w-14 h-20 object-cover"
               />
               <div class="flex justify-between items-center w-full">
-                <h5 class="font-semibold truncate">{{ item.tentruyen }}</h5>
+                <div>
+                  <h5 class="font-semibold truncate">{{ item.novelName }}</h5>
+                  <p class="text-gray-500">{{ item.author }}</p>
+                </div>
                 <p class="text-gray-500 flex-shrink-0">
-                  Chương {{ item.dadoc }} / {{ item.total }}
+                  {{ item.chapterCount }} chương
                 </p>
               </div>
             </div>
           </div>
         </div>
+        <div class="flex justify-center mt-6">
+          <Pagination
+              :current="currentPage"
+              :total="totalElements"
+              :pageSize="pageSize"
+              @change="handlePageChange"
+              show-quick-jumper
+              :show-total="(total: number) => `Total ${total} items`"
+          />
+        </div>
       </section>
     </div>
   </div>
-
 </template>
 
+<script setup lang="ts">
+import { onMounted, ref } from "vue";
+import Ads from "@/components/home/Banner.vue";
+import { getMyFollowedNovels } from "@/api/user";
+import store from "@/store";
+import { Pagination } from 'ant-design-vue';
+import {Breadcrumb} from 'ant-design-vue';
 
+// Define the data structure for the novels
+interface Novel {
+  novelId: string;
+  novelName: string;
+  author: string;
+  chapterCount: number | null;
+  image: string;
+}
+
+const novels = ref<Novel[]>([]);
+const currentPage = ref(1);
+const pageSize = ref(10);
+const totalElements = ref(0);
+
+const fetchFollowNovels = async (page: number, size: number) => {
+  try {
+    const userId = store.getters.getUserId;
+    const result = await getMyFollowedNovels(userId, page, size);
+    console.log("Followed novels:", result);
+    novels.value = result.data;
+    totalElements.value = result.totalElements;
+  } catch (error) {
+    console.error("Failed to fetch followed novels:", error);
+  }
+};
+
+const handlePageChange = (page: number) => {
+  currentPage.value = page;
+  fetchFollowNovels(page, pageSize.value);
+};
+
+onMounted(() => {
+  fetchFollowNovels(currentPage.value, pageSize.value);
+});
+const breadcrumbItems = [
+  { title: 'Home', path: '/' },
+  { title: 'Account', path: '/templates' },
+  { title: 'Library' }
+];
+</script>
 
 <style scoped>
-/* Add any custom styles if needed */
+.container {
+  @apply min-h-screen flex flex-col;
+}
+
+.content {
+  @apply flex-1;
+}
 </style>
-  

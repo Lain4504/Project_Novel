@@ -10,6 +10,6 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserNovelFollowRequest {
-    private String userId;
-    private String novelId;
+     String userId;
+     String novelId;
 }

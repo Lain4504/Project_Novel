@@ -1,15 +1,16 @@
 <script setup lang="ts">
-import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome';
-import {ref, watch, computed, onMounted, onUnmounted} from 'vue';
-import {useStore} from 'vuex';
-import {logout} from '@/api/auth';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { ref, watch, computed, onMounted, onUnmounted } from 'vue';
+import { useStore } from 'vuex';
+import { logout } from '@/api/auth';
 import NotificationDropdown from '../common/BellNotificationDropdown.vue';
-import {getUserProfile} from "@/api/user";
+import { getUserProfile } from "@/api/user";
+import { getNotificationByUserId } from "@/api/notification";
 
 const isAccountMenuOpen = ref(false);
 const isCategoryMenuOpen = ref(false);
 const isNotificationListOpen = ref(false);
-const isMobileMenuOpen = ref(false); // Trạng thái riêng cho menu icon
+const isMobileMenuOpen = ref(false);
 const categories = [
   "Action", "Fantasy", "Romance",
   "Horror", "Adventure", "Comedy",
@@ -19,6 +20,9 @@ const userProfile = ref({
   image: '',
   username: '',
 });
+const notifications = ref([]);
+const unreadNotifications = ref(0);
+
 const fetchUserProfile = async () => {
   try {
     const userProfileData = await getUserProfile(store.getters.getUserId);
@@ -28,9 +32,25 @@ const fetchUserProfile = async () => {
     console.error('Error fetching user profile:', error);
   }
 };
+
+const fetchNotifications = async () => {
+  try {
+    const userId = store.getters.getUserId;
+    const page = 1;
+    const size = 5;
+    const notificationData = await getNotificationByUserId(userId, page, size);
+    notifications.value = notificationData.data;
+    unreadNotifications.value = notificationData.data.length;
+  } catch (error) {
+    console.error('Error fetching notifications:', error);
+  }
+};
+
 onMounted(() => {
   fetchUserProfile();
+  fetchNotifications();
 });
+
 watch(isMobileMenuOpen, (newVal) => {
   if (newVal) {
     isAccountMenuOpen.value = false;
@@ -103,11 +123,11 @@ const dropdownMenu = [
     icon: 'fa-solid fa-gear',
     link: '/user-profile',
   },
-  {
-    label: 'Transaction History',
-    icon: 'fa-solid fa-money-bill',
-    link: '/history',
-  },
+  // {
+  //   label: 'Transaction History',
+  //   icon: 'fa-solid fa-money-bill',
+  //   link: '/history',
+  // },
   {
     label: 'Logout',
     icon: 'fa-solid fa-right-from-bracket',
@@ -119,26 +139,8 @@ const closeMenu = () => {
   isAccountMenuOpen.value = false;
   isCategoryMenuOpen.value = false;
   isNotificationListOpen.value = false;
-  isMobileMenuOpen.value = false; // Đóng luôn menu icon
+  isMobileMenuOpen.value = false;
 };
-
-const unreadNotifications = ref(1);
-const notifications = ref([
-  {
-    id: 1,
-    user: "Jese Leos",
-    message: 'Hey, what\'s up? All set for the presentation?',
-    time: 'a few moments ago',
-    iconColor: 'bg-blue-600',
-  },
-  {
-    id: 2,
-    user: "Joseph Mcfall",
-    message: 'and 5 others started following you.',
-    time: '10 minutes ago',
-    iconColor: 'bg-gray-900',
-  },
-]);
 
 const toggleNotificationList = () => {
   isNotificationListOpen.value = !isNotificationListOpen.value;
@@ -161,7 +163,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <nav class="bg-[#F0EEE5] p-4 shadow-md relative">
+  <nav class="bg-white p-4 shadow-md relative">
     <div class="max-w-[90rem] mx-auto flex items-center justify-between">
       <div class="flex items-center space-x-4 md:space-x-0">
         <button @click.stop="isMobileMenuOpen = !isMobileMenuOpen"

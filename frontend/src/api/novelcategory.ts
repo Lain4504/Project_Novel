@@ -14,15 +14,15 @@ const deleteNovelCategory = (id : string) => {
         .then((response) => response.data.result);
 }
 const getNovelCategory = (id : string) => {
-    return axios.get(`${NOVEL_CATEGORY_API}/${id}`)
+    return axios.get(`${NOVEL_CATEGORY_API}/get/${id}`)
         .then((response) => response.data.result);
 }
 const getNovelCategoriesWithoutPagination = () => {
-    return axios.get(`${NOVEL_CATEGORY_API}/all-without-pagination`)
+    return axios.get(`${NOVEL_CATEGORY_API}/get/all-without-pagination`)
         .then((response) => response.data.result);
 }
 const getNovelCategories = (page: number, size: number) => {
-    return axios.get(`${NOVEL_CATEGORY_API}/all?page=${page}&size=${size}`)
+    return axios.get(`${NOVEL_CATEGORY_API}/get/all?page=${page}&size=${size}`)
         .then((response) => response.data.result);
 }
 export { createNovelCategory, updateNovelCategory, deleteNovelCategory, getNovelCategory, getNovelCategoriesWithoutPagination, getNovelCategories };

@@ -3,21 +3,20 @@ package com.backend.postservice.configuration;
 import com.backend.dto.response.ApiResponse;
 import com.backend.exception.AppException;
 import com.backend.exception.ErrorCode;
-import jakarta.validation.ConstraintViolation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.util.Map;
-import java.util.Objects;
+import java.util.stream.Collectors;
 
 @ControllerAdvice
 @Slf4j
 public class CommonExceptionHandler {
-
     private static final String MIN_ATTRIBUTE = "min";
 
     @ExceptionHandler(value = Exception.class)
@@ -55,31 +54,19 @@ public class CommonExceptionHandler {
 
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
     ResponseEntity<ApiResponse> handlingValidation(MethodArgumentNotValidException exception) {
-        String enumKey = exception.getFieldError().getDefaultMessage();
+        Map<String, String> errors = exception.getBindingResult().getFieldErrors().stream()
+                .collect(Collectors.toMap(
+                        FieldError::getField,
+                        FieldError::getDefaultMessage
+                ));
 
-        ErrorCode errorCode = ErrorCode.INVALID_KEY;
-        Map<String, Object> attributes = null;
-        try {
-            errorCode = ErrorCode.valueOf(enumKey);
-
-            var constraintViolation =
-                    exception.getBindingResult().getAllErrors().getFirst().unwrap(ConstraintViolation.class);
-
-            attributes = constraintViolation.getConstraintDescriptor().getAttributes();
-
-            log.info(attributes.toString());
-
-        } catch (IllegalArgumentException e) {
-
-        }
+        String errorMessage = errors.entrySet().stream()
+                .map(entry -> "- " + entry.getValue())
+                .collect(Collectors.joining("\n"));
 
         ApiResponse apiResponse = new ApiResponse();
-
-        apiResponse.setCode(errorCode.getCode());
-        apiResponse.setMessage(
-                Objects.nonNull(attributes)
-                        ? mapAttribute(errorCode.getMessage(), attributes)
-                        : errorCode.getMessage());
+        apiResponse.setCode(ErrorCode.INVALID_INPUT.getCode());
+        apiResponse.setMessage("Validation failed:\n" + errorMessage);
 
         return ResponseEntity.badRequest().body(apiResponse);
     }

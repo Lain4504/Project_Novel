@@ -12,7 +12,9 @@ public class NovelDetailsResponse {
     private String novelId;
     private String novelName;
     private String author;
-    private int chapterCount;
+    private Integer chapterCount;
+    private String image;
+
 }
 
 

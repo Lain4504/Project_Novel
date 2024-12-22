@@ -8,13 +8,14 @@ import Breadcrumb from "@/components/home/Breadcrumb.vue";
 const fields = {
   title: "Edit Post",
   inputs: [
-    { id: "title", label: "Title", type: "text" },
-    { id: "content", label: "Content", type: "tiptap" },
+    { id: "title", label: "Title", type: "text", required: true },
+    { id: "content", label: "Content", type: "tiptap", required: true },
     {
       id: "categoryId",
       label: "Category",
       type: "select",
-      options: [], // Options sẽ được nạp từ API
+      options: [], // Options will be loaded from API
+      required: true,
     },
   ],
 };

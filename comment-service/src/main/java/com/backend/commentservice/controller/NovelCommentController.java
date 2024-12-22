@@ -1,8 +1,15 @@
 package com.backend.commentservice.controller;
 
+import com.backend.commentservice.dto.request.NovelCommentReplyRequest;
+import com.backend.commentservice.dto.request.NovelCommentRequest;
+import com.backend.commentservice.dto.response.NovelCommentReplyResponse;
+import com.backend.commentservice.dto.response.NovelCommentResponse;
 import com.backend.commentservice.entity.NovelComment;
 import com.backend.commentservice.entity.NovelCommentReply;
 import com.backend.commentservice.service.NovelCommentService;
+import com.backend.dto.response.ApiResponse;
+import com.backend.dto.response.PageResponse;
+import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -19,43 +26,63 @@ public class NovelCommentController {
     NovelCommentService novelCommentService;
 
     @GetMapping("/{novelId}")
-    public ResponseEntity<List<NovelComment>> getAllComments(@PathVariable String novelId) {
-        return ResponseEntity.ok(novelCommentService.getAllComments(novelId));
+    public ApiResponse<PageResponse<NovelCommentResponse>> getAllComments(
+            @PathVariable String novelId,
+            @RequestParam(value = "page", required = false, defaultValue = "1") int page,
+            @RequestParam(value = "size", required = false, defaultValue = "10") int size
+    ) {
+        return ApiResponse.<PageResponse<NovelCommentResponse>>builder()
+                .result(novelCommentService.getAllComments(novelId, page, size))
+                .build();
     }
 
     @PostMapping
-    public ResponseEntity<NovelComment> createComment(@RequestBody NovelComment novelComment) {
-        return ResponseEntity.ok(novelCommentService.createComment(novelComment));
+    public ApiResponse<NovelCommentResponse> createComment(@Valid @RequestBody NovelCommentRequest request) {
+        return ApiResponse.<NovelCommentResponse>builder()
+                .result(novelCommentService.createComment(request))
+                .build();
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<NovelComment> updateComment(@PathVariable String id, @RequestBody NovelComment novelComment) {
-        return ResponseEntity.ok(novelCommentService.updateComment(id, novelComment));
+    public ApiResponse<NovelCommentResponse> updateComment(@PathVariable String id, @Valid @RequestBody NovelCommentRequest request) {
+        return ApiResponse.<NovelCommentResponse>builder()
+                .result(novelCommentService.updateComment(id, request))
+                .build();
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteComment(@PathVariable String id) {
+    public ApiResponse<Void> deleteComment(@PathVariable String id) {
         novelCommentService.deleteComment(id);
-        return ResponseEntity.ok().build();
+        return ApiResponse.<Void>builder().build();
     }
 
     @PostMapping("/replies")
-    public ResponseEntity<NovelCommentReply> createReply(@RequestBody NovelCommentReply novelCommentReply) {
-        return ResponseEntity.ok(novelCommentService.createReply(novelCommentReply));
+    public ApiResponse<NovelCommentReplyResponse> createReply(@Valid @RequestBody NovelCommentReplyRequest request) {
+        return ApiResponse.<NovelCommentReplyResponse>builder()
+                .result(novelCommentService.createReply(request))
+                .build();
     }
 
     @PutMapping("/replies/{id}")
-    public ResponseEntity<NovelCommentReply> updateReply(@PathVariable String id, @RequestBody NovelCommentReply novelCommentReply) {
-        return ResponseEntity.ok(novelCommentService.updateReply(id, novelCommentReply));
+    public ApiResponse<NovelCommentReplyResponse> updateReply(@PathVariable String id,@Valid @RequestBody NovelCommentReplyRequest request) {
+        return ApiResponse.<NovelCommentReplyResponse>builder()
+                .result(novelCommentService.updateReply(id, request))
+                .build();
     }
 
     @DeleteMapping("/replies/{id}")
-    public ResponseEntity<Void> deleteReply(@PathVariable String id) {
+    public ApiResponse<Void> deleteReply(@PathVariable String id) {
         novelCommentService.deleteReply(id);
-        return ResponseEntity.ok().build();
+        return ApiResponse.<Void>builder().build();
     }
     @GetMapping("/replies/{commentId}")
-    public ResponseEntity<List<NovelCommentReply>> getAllRepliesByCommentId(@PathVariable String commentId) {
-        return ResponseEntity.ok(novelCommentService.getAllRepliesByCommentId(commentId));
+    public ApiResponse<PageResponse<NovelCommentReplyResponse>> getAllRepliesByCommentId(
+            @PathVariable String commentId,
+            @RequestParam(value = "page", required = false, defaultValue = "1") int page,
+            @RequestParam(value = "size", required = false, defaultValue = "10") int size
+            ) {
+        return ApiResponse.<PageResponse<NovelCommentReplyResponse>>builder()
+                .result(novelCommentService.getAllRepliesByCommentId(commentId, page, size))
+                .build();
     }
 }

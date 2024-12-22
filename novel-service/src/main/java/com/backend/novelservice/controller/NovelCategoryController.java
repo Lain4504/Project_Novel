@@ -24,7 +24,7 @@ public class NovelCategoryController {
         return ApiResponse.<NovelCategoryResponse>builder()
                 .result(novelCategoryService.createNovelCategory(request)).build();
     }
-    @GetMapping("/all")
+    @GetMapping("/get/all")
     ApiResponse<PageResponse<NovelCategoryResponse>> getAllCategories(
             @RequestParam(value = "page", required = false, defaultValue = "1") int page,
             @RequestParam(value = "size", required = false, defaultValue = "10") int size
@@ -32,12 +32,12 @@ public class NovelCategoryController {
         return ApiResponse.<PageResponse<NovelCategoryResponse>>builder()
                 .result(novelCategoryService.getNovelCategories(page, size)).build();
     }
-    @GetMapping("/all-without-pagination")
+    @GetMapping("/get/all-without-pagination")
     ApiResponse<List<NovelCategoryResponse>> getAllCategoriesWithoutPaginations() {
         return ApiResponse.<List<NovelCategoryResponse>>builder()
                 .result(novelCategoryService.getAllNovelCategories()).build();
     }
-    @GetMapping("/{categoryId}")
+    @GetMapping("/get/{categoryId}")
     ApiResponse<NovelCategoryResponse> getCategory(@PathVariable("categoryId") String categoryId) {
         return ApiResponse.<NovelCategoryResponse>builder()
                 .result(novelCategoryService.getNovelCategoryById(categoryId)).build();

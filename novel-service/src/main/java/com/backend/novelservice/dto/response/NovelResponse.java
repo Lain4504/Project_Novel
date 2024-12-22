@@ -1,8 +1,11 @@
 package com.backend.novelservice.dto.response;
 
+import com.backend.enums.NovelStatusEnum;
 import com.backend.novelservice.entity.Image;
 import com.backend.novelservice.entity.NovelCategory;
 import com.backend.novelservice.entity.NovelVolume;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -36,4 +39,7 @@ public class NovelResponse {
     Instant updateDateTime;
     List<NovelVolume> volumes;
     Image image;
+    String latestChapterTitle;
+    String latestChapterId;
+    String status;
 }

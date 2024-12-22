@@ -8,23 +8,13 @@
       <p class="text-sm md:text-base mb-4 text-gray-700">{{ message }}</p>
       <div class="flex flex-row justify-end space-x-4">
         <!-- Cancel Button -->
-        <button
-            @click="cancel"
-            class="w-full sm:w-auto px-4 py-2 border border-gray-400 text-gray-700 rounded-md
-                 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500
-                 text-sm md:text-base"
-        >
+        <a-button @click="cancel" class="w-full sm:w-auto" type="default">
           Cancel
-        </button>
+        </a-button>
         <!-- Confirm Button -->
-        <button
-            @click="confirm"
-            class="w-full sm:w-auto px-4 py-2 border border-red-500 text-red-500 rounded-md
-                 hover:bg-red-600 hover:text-white focus:outline-none focus:ring-2 focus:ring-red-500
-                 text-sm md:text-base"
-        >
+        <a-button @click="confirm" class="w-full sm:w-auto" type="primary" danger>
           {{ confirmText }}
-        </button>
+        </a-button>
       </div>
     </div>
   </div>
@@ -32,6 +22,7 @@
 
 <script setup lang="ts">
 import { defineProps, defineEmits } from 'vue';
+import { Button } from 'ant-design-vue';
 
 const props = defineProps({
   show: {
@@ -62,3 +53,7 @@ const cancel = () => {
   emit('cancel');
 };
 </script>
+
+<style scoped>
+/* Add any additional styling if needed */
+</style>

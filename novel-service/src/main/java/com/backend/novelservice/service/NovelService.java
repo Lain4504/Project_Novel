@@ -1,5 +1,8 @@
 package com.backend.novelservice.service;
 
+import com.backend.enums.NovelStatusEnum;
+import com.backend.event.NotificationEvent;
+import com.backend.event.NovelDataSenderEvent;
 import com.backend.novelservice.dto.request.NovelCreationRequest;
 import com.backend.novelservice.dto.request.NovelUpdateRequest;
 import com.backend.novelservice.dto.response.NovelDetailsResponse;
@@ -14,20 +17,22 @@ import com.backend.utils.DateTimeFormatter;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
-
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -37,7 +42,9 @@ public class NovelService {
     NovelMapper novelMapper;
     DateTimeFormatter dateTimeFormatter;
     ImageService imageService;
-    public NovelResponse createNovel(NovelCreationRequest request,  MultipartFile imageFile) {
+    KafkaTemplate<String, Object> kafkaTemplate;
+
+    public NovelResponse createNovel(NovelCreationRequest request, MultipartFile imageFile) {
         if (novelRepository.existsByTitle(request.getTitle())) {
             throw new IllegalArgumentException("Novel with title " + request.getTitle() + " already exists");
         }
@@ -52,39 +59,66 @@ public class NovelService {
             novel.setImage(image);
         }
         novel = novelRepository.save(novel);
+        NovelDataSenderEvent event = NovelDataSenderEvent
+                .builder()
+                .channel("NOVEL")
+                .param(Map.of("data", novel))
+                .build();
+        //Publish message to kafka
+        kafkaTemplate.send("novel-create", event);
         return novelMapper.toNovelResponse(novel);
     }
-public NovelResponse updateNovel(String novelId, NovelUpdateRequest request, MultipartFile imageFile) {
-    var novel = novelRepository.findById(novelId).orElseThrow(() -> new IllegalArgumentException("Novel with id " + novelId + " not found"));
-    if (novelRepository.existsByTitle(request.getTitle()) && !novel.getTitle().equals(request.getTitle())) {
-        throw new IllegalArgumentException("Novel with title " + request.getTitle() + " already exists");
-    }
-    novelMapper.updateNovel(novel, request);
-    var categories = new HashSet<NovelCategory>();
-    novelCategoryRepository.findAllById(request.getCategories()).forEach(categories::add);
-    novel.setCategories(categories);
-    novel.setUpdateDateTime(Instant.now());
 
-    if (imageFile != null && !imageFile.isEmpty()) {
-        if (novel.getImage() != null && !novel.getImage().getPath().equals(request.getImageUrl())) {
-            imageService.deleteImage(novel.getImage().getId());
+    public NovelResponse updateNovel(String novelId, NovelUpdateRequest request, MultipartFile imageFile) {
+        var novel = novelRepository.findById(novelId).orElseThrow(() -> new IllegalArgumentException("Novel with id " + novelId + " not found"));
+        if (novelRepository.existsByTitle(request.getTitle()) && !novel.getTitle().equals(request.getTitle())) {
+            throw new IllegalArgumentException("Novel with title " + request.getTitle() + " already exists");
+        }
+        novelMapper.updateNovel(novel, request);
+        var categories = new HashSet<NovelCategory>();
+        novelCategoryRepository.findAllById(request.getCategories()).forEach(categories::add);
+        novel.setCategories(categories);
+        novel.setUpdateDateTime(Instant.now());
+        novel.setStatus(NovelStatusEnum.valueOf(request.getStatus()));
+        if (imageFile != null && !imageFile.isEmpty()) {
+            if (novel.getImage() != null && !novel.getImage().getPath().equals(request.getImageUrl())) {
+                imageService.deleteImage(novel.getImage().getId());
+                Image newImage = imageService.uploadImage(imageFile);
+                novel.setImage(newImage);
+            }
+        } else if (novel.getImage() == null || !novel.getImage().getPath().equals(request.getImageUrl())) {
             Image newImage = imageService.uploadImage(imageFile);
             novel.setImage(newImage);
         }
-    } else if (novel.getImage() == null || !novel.getImage().getPath().equals(request.getImageUrl())) {
-        Image newImage = imageService.uploadImage(imageFile);
-        novel.setImage(newImage);
+
+        novel = novelRepository.save(novel);
+        NovelDataSenderEvent event = NovelDataSenderEvent
+                .builder()
+                .channel("NOVEL")
+                .param(Map.of("data", novel))
+                .build();
+        //Publish message to kafka
+        kafkaTemplate.send("novel-update", event);
+        return novelMapper.toNovelResponse(novel);
     }
 
-    novel = novelRepository.save(novel);
-    return novelMapper.toNovelResponse(novel);
-}    public void deleteNovel(String novelId) {
+    public void deleteNovel(String novelId) {
+        var novel = novelRepository.findById(novelId).orElseThrow(() -> new IllegalArgumentException("Novel with id " + novelId + " not found"));
         novelRepository.deleteById(novelId);
+        NovelDataSenderEvent event = NovelDataSenderEvent
+                .builder()
+                .channel("NOVEL")
+                .param(Map.of("data", novel))
+                .build();
+        //Publish message to kafka
+        kafkaTemplate.send("novel-delete", event);
     }
+
     public NovelResponse getNovel(String novelId) {
         var novel = novelRepository.findById(novelId).orElseThrow(() -> new IllegalArgumentException("Novel with id " + novelId + " not found"));
         return novelMapper.toNovelResponse(novel);
     }
+
     public PageResponse<NovelResponse> getNovels(int page, int size) {
         Sort sort = Sort.by(Sort.Order.desc("createdDate"));
         Pageable pageable = PageRequest.of(page - 1, size, sort);
@@ -122,6 +156,7 @@ public NovelResponse updateNovel(String novelId, NovelUpdateRequest request, Mul
                 .data(novelList)
                 .build();
     }
+
     public PageResponse<NovelResponse> getNovelsByAuthor(String authorId, int page, int size) {
         Sort sort = Sort.by(Sort.Order.desc("createdDate"));
         Pageable pageable = PageRequest.of(page - 1, size, sort);
@@ -139,14 +174,53 @@ public NovelResponse updateNovel(String novelId, NovelUpdateRequest request, Mul
                 .data(novelList)
                 .build();
     }
+
     public List<NovelDetailsResponse> getNovelDetails(List<String> novelIds) {
         return novelRepository.findAllById(novelIds).stream()
                 .map(novel -> new NovelDetailsResponse(
                         novel.getId(),
                         novel.getTitle(),
                         novel.getAuthorName(),
-                        novel.getChapterCount() // Lấy số chapter
+                        novel.getChapterCount(),
+                        novel.getImage() != null ? novel.getImage().getPath() : null
                 ))
                 .collect(Collectors.toList());
+    }
+
+    public PageResponse<NovelResponse> getLatestNovels(int page, int size) {
+        Sort sort = Sort.by(Sort.Order.desc("latestChapterTime").nullsLast());
+        Pageable pageable = PageRequest.of(page - 1, size, sort);
+        var pageData = novelRepository.findAll(pageable);
+        var novelList = pageData.getContent().stream()
+                .filter(novel -> novel.getLatestChapterTime() != null)
+                .map(novel -> {
+                    var novelResponse = novelMapper.toNovelResponse(novel);
+                    novelResponse.setCreated(dateTimeFormatter.format(novel.getLatestChapterTime()));
+                    return novelResponse;
+                }).toList();
+        return PageResponse.<NovelResponse>builder()
+                .currentPage(page)
+                .pageSize(pageData.getSize())
+                .totalPages(pageData.getTotalPages())
+                .totalElements(pageData.getTotalElements())
+                .data(novelList)
+                .build();
+    }
+    public PageResponse<NovelResponse> getNovelsByStatus(String status, int page, int size) {
+        Sort sort = Sort.by(Sort.Order.desc("createdDate"));
+        Pageable pageable = PageRequest.of(page - 1, size, sort);
+        var pageData = novelRepository.findByStatus(status, pageable);
+        var novelList = pageData.getContent().stream().map(novel -> {
+            var novelResponse = novelMapper.toNovelResponse(novel);
+            novelResponse.setCreated(dateTimeFormatter.format(novel.getCreatedDate()));
+            return novelResponse;
+        }).toList();
+        return PageResponse.<NovelResponse>builder()
+                .currentPage(page)
+                .pageSize(pageData.getSize())
+                .totalPages(pageData.getTotalPages())
+                .totalElements(pageData.getTotalElements())
+                .data(novelList)
+                .build();
     }
 }

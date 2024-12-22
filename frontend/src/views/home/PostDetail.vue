@@ -41,7 +41,7 @@ const fetchPost = async () => {
 const fetchComments = async () => {
   try {
     const result = await getAllComments(props.id);
-    comments.value = result;
+    comments.value = result.data;
   } catch (error) {
     console.error('Failed to fetch comments:', error);
   }
@@ -79,7 +79,7 @@ onMounted(() => {
                       :create-comment-api="createComment"
                       :create-reply-api="createReply"
                       :owner-id="post.userId"
-                      :post-name="post.title"
+                      :item-name="post.title"
                       :get-all-replies-api="getAllRepliesByCommentId"/>
     </div>
   </div>

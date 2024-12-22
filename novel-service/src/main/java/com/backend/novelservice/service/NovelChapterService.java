@@ -10,6 +10,7 @@ import com.backend.novelservice.entity.NovelChapter;
 import com.backend.novelservice.entity.NovelVolume;
 import com.backend.novelservice.mapper.NovelChapterMapper;
 import com.backend.novelservice.repository.NovelChapterRepository;
+import com.backend.novelservice.repository.NovelRepository;
 import com.backend.novelservice.repository.NovelVolumeRepository;
 import com.backend.utils.DateTimeFormatter;
 import jakarta.persistence.MapKey;
@@ -32,31 +33,31 @@ import java.util.Optional;
 public class NovelChapterService {
     NovelChapterRepository novelChapterRepository;
     NovelChapterMapper novelChapterMapper;
+    NovelRepository novelRepository;
     DateTimeFormatter dateTimeFormatter;
     NovelVolumeRepository novelVolumeRepository;
     public NovelChapterResponse createChapter(String volumeId, NovelChapterRequest request) {
         // Lấy thông tin NovelVolume theo volumeId
         NovelVolume volume = novelVolumeRepository.findById(volumeId)
                 .orElseThrow(() -> new RuntimeException("Volume not found"));
-        // Map từ request sang entity NovelChapter
         NovelChapter novelChapter = novelChapterMapper.toNovelChapter(request);
         novelChapter.setVolumeId(volumeId);
         novelChapter.setCreatedDate(Instant.now());
-        // Lưu chapter mới vào database
         NovelChapter savedChapter = novelChapterRepository.save(novelChapter);
-        // Đảm bảo danh sách chapterIds đã được khởi tạo
         List<String> chapterIds = volume.getChapterIds();
         if (chapterIds == null) {
             chapterIds = new ArrayList<>();
         }
-        // Thêm chapterId của chapter mới vào danh sách
         chapterIds.add(savedChapter.getId());
         volume.setChapterIds(chapterIds);
-        // Cập nhật số lượng chapter
         volume.setChapterCount(chapterIds.size());
-        // Lưu lại thông tin volume đã cập nhật
         novelVolumeRepository.save(volume);
-        // Map và trả về response
+        Novel novel = novelRepository.findById(volume.getNovelId())
+                .orElseThrow(() -> new RuntimeException("Novel not found"));
+        novel.setLatestChapterId(savedChapter.getId());
+        novel.setLatestChapterTitle(savedChapter.getChapterTitle());
+        novel.setLatestChapterTime(Instant.now());
+        novelRepository.save(novel);
         return novelChapterMapper.toNovelChapterResponse(savedChapter);
     }
 
@@ -75,6 +76,11 @@ public class NovelChapterService {
             .orElseThrow(() -> new RuntimeException("Chapter not found"));
     var chapterResponse = novelChapterMapper.toNovelChapterResponse(chapter);
     chapterResponse.setCreated(dateTimeFormatter.format(chapter.getCreatedDate()));
+    var volume = novelVolumeRepository.findById(chapter.getVolumeId())
+               .orElseThrow(() -> new RuntimeException("Volume not found"));
+    var novel = novelRepository.findById(volume.getNovelId())
+               .orElseThrow(() -> new RuntimeException("Novel not found"));
+    chapterResponse.setAuthorId(novel.getAuthorId());
     return chapterResponse;
 }
     public PageResponse<NovelChapterResponse> getChapters(int page, int size) {
@@ -122,5 +128,4 @@ public class NovelChapterService {
     public Optional<NovelChapter> getNextChapter(String volumeId, Integer currentChapterNumber) {
         return novelChapterRepository.findTopByVolumeIdAndChapterNumberGreaterThanOrderByChapterNumberAsc(volumeId, currentChapterNumber);
     }
-
 }

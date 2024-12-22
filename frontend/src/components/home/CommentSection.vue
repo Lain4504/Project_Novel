@@ -18,24 +18,17 @@ interface Reply {
   userAvatar: string;
   replyContent: string;
   replyTo: string;
+  userIdOfReplyTo: string;
+  userId: string;
 }
 
-interface PostCommentReply {
-  commentId: string;
-  parentReplyId?: string;
-  replyContent: string;
-  userId: string;
-  replyTo: string;
-  postName?: string;
-  userIdOfReplyTo?: string;
-}
 
 const props = defineProps<{
   itemId: string;
   itemType: 'post' | 'novel' | 'chapter';
   comments: Comment[];
   ownerId?: string;
-  postName?: string;
+  itemName?: string;
   createCommentApi: (data: any) => Promise<any>;
   createReplyApi: (data: any) => Promise<any>;
   getAllRepliesApi: (commentId: string) => Promise<any>;
@@ -68,7 +61,7 @@ const fetchReplies = async (commentId: string) => {
     const replies = await props.getAllRepliesApi(commentId);
     const comment = props.comments.find(comment => comment.id === commentId);
     if (comment) {
-      comment.replies = replies;
+      comment.replies = replies.data;
     }
     showReplies.value[commentId] = true;
   } catch (error) {
@@ -83,15 +76,16 @@ const addComment = async () => {
         content: newComment.value,
         userId: store.getters.getUserId,
         ownerId: props.ownerId,
-        postName: props.postName,
-        replies: []
       };
       if (props.itemType === 'post') {
         commentData.postId = props.itemId;
+        commentData.postName = props.itemName;
       } else if (props.itemType === 'novel') {
         commentData.novelId = props.itemId;
+        commentData.novelName = props.itemName;
       } else if (props.itemType === 'chapter') {
         commentData.chapterId = props.itemId;
+        commentData.chapterName = props.itemName;
       }
       await props.createCommentApi(commentData);
       newComment.value = '';
@@ -109,14 +103,24 @@ const submitReply = async (commentId: string) => {
   if (replyText.value[commentId]?.trim()) {
     try {
       const comment = props.comments.find(comment => comment.id === commentId);
-      const replyData: PostCommentReply = {
+      const replyData: any = {
         commentId,
         replyContent: replyText.value[commentId],
         userId: store.getters.getUserId,
         replyTo: comment ? comment.username : '',
         userIdOfReplyTo: comment ? comment.userId : '',
-        postName: props.postName
       };
+      if (props.itemType === 'post') {
+        replyData.postId = props.itemId;
+        replyData.postName = props.itemName;
+      } else if (props.itemType === 'novel') {
+        replyData.novelId = props.itemId;
+        replyData.novelName = props.itemName;
+      } else if (props.itemType === 'chapter') {
+        replyData.chapterId = props.itemId;
+        replyData.chapterName = props.itemName;
+      }
+      console.log(replyData);
       await props.createReplyApi(replyData);
       replyText.value[commentId] = '';
       fetchReplies(commentId);
@@ -135,13 +139,23 @@ const submitReplyForReply = async (replyId: string, commentId: string) => {
     try {
       const comment = props.comments.find(comment => comment.id === commentId);
       const reply = comment?.replies?.find(reply => reply.id === replyId);
-      const replyData: PostCommentReply = {
+      const replyData: any = {
         commentId,
-        parentReplyId: replyId,
         replyContent: replyText.value[replyId],
         userId: store.getters.getUserId,
-        replyTo: reply ? reply.username : ''
+        replyTo: reply ? reply.username : '',
+        userIdOfReplyTo: reply ? reply.userId : '',
       };
+      if (props.itemType === 'post') {
+        replyData.postId = props.itemId;
+        replyData.postName = props.itemName;
+      } else if (props.itemType === 'novel') {
+        replyData.novelId = props.itemId;
+        replyData.novelName = props.itemName;
+      } else if (props.itemType === 'chapter') {
+        replyData.chapterId = props.itemId;
+        replyData.chapterName = props.itemName;
+      }
       await props.createReplyApi(replyData);
       replyText.value[replyId] = '';
       fetchReplies(commentId);
@@ -167,10 +181,9 @@ const toggleShowReplies = (commentId: string) => {
         <textarea v-model="newComment" placeholder="Để lại bình luận..."
           class="w-full p-4 text-lg border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:text-sm"></textarea>
         <div class="flex justify-end">
-          <button @click="addComment"
-            class="px-5 py-2 bg-[#98a77c] hover:bg-[#88976c] text-white rounded text-sm">
+          <a-button type="primary" @click="addComment" class="mt-2">
             Send
-          </button>
+          </a-button>
         </div>
       </div>
 
@@ -182,18 +195,21 @@ const toggleShowReplies = (commentId: string) => {
               <p class="text-gray-700 font-semibold">{{ comment.username }}</p>
               <p class="text-gray-600">{{ comment.content }}</p>
               <div class="flex items-center space-x-4 mt-2">
-                <button @click="toggleReplyBox(comment.id)" class="text-gray-500 hover:text-blue-500 text-sm">💬 Reply</button>
-                <button @click="toggleShowReplies(comment.id)" class="text-gray-500 hover:text-blue-500 text-sm">
+                <a-button type="link" @click="toggleReplyBox(comment.id)" class="p-0">
+                  💬 Reply
+                </a-button>
+                <a-button type="link" @click="toggleShowReplies(comment.id)" class="p-0">
                   {{ showReplies[comment.id] ? 'Hide Replies' : 'Show More' }}
-                </button>
+                </a-button>
               </div>
               <div v-if="replyBoxes[comment.id]" class="mt-2">
                 <textarea v-model="replyText[comment.id]"
                   class="w-full p-4 text-lg border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:text-sm"
                   placeholder="Write your reply..."></textarea>
                 <div class="flex justify-end">
-                  <button @click="submitReply(comment.id)"
-                    class="px-4 py-2 bg-[#98a77c] hover:bg-[#88976c] text-white rounded text-sm mt-2">Reply</button>
+                  <a-button type="primary" @click="submitReply(comment.id)" class="mt-2">
+                    Reply
+                  </a-button>
                 </div>
               </div>
               <ul v-if="showReplies[comment.id] && comment.replies" class="mt-4 space-y-4">
@@ -202,16 +218,18 @@ const toggleShowReplies = (commentId: string) => {
                   <p class="text-gray-700 font-semibold">{{ reply.username }}</p>
                   <p class="text-gray-600">@{{ reply.replyTo }}: {{ reply.replyContent }}</p>
                   <div class="flex items-center space-x-4 mt-2">
-                    <button @click="toggleReplyBoxForReply(reply.id)"
-                      class="text-gray-500 hover:text-blue-500 text-sm">💬 Reply</button>
+                    <a-button type="link" @click="toggleReplyBoxForReply(reply.id)" class="p-0">
+                      💬 Reply
+                    </a-button>
                   </div>
                   <div v-if="replyBoxes[reply.id]" class="mt-2">
                     <textarea v-model="replyText[reply.id]"
                       class="w-full p-4 text-lg border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:text-sm"
                       placeholder="Write your reply..."></textarea>
                     <div class="flex justify-end">
-                      <button @click="submitReplyForReply(reply.id, comment.id)"
-                        class="px-4 py-2 bg-[#98a77c] hover:bg-[#88976c] text-white rounded text-sm mt-2">Reply</button>
+                      <a-button type="primary" @click="submitReplyForReply(reply.id, comment.id)" class="mt-2">
+                        Reply
+                      </a-button>
                     </div>
                   </div>
                 </li>

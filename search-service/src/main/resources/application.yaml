@@ -1,10 +1,20 @@
 server:
-  port: 8083
+  port: 8086
   servlet:
-    context-path: /post
+    context-path: /search
 spring:
   application:
     name: search-service
-  data:
-    mongodb:
-      uri: mongodb://root:root@localhost:27017/search-service?authSource=admin
+  elasticsearch:
+    rest:
+      uris: http://localhost:9200
+  # Kafka Configuration
+  kafka:
+    bootstrap-servers: localhost:9094
+    consumer:
+      group-id: search-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "*"

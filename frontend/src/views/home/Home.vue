@@ -15,7 +15,7 @@ import UpdatedList from '@/components/home/UpdatedList.vue';
     <Banner />
     <StoryList />
     <PromtNovel/>
-    <Ads/>
+<!--    <Ads/>-->
     <UpdatedList/>
     <NewNovel/>
     <Ads/>

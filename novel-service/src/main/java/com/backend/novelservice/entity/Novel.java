@@ -5,8 +5,12 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
+import com.backend.enums.NovelStatusEnum;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.ManyToMany;
 import lombok.*;
 import org.springframework.data.annotation.Id;
@@ -45,4 +49,9 @@ public class Novel {
     @DBRef
     Image image;
     Integer chapterCount;
+    String latestChapterTitle;
+    String latestChapterId;
+    Instant latestChapterTime;
+    @Enumerated(EnumType.STRING)
+    NovelStatusEnum status;
 }

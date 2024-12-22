@@ -42,19 +42,20 @@ public class NovelController {
         novelService.deleteNovel(novelId);
         return ApiResponse.<Void>builder().build();
     }
-    @GetMapping("/{novelId}")
+    @GetMapping("/get/{novelId}")
     ApiResponse<NovelResponse> getNovel(@PathVariable("novelId") String novelId) {
         return ApiResponse.<NovelResponse>builder()
                 .result(novelService.getNovel(novelId)).build();
     }
-    @GetMapping("/all")
+    @GetMapping("/get/all")
     ApiResponse<PageResponse<NovelResponse>> getAllNovels(
             @RequestParam(value = "page", required = false, defaultValue = "1") int page,
-            @RequestParam(value = "size", required = false, defaultValue = "10") int size){
+            @RequestParam(value = "size", required = false, defaultValue = "10") int size
+            ){
         return ApiResponse.<PageResponse<NovelResponse>>builder()
                 .result(novelService.getNovels(page, size)).build();
     }
-    @GetMapping("/my-novels")
+    @GetMapping("/get/my-novels")
     ApiResponse<PageResponse<NovelResponse>> getMyNovels(
             @RequestParam(value = "page", required = false, defaultValue = "1") int page,
             @RequestParam(value = "size", required = false, defaultValue = "10") int size
@@ -63,7 +64,15 @@ public class NovelController {
         return ApiResponse.<PageResponse<NovelResponse>>builder()
                 .result(novelService.getMyNovels(page, size)).build();
     }
-    @GetMapping("author/{authorId}")
+    @GetMapping("/get/latest-novels")
+    ApiResponse<PageResponse<NovelResponse>> getLatestNovels(
+            @RequestParam(value = "page", required = false, defaultValue = "1") int page,
+            @RequestParam(value = "size", required = false, defaultValue = "10") int size)
+    {
+        return ApiResponse.<PageResponse<NovelResponse>>builder()
+                .result(novelService.getLatestNovels(page, size)).build();
+    }
+    @GetMapping("/get/author/{authorId}")
     ApiResponse<PageResponse<NovelResponse>> getNovelsByAuthor(
             @PathVariable("authorId") String authorId,
             @RequestParam(value = "page", required = false, defaultValue = "1") int page,
@@ -77,5 +86,14 @@ public class NovelController {
     public List<NovelDetailsResponse> getNovelDetails(@RequestBody List<String> novelIds) {
         return novelService.getNovelDetails(novelIds);
     }
-
+    @GetMapping("/get/find-by-status/{status}")
+    public ApiResponse<PageResponse<NovelResponse>> getNovelsByStatus(
+            @PathVariable("status") String status,
+            @RequestParam(value = "page", required = false, defaultValue = "1") int page,
+            @RequestParam(value = "size", required = false, defaultValue = "10") int size
+    )
+    {
+        return ApiResponse.<PageResponse<NovelResponse>>builder()
+                .result(novelService.getNovelsByStatus(status, page, size)).build();
+    }
 }

@@ -128,8 +128,9 @@ onMounted(() => {
         <label for="status" class="block text-sm font-medium text-gray-700">Status</label>
         <select id="status" v-model="state.status"
                 class="block w-1/2 px-4 py-2 mt-1 text-gray-900 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-          <option value="ongoing">Ongoing</option>
-          <option value="completed">Completed</option>
+          <option value="COMPLETED">Completed</option>
+          <option value="HIATUS">Hiatus</option>
+          <option value="ON_GOING">On Going</option>
         </select>
       </div>
       <div class="mt-4">

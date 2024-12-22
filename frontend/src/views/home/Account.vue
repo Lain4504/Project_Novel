@@ -1,11 +1,13 @@
 <script setup lang="ts">
-import Ads from '@/components/home/Banner.vue';
-import Breadcrumb from '@/components/home/Breadcrumb.vue';
-
-import {ref, onMounted, reactive} from 'vue';
+import { Card, Avatar, Descriptions, List, Pagination, Typography, Row, Col, Breadcrumb } from 'ant-design-vue';
+import { UserOutlined } from '@ant-design/icons-vue';
+import { ref, onMounted, computed } from 'vue';
 import { getUserProfile } from '@/api/user';
+import { getNovelsByAuthorId } from '@/api/novel';
 import store from '@/store';
-import {getNovelsByAuthorId} from "@/api/novel";
+import Ads from '@/components/home/Banner.vue';
+
+const { Title, Paragraph, Text } = Typography;
 
 const userProfile = ref({
   id: '',
@@ -14,44 +16,63 @@ const userProfile = ref({
   gender: '',
   dateOfBirth: '',
   bio: '',
-  readNovels: '',
-  marked: '',
-  recommended: '',
-  comments: '',
-  ratings: '',
-  publishedNovels: '',
+  readNovels: '0',
+  marked: '0',
+  recommended: '0',
+  comments: '0',
+  ratings: '0',
+  publishedNovels: '0',
   created: ''
 });
+
 const novels = ref<any[]>([]);
 const currentPage = ref(1);
 const pageSize = 3;
 const totalPages = ref(1);
+const loading = ref(false);
+
+const userStats = computed(() => [
+  { key: 'Read', value: `${userProfile.value.readNovels} novels` },
+  { key: 'Marked', value: userProfile.value.marked },
+  { key: 'Recommended', value: userProfile.value.recommended },
+  { key: 'Comments', value: userProfile.value.comments },
+  { key: 'Ratings', value: userProfile.value.ratings }
+]);
+
+const breadcrumbItems = [
+  { title: 'Home', path: '/' },
+  { title: 'Account', path: '/templates' },
+  { title: 'Member' }
+];
 
 const fetchNovelsData = async (page: number, size: number) => {
+  loading.value = true;
   try {
     const novelsData = await getNovelsByAuthorId(store.getters.getUserId, page, size);
     novels.value = novelsData.data;
     totalPages.value = novelsData.totalPages;
   } catch (error) {
     console.error('Error fetching novels data:', error);
+  } finally {
+    loading.value = false;
   }
 };
 
 const fetchUserProfile = async () => {
   try {
     const userProfileData = await getUserProfile(store.getters.getUserId);
-    userProfile.value = userProfileData;
-    userProfile.value.image = userProfileData.image.path;
+    userProfile.value = {
+      ...userProfileData,
+      image: userProfileData.image.path
+    };
   } catch (error) {
     console.error('Error fetching user profile:', error);
   }
 };
 
-const goToPage = (page: number) => {
-  if (page > 0 && page <= totalPages.value) {
-    currentPage.value = page;
-    fetchNovelsData(page, pageSize);
-  }
+const handlePageChange = (page: number) => {
+  currentPage.value = page;
+  fetchNovelsData(page, pageSize);
 };
 
 onMounted(() => {
@@ -59,126 +80,135 @@ onMounted(() => {
   fetchUserProfile();
 });
 </script>
+
 <template>
-  <div class="bg-gray-50 min-h-screen">
-    <div class="max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8">
+  <div class="min-h-screen bg-[#f0f2f5] py-8">
+    <div class="max-w-7xl mx-auto px-4">
       <Ads class="mb-6" />
 
-      <Breadcrumb
-          :breadcrumbs="[
-          { label: 'Home', to: '/' },
-          { label: 'Account', to: '/templates' },
-          { label: 'Member', to: '/flowbite', isCurrent: true }
-        ]"
-          class="mb-6"
-      />
+      <Breadcrumb class="mb-6">
+        <Breadcrumb.Item v-for="(item, index) in breadcrumbItems" :key="index">
+          <router-link v-if="item.path" :to="item.path">{{ item.title }}</router-link>
+          <span v-else>{{ item.title }}</span>
+        </Breadcrumb.Item>
+      </Breadcrumb>
 
-      <div class="grid lg:grid-cols-3 gap-8">
-        <!-- User Info Box -->
-        <div class="lg:col-span-1 bg-white rounded-xl shadow-lg p-6 transform transition-all hover:scale-[1.02]">
-          <h2 class="text-2xl font-bold text-gray-800 mb-6 border-b pb-3">User Information</h2>
+      <Row :gutter="24">
+        <!-- User Profile Card -->
+        <Col :xs="24" :sm="24" :md="8">
+          <Card :bordered="false" class="shadow-sm">
+            <template #title>
+              <Title :level="4">User Information</Title>
+            </template>
 
-          <div class="flex items-center space-x-6 mb-6">
-            <img
-                class="w-20 h-20 rounded-full object-cover ring-4 ring-blue-100 shadow-md"
-                :src="userProfile?.image || 'https://via.placeholder.com/150'"
-                alt="User Profile Picture"
-            />
-            <div>
-              <h3 class="text-xl font-semibold text-gray-900">{{ userProfile?.username }}</h3>
-              <p class="text-sm text-gray-500">Member</p>
-            </div>
-          </div>
-
-          <div class="space-y-4">
-            <div
-                v-for="(detail, key) in {
-      'Date Join': userProfile?.created || 'No date available',
-      'Bio': userProfile?.bio || 'No bio available',
-      'Read': `${userProfile?.readNovels || '0'} novels`,
-      'Marked': userProfile?.marked || '0',
-      'Recommended': userProfile?.recommended || '0',
-      'Comments': userProfile?.comments || '0',
-      'Ratings': userProfile?.ratings || '0'
-    }"
-                :key="key"
-                class="flex justify-between border-b py-2 last:border-b-0"
-            >
-              <span class="text-gray-600 font-medium">{{ key }}:</span>
-              <span
-                  v-if="key === 'Bio'"
-                  class="text-gray-800 font-semibold"
-                  v-html="detail">
-    </span>
-              <span
-                  v-else
-                  class="text-gray-800 font-semibold">
-      {{ detail }}
-    </span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Published Novels Box -->
-        <div class="lg:col-span-2 bg-white rounded-xl shadow-lg p-6">
-          <h2 class="text-2xl font-bold text-gray-800 mb-6 border-b pb-3">Your Published Novels</h2>
-
-          <div class="space-y-6">
-            <div
-                v-for="novel in novels"
-                :key="novel.id"
-                class="flex items-center space-x-6 pb-6 border-b last:border-b-0 hover:bg-gray-50 p-4 rounded-lg transition-all"
-            >
-              <img
-                  :src="novel.image.path"
-                  alt="Novel Cover"
-                  class="w-32 h-48 object-cover rounded-lg shadow-md"
+            <div class="flex items-center mb-6">
+              <Avatar
+                  :size="80"
+                  :src="userProfile.image"
+                  :icon="!userProfile.image && UserOutlined"
+                  class="mr-4"
               />
-              <div class="flex-1">
-                <router-link :to='`noveldetail/${novel.id}`'>
-                <h3 class="text-xl font-bold text-gray-900 mb-2">{{ novel.title }}</h3>
-                </router-link>
-                <div class="space-y-2 mb-4">
-                  <p class="text-sm text-gray-600">
-                    <span class="font-semibold">Author:</span> {{ novel.authorName }}
-                  </p>
-                  <p class="text-sm text-gray-600 font-semibold">
-                    Genres:
-                    <span class="font-normal"
-                          v-for="(category, index) in novel.categories"
-                          :key="index"
-                    >{{ category.name }}{{ index < novel.categories.length - 1 ? ', ' : '' }}</span>
-                  </p>
-                  <p v-html="novel.description" class="text-sm text-gray-500 italic"/>
-                </div>
-                <div class="flex justify-between text-sm text-gray-500">
-                  <span>{{ novel.chapters }} Chapters</span>
-                  <span>Last Updated: {{ novel.created }}</span>
-                </div>
+              <div>
+                <Title :level="4" class="mb-0">{{ userProfile.username }}</Title>
+                <Text type="secondary">Member</Text>
               </div>
             </div>
-          </div>
 
-          <!-- Pagination -->
-          <div class="flex flex-col items-center my-4">
-            <div class="flex justify-center mb-2">
-              <button @click="goToPage(1)" :disabled="currentPage === 1"
-                      class="px-3 py-1 mx-1 text-sm text-gray-400 rounded hover:bg-[#BA5B38]">
-                Đầu
-              </button>
-              <button v-for="page in totalPages" :key="page" @click="goToPage(page)"
-                      class="px-3 py-1 mx-1 text-sm rounded hover:bg-[#BA5B38] hover:text-[#F8F8F7]"
-                      :class="{'bg-[#C96442] text-white': page === currentPage, 'text-[#BA5B38]': page !== currentPage}">
-                {{ page }}
-              </button>
-              <button @click="goToPage(totalPages)" :disabled="currentPage === totalPages"
-                      class="px-3 py-1 mx-1 text-sm text-gray-400 rounded hover:bg-[#BA5B38]">
-                Cuối
-              </button>
+            <Descriptions layout="vertical" :column="1">
+              <Descriptions.Item label="Date Join">
+                {{ userProfile.created || 'No date available' }}
+              </Descriptions.Item>
+              <Descriptions.Item label="Bio">
+                <span v-html="userProfile.bio || 'No bio available'"></span>
+              </Descriptions.Item>
+              <template v-for="stat in userStats" :key="stat.key">
+                <Descriptions.Item :label="stat.key">
+                  {{ stat.value }}
+                </Descriptions.Item>
+              </template>
+            </Descriptions>
+          </Card>
+        </Col>
+
+        <!-- Published Novels Card -->
+        <Col :xs="24" :sm="24" :md="16">
+          <Card :bordered="false" class="shadow-sm">
+            <template #title>
+              <Title :level="4">Your Published Novels</Title>
+            </template>
+
+            <List
+                :data-source="novels"
+                :loading="loading"
+                item-layout="vertical"
+                size="large"
+            >
+              <template #renderItem="{ item }">
+                <List.Item>
+                  <div class="flex">
+                    <img
+                        :src="item.image.path"
+                        :alt="item.title"
+                        class="w-32 h-48 object-cover rounded mr-6"
+                    />
+                    <div class="flex-1">
+                      <router-link :to="`noveldetail/${item.id}`">
+                        <Title :level="4" class="mb-2">{{ item.title }}</Title>
+                      </router-link>
+
+                      <Paragraph type="secondary">
+                        <strong>Author:</strong> {{ item.authorName }}
+                      </Paragraph>
+
+                      <Paragraph type="secondary">
+                        <strong>Genres:</strong>
+                        {{ item.categories.map((cat: { name: string }) => cat.name).join(', ') }}
+                      </Paragraph>
+
+                      <Paragraph class="italic" v-html="item.description" />
+
+                      <div class="flex justify-between text-gray-500 text-sm">
+                        <span>{{ item.chapters }} Chapters</span>
+                        <span>Last Updated: {{ item.created }}</span>
+                      </div>
+                    </div>
+                  </div>
+                </List.Item>
+              </template>
+            </List>
+
+            <div class="flex justify-center mt-6">
+              <Pagination
+                  :current="currentPage"
+                  :total="totalPages * pageSize"
+                  :pageSize="pageSize"
+                  @change="handlePageChange"
+                  show-quick-jumper
+                  :show-total="(total: number) => `Total ${total} items`"
+              />
             </div>
-          </div>
-        </div>
-      </div>
+          </Card>
+        </Col>
+      </Row>
     </div>
   </div>
 </template>
+
+<style scoped>
+.ant-card {
+  border-radius: 8px;
+}
+
+.ant-list-item {
+  padding: 24px;
+  transition: all 0.3s;
+}
+
+.ant-list-item:hover {
+  background-color: #fafafa;
+}
+
+.ant-description-item-label {
+  font-weight: 500;
+}
+</style>

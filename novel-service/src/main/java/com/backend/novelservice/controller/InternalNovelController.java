@@ -19,8 +19,7 @@ public class InternalNovelController {
     NovelService novelService;
 
     @PostMapping("/internal/novels")
-    public ApiResponse<List<NovelDetailsResponse>> getNovelDetails(@RequestBody List<String> novelIds) {
-        return ApiResponse.<List<NovelDetailsResponse>>builder()
-                .result(novelService.getNovelDetails(novelIds)).build();
+    public List<NovelDetailsResponse> getNovelDetails(@RequestBody List<String> novelIds) {
+        return novelService.getNovelDetails(novelIds);
     }
 }

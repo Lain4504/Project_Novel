@@ -1,19 +1,31 @@
 package com.backend.commentservice.service;
 
+import com.backend.commentservice.dto.request.PostCommentReplyRequest;
+import com.backend.commentservice.dto.request.PostCommentRequest;
+import com.backend.commentservice.dto.response.PostCommentReplyResponse;
+import com.backend.commentservice.dto.response.PostCommentResponse;
 import com.backend.commentservice.entity.PostComment;
 import com.backend.commentservice.entity.PostCommentReply;
+import com.backend.commentservice.mapper.PostCommentMapper;
+import com.backend.commentservice.mapper.PostCommentReplyMapper;
 import com.backend.commentservice.repository.PostCommentReplyRepository;
 import com.backend.commentservice.repository.PostCommentRepository;
 import com.backend.commentservice.repository.httpclient.UserProfileClient;
 import com.backend.commentservice.repository.httpclient.UserProfileResponse;
+import com.backend.dto.response.PageResponse;
 import com.backend.event.NotificationEvent;
+import com.backend.utils.DateTimeFormatter;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -26,39 +38,60 @@ import java.util.stream.Collectors;
 public class PostCommentService {
     PostCommentReplyRepository postCommentReplyRepository;
     PostCommentRepository postCommentRepository;
+    PostCommentMapper postCommentMapper;
+    PostCommentReplyMapper postCommentReplyMapper;
     UserProfileClient userProfileClient;
     KafkaTemplate<String, Object> kafkaTemplate;
+    DateTimeFormatter dateTimeFormatter;
 
-    public List<PostComment> getAllComments(String postId) {
-        return postCommentRepository.findAllByPostId(postId).stream()
-                .map(this::enrichCommentWithUserProfile)
-                .collect(Collectors.toList());
-    }
+    public PageResponse<PostCommentResponse> getAllComments(String postId, int page, int size) {
+    Sort sort = Sort.by(Sort.Order.desc("createdDate"));
+    Pageable pageable = PageRequest.of(page - 1, size, sort);
+    var pageData = postCommentRepository.findAllByPostId(postId, pageable);
+    var commentList = pageData.getContent().stream()
+            .map(this::enrichCommentWithUserProfile)
+            .map(postComment -> {
+                PostCommentResponse response = postCommentMapper.toPostCommentResponse(postComment);
+                response.setCreated(dateTimeFormatter.format(postComment.getCreatedDate()));
+                return response;
+            })
+            .collect(Collectors.toList());
+    return PageResponse.<PostCommentResponse>builder()
+            .currentPage(page)
+            .pageSize(pageData.getSize())
+            .totalPages(pageData.getTotalPages())
+            .totalElements(pageData.getTotalElements())
+            .data(commentList)
+            .build();
+}
 
-    public PostComment createComment(PostComment postComment) {
-        postComment.setCreatedDate(LocalDateTime.now());
-        postComment.setUpdateDateTime(LocalDateTime.now());
+    public PostCommentResponse createComment(PostCommentRequest request) {
+        PostComment postComment = postCommentMapper.toPostComment(request);
+        postComment.setCreatedDate(Instant.now());
+        postComment.setUpdateDateTime(Instant.now());
         UserProfileResponse userProfile = userProfileClient.getUserProfile(postComment.getUserId());
         postComment.setUsername(userProfile.getUsername());
-        NotificationEvent event = NotificationEvent
-                .builder()
-                .channel("PUSH_NOTIFICATION")
-                .recipient(postComment.getOwnerId())
-                .templateCode("COMMENT_OWNER_NOTIFICATION")
-                .param(Map.of("fromUser", postComment.getUsername(), "inLocation", postComment.getPostName(),
-                        "content", postComment.getContent()))
-                .build();
-        //Publish message to kafka
-        kafkaTemplate.send("post-comment-notification", event);
-        return postCommentRepository.save(postComment);
+        if (!postComment.getOwnerId().equals(postComment.getUserId())) {
+            NotificationEvent event = NotificationEvent
+                    .builder()
+                    .channel("POST")
+                    .recipient(postComment.getOwnerId())
+                    .templateCode("POST_COMMENT_OWNER_NOTIFICATION")
+                    .param(Map.of("fromUser", postComment.getUsername(), "inLocation", postComment.getPostName(),
+                            "content", postComment.getContent()))
+                    .build();
+            //Publish message to kafka
+            kafkaTemplate.send("comment-notification", event);
+        }
+        return postCommentMapper.toPostCommentResponse(postCommentRepository.save(postComment));
     }
 
-    public PostComment updateComment(String id, PostComment postComment) {
+    public PostCommentResponse updateComment(String id, PostCommentRequest request) {
         return postCommentRepository.findById(id)
                 .map(existingComment -> {
-                    existingComment.setContent(postComment.getContent());
-                    existingComment.setUpdateDateTime(LocalDateTime.now());
-                    return postCommentRepository.save(existingComment);
+                    postCommentMapper.updatePostComment(existingComment, request);
+                    existingComment.setUpdateDateTime(Instant.now());
+                    return postCommentMapper.toPostCommentResponse(postCommentRepository.save(existingComment));
                 })
                 .orElseThrow(() -> new RuntimeException("Comment not found"));
     }
@@ -67,35 +100,52 @@ public class PostCommentService {
         postCommentRepository.deleteById(id);
     }
 
-    public List<PostCommentReply> getAllRepliesByCommentId(String commentId) {
-        return postCommentReplyRepository.findAllByCommentId(commentId).stream()
+    public PageResponse<PostCommentReplyResponse> getAllRepliesByCommentId(String commentId, int page, int size) {
+        Sort sort = Sort.by(Sort.Order.desc("createdDate"));
+        Pageable pageable = PageRequest.of(page - 1, size, sort);
+        var pageData = postCommentReplyRepository.findAllByCommentId(commentId, pageable);
+        var replyList = pageData.getContent().stream()
                 .map(this::enrichReplyWithUserProfile)
-                .collect(Collectors.toList());
-    }
-
-    public PostCommentReply createReply(PostCommentReply postCommentReply) {
-        postCommentReply.setCreatedDate(LocalDateTime.now());
-        postCommentReply.setUpdateDateTime(LocalDateTime.now());
-        postCommentReply.setUsername(userProfileClient.getUserProfile(postCommentReply.getUserId()).getUsername());
-        NotificationEvent event = NotificationEvent
-                .builder()
-                .channel("PUSH_NOTIFICATION")
-                .recipient(postCommentReply.getUserIdOfReplyTo())
-                .templateCode("COMMENT_REPLY_NOTIFICATION")
-                .param(Map.of("fromUser", postCommentReply.getUsername(), "inLocation", postCommentReply.getPostName(),
-                        "content", postCommentReply.getReplyContent()))
+                .map(reply ->{
+                    PostCommentReplyResponse response = postCommentReplyMapper.toPostCommentReplyResponse(reply);
+                    response.setCreated(dateTimeFormatter.format(reply.getCreatedDate()));
+                    return response;
+                }).collect(Collectors.toList());
+        return PageResponse.<PostCommentReplyResponse>builder()
+                .currentPage(page)
+                .pageSize(pageData.getSize())
+                .totalPages(pageData.getTotalPages())
+                .totalElements(pageData.getTotalElements())
+                .data(replyList)
                 .build();
-        //Publish message to kafka
-        kafkaTemplate.send("post-comment-notification", event);
-        return postCommentReplyRepository.save(postCommentReply);
     }
 
-    public PostCommentReply updateReply(String id, PostCommentReply postCommentReply) {
+    public PostCommentReplyResponse createReply(PostCommentReplyRequest request) {
+        PostCommentReply postCommentReply = postCommentReplyMapper.toPostCommentReply(request);
+        postCommentReply.setCreatedDate(Instant.now());
+        postCommentReply.setUpdateDateTime(Instant.now());
+        postCommentReply.setUsername(userProfileClient.getUserProfile(postCommentReply.getUserId()).getUsername());
+        if (!postCommentReply.getUserIdOfReplyTo().equals(postCommentReply.getUserId())) {
+            NotificationEvent event = NotificationEvent
+                    .builder()
+                    .channel("POST")
+                    .recipient(postCommentReply.getUserIdOfReplyTo())
+                    .templateCode("POST_COMMENT_REPLY_NOTIFICATION")
+                    .param(Map.of("fromUser", postCommentReply.getUsername(), "inLocation", postCommentReply.getPostName(),
+                            "content", postCommentReply.getReplyContent()))
+                    .build();
+            //Publish message to kafka
+            kafkaTemplate.send("comment-notification", event);
+        }
+        return postCommentReplyMapper.toPostCommentReplyResponse(postCommentReplyRepository.save(postCommentReply));
+    }
+
+    public PostCommentReplyResponse updateReply(String id, PostCommentReplyRequest request) {
         return postCommentReplyRepository.findById(id)
                 .map(existingReply -> {
-                    existingReply.setReplyContent(postCommentReply.getReplyContent());
-                    existingReply.setUpdateDateTime(LocalDateTime.now());
-                    return postCommentReplyRepository.save(existingReply);
+                    postCommentReplyMapper.updatePostCommentReplyFromRequest(existingReply, request);
+                    existingReply.setUpdateDateTime(Instant.now());
+                    return postCommentReplyMapper.toPostCommentReplyResponse(postCommentReplyRepository.save(existingReply));
                 })
                 .orElseThrow(() -> new RuntimeException("Reply not found"));
     }
@@ -104,7 +154,7 @@ public class PostCommentService {
         postCommentReplyRepository.deleteById(id);
     }
 
-    private PostComment enrichCommentWithUserProfile(PostComment comment) {
+     PostComment enrichCommentWithUserProfile(PostComment comment) {
         UserProfileResponse userProfile = userProfileClient.getUserProfile(comment.getUserId());
         comment.setUsername(userProfile.getUsername());
         if (userProfile.getImage() != null) {
@@ -115,7 +165,7 @@ public class PostCommentService {
         return comment;
     }
 
-    private PostCommentReply enrichReplyWithUserProfile(PostCommentReply reply) {
+     PostCommentReply enrichReplyWithUserProfile(PostCommentReply reply) {
         UserProfileResponse userProfile = userProfileClient.getUserProfile(reply.getUserId());
         reply.setUsername(userProfile.getUsername());
         if (userProfile.getImage() != null) {

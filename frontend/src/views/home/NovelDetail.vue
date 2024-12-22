@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {computed, onMounted, ref} from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import Comment from '@/components/home/CommentSection.vue';
 import ReviewNovel from '@/components/home/ReviewNovelForm.vue';
@@ -8,7 +8,7 @@ import Breadcrumb from '@/components/home/Breadcrumb.vue';
 import { getNovel } from '@/api/novel';
 import { getVolumesByNovelId } from '@/api/volume';
 import { getChapterByVolumeId } from '@/api/chapter';
-import { followNovel, isFollowingNovel, unfollowNovel } from "@/api/user";
+import {followNovel, getReviewList, isFollowingNovel, unfollowNovel} from "@/api/user";
 import store from "@/store";
 import {
   createNovelComment,
@@ -16,14 +16,14 @@ import {
   getAllNovelComments,
   getAllNovelRepliesByCommentId
 } from "@/api/novelcomment";
-import CommentSection from "@/components/home/CommentSection.vue";
 
 const route = useRoute();
-const id = Array.isArray(route.params.id) ? route.params.id[0] : route.params.id;
+const novelId = Array.isArray(route.params.id) ? route.params.id[0] : route.params.id;
 const userId = store.getters.getUserId;
 
 const novel = ref<Novel | Record<string, any>>({});
 const comments = ref([]);
+const reviews = ref([]);
 const volumes = ref<Volume[]>([]);
 const isCollected = ref(false);
 const showRatingMenu = ref(false);
@@ -46,6 +46,7 @@ interface Category {
 interface Novel {
   id: string;
   title: string;
+  authorId: string;
   authorName: string;
   description: string;
   bookStatus: string;
@@ -69,7 +70,7 @@ interface Volume {
 
 const fetchNovelData = async () => {
   try {
-    const data = await getNovel(id);
+    const data = await getNovel(novelId);
     novel.value = {
       ...data,
       categories: data.categories.map((category: any) => ({
@@ -87,10 +88,19 @@ const fetchNovelData = async () => {
 
 const fetchComments = async () => {
   try {
-    const result = await getAllNovelComments(id);
-    comments.value = result;
+    const result = await getAllNovelComments(novelId);
+    comments.value = result.data;
   } catch (error) {
     console.error('Failed to fetch comments:', error);
+  }
+};
+
+const fetchReviews = async () => {
+  try {
+    const result = await getReviewList(novelId, 1, 10);
+    reviews.value = result.data;
+  } catch (error) {
+    console.error('Failed to fetch reviews:', error);
   }
 };
 
@@ -130,7 +140,7 @@ const toggleShowMore = (index: number) => {
 
 const checkFollowStatus = async () => {
   try {
-    const response = await isFollowingNovel({ userId, id });
+    const response = await isFollowingNovel({ userId, novelId });
     isCollected.value = response;
   } catch (error) {
     console.error(error);
@@ -140,14 +150,18 @@ const checkFollowStatus = async () => {
 const toggleCollect = async () => {
   try {
     if (isCollected.value) {
-      await unfollowNovel({ userId, id });
+      await unfollowNovel({ userId, novelId });
     } else {
-      await followNovel({ userId, id });
+      await followNovel({ userId, novelId });
     }
     isCollected.value = !isCollected.value;
   } catch (error) {
     console.error(error);
   }
+};
+
+const handleReviewCreated = () => {
+  fetchReviews();
 };
 
 const handleCommentAdded = () => {
@@ -168,7 +182,8 @@ const currentTabComponent = computed(() => {
 onMounted(() => {
   fetchNovelData();
   fetchComments();
-  fetchVolumes(id);
+  fetchReviews();
+  fetchVolumes(novelId);
   checkFollowStatus();
 });
 </script>
@@ -273,7 +288,8 @@ onMounted(() => {
               <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 <router-link
                   v-for="(chapter, chapterIndex) in volume.chapters.slice(0, volume.showMore ? undefined : 6)"
-                  :key="chapterIndex" :to="{ name: 'chapter', params: { novelId: novel.id, chapterId: chapter.id } }"
+                  :key="chapterIndex"
+                  :to="{ name: 'chapter', params: { id: chapter.id } }"
                   class="group relative">
                   <div
                     class="p-3 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow border border-gray-100 hover:border-gray-200">
@@ -305,21 +321,12 @@ onMounted(() => {
           {{ tab }}
         </button>
       </div>
-      <component :is="currentTabComponent" :itemId="novel.id" itemType="novel"  :comments="comments" @commentAdded="handleCommentAdded"
+      <component :is="currentTabComponent" :itemId="novel.id" :reviews="reviews" @reviewCreated="handleReviewCreated"
+                 :comments="comments" @commentAdded="handleCommentAdded"
                  :create-comment-api="createNovelComment"
                  :create-reply-api="createNovelReply"
                  :get-all-replies-api="getAllNovelRepliesByCommentId"
-      />
+                 itemType="novel" :owner-id="novel.authorId" :item-name="novel.title" />
     </div>
   </div>
 </template>
-
-<style scoped>
-.sharing-box {
-  display: none;
-}
-
-#open-sharing:checked + .sharing-box {
-  display: block;
-}
-</style>

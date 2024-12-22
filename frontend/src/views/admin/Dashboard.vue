@@ -7,8 +7,8 @@ enum Routes {
   Analytics = '/analytics',
   Support = '/support',
   AdminNotification = '/system-notification',
-  Account = '/author-account',
-  Payment = '/payment',
+  // Account = '/author-account',
+  // Payment = '/payment',
   FAQ = '/faq',
   PostCategory = '/post-category-for-author',
   BookCategory = '/novel-category-for-author',
@@ -24,12 +24,32 @@ enum Routes {
 import NotificationDropdown from '@/components/common/BellNotificationDropdown.vue';
 import {getUserProfile} from "@/api/user";
 import store from "@/store";
+import {getNotificationByUserId} from "@/api/notification";
+import {logout} from "@/api/auth";
+import router from "@/router";
 
 const showDropDown = ref<boolean>(false);
 const showSide = ref<boolean>(true);
 const isMobile = ref<boolean>(false);
 const showMobileSide = ref<boolean>(false);
 const isDropdownOpen = ref<boolean>(false);
+const notifications = ref([]);
+const unreadNotifications = ref(0);
+const fetchNotifications = async () => {
+  try {
+    const userId = store.getters.getUserId;
+    const page = 1;
+    const size = 5;
+    const notificationData = await getNotificationByUserId(userId, page, size);
+    notifications.value = notificationData.data;
+    unreadNotifications.value = notificationData.data.length;
+  } catch (error) {
+    console.error('Error fetching notifications:', error);
+  }
+};
+onMounted(() => {
+  fetchNotifications();
+});
 
 const toggleDropdown = (): void => {
   isDropdownOpen.value = !isDropdownOpen.value;
@@ -79,10 +99,10 @@ const MenuItems = [
     ]
   },
   {
-    label: 'Notification and Support',
+    label: 'Notification',
     isParent: true,
     children: [
-      {to: Routes.Support, label: 'Support', icon: 'fa-solid fa-phone'},
+      // {to: Routes.Support, label: 'Support', icon: 'fa-solid fa-phone'},
       {to: Routes.AdminNotification, label: 'Notification', icon: 'fa-solid fa-bullhorn'},
     ]
   },
@@ -127,30 +147,33 @@ const featureMenuItems = [
     label: 'Admin Dashboard',
   }
 ];
-const dropdownItems = [
-  {to: Routes.Account, label: 'Account'},
-  {to: Routes.Payment, label: 'Payment'},
-  {label: 'Sign out'},
-];
 
+const handleLogout = async () => {
+  try {
+    const accessToken = store.getters.getToken;
+    const refreshToken = store.getters.getRefreshToken;
+
+    if (!accessToken || !refreshToken) {
+      console.error('Tokens are missing');
+      return;
+    }
+    await logout({
+      refreshToken: refreshToken,
+      accessToken: accessToken
+    });
+    store.commit('clearUser');
+    router.push('/');
+  } catch (error) {
+    console.error('Logout failed:', error);
+    alert('Logout failed. Please try again.');
+  }
+};
+const dropdownItems = [
+  // {to: Routes.Account, label: 'Account'},
+  // {to: Routes.Payment, label: 'Payment'},
+  { label: 'Sign out', action: handleLogout }, // Thêm mục Sign out
+];
 const isNotificationListOpen = ref(false);
-const unreadNotifications = ref(1); // Số thông báo chưa đọc
-const notifications = ref([
-  {
-    id: 1,
-    user: "Jese Leos",
-    message: 'Hey, what\'s up? All set for the presentation?',
-    time: 'a few moments ago',
-    iconColor: 'bg-blue-600',
-  },
-  {
-    id: 2,
-    user: "Joseph Mcfall",
-    message: 'and 5 others started following you.',
-    time: '10 minutes ago',
-    iconColor: 'bg-gray-900',
-  },
-]); // Danh sách thông báo mẫu
 
 // Phương thức toggle
 const toggleNotificationList = () => {
@@ -177,13 +200,13 @@ onMounted(() => {
 <template>
   <div class="w-screen h-screen flex">
     <!-- Sidebar for larger screens -->
-    <div class="w-[260px] h-full bg-gray-200 text-black overflow-hidden" v-show="showSide && !isMobile">
-      <div class="h-[50px] bg-[#F0EEE5] flex justify-start items-center">
+    <div class="w-[260px] h-full bg-white text-black border-r border-gray-300 overflow-hidden" v-show="showSide && !isMobile">
+      <div class="h-[50px] bg-white flex justify-start items-center border-b border-gray-300">
         <div class="px-[20px]">
           <h3 class="font-bold text-xl">Admin Panel</h3>
         </div>
       </div>
-      <div class="h-[calc(100vh-50px)] bg-[#F0EEE5] overflow-y-auto custom-scrollbar">
+      <div class="h-[calc(100vh-50px)] bg-white overflow-y-auto custom-scrollbar">
         <div class="py-[10px] px-[20px]">
           <div class="space-y-2">
             <!-- My Book Group -->
@@ -195,8 +218,8 @@ onMounted(() => {
                 <!-- Child Items (Menu Links) -->
                 <div v-if="item.isParent" class="flex flex-col justify-between">
                   <router-link v-for="subItem in item.children" :key="subItem.to" :to="subItem.to"
-                               class="inline-flex relative items-center py-[10px] px-[10px] w-full text-sm font-medium rounded-md border-gray-200 transition duration-500 ease-in-out hover:underline"
-                               active-class="bg-[#D4A27F] text-gray-800 font-semibold">
+                               class="inline-flex relative items-center py-[10px] px-[10px] w-full text-sm font-medium rounded-md border-gray-200 transition duration-500 ease-in-out hover:bg-gray-100 hover:text-black"
+                               active-class="bg-gray-300 text-black font-semibold">
                     <font-awesome-icon :icon="subItem.icon" class="mr-2"/>
                     {{ subItem.label }}
                   </router-link>
@@ -207,7 +230,7 @@ onMounted(() => {
             <div class="space-y-2 mt-4">
               <!-- Tiêu đề chính của dropdown -->
               <div
-                  class="text-sm text-gray-700 font-semibold cursor-pointer flex justify-between items-center py-2 px-3 bg-[#C96442] rounded-md"
+                  class="text-sm text-gray-700 font-semibold cursor-pointer flex justify-between items-center py-2 px-3 bg-gray-200 rounded-md"
                   @click="toggleDropdown">
                 <div class="flex items-center space-x-2">
                   <font-awesome-icon icon="fa-solid fa-bars-progress" size="lg" class="mx-2 my-[0.2rem]"/>
@@ -221,8 +244,8 @@ onMounted(() => {
 
               <div v-if="isDropdownOpen" class="mt-2 flex flex-col space-y-1">
                 <router-link v-for="item in featureMenuItems" :key="item.to" :to="item.to"
-                             class="inline-flex items-center py-2 px-3 text-sm font-medium rounded-md border-gray-200 transition duration-500 ease-in-out hover:underline"
-                             active-class="bg-[#D4A27F] text-gray-800 font-semibold" @click="handleItemClick">
+                             class="inline-flex items-center py-2 px-3 text-sm font-medium rounded-md border-gray-200 transition duration-500 ease-in-out hover:bg-gray-100 hover:text-black"
+                             active-class="bg-gray-300 text-black font-semibold" @click="handleItemClick">
                   {{ item.label }}
                 </router-link>
               </div>
@@ -234,7 +257,7 @@ onMounted(() => {
 
     <!-- Mobile overlay sidebar (remains the same) -->
     <div v-show="showMobileSide" class="fixed inset-0 z-20 bg-gray-900 bg-opacity-50">
-      <div class="w-[250px] h-full bg-[#F0EEE5] text-gray-700 overflow-y-auto">
+      <div class="w-[250px] h-full bg-white text-gray-700 overflow-y-auto">
         <div class="p-4">
           <div class="flex justify-between items-center">
             <h3 class="font-bold text-xl">Admin Panel</h3>
@@ -249,8 +272,8 @@ onMounted(() => {
 
                 <div class="text-sm text-gray-700 font-semibold">{{ item.label }}</div>
                 <router-link v-for="subItem in item.children" :key="subItem.to" :to="subItem.to"
-                             class="inline-flex relative items-center py-2 px-3 w-full text-sm font-medium rounded-md transition duration-500 ease-in-out"
-                             active-class="bg-[#D4A27F] text-gray-800 font-semibold" @click="toggleSideBar">
+                             class="inline-flex relative items-center py-2 px-3 w-full text-sm font-medium rounded-md transition duration-500 ease-in-out hover:bg-gray-100 hover:text-black"
+                             active-class="bg-gray-300 text-black font-semibold" @click="toggleSideBar">
                   <font-awesome-icon :icon="subItem.icon" class="mr-2"/>
                   {{ subItem.label }}
                 </router-link>
@@ -259,7 +282,7 @@ onMounted(() => {
             <div class="space-y-2">
               <!-- Tiêu đề chính của dropdown -->
               <div
-                  class="text-xs text-gray-700 font-semibold cursor-pointer flex justify-between items-center py-2 px-3 bg-[#C96442] rounded-md"
+                  class="text-xs text-gray-700 font-semibold cursor-pointer flex justify-between items-center py-2 px-3 bg-gray-200 rounded-md"
                   @click="toggleDropdown">
                 <div class="flex items-center space-x-2">
                   <font-awesome-icon icon="fa-solid fa-bars-progress" size="lg" class="mx-2 my-[0.2rem]"/>
@@ -270,8 +293,8 @@ onMounted(() => {
               <!-- Menu items (dropdown content) -->
               <div v-if="isDropdownOpen" class="mt-2 flex flex-col space-y-1">
                 <router-link v-for="item in featureMenuItems" :key="item.to" :to="item.to"
-                             class="inline-flex items-center py-2 px-3 text-sm font-medium rounded-md border-gray-200 transition duration-500 ease-in-out hover:bg-gray-100"
-                             active-class="bg-gray-300 text-gray-800 font-semibold" @click="handleItemClick">
+                             class="inline-flex items-center py-2 px-3 text-sm font-medium rounded-md border-gray-200 transition duration-500 ease-in-out hover:bg-gray-100 hover:text-black"
+                             active-class="bg-gray-300 text-black font-semibold" @click="handleItemClick">
                   {{ item.label }}
                 </router-link>
               </div>
@@ -282,9 +305,9 @@ onMounted(() => {
     </div>
 
     <!-- Main Content -->
-    <div class="flex-1 flex flex-col h-screen bg-gray-400 overflow-hidden">
+    <div class="flex-1 flex flex-col h-screen bg-white overflow-hidden">
       <div
-          class="h-[50px] top-0 sticky bg-[#F0EEE5] flex items-center shadow-sm px-[20px] w-full py-[10px] z-10 border-b justify-between">
+          class="h-[50px] top-0 sticky bg-white flex items-center shadow-sm px-[20px] w-full py-[10px] z-10 border-b border-gray-300 justify-between">
         <!-- Toggle Sidebar Button -->
         <div
             class="cursor-pointer w-[30px] text-gray-700 hover:text-black transition-transform duration-200 hover:scale-110 focus:scale-125 active:animate-custom-pulse focus:outline-none"
@@ -310,7 +333,7 @@ onMounted(() => {
                                  class="cursor-pointer w-[30px] text-gray-700 hover:text-black transition-transform duration-200 hover:scale-110 focus:scale-125 active:animate-pulse focus:outline-none"/>
               <span
                   className='absolute right-[-5px] bottom-[-5px] w-4 text-center leading-4 bg-black text-white aspect-square rounded-full text-[8px]'>
-                                1
+                                {{ unreadNotifications }}
                             </span>
             </div>
             <!-- Notification List -->
@@ -330,7 +353,8 @@ onMounted(() => {
                  class="absolute top-full mt-2 right-0 z-10 w-44 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
               <div class="py-1 text-left" role="none">
                 <router-link v-for="item in dropdownItems" :key="item.label" :to="item.to ? item.to : ''"
-                             class="text-gray-700 block px-4 py-2 text-sm hover:bg-[#F8F8F7]" role="menuitem">
+                             class="text-gray-700 block px-4 py-2 text-sm hover:bg-gray-100" role="menuitem"
+                             @click="item.action ? item.action() : null">
                   {{ item.label }}
                 </router-link>
               </div>
@@ -339,7 +363,7 @@ onMounted(() => {
         </div>
       </div>
       <!-- Content Area -->
-      <div class="flex-1 bg-[#F5F4EF] p-[20px] overflow-y-auto">
+      <div class="flex-1 bg-white p-[20px] overflow-y-auto">
         <div class="h-full border-gray-300">
           <RouterView/>
         </div>
