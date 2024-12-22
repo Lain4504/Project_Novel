@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import {onMounted, ref, computed} from 'vue';
+import { onMounted, ref, computed } from 'vue';
 import Banner from "@/components/home/Banner.vue";
 import store from "@/store";
-import {getNotificationByUserId} from "@/api/notification";
+import { getNotificationByUserId } from "@/api/notification";
+import { Pagination } from 'ant-design-vue';
 
 interface Notification {
   id: string;
@@ -41,22 +42,6 @@ const goToPage = (page: number) => {
   }
 };
 
-const visiblePages = computed(() => {
-  const pages = [];
-  const maxVisible = 5;
-  let start = Math.max(1, currentPage.value - Math.floor(maxVisible / 2));
-  let end = Math.min(totalPages.value, start + maxVisible - 1);
-
-  if (end - start + 1 < maxVisible) {
-    start = Math.max(1, end - maxVisible + 1);
-  }
-
-  for (let i = start; i <= end; i++) {
-    pages.push(i);
-  }
-  return pages;
-});
-
 const showDropdown = ref(false);
 const toggleDropdown = () => {
   showDropdown.value = !showDropdown.value;
@@ -93,15 +78,12 @@ const toggleDropdown = () => {
     </div>
     <!-- Pagination -->
     <div class="flex justify-center mt-4">
-      <button @click="goToPage(1)" :disabled="currentPage === 1" class="px-3 py-1 mx-1 text-sm text-gray-400 rounded hover:bg-gray-200">
-        First
-      </button>
-      <button v-for="page in visiblePages" :key="page" @click="goToPage(page)" class="px-3 py-1 mx-1 text-sm rounded hover:bg-gray-200" :class="{'bg-gray-300': page === currentPage, 'text-gray-700': page !== currentPage}">
-        {{ page }}
-      </button>
-      <button @click="goToPage(totalPages)" :disabled="currentPage === totalPages" class="px-3 py-1 mx-1 text-sm text-gray-400 rounded hover:bg-gray-200">
-        Last
-      </button>
+      <a-pagination
+        :current="currentPage"
+        :total="totalPages * pageSize"
+        :pageSize="pageSize"
+        @change="goToPage"
+      />
     </div>
   </div>
 </template>

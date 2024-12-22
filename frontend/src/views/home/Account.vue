@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Card, Avatar, Descriptions, List, Pagination, Typography, Row, Col, Breadcrumb } from 'ant-design-vue';
 import { UserOutlined } from '@ant-design/icons-vue';
-import {ref, onMounted, computed} from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { getUserProfile } from '@/api/user';
 import { getNovelsByAuthorId } from '@/api/novel';
 import store from '@/store';
@@ -119,7 +119,7 @@ onMounted(() => {
                 {{ userProfile.created || 'No date available' }}
               </Descriptions.Item>
               <Descriptions.Item label="Bio">
-                {{ userProfile.bio || 'No bio available' }}
+                <span v-html="userProfile.bio || 'No bio available'"></span>
               </Descriptions.Item>
               <template v-for="stat in userStats" :key="stat.key">
                 <Descriptions.Item :label="stat.key">
@@ -184,7 +184,7 @@ onMounted(() => {
                   :pageSize="pageSize"
                   @change="handlePageChange"
                   show-quick-jumper
-                  :show-total="total => `Total ${total} items`"
+                  :show-total="(total: number) => `Total ${total} items`"
               />
             </div>
           </Card>

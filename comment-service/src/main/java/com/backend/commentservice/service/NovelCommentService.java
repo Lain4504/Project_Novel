@@ -22,6 +22,7 @@ import com.backend.utils.DateTimeFormatter;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -36,6 +37,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class NovelCommentService {
     NovelCommentRepository novelCommentRepository;
@@ -125,6 +127,10 @@ public class NovelCommentService {
         novelCommentReply.setCreatedDate(Instant.now());
         novelCommentReply.setUpdateDateTime(Instant.now());
         novelCommentReply.setUsername(userProfileClient.getUserProfile(novelCommentReply.getUserId()).getUsername());
+        log.info("NovelCommentReply: {}", novelCommentReply.getUsername());
+        log.info("NovelCommentReply NovelName: {}", novelCommentReply.getNovelName());
+        log.info("NovelCommentReply: {}", novelCommentReply.getReplyContent());
+        log.info("NovelCommentReply: {}", novelCommentReply.getUserIdOfReplyTo());
         if (!novelCommentReply.getUserIdOfReplyTo().equals(novelCommentReply.getUserId())) {
             NotificationEvent event = NotificationEvent.builder()
                     .channel("NOVEL")
@@ -133,6 +139,7 @@ public class NovelCommentService {
                     .param(Map.of("fromUser", novelCommentReply.getUsername(), "inLocation", novelCommentReply.getNovelName(),
                             "content", novelCommentReply.getReplyContent())).build();
             //Publish message to kafka
+            log.info("NotificationEvent: {}", event);
             kafkaTemplate.send("comment-notification", event);
         }
         return novelCommentReplyMapper.toNovelCommentReplyResponse(novelCommentReplyRepository.save(novelCommentReply));

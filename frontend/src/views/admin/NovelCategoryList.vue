@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { ref, onMounted, watch } from "vue";
 import DynamicDataTable from "@/components/common/DynamicDataTable.vue";
-import {getNovelCategories, deleteNovelCategory, getNovelCategory} from "@/api/novelcategory";
+import { getNovelCategories, deleteNovelCategory } from "@/api/novelcategory";
 import router from "@/router";
 import ConfirmDeleteModal from "@/components/common/ConfirmDeleteModal.vue";
+
 const novelCategoryColumns = [
   { field: "id", headerName: "ID", width: 70 },
   { field: "name", headerName: "Tiêu đề", width: 200 },
@@ -15,6 +16,7 @@ const novelCategoryColumns = [
     isAction: true,
   },
 ];
+
 const totalPages = ref(1);
 const pageSize = ref(10);
 const currentPage = ref(1);
@@ -22,53 +24,63 @@ const novelCategoryRows = ref<any[]>([]);
 const showConfirmModal = ref(false);
 const rowToDelete = ref<any>(null);
 const createPath = '/create-novel-category';
-const fetchNovelCategories = async (page: number, size: number) =>{
-  try{
+
+const fetchNovelCategories = async (page: number, size: number) => {
+  try {
     const response = await getNovelCategories(page, size);
     novelCategoryRows.value = response.data;
     totalPages.value = response.totalPages;
-  }
-  catch (error){
+  } catch (error) {
     console.error('Error fetching novel categories:', error);
   }
-}
-const handleDelete = (row: any) =>{
+};
+
+const handleDelete = (row: any) => {
   rowToDelete.value = row;
   showConfirmModal.value = true;
-}
-const confirmDelete = async () =>{
-  if (rowToDelete.value){
-    try{
+};
+
+const confirmDelete = async () => {
+  if (rowToDelete.value) {
+    try {
       await deleteNovelCategory(rowToDelete.value.id);
+      if (novelCategoryRows.value.length === 1 && currentPage.value > 1) {
+        currentPage.value -= 1;
+      }
       fetchNovelCategories(currentPage.value, pageSize.value);
-    }
-    catch (error){
+    } catch (error) {
       console.error('Error deleting novel category:', error);
     }
   }
   showConfirmModal.value = false;
-}
-const cancelDelete = () =>{
+};
+
+const cancelDelete = () => {
   showConfirmModal.value = false;
-}
-watch(currentPage, () =>{
+};
+
+watch(currentPage, (newPage) => {
+  fetchNovelCategories(newPage, pageSize.value);
+});
+
+onMounted(() => {
   fetchNovelCategories(currentPage.value, pageSize.value);
-})
-onMounted(() =>{
-  fetchNovelCategories(currentPage.value, pageSize.value);
-})
-const handlePageChange = (page: number) =>{
-  currentPage.value = page;
-}
-const handleEdit = (row: any) =>{
-  router.push({name: 'updateNovelCategory', params: {id: row.id}});
-}
+});
+
+const handlePageSizeChange = (current: number, size: number) => {
+  pageSize.value = size;
+  currentPage.value = current;
+  fetchNovelCategories(current, size);
+};
+
+const handleEdit = (row: any) => {
+  router.push({ name: 'updateNovelCategory', params: { id: row.id } });
+};
 </script>
 
 <template>
   <h3 class="text-2xl font-bold text-left py-2">Novel Category Management</h3>
 
-  <!-- Modal Confirm Delete -->
   <ConfirmDeleteModal
       :show="showConfirmModal"
       title="Bạn có chắc chắn muốn xóa không?"
@@ -77,7 +89,6 @@ const handleEdit = (row: any) =>{
       @confirm="confirmDelete"
       @cancel="cancelDelete"
   />
-  <!-- Pass the fetched rows and columns to the DynamicDataTable component -->
   <DynamicDataTable
       :columns="novelCategoryColumns"
       :rows="novelCategoryRows"
@@ -85,7 +96,7 @@ const handleEdit = (row: any) =>{
       :totalPages="totalPages"
       :createPath="createPath"
       :emits="['page-change', 'delete', 'edit']"
-      @page-change="handlePageChange"
+      @page-change="handlePageSizeChange"
       @edit="handleEdit"
       @delete="handleDelete"
   />

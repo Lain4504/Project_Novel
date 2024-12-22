@@ -55,17 +55,20 @@ const inputs = ref([
     label: "Tiêu đề",
     type: "text",
     placeholder: "Nhập tiêu đề bài viết",
+    required: true,
   },
   {
     id: "content",
     label: "Nội dung",
     type: "tiptap", // Sử dụng Tiptap editor
+    required: true,
   },
   {
     id: "categoryId",
     label: "Chọn chuyên mục",
     type: "select",
     options: categories.value, // Bind với categories
+    required: true,
   },
 ]);
 </script>

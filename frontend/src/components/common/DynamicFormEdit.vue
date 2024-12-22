@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import {inject, ref, watch} from 'vue';
-import Tiptap from "@/components/common/Tiptap.vue"; // Đảm bảo đường dẫn đến Tiptap đúng
+import { inject, ref, watch } from 'vue';
+import Tiptap from "@/components/common/Tiptap.vue";
+import { Input, Select, Button, notification } from 'ant-design-vue';
 
 interface Field {
   id: string;
@@ -20,32 +21,32 @@ const props = defineProps<Props>();
 const formData = ref({ ...props.initialData });
 
 watch(
-    () => props.initialData,
-    (newData) => {
-      formData.value = { ...newData };
-    }
-);
-const showAlert = inject('showAlert') as ((type: string, message: string) => void);
-const showNotification = (type: string, message: string) => {
-  if (showAlert) {
-    showAlert(type, message); // Gọi hàm showAlert toàn cục
-  } else {
-    console.error('showAlert is not available in this context');
+  () => props.initialData,
+  (newData) => {
+    formData.value = { ...newData };
   }
+);
+
+const showNotification = (type: 'success' | 'error', message: string) => {
+  notification[type]({
+    message: type === 'success' ? 'Success' : 'Error',
+    description: message,
+    duration: 3,
+  });
 };
+
 const handleSave = async () => {
   try {
     await props.onSave(formData.value.id, formData.value);
     showNotification('success', 'Item updated successfully.');
   } catch (error: any) {
     console.error('Failed to update item:', error);
-    // Xử lý lỗi trực tiếp trong DynamicFormEdit
     if (error.response) {
-      showNotification('danger', error.response.data.message || 'Item update failed. Please try again.');
+      showNotification('error', error.response.data.message || 'Item update failed. Please try again.');
     } else if (error.request) {
-      showNotification('danger', 'No response from server. Please try again.');
+      showNotification('error', 'No response from server. Please try again.');
     } else {
-      showNotification('danger', 'An unexpected error occurred. Please try again.');
+      showNotification('error', 'An unexpected error occurred. Please try again.');
     }
   }
 };
@@ -59,39 +60,36 @@ const handleSave = async () => {
         <div class="flex flex-col space-y-6">
           <div v-for="field in props.fields.inputs" :key="field.id">
             <label :for="field.id" class="block text-sm font-medium text-gray-700">
-              {{ field.label }}
+              {{ field.label }}<span v-if="field.required" class="text-red-500">*</span>
             </label>
             <div class="mt-1">
-              <!-- Xử lý kiểu 'tiptap' -->
               <template v-if="field.type === 'tiptap'">
                 <Tiptap
-                    :content="formData[field.id]"
-                    @update:content="formData[field.id] = $event"
+                  :content="formData[field.id]"
+                  @update:content="formData[field.id] = $event"
                 />
               </template>
-              <!-- Xử lý kiểu 'select' -->
               <template v-else-if="field.type === 'select'">
-                <select
-                    :id="field.id"
-                    v-model="formData[field.id]"
-                    class="w-full border border-gray-300 rounded-lg py-1 px-4 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:text-sm"
+                <Select
+                  :id="field.id"
+                  v-model:value="formData[field.id]"
+                  class="w-full"
                 >
-                  <option
-                      v-for="option in field.options"
-                      :key="option.value"
-                      :value="option.value"
+                  <Select.Option
+                    v-for="option in field.options"
+                    :key="option.value"
+                    :value="option.value"
                   >
                     {{ option.label }}
-                  </option>
-                </select>
+                  </Select.Option>
+                </Select>
               </template>
-              <!-- Xử lý các kiểu còn lại -->
               <template v-else>
-                <input
-                    :type="field.type"
-                    :id="field.id"
-                    v-model="formData[field.id]"
-                    class="w-full border border-gray-300 rounded-lg py-1 px-4 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:text-sm"
+                <Input
+                  :type="field.type"
+                  :id="field.id"
+                  v-model:value="formData[field.id]"
+                  class="w-full"
                 />
               </template>
             </div>
@@ -99,20 +97,18 @@ const handleSave = async () => {
         </div>
 
         <div class="flex justify-end space-x-4">
-          <button
-              type="button"
-              @click="props.onCancel"
-              class="cursor-pointer text-sm bg-transparent border-[1px] border-red-500 text-red-500 hover:border-red-700 hover:scale-105 font-medium py-2 px-4 rounded transition-all duration-300"
+          <Button
+            type="default"
+            @click="props.onCancel"
           >
             Cancel
-          </button>
-          <button
-              type="button"
-              @click="handleSave"
-              class="cursor-pointer text-sm bg-transparent border-[1px] border-blue-500 text-blue-500 hover:border-blue-700 hover:scale-105 font-medium py-2 px-4 rounded transition-all duration-300"
+          </Button>
+          <Button
+            type="primary"
+            @click="handleSave"
           >
             Save
-          </button>
+          </Button>
         </div>
       </form>
     </div>

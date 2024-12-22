@@ -16,8 +16,8 @@ interface PostCommentReply {
     content: string;
 }
 
-const getAllComments = (postId: string) => {
-    return axios.get(`${POST_COMMENT_API}/${postId}`)
+const getAllComments = (postId: string, page: number, size: number) => {
+    return axios.get(`${POST_COMMENT_API}/${postId}?page=${page}&size=${size}`)
         .then((response) => response.data.result);
 };
 
@@ -36,8 +36,8 @@ const deleteComment = (id: string) => {
         .then((response) => response.data.result);
 };
 
-const getAllRepliesByCommentId = (commentId: string) => {
-    return axios.get(`${POST_COMMENT_API}/replies/${commentId}`)
+const getAllRepliesByCommentId = (commentId: string, page: number, size: number) => {
+    return axios.get(`${POST_COMMENT_API}/replies/${commentId}?page=${page}&size=${size}`)
         .then((response) => response.data.result);
 };
 
