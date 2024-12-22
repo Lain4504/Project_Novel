@@ -5,6 +5,7 @@ import com.backend.dto.response.PageResponse;
 import com.backend.postservice.dto.request.PostCategoryRequest;
 import com.backend.postservice.dto.response.PostCategoryResponse;
 import com.backend.postservice.service.PostCategoryService;
+import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -22,13 +23,13 @@ import java.util.List;
 public class PostCategoryController {
     PostCategoryService postCategoryService;
     @PostMapping("/create")
-    public ApiResponse<PostCategoryResponse> createPostCategory(@RequestBody PostCategoryRequest request){
+    public ApiResponse<PostCategoryResponse> createPostCategory(@Valid @RequestBody PostCategoryRequest request){
         return ApiResponse.<PostCategoryResponse>builder()
                 .result(postCategoryService.createPostCategory(request))
                 .build();
     }
     @PutMapping("/update/{postCategoryId}")
-    public ApiResponse<PostCategoryResponse> updatePostCategory(@PathVariable("postCategoryId") String postCategory, @RequestBody PostCategoryRequest request){
+    public ApiResponse<PostCategoryResponse> updatePostCategory(@PathVariable("postCategoryId") String postCategory, @Valid  @RequestBody PostCategoryRequest request){
         return ApiResponse.<PostCategoryResponse>builder()
                 .result(postCategoryService.updatePostCategory(postCategory, request))
                 .build();

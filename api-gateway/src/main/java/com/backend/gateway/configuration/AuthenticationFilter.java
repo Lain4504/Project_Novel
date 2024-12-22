@@ -38,6 +38,20 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
     private String[] publicEndpoints = {
             "/identity/auth/.*",
             "/identity/users/registration",
+            "/profile/users/.*",
+            "/post/posts/.*",
+            "/post-categories/.*",
+            "/post/post-categories/.*",
+            "/notification/notifications/.*",
+            "/comment/post-comments/.*",
+            "/comment/novel-chapter-comments/.*",
+            "/comment/novel-comments/.*",
+            "/novel/novels/get/.*",
+            "/novel/novel-categories/get/.*",
+            "/novel/novel-chapters/.*",
+            "/novel/novel-volumes/.*",
+            "/profile/user-novel-follow/.*",
+            "/profile/user-novel-review/.*",
     };
 
     @Value("${app.api-prefix}")

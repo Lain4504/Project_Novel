@@ -62,9 +62,12 @@ import {
 import { faGoogle } from '@fortawesome/free-brands-svg-icons'
 
 library.add(faMoon, faKey , faSun, faNewspaper, faBookOpen, faPlus, faImage,faMinus, faRotateRight, faRotateLeft, faBold, faItalic, faUnderline, faListUl, faListOl, faQuoteRight, faCode, faEnvelope, faChevronDown, faChevronUp,faSquarePlus, faSquareMinus, faQuestionCircle, faHouse, faArrowUpFromBracket, faArrowUpRightFromSquare, faSortUp, faSortDown, faStar, faShareNodes, faList, faComments, faQuestion, faXmark, faHeart, faPen, faTrash, faFeatherPointed, faAnglesUp, faAnglesDown, faPhone, faBullhorn, faChartPie, faPhone, faBell, faPenToSquare, faSearch, faBars, faUser, faBookmark, faBook, faGear, faMoneyBill, faRightFromBracket, faChevronLeft, faChevronRight, faInfoCircle, faExclamationCircle, faCheckCircle, faExclamationTriangle, faEyeSlash, faEye, faGoogle, faBarsProgress)
+import 'ant-design-vue/dist/reset.css';
+import Antd from 'ant-design-vue';
 
 createApp(App)
     .component('font-awesome-icon', FontAwesomeIcon)
     .use(router)
     .use(store)
+    .use(Antd)
     .mount('#app');

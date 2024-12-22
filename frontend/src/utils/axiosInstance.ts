@@ -20,6 +20,7 @@ axios.interceptors.response.use((response) => {
 }, (error) => {
     if (error.response.status === 401) {
         store.commit('clearUser');
+        console.log('401 error');
         router.push('/login');
     }
     return Promise.reject(error);

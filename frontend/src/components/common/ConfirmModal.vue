@@ -1,31 +1,44 @@
 <template>
-  <div class="fixed inset-0 bg-gray-500 bg-opacity-75 flex justify-center items-center z-50">
-    <div class="bg-white rounded-lg p-6 w-96">
-      <div class="text-center">
-        <h3 class="text-xl font-semibold">{{ title }}</h3>
-        <p class="mt-2 text-sm text-gray-600">{{ content }}</p>
-        <div class="mt-4">
-          <button @click="handleConfirm" class="px-4 py-2 bg-[#C15E3C] text-white rounded-md hover:bg-[#d76843]">{{ confirmText }}</button>
-        </div>
-      </div>
-    </div>
-  </div>
+  <a-modal
+    v-model:visible="visible"
+    :title="title"
+    @ok="handleConfirm"
+    @cancel="handleCancel"
+    okText="Confirm"
+    cancelText="Cancel"
+  >
+    <p>{{ content }}</p>
+  </a-modal>
 </template>
 
 <script setup lang="ts">
-defineProps({
+import { ref, defineProps, defineEmits, watch } from 'vue';
+
+const props = defineProps({
   title: String,
   content: String,
   confirmText: String,
   cancelText: String,
+  visible: Boolean,
 });
+
 const emit = defineEmits(['close']);
 
+const visible = ref(props.visible);
+
+watch(() => props.visible, (newVal) => {
+  visible.value = newVal;
+});
+
 const handleConfirm = () => {
+  emit('close');
+};
+
+const handleCancel = () => {
   emit('close');
 };
 </script>
 
 <style scoped>
-/* Modal styling */
+/* No additional styling needed as Ant Design handles it */
 </style>

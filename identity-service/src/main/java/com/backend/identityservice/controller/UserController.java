@@ -6,6 +6,7 @@ import com.backend.identityservice.dto.request.UserCreationRequest;
 import com.backend.identityservice.dto.request.UserUpdateRequest;
 import com.backend.identityservice.dto.response.UserResponse;
 import com.backend.identityservice.service.UserService;
+import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -22,7 +23,7 @@ import java.util.List;
 public class UserController {
     UserService userService;
     @PostMapping("/registration")
-    ApiResponse<UserResponse> createUser(@RequestBody UserCreationRequest request) {
+    ApiResponse<UserResponse> createUser(@Valid @RequestBody UserCreationRequest request) {
         return ApiResponse.<UserResponse>builder().result(userService.createUser(request)).build();
     }
     @GetMapping

@@ -9,6 +9,7 @@ import com.backend.commentservice.entity.NovelChapterCommentReply;
 import com.backend.commentservice.service.NovelChapterCommentService;
 import com.backend.dto.response.ApiResponse;
 import com.backend.dto.response.PageResponse;
+import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -36,14 +37,14 @@ public class NovelChapterCommentController {
     }
 
     @PostMapping
-    public ApiResponse<NovelChapterCommentResponse> createComment(@RequestBody NovelChapterCommentRequest request) {
+    public ApiResponse<NovelChapterCommentResponse> createComment(@Valid @RequestBody NovelChapterCommentRequest request) {
         return ApiResponse.<NovelChapterCommentResponse>builder()
                 .result(novelChapterCommentService.createComment(request))
                 .build();
     }
 
     @PutMapping("/{id}")
-    public ApiResponse<NovelChapterCommentResponse> updateComment(@PathVariable String id, @RequestBody NovelChapterCommentRequest request) {
+    public ApiResponse<NovelChapterCommentResponse> updateComment(@PathVariable String id, @Valid @RequestBody NovelChapterCommentRequest request) {
         return ApiResponse.<NovelChapterCommentResponse>builder()
                 .result(novelChapterCommentService.updateComment(id, request))
                 .build();
@@ -56,14 +57,14 @@ public class NovelChapterCommentController {
     }
 
     @PostMapping("/replies")
-    public ApiResponse<NovelChapterCommentReplyResponse> createReply(@RequestBody NovelChapterCommentReplyRequest request) {
+    public ApiResponse<NovelChapterCommentReplyResponse> createReply(@Valid @RequestBody NovelChapterCommentReplyRequest request) {
         return ApiResponse.<NovelChapterCommentReplyResponse>builder()
                 .result(novelChapterCommentService.createReply(request))
                 .build();
     }
 
     @PutMapping("/replies/{id}")
-    public ApiResponse<NovelChapterCommentReplyResponse> updateReply(@PathVariable String id, @RequestBody NovelChapterCommentReplyRequest request) {
+    public ApiResponse<NovelChapterCommentReplyResponse> updateReply(@PathVariable String id, @Valid @RequestBody NovelChapterCommentReplyRequest request) {
         return ApiResponse.<NovelChapterCommentReplyResponse>builder()
                 .result(novelChapterCommentService.updateReply(id, request))
                 .build();
