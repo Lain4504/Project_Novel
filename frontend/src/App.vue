@@ -22,11 +22,9 @@ provide('showAlert', (type: string, message: string) => {
 
 <template>
   <!-- Wrap the entire content with a div to apply the background color -->
-  <div class="bg-[#F5F4EF]">
     <Notification ref="alertNotification" />
     <Header v-if="showAdmin" />
     <RouterView/>
     <ScrollToTop />
     <Footer v-if="showAdmin" />
-  </div>
 </template>

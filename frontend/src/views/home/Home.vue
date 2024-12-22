@@ -14,7 +14,7 @@ import UpdatedList from '@/components/home/UpdatedList.vue';
   <div class="max-w-[83rem] mx-auto px-4 sm:px-6 lg:px-8 my-5 ">
     <Banner />
     <StoryList />
-<!--    <PromtNovel/>-->
+    <PromtNovel/>
 <!--    <Ads/>-->
     <UpdatedList/>
     <NewNovel/>

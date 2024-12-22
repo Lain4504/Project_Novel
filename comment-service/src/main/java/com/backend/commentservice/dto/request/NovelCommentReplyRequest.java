@@ -24,11 +24,10 @@ public class NovelCommentReplyRequest {
     String replyContent;
     @NotBlank(message = "Reply to is mandatory")
     String replyTo;
-    @NotBlank(message = "Chapter name is mandatory")
-    String chapterName;
-    @NotNull(message = "Chapter ID is mandatory")
-    String chapterId;
+    @NotBlank(message = "Novel name is mandatory")
+    String novelName;
+    @NotNull(message = "Novel ID is mandatory")
+    String novelId;
     @NotNull(message = "User ID of reply to is mandatory")
     String userIdOfReplyTo;
-
 }

@@ -123,11 +123,11 @@ const dropdownMenu = [
     icon: 'fa-solid fa-gear',
     link: '/user-profile',
   },
-  {
-    label: 'Transaction History',
-    icon: 'fa-solid fa-money-bill',
-    link: '/history',
-  },
+  // {
+  //   label: 'Transaction History',
+  //   icon: 'fa-solid fa-money-bill',
+  //   link: '/history',
+  // },
   {
     label: 'Logout',
     icon: 'fa-solid fa-right-from-bracket',
@@ -163,7 +163,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <nav class="bg-[#F0EEE5] p-4 shadow-md relative">
+  <nav class="bg-white p-4 shadow-md relative">
     <div class="max-w-[90rem] mx-auto flex items-center justify-between">
       <div class="flex items-center space-x-4 md:space-x-0">
         <button @click.stop="isMobileMenuOpen = !isMobileMenuOpen"

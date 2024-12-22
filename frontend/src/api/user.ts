@@ -66,8 +66,8 @@ const getReviewList = (novelId: string, page: number, size: number) => {
     return axios.get(`${USER_NOVEL_REVIEW_API}/novel/${novelId}?page=${page}&size=${size}`)
         .then(response => response.data.result);
 }
-const getMyFollowedNovels = (userId: string) => {
-    return axios.get(`${USER_NOVEL_FOLLOW_API}/followed-novels/${userId}`)
+const getMyFollowedNovels = (userId: string, page: number, size: number) => {
+    return axios.get(`${USER_NOVEL_FOLLOW_API}/followed-novels/${userId}?page=${page}&size=${size}`)
         .then(response => response.data.result);
 };
 export {register, getMyInfo, getUserProfile, updateUserProfile, followNovel, unfollowNovel, isFollowingNovel, createReview, updateReview, deleteReview, getLatestReview, getReviewList,
