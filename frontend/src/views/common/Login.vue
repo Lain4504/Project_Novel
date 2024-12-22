@@ -1,185 +1,157 @@
 <script setup lang="ts">
-import {computed, ref, inject} from 'vue';
-import {useStore} from 'vuex';
-import {useRouter} from 'vue-router';
-import {login} from '@/api/auth';
-import {getMyInfo} from '@/api/user';
+import { Form, Input, Button, Checkbox, Card, message } from 'ant-design-vue';
+import { UserOutlined, LockOutlined, GoogleOutlined } from '@ant-design/icons-vue';
+import { ref } from 'vue';
+import { useStore } from 'vuex';
+import { useRouter } from 'vue-router';
+import { login } from '@/api/auth';
+import { getMyInfo } from '@/api/user';
 import ForgotPasswordModal from '@/components/common/ForgotPasswordModal.vue';
+import { RuleObject } from 'ant-design-vue/es/form';
 
-const email = ref('');
-const password = ref('');
-const passwordVisible = ref(false);
 const store = useStore();
 const router = useRouter();
-const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const isEmailValid = computed(() => emailRegex.test(email.value));
-const showAlert = inject('showAlert') as ((type: string, message: string) => void);
-const showNotification = (type: string, message: string) => {
-  showAlert(type, message);  // Call the global showAlert function
-};
-const togglePasswordVisibility = () => {
-  passwordVisible.value = !passwordVisible.value;
-};
 const isModalVisible = ref(false);
+const form = ref();
 
-const openModal = () => {
-  isModalVisible.value = true;
+const formState = ref({
+  email: '',
+  password: '',
+  remember: false
+});
+
+const rules: { [k: string]: RuleObject | RuleObject[] } = {
+  email: [
+    { required: true, message: 'Please input your email!' },
+    { type: 'email', message: 'Please enter a valid email address!' }
+  ],
+  password: [
+    { required: true, message: 'Please input your password!' },
+  ]
 };
 
-const handleLogin = async () => {
+const handleFinish = async (values: any) => {
   try {
     const response = await login({
-      email: email.value,
-      password: password.value
+      email: values.email,
+      password: values.password
     });
-    console.log(response);
+
     store.commit('setToken', response.token);
     const userData = await getMyInfo();
     store.commit('setUser', userData);
-    console.log('User from store:', store.state.user);
     store.commit('setRefreshToken', response.refreshToken);
-    console.log('Token from store:', store.state.token);
-    console.log('Refresh Token from store:', store.state.refreshToken);
-    showNotification('success', 'Login successful. Redirecting to home page...');
+
+    message.success('Login successful. Redirecting to home page...');
+
     setTimeout(() => {
       router.push('/');
     }, 1000);
   } catch (error: any) {
     if (error.response) {
-      showNotification('danger', error.response.data.message || 'Login failed. Please try again.');
+      message.error(error.response.data.message || 'Login failed. Please try again.');
     } else if (error.request) {
-      showNotification('danger', 'No response from server. Please try again.');
+      message.error('No response from server. Please try again.');
     } else {
-      showNotification('danger', 'An unexpected error occurred. Please try again.');
+      message.error('An unexpected error occurred. Please try again.');
     }
   }
 };
+
 const handleGoogleLogin = () => {
-  showNotification('', 'In development. Please use email and password to login.');
-
+  message.info('In development. Please use email and password to login.');
 };
-// Slider logic
-const slides = ref([
-  {id: 1, img: 'https://placehold.co/600x400', content: 'Content for Slide 1'},
-  {id: 2, img: 'https://placehold.co/600x400', content: 'Content for Slide 2'},
-  {id: 3, img: 'https://placehold.co/600x400', content: 'Content for Slide 3'},
-  {id: 4, img: 'https://placehold.co/600x400', content: 'Content for Slide 4'},
-  {id: 5, img: 'https://placehold.co/600x400', content: 'Content for Slide 5'},
-]);
-const currentSlide = ref(0);
 
-// Computed to get the active slide
-const activeSlide = computed(() => slides.value[currentSlide.value]);
-
-// Method to go to a specific slide
-const goToSlide = (index: number) => {
-  currentSlide.value = index;
+const openModal = () => {
+  isModalVisible.value = true;
 };
 </script>
+
 <template>
-  <section class="bg-[#F5F4EF] min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8">
-    <div class="bg-white flex flex-col lg:flex-row rounded-2xl border-black shadow-lg max-w-4xl w-full overflow-hidden">
-      <!-- Left Side (Slider) -->
-      <div class="hidden lg:block lg:w-1/2 bg-[#F0EEE5] text-gray-700 p-10">
-        <h2 class="text-2xl font-bold mb-5">Welcome Back!</h2>
-        <p class="text-sm mb-5">
-          Join our platform and explore exclusive content. Login now to continue.
-        </p>
-        <!-- Slider -->
-        <div class="relative w-full overflow-hidden rounded-lg">
-          <!-- Content (Outside of Image) -->
-          <div class="mb-4 p-4 shadow">
-            <p class="text-gray-700 text-sm">{{ activeSlide.content }}</p>
-          </div>
-          <!-- Active Image -->
-          <img :src="activeSlide.img" alt="" class="block w-full h-56 object-cover rounded-lg"/>
+  <div class="min-h-screen flex items-center justify-center bg-gray-100 px-4">
+    <div class="w-full max-w-md bg-white border border-gray-300 shadow-lg p-6 rounded-lg">
+      <h2 class="text-center text-2xl font-bold mb-8">Login</h2>
+
+      <Form
+          :model="formState"
+          :rules="rules"
+          @finish="handleFinish"
+          ref="form"
+      >
+        <Form.Item name="email">
+          <Input
+              v-model:value="formState.email"
+              placeholder="Email"
+              size="large"
+          >
+            <template #prefix>
+              <UserOutlined class="text-gray-400" />
+            </template>
+          </Input>
+        </Form.Item>
+
+        <Form.Item name="password">
+          <Input.Password
+              v-model:value="formState.password"
+              placeholder="Password"
+              size="large"
+          >
+            <template #prefix>
+              <LockOutlined class="text-gray-400" />
+            </template>
+          </Input.Password>
+        </Form.Item>
+
+        <div class="flex justify-between mb-4">
+          <Form.Item name="remember" :wrapper-col="{ span: 24 }" class="mb-0">
+            <Checkbox v-model:checked="formState.remember">
+              Remember me
+            </Checkbox>
+          </Form.Item>
+          <a @click="openModal" class="text-primary hover:text-primary-dark">
+            Forgot password?
+          </a>
         </div>
-        <!-- Dots -->
-        <div class="flex justify-center mt-4 space-x-3">
-          <button v-for="(slide, index) in slides" :key="slide.id" @click="goToSlide(index)"
-                  class="w-2 h-2 rounded-full" :class="{
-              'bg-gray-700': currentSlide === index,
-              'bg-gray-300': currentSlide !== index,
-            }"></button>
+
+        <Form.Item>
+          <Button type="primary" html-type="submit" class="w-full" size="large">
+            Log in
+          </Button>
+        </Form.Item>
+
+        <div class="flex items-center justify-center my-4">
+          <div class="flex-grow border-t border-gray-300"></div>
+          <span class="px-4 text-gray-500">or</span>
+          <div class="flex-grow border-t border-gray-300"></div>
         </div>
-      </div>
 
-      <!-- Right Side (Login Form) -->
-      <div class="w-full lg:w-1/2 p-6 sm:p-10 max-w-md md:max-w-lg mx-auto">
-        <h2 class="text-3xl font-bold text-center text-gray-800">Login</h2>
-        <p class="text-sm text-center text-gray-600 mt-2">Welcome back! Please login to your account.</p>
+        <Button
+            class="w-full"
+            size="large"
+            @click="handleGoogleLogin"
+        >
+          <GoogleOutlined />
+          Login with Google
+        </Button>
 
-        <!-- Login Form -->
-        <form @submit.prevent="handleLogin" class="mt-8 space-y-6">
-          <!-- Email -->
-          <div>
-            <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
-            <input v-model="email" type="email" id="email" name="email" placeholder="Enter your email" required
-                   class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#889b6c] focus:border-[#889b6c] sm:text-sm"/>
-            <p v-if="!isEmailValid && email" class="text-sm text-red-500 mt-1">
-              Please enter a valid email address.
-            </p>
-          </div>
-
-          <!-- Password -->
-          <div class="relative">
-            <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
-            <input v-model="password" :type="passwordVisible ? 'text' : 'password'" id="password" name="password"
-                   placeholder="Enter your password" required
-                   class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#889b6c] focus:border-[#889b6c] sm:text-sm"/>
-            <!-- Custom Toggle Icon -->
-            <span @click="togglePasswordVisibility"
-                  class="absolute right-3 bottom-[0.45rem] text-gray-500 cursor-pointer">
-              <font-awesome-icon :icon="passwordVisible ? 'fa-regular fa-eye' : 'fa-regular fa-eye-slash'"/>
-            </span>
-          </div>
-
-          <div class="flex justify-between items-center">
-            <div class="flex items-center">
-              <input type="checkbox" id="remember" class="mr-2"/>
-              <label for="remember" class="text-sm text-[#C15E3C]">
-                Remember me
-              </label>
-            </div>
-            <a class="text-sm text-[#C15E3C] hover:underline cursor-pointer" @click="openModal">
-              Forgot password?
-            </a>
-          </div>
-
-          <!-- Submit Button -->
-          <div>
-            <button type="submit"
-                    class="w-full bg-[#C15E3C] text-white py-2 px-4 rounded-md hover:bg-[#d76843] focus:ring-2 focus:ring-[#889b6c] focus:outline-none">
-              Login
-            </button>
-          </div>
-
-          <!-- Alternative Login -->
-          <div class="flex items-center justify-between mt-4">
-            <div class="flex-grow border-t border-gray-300"></div>
-            <span class="text-gray-500 text-sm mx-4">or</span>
-            <div class="flex-grow border-t border-gray-300"></div>
-          </div>
-
-          <div class="flex items-center justify-center space-x-2 mt-4">
-            <button @click="handleGoogleLogin" type="button"
-                    class="w-full flex items-center justify-center bg-gray-50 border text-gray-700 py-2 px-4 rounded-md hover:bg-gray-100 focus:ring-2 focus:ring-gray-500 focus:outline-none">
-              <!-- Google Login Button -->
-              <font-awesome-icon :icon="['fab', 'google']" class="mr-2 text-red-600"/>
-              Login with Google
-            </button>
-          </div>
-        </form>
-
-        <p class="text-center text-sm text-gray-600 mt-6">
-          Don't have an account?
-          <router-link to="/register" class="text-[#C15E3C] hover:underline">
+        <div class="text-center mt-4">
+          <span class="text-gray-600">Don't have an account? </span>
+          <router-link to="/register" class="text-primary hover:text-primary-dark">
             Sign up
           </router-link>
-        </p>
-      </div>
+        </div>
+      </Form>
     </div>
-  </section>
-  <ForgotPasswordModal :isModalVisible="isModalVisible" @update:isModalVisible="isModalVisible = $event"/>
 
+    <ForgotPasswordModal
+        :isModalVisible="isModalVisible"
+        @update:isModalVisible="isModalVisible = $event"
+    />
+  </div>
 </template>
+
+<style scoped>
+.ant-input-affix-wrapper {
+  background-color: #fff !important;
+}
+</style>
