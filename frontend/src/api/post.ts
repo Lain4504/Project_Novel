@@ -10,12 +10,12 @@ const getPosts = ({ page, size, categoryId }: { page: number, size: number, cate
     if (categoryId) {
         params.categoryId = categoryId;
     }
-    return axios.get(`${POST_API}/all`, {
+    return axios.get(`${POST_API}/get/all`, {
         params: params
     }).then((response) => response.data.result);
 }
 const getPost = (id: string) => {
-    return axios.get(`${POST_API}/${id}`)
+    return axios.get(`${POST_API}/get/${id}`)
         .then((response) => response.data.result);
 }
 const deletePost = (id: string) => {

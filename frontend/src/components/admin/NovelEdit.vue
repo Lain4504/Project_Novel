@@ -4,14 +4,13 @@ import { updateNovel } from "@/api/novel";
 import Tiptap from "@/components/common/Tiptap.vue";
 import store from "@/store";
 import { getNovelCategoriesWithoutPagination } from "@/api/novelcategory";
-
-const showAlert = inject('showAlert') as ((type: string, message: string) => void);
+import {notification} from "ant-design-vue";
 const showNotification = (type: string, message: string) => {
-  if (showAlert) {
-    showAlert(type, message);
-  } else {
-    console.error('showAlert is not available in this context');
-  }
+  notification[type]({
+    message: type === 'success' ? 'Success' : 'Error',
+    description: message,
+    duration: 3
+  });
 };
 
 const props = defineProps({

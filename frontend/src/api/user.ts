@@ -23,7 +23,7 @@ const getMyInfo = () => {
 };
 
 const getUserProfile = (userId: string) => {
-    return axios.get(`${PROFILE_API}/${userId}`)
+    return axios.get(`${PROFILE_API}/get//${userId}`)
         .then(response => response.data.result);
 };
 const updateUserProfile = (id: string, data: any) => {
@@ -59,15 +59,15 @@ const deleteReview = (id: string) => {
         .then(response => response.data.result);
 }
 const getLatestReview = (id: string) => {
-    return axios.get(`${USER_NOVEL_REVIEW_API}/get-latest`)
+    return axios.get(`${USER_NOVEL_REVIEW_API}/get/get-latest`)
         .then(response => response.data.result);
 }
 const getReviewList = (novelId: string, page: number, size: number) => {
-    return axios.get(`${USER_NOVEL_REVIEW_API}/novel/${novelId}?page=${page}&size=${size}`)
+    return axios.get(`${USER_NOVEL_REVIEW_API}/get/novel/${novelId}?page=${page}&size=${size}`)
         .then(response => response.data.result);
 }
 const getMyFollowedNovels = (userId: string, page: number, size: number) => {
-    return axios.get(`${USER_NOVEL_FOLLOW_API}/followed-novels/${userId}?page=${page}&size=${size}`)
+    return axios.get(`${USER_NOVEL_FOLLOW_API}/get/followed-novels/${userId}?page=${page}&size=${size}`)
         .then(response => response.data.result);
 };
 export {register, getMyInfo, getUserProfile, updateUserProfile, followNovel, unfollowNovel, isFollowingNovel, createReview, updateReview, deleteReview, getLatestReview, getReviewList,

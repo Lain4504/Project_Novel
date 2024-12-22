@@ -23,7 +23,7 @@ import java.util.List;
 public class PostCommentController {
     PostCommentService postCommentService;
 
-    @GetMapping("/{postId}")
+    @GetMapping("/get/{postId}")
     public ApiResponse<PageResponse<PostCommentResponse>> getAllComments(
             @PathVariable("postId") String postId,
             @RequestParam(value = "page", required = false, defaultValue = "1") int page,
@@ -54,7 +54,7 @@ public class PostCommentController {
         return ApiResponse.<Void>builder().build();
     }
 
-    @GetMapping("/replies/{commentId}")
+    @GetMapping("/replies/get/{commentId}")
     public ApiResponse<PageResponse<PostCommentReplyResponse>> getAllRepliesByCommentId(
             @PathVariable String commentId,
             @RequestParam(value = "page", required = false, defaultValue = "1") int page,

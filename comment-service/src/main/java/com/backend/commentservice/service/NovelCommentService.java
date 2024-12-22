@@ -47,7 +47,8 @@ public class NovelCommentService {
     UserProfileClient userProfileClient;
     DateTimeFormatter dateTimeFormatter;
     KafkaTemplate<String, Object> kafkaTemplate;
-    public PageResponse<NovelCommentResponse> getAllComments(String novelId, int page, int size){
+
+    public PageResponse<NovelCommentResponse> getAllComments(String novelId, int page, int size) {
         Sort sort = Sort.by(Sort.Order.desc("createdDate"));
         Pageable pageable = PageRequest.of(page - 1, size, sort);
         var pageData = novelCommentRepository.findAllByNovelId(novelId, pageable);
@@ -68,6 +69,7 @@ public class NovelCommentService {
                 .build();
 
     }
+
     public NovelCommentResponse createComment(NovelCommentRequest request) {
         NovelComment novelComment = novelCommentMapper.toNovelComment(request);
         novelComment.setCreatedDate(Instant.now());
@@ -103,34 +105,36 @@ public class NovelCommentService {
     }
 
     public PageResponse<NovelCommentReplyResponse> getAllRepliesByCommentId(String commentId, int page, int size) {
-       Sort sort = Sort.by(Sort.Order.desc("createDate"));
-       Pageable pageable = PageRequest.of(page - 1, size, sort);
-       var pageData = novelCommentReplyRepository.findAllByCommentId(commentId, pageable);
-         var replyList = pageData.getContent().stream()
+        Sort sort = Sort.by(Sort.Order.desc("createDate"));
+        Pageable pageable = PageRequest.of(page - 1, size, sort);
+        var pageData = novelCommentReplyRepository.findAllByCommentId(commentId, pageable);
+        var replyList = pageData.getContent().stream()
                 .map(this::enrichReplyWithUserProfile)
-                .map(reply ->{
+                .map(reply -> {
                     NovelCommentReplyResponse response = novelCommentReplyMapper.toNovelCommentReplyResponse(reply);
                     response.setCreated(dateTimeFormatter.format(reply.getCreatedDate()));
                     return response;
                 })
                 .collect(Collectors.toList());
-         return PageResponse.<NovelCommentReplyResponse>builder()
-                 .currentPage(page)
-                 .pageSize(pageData.getSize())
-                 .totalPages(pageData.getTotalPages())
-                 .totalElements(pageData.getTotalElements())
-                 .data(replyList)
-                 .build();
+        return PageResponse.<NovelCommentReplyResponse>builder()
+                .currentPage(page)
+                .pageSize(pageData.getSize())
+                .totalPages(pageData.getTotalPages())
+                .totalElements(pageData.getTotalElements())
+                .data(replyList)
+                .build();
     }
+
     public NovelCommentReplyResponse createReply(NovelCommentReplyRequest request) {
         NovelCommentReply novelCommentReply = novelCommentReplyMapper.toNovelCommentReply(request);
         novelCommentReply.setCreatedDate(Instant.now());
         novelCommentReply.setUpdateDateTime(Instant.now());
         novelCommentReply.setUsername(userProfileClient.getUserProfile(novelCommentReply.getUserId()).getUsername());
-        log.info("NovelCommentReply: {}", novelCommentReply.getUsername());
-        log.info("NovelCommentReply NovelName: {}", novelCommentReply.getNovelName());
-        log.info("NovelCommentReply: {}", novelCommentReply.getReplyContent());
-        log.info("NovelCommentReply: {}", novelCommentReply.getUserIdOfReplyTo());
+        novelCommentRepository.findById(novelCommentReply.getCommentId())
+                .ifPresent(comment -> {
+                    comment.setReplyCount(comment.getReplyCount() + 1);
+                    novelCommentRepository.save(comment);
+                });
         if (!novelCommentReply.getUserIdOfReplyTo().equals(novelCommentReply.getUserId())) {
             NotificationEvent event = NotificationEvent.builder()
                     .channel("NOVEL")
@@ -144,6 +148,7 @@ public class NovelCommentService {
         }
         return novelCommentReplyMapper.toNovelCommentReplyResponse(novelCommentReplyRepository.save(novelCommentReply));
     }
+
     public NovelCommentReplyResponse updateReply(String id, NovelCommentReplyRequest request) {
         return novelCommentReplyRepository.findById(id)
                 .map(existingReply -> {
@@ -155,10 +160,18 @@ public class NovelCommentService {
     }
 
     public void deleteReply(String id) {
+        novelCommentReplyRepository.findById(id)
+                .ifPresent(reply -> {
+                    novelCommentRepository.findById(reply.getCommentId())
+                            .ifPresent(comment -> {
+                                comment.setReplyCount(comment.getReplyCount() - 1);
+                                novelCommentRepository.save(comment);
+                            });
+                });
         novelCommentReplyRepository.deleteById(id);
     }
 
-     NovelComment enrichCommentWithUserProfile(NovelComment comment) {
+    NovelComment enrichCommentWithUserProfile(NovelComment comment) {
         UserProfileResponse userProfile = userProfileClient.getUserProfile(comment.getUserId());
         comment.setUsername(userProfile.getUsername());
         if (userProfile.getImage() != null) {
@@ -169,7 +182,7 @@ public class NovelCommentService {
         return comment;
     }
 
-     NovelCommentReply enrichReplyWithUserProfile(NovelCommentReply reply) {
+    NovelCommentReply enrichReplyWithUserProfile(NovelCommentReply reply) {
         UserProfileResponse userProfile = userProfileClient.getUserProfile(reply.getUserId());
         reply.setUsername(userProfile.getUsername());
         if (userProfile.getImage() != null) {

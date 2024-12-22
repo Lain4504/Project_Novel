@@ -1,6 +1,7 @@
 package com.backend.novelservice.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -26,7 +27,7 @@ public class NovelVolumeRequest {
     String status;
     @Positive(message = "Volume number must be positive")
     int volumeNumber;
-    @NotBlank(message = "Novel ID is mandatory")
+    @NotNull(message = "Novel ID is mandatory")
     String novelId;
     Set<String> chapters;
 }

@@ -35,7 +35,7 @@ public class UserNovelFollowController {
                 .result(userNovelFollowService.isFollowingNovel(request))
                 .build();
     }
-    @GetMapping("/followed-novels/{userId}")
+    @GetMapping("/get/followed-novels/{userId}")
     ApiResponse<PageResponse<NovelDetailsResponse>> getFollowingNovelDetails(
             @PathVariable("userId") String userId,
             @RequestParam(value = "page", required = false, defaultValue = "1") int page,

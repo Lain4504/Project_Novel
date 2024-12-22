@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
 import Ads from '@/components/home/Banner.vue';
-import Breadcrumb from '@/components/home/Breadcrumb.vue';
 
 // Define the structure of a transaction
 interface Transaction {

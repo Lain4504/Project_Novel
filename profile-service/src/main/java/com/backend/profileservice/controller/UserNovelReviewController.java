@@ -28,7 +28,7 @@ public class UserNovelReviewController {
         userReviewService.deleteReview(request);
         return ApiResponse.<Void>builder().build();
     }
-    @GetMapping("/novel/{novelId}")
+    @GetMapping("/get/novel/{novelId}")
     public ApiResponse<PageResponse<UserReviewResponse>> getReviewsByNovelId(@PathVariable String novelId,
                          @RequestParam(value = "page", required = false, defaultValue = "1") int page,
                          @RequestParam(value = "size", required = false, defaultValue = "10") int size
@@ -37,7 +37,7 @@ public class UserNovelReviewController {
                 .result(userReviewService.getReviewsByNovelId(novelId, page, size))
                 .build();
     }
-    @GetMapping("/get-latest")
+    @GetMapping("/get/get-latest")
     public ApiResponse<PageResponse<UserReviewResponse>> getReviewsByUserId(
                         @RequestParam(value = "page", required = false, defaultValue = "1") int page,
                         @RequestParam(value = "size", required = false, defaultValue = "10") int size

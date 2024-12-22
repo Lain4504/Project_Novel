@@ -22,7 +22,6 @@
 
 <script setup lang="ts">
 import { defineProps, defineEmits } from 'vue';
-import { Button } from 'ant-design-vue';
 
 const props = defineProps({
   show: {

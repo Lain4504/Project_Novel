@@ -36,18 +36,18 @@ public class NovelVolumeController {
         novelVolumeService.deleteNovelVolume(id);
         return ApiResponse.<Void>builder().build();
     }
-    @GetMapping("/{id}")
+    @GetMapping("/get/{id}")
     ApiResponse<NovelVolumeResponse> getNovelVolume(@PathVariable String id) {
         return ApiResponse.<NovelVolumeResponse>builder()
                 .result(novelVolumeService.getNovelVolume(id)).build();
     }
-    @GetMapping("/get-all/")
+    @GetMapping("/get/get-all/")
     ApiResponse<List<NovelVolumeResponse>> getNovelVolume() {
         return ApiResponse.<List<NovelVolumeResponse>>builder()
                 .result(novelVolumeService.getNovelVolumes()).build();
 
     }
-    @GetMapping("/{novelId}/volumes")
+    @GetMapping("/get/{novelId}/volumes")
     ApiResponse<List<NovelVolumeResponse>> getNovelVolumes(@PathVariable("novelId") String novelId) {
         return ApiResponse.<List<NovelVolumeResponse>>builder()
                 .result(novelVolumeService.getVolumesByNovelId(novelId)).build();

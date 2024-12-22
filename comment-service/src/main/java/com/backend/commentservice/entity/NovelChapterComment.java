@@ -1,5 +1,6 @@
 package com.backend.commentservice.entity;
 
+import jakarta.persistence.Column;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -21,7 +22,8 @@ public class NovelChapterComment {
     String chapterId;
     String userId;
     String content;
-    Integer replyCount;
+    @Column(nullable = false)
+    Integer replyCount = 0;
     Instant createdDate;
     Instant updateDateTime;
     String username;

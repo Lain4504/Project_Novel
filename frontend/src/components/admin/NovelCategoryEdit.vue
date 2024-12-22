@@ -4,15 +4,8 @@ import {getNovelCategory, updateNovelCategory} from "@/api/novelcategory";
 import {inject, onMounted, ref} from "vue";
 import router from "@/router";
 import DynamicFormEdit from "@/components/common/DynamicFormEdit.vue";
+import {notification} from "ant-design-vue";
 
-const showAlert = inject('showAlert') as ((type: string, message: string) => void);
-const showNotification = (type: string, message: string) => {
-  if (showAlert) {
-    showAlert(type, message); // Call the global showAlert function
-  } else {
-    console.error('showAlert is not available in this context');
-  }
-};
 const fields = {
   title: 'Novel Category',
   inputs: [

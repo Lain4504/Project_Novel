@@ -55,7 +55,7 @@ public class NovelController {
         return ApiResponse.<PageResponse<NovelResponse>>builder()
                 .result(novelService.getNovels(page, size)).build();
     }
-    @GetMapping("/get/my-novels")
+    @GetMapping("/my-novels")
     ApiResponse<PageResponse<NovelResponse>> getMyNovels(
             @RequestParam(value = "page", required = false, defaultValue = "1") int page,
             @RequestParam(value = "size", required = false, defaultValue = "10") int size

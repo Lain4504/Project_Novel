@@ -16,7 +16,7 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     private static final String[] PUBLIC_ENDPOINTS = {
-            "/novels/get/**", "/novel-categories/get/**",
+            "/novels/get/**", "/novel-categories/get/**", "/novel-chapters/get/**", "/novel-volumes/get/**"
     };
     private final CustomJwtDecoder customJwtDecoder;
 

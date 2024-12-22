@@ -1,15 +1,17 @@
 <script setup lang="ts">
-import {inject, ref} from 'vue';
+import { inject, ref } from 'vue';
 import Tiptap from '@/components/common/Tiptap.vue';
 import { createChapter } from '@/api/chapter';
-const showAlert = inject('showAlert') as ((type: string, message: string) => void);
+import { notification, Input, Select, Radio, Button } from 'ant-design-vue';
+
 const showNotification = (type: string, message: string) => {
-  if (showAlert) {
-    showAlert(type, message); // Gọi hàm showAlert toàn cục
-  } else {
-    console.error('showAlert is not available in this context');
-  }
+  notification[type]({
+    message: type === 'success' ? 'Success' : 'Error',
+    description: message,
+    duration: 3
+  });
 };
+
 const props = defineProps({
   volumeId: {
     type: String,
@@ -50,11 +52,11 @@ const handleSubmit = async () => {
   } catch (error: any) {
     console.error('Failed to create chapter:', error);
     if (error.response) {
-      showNotification('danger', error.response.data.message || 'Chapter creation failed. Please try again.');
+      showNotification('error', error.response.data.message || 'Chapter creation failed. Please try again.');
     } else if (error.request) {
-      showNotification('danger', 'No response from server. Please try again.');
+      showNotification('error', 'No response from server. Please try again.');
     } else {
-      showNotification('danger', 'An unexpected error occurred. Please try again.');
+      showNotification('error', 'An unexpected error occurred. Please try again.');
     }
   }
 };
@@ -66,50 +68,38 @@ const handleSubmit = async () => {
     <form @submit.prevent="handleSubmit">
       <div>
         <label for="title" class="block text-sm font-medium text-gray-700">Tiêu đề</label>
-        <input type="text" id="title" v-model="title"
-               class="block w-full px-4 py-2 mt-1 text-gray-900 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
+        <a-input v-model:value="title" id="title" placeholder="Nhập tiêu đề" class="w-full text-sm p-2" />
       </div>
       <div class="mt-4">
         <label for="chapterNumber" class="block text-sm font-medium text-gray-700">Số chương</label>
-        <input type="number" id="chapterNumber" v-model="chapterNumber"
-               class="block w-full px-4 py-2 mt-1 text-gray-900 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
+        <a-input-number v-model:value="chapterNumber" id="chapterNumber" placeholder="Nhập số chương" class="p-[0.15rem] w-1/2 text-sm" />
       </div>
       <div class="mt-4">
         <label for="status" class="block text-sm font-medium text-gray-700">Trạng thái</label>
-        <select id="status" v-model="status"
-                class="block w-1/2 px-4 py-2 mt-1 text-gray-900 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-          <option value="completed">Đã hoàn thành</option>
-          <option value="incomplete">Chưa hoàn thành</option>
-        </select>
+        <a-select v-model:value="status" id="status" class="block w-1/2">
+          <a-select-option value="completed">Đã hoàn thành</a-select-option>
+          <a-select-option value="incomplete">Chưa hoàn thành</a-select-option>
+        </a-select>
       </div>
       <div class="mt-4">
         <span class="block text-sm font-medium text-gray-700">Chọn loại</span>
-        <div class="mt-2">
-          <label class="inline-flex items-center">
-            <input type="radio" v-model="isPaid" :value="true" class="form-radio text-blue-500" />
-            <span class="ml-2">Trả phí</span>
-          </label>
-          <label class="inline-flex items-center ml-6">
-            <input type="radio" v-model="isPaid" :value="false" class="form-radio text-blue-500" />
-            <span class="ml-2">Không trả phí</span>
-          </label>
-        </div>
+        <a-radio-group v-model:value="isPaid" class="mt-2">
+          <a-radio :value="true">Trả phí</a-radio>
+          <a-radio :value="false">Không trả phí</a-radio>
+        </a-radio-group>
       </div>
       <div v-if="isPaid" class="mt-4 w-1/2">
         <label for="price" class="block text-sm font-medium text-gray-700">Giá tiền</label>
-        <input type="number" id="price" v-model="price"
-               class="block w-full px-4 py-2 mt-1 text-gray-900 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-               placeholder="Nhập giá tiền" />
+        <a-input-number v-model:value="price" id="price" placeholder="Nhập giá tiền" />
       </div>
       <div class="mt-4">
         <label for="content" class="block text-sm font-medium text-gray-700">Nội dung</label>
         <Tiptap :content="content" @update:content="content = $event" class="mt-1" />
       </div>
       <div class="flex justify-end mt-4">
-        <button type="submit"
-                class="text-sm bg-transparent border-[1px] border-blue-500 text-blue-500 hover:border-blue-700 hover:scale-105 font-medium py-2 px-4 rounded transition-all duration-300">
+        <a-button type="primary" html-type="submit">
           Submit
-        </button>
+        </a-button>
       </div>
     </form>
   </main>

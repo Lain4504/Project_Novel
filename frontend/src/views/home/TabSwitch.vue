@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import Ads from '@/components/home/Banner.vue';
-import Breedcrumb from '@/components/home/Breadcrumb.vue';
 interface TabSwitch {
   name: string;
   label: string;

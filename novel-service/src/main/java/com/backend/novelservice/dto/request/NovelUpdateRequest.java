@@ -2,6 +2,7 @@ package com.backend.novelservice.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -24,7 +25,7 @@ public class NovelUpdateRequest {
     List<String> categories;
     @NotBlank(message = "Cover picture is mandatory")
     String imageUrl;
-    @NotBlank(message = "Author ID is mandatory")
+    @NotNull(message = "Author ID is mandatory")
     String authorId;
     @NotBlank(message = "Author name is mandatory")
     String authorName;

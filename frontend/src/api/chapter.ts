@@ -5,7 +5,7 @@ const createChapter = (volumeId: string, data = {}) => {
         .then((response) => response.data.result);
 }
 const getChapter = (id: string) => {
-    return axios.get(`${CHAPTER_API}/${id}`)
+    return axios.get(`${CHAPTER_API}/get/${id}`)
         .then((response) => response.data.result);
 }
 const updateChapter = (id: string, data: Record<any, any>) =>{
@@ -17,15 +17,15 @@ const deleteChapter = (id: string) => {
         .then((response) => response.data.result);
 }
 const getChapterByVolumeId = (volumeId: string) => {
-    return axios.get(`${CHAPTER_API}/${volumeId}/chapters`)
+    return axios.get(`${CHAPTER_API}/get/${volumeId}/chapters`)
         .then((response) => response.data.result);
 }
 const getPreviousChapter = (volumeId: string, chapterNumber: number) => {
-    return axios.get(`${CHAPTER_API}/${volumeId}/${chapterNumber}/previous`)
+    return axios.get(`${CHAPTER_API}/get/${volumeId}/${chapterNumber}/previous`)
         .then((response) => response.data.result);
 }
 const getNextChapter = (volumeId: string, chapterNumber: number) => {
-    return axios.get(`${CHAPTER_API}/${volumeId}/${chapterNumber}/next`)
+    return axios.get(`${CHAPTER_API}/get/${volumeId}/${chapterNumber}/next`)
         .then((response) => response.data.result);
 }
 export { createChapter, getChapter, updateChapter, deleteChapter, getChapterByVolumeId , getPreviousChapter, getNextChapter };

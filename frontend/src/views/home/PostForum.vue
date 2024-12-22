@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import Ads from "@/components/home/Banner.vue";
 import { ref, computed, onMounted, watch } from 'vue';
-import Breadcrumb from '@/components/home/Breadcrumb.vue';
 import { getPosts } from "@/api/post";
 import { getPostCategoriesWithoutPagination } from "@/api/postcategory";
 import { Pagination } from 'ant-design-vue';
