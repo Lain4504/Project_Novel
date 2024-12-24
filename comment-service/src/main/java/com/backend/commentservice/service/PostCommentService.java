@@ -125,6 +125,11 @@ public class PostCommentService {
         postCommentReply.setCreatedDate(Instant.now());
         postCommentReply.setUpdateDateTime(Instant.now());
         postCommentReply.setUsername(userProfileClient.getUserProfile(postCommentReply.getUserId()).getUsername());
+        postCommentRepository.findById(postCommentReply.getCommentId())
+                .ifPresent(comment -> {
+                    comment.setReplyCount(comment.getReplyCount() + 1);
+                    postCommentRepository.save(comment);
+                });
         if (!postCommentReply.getUserIdOfReplyTo().equals(postCommentReply.getUserId())) {
             NotificationEvent event = NotificationEvent
                     .builder()
@@ -151,6 +156,14 @@ public class PostCommentService {
     }
 
     public void deleteReply(String id) {
+        postCommentReplyRepository.findById(id)
+                .ifPresent(reply -> {
+                    postCommentRepository.findById(reply.getCommentId())
+                            .ifPresent(comment -> {
+                                comment.setReplyCount(comment.getReplyCount() - 1);
+                                postCommentRepository.save(comment);
+                            });
+                });
         postCommentReplyRepository.deleteById(id);
     }
 

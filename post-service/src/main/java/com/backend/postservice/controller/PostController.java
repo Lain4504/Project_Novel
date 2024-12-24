@@ -42,13 +42,13 @@ public class PostController {
                 .result(postService.updatePost(postId, request))
                 .build();
     }
-    @GetMapping("/{postId}")
+    @GetMapping("/get/{postId}")
     ApiResponse<PostResponse> getPost(@PathVariable("postId") String postId){
         return ApiResponse.<PostResponse>builder()
                 .result(postService.getPost(postId))
                 .build();
     }
-    @GetMapping("/all")
+    @GetMapping("/get/all")
     ApiResponse<PageResponse<PostResponse>> getAllPosts(
             @RequestParam(value = "page", required = false, defaultValue = "1") int page,
             @RequestParam(value = "size", required = false, defaultValue = "10") int size,

@@ -6,15 +6,15 @@ const createVolume = (novelId: string, data: Record<string, any>) => {
         .then((response) => response.data.result);
 }
 const getVolumesByNovelId = (novelId: string) => {
-    return axios.get(`${VOLUME_API}/${novelId}/volumes`)
+    return axios.get(`${VOLUME_API}/get/${novelId}/volumes`)
         .then((response) => response.data.result);
 }
 const getVolumes = () => {
-    return axios.get(`${VOLUME_API}/all`)
+    return axios.get(`${VOLUME_API}/get/all`)
         .then((response) => response.data.result);
 }
 const getVolume = (id: string) => {
-    return axios.get(`${VOLUME_API}/${id}`)
+    return axios.get(`${VOLUME_API}/get/${id}`)
         .then((response) => response.data.result);
 }
 const updateVolume = (id: string, data = {}) => {

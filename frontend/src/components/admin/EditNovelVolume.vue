@@ -2,13 +2,13 @@
 import {inject, reactive, watch} from 'vue';
 import Tiptap from "@/components/common/Tiptap.vue";
 import { updateVolume } from '@/api/volume';
-const showAlert = inject('showAlert') as ((type: string, message: string) => void);
+import {notification} from "ant-design-vue";
 const showNotification = (type: string, message: string) => {
-  if (showAlert) {
-    showAlert(type, message); // Gọi hàm showAlert toàn cục
-  } else {
-    console.error('showAlert is not available in this context');
-  }
+  notification[type]({
+    message: type === 'success' ? 'Success' : 'Error',
+    description: message,
+    duration: 3
+  });
 };
 const props = defineProps({
   volumeData: {
@@ -38,11 +38,11 @@ const handleSubmit = async () => {
   } catch (error: any) {
     console.error('Failed to update volume:', error);
     if (error.response) {
-      showNotification('danger', error.response.data.message || 'Volume update failed. Please try again.');
+      showNotification('Error', error.response.data.message || 'Volume update failed. Please try again.');
     } else if (error.request) {
-      showNotification('danger', 'No response from server. Please try again.');
+      showNotification('Error', 'No response from server. Please try again.');
     } else {
-      showNotification('danger', 'An unexpected error occurred. Please try again.');
+      showNotification('Error', 'An unexpected error occurred. Please try again.');
     }
   }
 };

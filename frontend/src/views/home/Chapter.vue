@@ -28,6 +28,7 @@ const chapter = reactive({
 const fetchChapter = async (id: string) => {
   try {
     const response = await getChapter(id);
+    console.log('Chapter:', response);
     chapter.id = response.id;
     chapter.title = response.chapterTitle;
     chapter.content = response.content;
@@ -61,31 +62,46 @@ const fetchNextChapter = async () => {
 };
 
 const comments = ref([]);
-const fetchComments = async () => {
+const currentPage = ref(1);
+const pageSize = ref(10);
+const totalComments = ref(0);
+const fetchComments = async (page: number, size: number) => {
   try {
-    const result = await getAllChapterComments(chapterId);
+    const result = await getAllChapterComments(chapterId, page, size);
+    console.log('Comments:', result);
     comments.value = result.data;
+    totalComments.value = result.totalElements; // Update to use totalElements from the API response
   } catch (error) {
     console.error('Failed to fetch comments:', error);
   }
 };
-
 const handleCommentAdded = () => {
-  fetchComments();
+  fetchComments(currentPage.value, pageSize.value);
 };
 
+const handlePageChange = (page: number) => {
+  currentPage.value = page;
+  fetchComments(page, pageSize.value);
+};
 onMounted(() => {
   fetchChapter(chapterId);
-  fetchComments();
+  fetchComments(currentPage.value, pageSize.value);
 });
 </script>
 
 <template>
   <ChapterContent :chapter="chapter" @previous-chapter="fetchPreviousChapter" @next-chapter="fetchNextChapter" />
-  <CommentSection :itemId="chapterId" :comments="comments" @commentAdded="handleCommentAdded"
+  <CommentSection :itemId="chapterId"  itemType="chapter"
+                  :comments="comments" @commentAdded="handleCommentAdded"
                   :create-comment-api="createChapterComment"
                   :create-reply-api="createChapterReply"
+                  :owner-id="chapter.userId"
+                  :item-name="chapter.title"
                   :get-all-replies-api="getAllRepliesByChapterCommentId"
-                  itemType="chapter" :owner-id="chapter.userId" :item-name="chapter.title"
+                  :fetch-comments="fetchComments"
+                  :current-page="currentPage"
+                  :page-size="pageSize"
+                  :total-comments="totalComments"
+                  @pageChange="handlePageChange"
   />
 </template>

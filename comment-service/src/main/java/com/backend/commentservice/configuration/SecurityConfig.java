@@ -18,9 +18,12 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableMethodSecurity
 public class SecurityConfig {
     private static final String[] PUBLIC_ENDPOINTS = {
-            "/novel-chapter-comments/**",
-            "/novel-comments/**",
-            "/post-comments/**"
+            "/novel-chapter-comments/get/**",
+            "/novel-comments/get/**",
+            "/post-comments/get/**",
+            "/novel-chapter-comments/replies/get/**",
+            "/novel-comments/replies/get/**",
+            "/post-comments/replies/get/**"
     };
 
     private final CustomJwtDecoder customJwtDecoder;

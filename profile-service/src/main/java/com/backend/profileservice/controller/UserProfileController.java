@@ -22,7 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class UserProfileController {
     UserProfileService userProfileService;
 
-    @GetMapping("/{userId}")
+    @GetMapping("/get/{userId}")
     ApiResponse<UserProfileResponse> getUserProfile(@PathVariable String userId) {
         return ApiResponse.<UserProfileResponse>builder()
                 .result(userProfileService.getProfile(userId)).
@@ -42,7 +42,7 @@ public class UserProfileController {
       return ApiResponse.<UserProfileResponse>builder()
               .result(userProfileService.updateProfile(profileId, request, imageFile)).build();
     }
-    @GetMapping("/getall")
+    @GetMapping("/get-all")
     ApiResponse<List<UserProfileResponse>> getAllProfiles() {
         return ApiResponse.<List<UserProfileResponse>>builder().result(userProfileService.getAllProfiles()).build();
     }

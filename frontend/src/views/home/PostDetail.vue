@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import Ads from '@/components/home/Banner.vue';
-import Breadcrumb from '@/components/home/Breadcrumb.vue';
 import { getPost } from '@/api/post';
 import { getAllComments, createComment, createReply, getAllRepliesByCommentId } from '@/api/postcomment';
 import CommentSection from '@/components/home/CommentSection.vue';
@@ -29,6 +28,9 @@ const post = ref<Post>({
   created: ''
 });
 const comments = ref([]);
+const currentPage = ref(1);
+const pageSize = ref(10);
+const totalComments = ref(0);
 
 const fetchPost = async () => {
   try {
@@ -38,33 +40,36 @@ const fetchPost = async () => {
     console.error('Failed to fetch post:', error);
   }
 };
-const fetchComments = async () => {
+
+const fetchComments = async (page: number, size: number) => {
   try {
-    const result = await getAllComments(props.id);
+    const result = await getAllComments(props.id, page, size);
+    console.log('Comments:', result);
     comments.value = result.data;
+    totalComments.value = result.totalElements; // Update to use totalElements from the API response
   } catch (error) {
     console.error('Failed to fetch comments:', error);
   }
 };
 
 const handleCommentAdded = () => {
-  fetchComments();
+  fetchComments(currentPage.value, pageSize.value);
+};
+
+const handlePageChange = (page: number) => {
+  currentPage.value = page;
+  fetchComments(page, pageSize.value);
 };
 
 onMounted(() => {
   fetchPost();
-  fetchComments();
+  fetchComments(currentPage.value, pageSize.value);
 });
 </script>
 
 <template>
   <div class="max-w-7xl mx-auto">
     <Ads class="my-4"/>
-    <Breadcrumb :breadcrumbs="[
-      { label: 'Home', to: '/' },
-      { label: 'Forum', to: '/forum' },
-      { label: 'Post', to: '/post', isCurrent: true }
-    ]"/>
     <div class="bg-white p-6 mt-6 rounded-lg shadow-md">
       <div class="flex items-center justify-between mb-6">
         <div class="flex items-center">
@@ -75,12 +80,19 @@ onMounted(() => {
       </div>
       <h1 class="text-3xl font-bold text-gray-800 mb-4">{{ post.title }}</h1>
       <div class="content-body mb-6" v-html="post.content"></div>
-      <CommentSection :itemId="props.id" itemType="post" :comments="comments" @commentAdded="handleCommentAdded"
+      <CommentSection :itemId="props.id" itemType="post"
+                      :comments="comments" @commentAdded="handleCommentAdded"
                       :create-comment-api="createComment"
                       :create-reply-api="createReply"
                       :owner-id="post.userId"
                       :item-name="post.title"
-                      :get-all-replies-api="getAllRepliesByCommentId"/>
+                      :get-all-replies-api="getAllRepliesByCommentId"
+                      :fetch-comments="fetchComments"
+                      :current-page="currentPage"
+                      :page-size="pageSize"
+                      :total-comments="totalComments"
+                      @pageChange="handlePageChange"
+      />
     </div>
   </div>
 </template>

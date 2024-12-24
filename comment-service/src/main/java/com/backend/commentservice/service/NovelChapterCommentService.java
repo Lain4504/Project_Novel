@@ -33,6 +33,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -45,13 +46,14 @@ public class NovelChapterCommentService {
     DateTimeFormatter dateTimeFormatter;
     NovelChapterCommentMapper novelChapterCommentMapper;
     NovelChapterCommentReplyMapper novelChapterCommentReplyMapper;
+
     public PageResponse<NovelChapterCommentResponse> getAllComments(String chapterId, int page, int size) {
         Sort sort = Sort.by(Sort.Order.desc("createdDate"));
         Pageable pageable = PageRequest.of(page - 1, size, sort);
         var pageData = novelChapterCommentRepository.findAllByChapterId(chapterId, pageable);
         var commentList = pageData.getContent().stream()
                 .map(this::enrichCommentWithUserProfile)
-                .map( novelChapterComment -> {
+                .map(novelChapterComment -> {
                     NovelChapterCommentResponse response = novelChapterCommentMapper.toNovelChapterCommentResponse(novelChapterComment);
                     response.setCreated(dateTimeFormatter.format(novelChapterComment.getCreatedDate()));
                     return response;
@@ -66,6 +68,7 @@ public class NovelChapterCommentService {
                 .build();
 
     }
+
     public NovelChapterCommentResponse createComment(NovelChapterCommentRequest request) {
         NovelChapterComment novelChapterComment = novelChapterCommentMapper.toNovelChapterComment(request);
         novelChapterComment.setCreatedDate(Instant.now());
@@ -85,6 +88,7 @@ public class NovelChapterCommentService {
         }
         return novelChapterCommentMapper.toNovelChapterCommentResponse(novelChapterCommentRepository.save(novelChapterComment));
     }
+
     public NovelChapterCommentResponse updateComment(String id, NovelChapterCommentRequest request) {
         return novelChapterCommentRepository.findById(id)
                 .map(existingComment -> {
@@ -94,10 +98,12 @@ public class NovelChapterCommentService {
                 })
                 .orElseThrow(() -> new RuntimeException("Comment not found"));
     }
+
     public void deleteComment(String id) {
         novelChapterCommentRepository.deleteById(id);
     }
-    public PageResponse<NovelChapterCommentReplyResponse> getAllRepliesByCommentId(String commentId, int page, int size){
+
+    public PageResponse<NovelChapterCommentReplyResponse> getAllRepliesByCommentId(String commentId, int page, int size) {
         Sort sort = Sort.by(Sort.Order.desc("createdDate"));
         Pageable pageable = PageRequest.of(page - 1, size, sort);
         var pageData = novelChapterCommentReplyRepository.findAllByCommentId(commentId, pageable);
@@ -118,26 +124,33 @@ public class NovelChapterCommentService {
                 .build();
 
     }
-public NovelChapterCommentReplyResponse createReply(NovelChapterCommentReplyRequest request) {
-    NovelChapterCommentReply novelCommentReply = novelChapterCommentReplyMapper.toNovelChapterCommentReply(request);
-    novelCommentReply.setCreatedDate(Instant.now());
-    novelCommentReply.setUpdateDateTime(Instant.now());
-    novelCommentReply.setUsername(userProfileClient.getUserProfile(novelCommentReply.getUserId()).getUsername());
-    log.info("novelCommentReply.getUserIdOfReplyTo() : {}", novelCommentReply.getUserIdOfReplyTo());
-    if (novelCommentReply.getUserIdOfReplyTo() != null && !novelCommentReply.getUserIdOfReplyTo().equals(novelCommentReply.getUserId())) {
-        NotificationEvent event = NotificationEvent
-                .builder()
-                .channel("NOVEL_CHAPTER")
-                .recipient(novelCommentReply.getUserIdOfReplyTo())
-                .templateCode("NOVEL_CHAPTER_COMMENT_REPLY_NOTIFICATION")
-                .param(Map.of("fromUser", novelCommentReply.getUsername(), "inLocation", novelCommentReply.getChapterName(),
-                        "content", novelCommentReply.getReplyContent()))
-                .build();
-        //Publish message to kafka
-        kafkaTemplate.send("comment-notification", event);
+
+    public NovelChapterCommentReplyResponse createReply(NovelChapterCommentReplyRequest request) {
+        NovelChapterCommentReply novelChapterCommentReply = novelChapterCommentReplyMapper.toNovelChapterCommentReply(request);
+        novelChapterCommentReply.setCreatedDate(Instant.now());
+        novelChapterCommentReply.setUpdateDateTime(Instant.now());
+        novelChapterCommentReply.setUsername(userProfileClient.getUserProfile(novelChapterCommentReply.getUserId()).getUsername());
+        novelChapterCommentRepository.findById(novelChapterCommentReply.getCommentId())
+                .ifPresent(comment -> {
+                    comment.setReplyCount(comment.getReplyCount() + 1);
+                    novelChapterCommentRepository.save(comment);
+                });
+        if (novelChapterCommentReply.getUserIdOfReplyTo() != null && !novelChapterCommentReply.getUserIdOfReplyTo().equals(novelChapterCommentReply.getUserId())) {
+            NotificationEvent event = NotificationEvent
+                    .builder()
+                    .channel("NOVEL_CHAPTER")
+                    .recipient(novelChapterCommentReply.getUserIdOfReplyTo())
+                    .templateCode("NOVEL_CHAPTER_COMMENT_REPLY_NOTIFICATION")
+                    .param(Map.of("fromUser", novelChapterCommentReply.getUsername(), "inLocation", novelChapterCommentReply.getChapterName(),
+                            "content", novelChapterCommentReply.getReplyContent()))
+                    .build();
+            //Publish message to kafka
+            kafkaTemplate.send("comment-notification", event);
+        }
+        return novelChapterCommentReplyMapper.toNovelChapterCommentReplyResponse(novelChapterCommentReplyRepository.save(novelChapterCommentReply));
     }
-    return novelChapterCommentReplyMapper.toNovelChapterCommentReplyResponse(novelChapterCommentReplyRepository.save(novelCommentReply));
-}    public NovelChapterCommentReplyResponse updateReply(String id, NovelChapterCommentReplyRequest request) {
+
+    public NovelChapterCommentReplyResponse updateReply(String id, NovelChapterCommentReplyRequest request) {
         return novelChapterCommentReplyRepository.findById(id)
                 .map(existingReply -> {
                     novelChapterCommentReplyMapper.updateNovelChapterCommentReply(existingReply, request);
@@ -148,9 +161,17 @@ public NovelChapterCommentReplyResponse createReply(NovelChapterCommentReplyRequ
     }
 
     public void deleteReply(String id) {
+        novelChapterCommentReplyRepository.findById(id)
+                .ifPresent(reply -> {
+                    novelChapterCommentRepository.findById(reply.getCommentId())
+                            .ifPresent(comment -> {
+                                comment.setReplyCount(comment.getReplyCount() - 1);
+                                novelChapterCommentRepository.save(comment);
+                            });
+                });
         novelChapterCommentReplyRepository.deleteById(id);
     }
-    
+
     NovelChapterComment enrichCommentWithUserProfile(NovelChapterComment comment) {
         UserProfileResponse userProfile = userProfileClient.getUserProfile(comment.getUserId());
         comment.setUsername(userProfile.getUsername());
@@ -162,7 +183,7 @@ public NovelChapterCommentReplyResponse createReply(NovelChapterCommentReplyRequ
         return comment;
     }
 
-     NovelChapterCommentReply enrichReplyWithUserProfile(NovelChapterCommentReply reply) {
+    NovelChapterCommentReply enrichReplyWithUserProfile(NovelChapterCommentReply reply) {
         UserProfileResponse userProfile = userProfileClient.getUserProfile(reply.getUserId());
         reply.setUsername(userProfile.getUsername());
         if (userProfile.getImage() != null) {

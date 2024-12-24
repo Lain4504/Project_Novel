@@ -21,7 +21,7 @@ import org.springframework.web.filter.CorsFilter;
 public class SecurityConfig {
 
     private final String[] PUBLIC_ENDPOINTS_GET = {"internal/users/**",
-            "/users/**", "/user-novel-review/**", "/user-novel-follow/**", "/user-novel-rating/**",
+            "/users/get/**", "/user-novel-review/get/**", "/user-novel-follow/get/**", "/user-novel-rating/get/**",
     };
     private final String[] PUBLIC_ENDPOINTS_POST = {"internal/users/**",
             "/user-novel-follow/is-following"

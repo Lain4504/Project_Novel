@@ -31,7 +31,7 @@ const getLatestNovels = (page: number, size: number) => {
         .then((response) => response.data.result);
 }
 const getMyNovels = (page: number, size: number) => {
-    return axios.get(`${NOVEL_API}/get/my-novels?page=${page}&size=${size}`)
+    return axios.get(`${NOVEL_API}/my-novels?page=${page}&size=${size}`)
         .then((response) => response.data.result);
 }
 const getNovelsByAuthorId = (authorId: string, page: number, size: number) => {

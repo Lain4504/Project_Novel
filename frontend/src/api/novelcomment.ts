@@ -29,8 +29,8 @@ interface NovelChapterCommentReply{
     replyTo: string;
     content: string;
 }
-const getAllNovelComments = (novelId: string) => {
-    return axios.get(`${NOVEL_COMMENT_API}/${novelId}`)
+const getAllNovelComments = (novelId: string, page: number, size: number) => {
+    return axios.get(`${NOVEL_COMMENT_API}/get/${novelId}?page=${page}&limit=${size}`)
         .then((response) => response.data.result);
 };
 const createNovelComment = (data: NovelComment) => {
@@ -45,8 +45,8 @@ const deleteNovelComment = (id: string) => {
     return axios.delete(`${NOVEL_COMMENT_API}/${id}`)
         .then((response) => response.data.result);
 };
-const getAllNovelRepliesByCommentId = (commentId: string) => {
-    return axios.get(`${NOVEL_COMMENT_API}/replies/${commentId}`)
+const getAllNovelRepliesByCommentId = (commentId: string, page: number, size: number) => {
+    return axios.get(`${NOVEL_COMMENT_API}/replies/get/${commentId}?page=${page}&limit=${size}`)
         .then((response) => response.data.result);
 };
 const createNovelReply = (data: NovelCommentReply) => {
@@ -61,8 +61,8 @@ const deleteNovelReply = (id: string) => {
     return axios.delete(`${NOVEL_COMMENT_API}/replies/${id}`)
         .then((response) => response.data.result);
 };
-const getAllChapterComments = (chapterId: string) => {
-    return axios.get(`${NOVEL_CHAPTER_API}/${chapterId}`)
+const getAllChapterComments = (chapterId: string, page: number, size: number) => {
+    return axios.get(`${NOVEL_CHAPTER_API}/get/${chapterId}?page=${page}&size=${size}`)
         .then((response) => response.data.result);
 }
 const createChapterComment = (data: NovelChapterComment) => {
@@ -77,8 +77,8 @@ const deleteChapterComment = (id: string) => {
     return axios.delete(`${NOVEL_CHAPTER_API}/${id}`)
         .then((response) => response.data.result);
 }
-const getAllRepliesByChapterCommentId = (commentId: string) => {
-    return axios.get(`${NOVEL_CHAPTER_API}/replies/${commentId}`)
+const getAllRepliesByChapterCommentId = (commentId: string, page: number, size: number) => {
+    return axios.get(`${NOVEL_CHAPTER_API}/replies/get/${commentId}?page=${page}&size=${size}`)
         .then((response) => response.data.result);
 }
 const createChapterReply = (data: NovelChapterCommentReply) => {

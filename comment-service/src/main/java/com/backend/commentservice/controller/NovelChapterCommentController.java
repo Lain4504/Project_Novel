@@ -25,7 +25,7 @@ import java.util.List;
 public class NovelChapterCommentController {
     NovelChapterCommentService novelChapterCommentService;
 
-    @GetMapping("/{chapterId}")
+    @GetMapping("/get/{chapterId}")
     public ApiResponse<PageResponse<NovelChapterCommentResponse>> getAllComments(
             @PathVariable String chapterId,
             @RequestParam(value = "page", required = false, defaultValue = "1") int page,
@@ -75,7 +75,7 @@ public class NovelChapterCommentController {
         novelChapterCommentService.deleteReply(id);
         return ApiResponse.<Void>builder().build();
     }
-    @GetMapping("/replies/{commentId}")
+    @GetMapping("/replies/get/{commentId}")
     public ApiResponse<PageResponse<NovelChapterCommentReplyResponse>> getAllRepliesByCommentId(
             @PathVariable String commentId,
             @RequestParam(value = "page", required = false, defaultValue = "1") int page,

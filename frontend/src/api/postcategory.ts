@@ -7,15 +7,15 @@ const createPostCategory = (data = {}) => {
 }
 const getPostCategories = (page : number, size : number) => {
     return axios
-        .get(`${POST_CATEGORY_API}/all`, { params: { page, size } })
+        .get(`${POST_CATEGORY_API}/get/all`, { params: { page, size } })
         .then((response) => response.data.result);
 };
 const getPostCategoriesWithoutPagination = () => {
-  return axios.get(`${POST_CATEGORY_API}/all-without-pagination`)
+  return axios.get(`${POST_CATEGORY_API}/get/all-without-pagination`)
       .then((response) => response.data.result);
 }
 const getPostCategory = (id : string) => {
-    return axios.get(`${POST_CATEGORY_API}/${id}`)
+    return axios.get(`${POST_CATEGORY_API}/get/${id}`)
         .then((response) => response.data.result);
 }
 const deletePostCategory = (id : string) => {

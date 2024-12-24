@@ -26,4 +26,5 @@ public class UserReadHistory {
     String novelChapterTitle;
     LocalDateTime createdDate;
     LocalDateTime modifiedDate;
+    String type; //bookmark or history
 }

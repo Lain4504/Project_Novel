@@ -28,7 +28,7 @@ public class NovelResponse {
     String authorId;
     String authorName;
     String description;
-    Integer score;
+    double score;
     Integer bookStatus;
     Long visitCount;
     Long wordCount;

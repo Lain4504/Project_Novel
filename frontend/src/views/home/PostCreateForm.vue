@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import Ads from "@/components/home/Banner.vue";
-import Breadcrumb from "@/components/home/Breadcrumb.vue";
 import DynamicFormNew from "@/components/common/DynamicFormNew.vue"; // Import dynamic form component
 import { reactive, ref, onMounted } from "vue";
 import { createPost } from "@/api/post";
@@ -39,13 +38,7 @@ const handleAddPost = async (formData: any) => {
     ...formData,
     userId: store.getters.getUserId, // Lấy userId từ store
   };
-
-  try {
     await createPost(postData);
-    alert("Bài viết đã được tạo thành công!");
-  } catch (error) {
-    alert("Có lỗi xảy ra khi tạo bài viết");
-  }
 };
 
 // Form inputs
@@ -88,7 +81,7 @@ const inputs = ref([
         :inputs="inputs"
         title="Tạo bài viết mới"
         :handle-add="handleAddPost"
-        location="/forum"
+        location="/post-forum"
     />
   </div>
 </template>

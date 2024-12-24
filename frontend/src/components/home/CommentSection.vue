@@ -10,6 +10,8 @@ interface Comment {
   userAvatar: string;
   content: string;
   replies?: Reply[];
+  replyPage?: number;
+  replyCount: number;
 }
 
 interface Reply {
@@ -22,7 +24,6 @@ interface Reply {
   userId: string;
 }
 
-
 const props = defineProps<{
   itemId: string;
   itemType: 'post' | 'novel' | 'chapter';
@@ -31,7 +32,11 @@ const props = defineProps<{
   itemName?: string;
   createCommentApi: (data: any) => Promise<any>;
   createReplyApi: (data: any) => Promise<any>;
-  getAllRepliesApi: (commentId: string) => Promise<any>;
+  getAllRepliesApi: (commentId: string, page: number, size: number) => Promise<any>;
+  fetchComments: (page: number, size: number) => Promise<void>;
+  currentPage: number;
+  pageSize: number;
+  totalComments: number;
 }>();
 
 const currentUser = ref({
@@ -55,20 +60,26 @@ const newComment = ref('');
 const replyText = ref<Record<string, string>>({});
 const replyBoxes = ref<Record<string, boolean>>({});
 const showReplies = ref<Record<string, boolean>>({});
+const replyPageSize = 10;
 
-const fetchReplies = async (commentId: string) => {
+const fetchReplies = async (commentId: string, page: number) => {
   try {
-    const replies = await props.getAllRepliesApi(commentId);
+    const result = await props.getAllRepliesApi(commentId, page, replyPageSize);
     const comment = props.comments.find(comment => comment.id === commentId);
     if (comment) {
-      comment.replies = replies.data;
+      if (!comment.replies) {
+        comment.replies = [];
+      }
+      comment.replies.push(...result.data);
+      comment.replyPage = page;
     }
     showReplies.value[commentId] = true;
   } catch (error) {
     console.error('Failed to fetch replies:', error);
   }
 };
-const emit = defineEmits(['commentAdded']);
+
+const emit = defineEmits(['commentAdded', 'pageChange']);
 const addComment = async () => {
   if (newComment.value.trim()) {
     try {
@@ -95,6 +106,11 @@ const addComment = async () => {
     }
   }
 };
+
+const handlePageChange = (page: number) => {
+  emit('pageChange', page);
+};
+
 const toggleReplyBox = (commentId: string) => {
   replyBoxes.value[commentId] = !replyBoxes.value[commentId];
 };
@@ -120,16 +136,29 @@ const submitReply = async (commentId: string) => {
         replyData.chapterId = props.itemId;
         replyData.chapterName = props.itemName;
       }
-      console.log(replyData);
       await props.createReplyApi(replyData);
       replyText.value[commentId] = '';
-      fetchReplies(commentId);
+      fetchReplies(commentId, 1);
     } catch (error) {
       console.error('Failed to submit reply:', error);
     }
   }
 };
 
+const toggleShowReplies = (commentId: string) => {
+  if (showReplies.value[commentId]) {
+    showReplies.value[commentId] = false;
+  } else {
+    fetchReplies(commentId, 1);
+  }
+};
+
+const loadMoreReplies = (commentId: string) => {
+  const comment = props.comments.find(comment => comment.id === commentId);
+  if (comment) {
+    fetchReplies(commentId, (comment.replyPage || 1) + 1);
+  }
+};
 const toggleReplyBoxForReply = (replyId: string) => {
   replyBoxes.value[replyId] = !replyBoxes.value[replyId];
 };
@@ -158,21 +187,14 @@ const submitReplyForReply = async (replyId: string, commentId: string) => {
       }
       await props.createReplyApi(replyData);
       replyText.value[replyId] = '';
-      fetchReplies(commentId);
+      fetchReplies(commentId, 1);
     } catch (error) {
       console.error('Failed to submit reply:', error);
     }
   }
 };
-
-const toggleShowReplies = (commentId: string) => {
-  if (showReplies.value[commentId]) {
-    showReplies.value[commentId] = false;
-  } else {
-    fetchReplies(commentId);
-  }
-};
 </script>
+
 <template>
   <div class="bg-gray-50">
     <section class="bg-gray-50 py-4 px-6 max-w-5xl mx-auto">
@@ -186,7 +208,6 @@ const toggleShowReplies = (commentId: string) => {
           </a-button>
         </div>
       </div>
-
       <ul class="mt-4 space-y-6">
         <li v-for="comment in comments" :key="comment.id" class="border-b pb-4">
           <div class="flex items-start space-x-4">
@@ -198,8 +219,8 @@ const toggleShowReplies = (commentId: string) => {
                 <a-button type="link" @click="toggleReplyBox(comment.id)" class="p-0">
                   💬 Reply
                 </a-button>
-                <a-button type="link" @click="toggleShowReplies(comment.id)" class="p-0">
-                  {{ showReplies[comment.id] ? 'Hide Replies' : 'Show More' }}
+                <a-button v-if="comment.replyCount > 0" type="link" @click="toggleShowReplies(comment.id)" class="p-0">
+                  {{ showReplies[comment.id] ? 'Hide Replies' : `Show More (${comment.replyCount} replies)` }}
                 </a-button>
               </div>
               <div v-if="replyBoxes[comment.id]" class="mt-2">
@@ -233,11 +254,24 @@ const toggleShowReplies = (commentId: string) => {
                     </div>
                   </div>
                 </li>
+                <li v-if="comment.replies.length < comment.replyCount" class="pl-4 border-l">
+                  <a-button type="link" @click="loadMoreReplies(comment.id)" class="p-0">
+                    Show More ({{ comment.replyCount - comment.replies.length }} more)
+                  </a-button>
+                </li>
               </ul>
             </div>
           </div>
         </li>
       </ul>
+      <div class="flex justify-center mt-4">
+        <a-pagination
+          :current="props.currentPage"
+          :total="props.totalComments"
+          :pageSize="props.pageSize"
+          @change="handlePageChange"
+        />
+      </div>
     </section>
   </div>
 </template>

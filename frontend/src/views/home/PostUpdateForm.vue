@@ -4,7 +4,6 @@ import DynamicFormEdit from "@/components/common/DynamicFormEdit.vue";
 import { getPost, updatePost } from "@/api/post";
 import router from "@/router";
 import Ads from "@/components/home/Banner.vue";
-import Breadcrumb from "@/components/home/Breadcrumb.vue";
 const fields = {
   title: "Edit Post",
   inputs: [

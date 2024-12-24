@@ -1,6 +1,7 @@
 package com.backend.commentservice.entity;
 
 import com.backend.commentservice.repository.httpclient.UserProfileResponse;
+import jakarta.persistence.Column;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -24,7 +25,8 @@ public class PostComment {
     String userId;
     String username; // lấy từ profile-service
     String content;
-    Integer replyCount;
+    @Column(nullable = false)
+    Integer replyCount = 0;
     Instant createdDate;
     Instant updateDateTime;
     String userAvatar; // từ profle-service

@@ -1,15 +1,22 @@
 <script setup lang="ts">
-import {inject, ref, watch} from 'vue';
+import { inject, ref, watch } from 'vue';
 import Tiptap from "@/components/common/Tiptap.vue";
 import { updateChapter } from '@/api/chapter';
-const showAlert = inject('showAlert') as ((type: string, message: string) => void);
+import { notification } from "ant-design-vue";
+
+enum ChapterStatusEnum {
+  DRAFT = 'DRAFT',
+  COMPLETED = 'COMPLETED'
+}
+
 const showNotification = (type: string, message: string) => {
-  if (showAlert) {
-    showAlert(type, message); // Gọi hàm showAlert toàn cục
-  } else {
-    console.error('showAlert is not available in this context');
-  }
+  notification[type]({
+    message: type === 'success' ? 'Success' : 'Error',
+    description: message,
+    duration: 3
+  });
 };
+
 const props = defineProps({
   chapterData: {
     type: Object,
@@ -19,37 +26,38 @@ const props = defineProps({
 const emit = defineEmits(['chapter-updated']);
 
 const title = ref(props.chapterData.chapterTitle || "");
-const status = ref(props.chapterData.status || "incomplete");
+const status = ref(props.chapterData.status || ChapterStatusEnum.DRAFT);
 const content = ref(props.chapterData.content || "");
-const chapterNumber = ref<number | null>(null);
+const chapterNumber = ref<number | null>(props.chapterData.chapterNumber || null);
 
 const handleSubmit = async () => {
   try {
-    const chapterTitle = `Chapter ${chapterNumber.value} - ${title.value}`;
     await updateChapter(props.chapterData.id, {
+      volumeId: props.chapterData.volumeId,
       chapterNumber: chapterNumber.value,
-      chapterTitle,
+      chapterTitle: title.value,
       status: status.value,
       content: content.value
     });
     emit('chapter-updated');
     showNotification('success', 'Chapter updated successfully.');
-  } catch (error : any) {
+  } catch (error: any) {
     console.error('Failed to update chapter:', error);
     if (error.response) {
-      showNotification('danger', error.response.data.message || 'Chapter update failed. Please try again.');
+      showNotification('error', error.response.data.message || 'Chapter update failed. Please try again.');
     } else if (error.request) {
-      showNotification('danger', 'No response from server. Please try again.');
+      showNotification('error', 'No response from server. Please try again.');
     } else {
-      showNotification('danger', 'An unexpected error occurred. Please try again.');
+      showNotification('error', 'An unexpected error occurred. Please try again.');
     }
   }
 };
 
 watch(() => props.chapterData, (newData) => {
   title.value = newData.chapterTitle || "";
-  status.value = newData.status || "incomplete";
+  status.value = newData.status || ChapterStatusEnum.DRAFT;
   content.value = newData.content || "";
+  chapterNumber.value = newData.chapterNumber || null;
 }, { immediate: true });
 </script>
 
@@ -71,8 +79,8 @@ watch(() => props.chapterData, (newData) => {
         <label for="status" class="block text-sm font-medium text-gray-700">Trạng thái</label>
         <select id="status" v-model="status"
                 class="block w-1/2 px-4 py-2 mt-1 text-gray-900 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-          <option value="completed">Đã hoàn thành</option>
-          <option value="incomplete">Chưa hoàn thành</option>
+          <option :value="ChapterStatusEnum.COMPLETED">Đã hoàn thành</option>
+          <option :value="ChapterStatusEnum.DRAFT">Chưa hoàn thành</option>
         </select>
       </div>
       <div class="mt-4">

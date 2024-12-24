@@ -8,7 +8,7 @@ import AddNovelVolume from "@/components/admin/AddNovelVolume.vue";
 import EditNovelVolume from "@/components/admin/EditNovelVolume.vue";
 import { useRoute } from "vue-router";
 import { deleteVolume, getVolumesByNovelId } from "@/api/volume";
-import { deleteChapter, getChapterByVolumeId } from "@/api/chapter";
+import {deleteChapter, getChaptersByVolumeId} from "@/api/chapter";
 import router from "@/router";
 import ConfirmDeleteModal from "@/components/common/ConfirmDeleteModal.vue";
 import NovelEdit from "@/components/admin/NovelEdit.vue";
@@ -16,6 +16,7 @@ import NovelEdit from "@/components/admin/NovelEdit.vue";
 interface Chapter {
   id: string;
   chapterTitle: string;
+  chapterNumber: number;
 }
 
 interface Volume {
@@ -62,10 +63,13 @@ const id = Array.isArray(route.params.id) ? route.params.id[0] : route.params.id
 
 const fetchChaptersForVolume = async (volumeId: string) => {
   try {
-    const response = await getChapterByVolumeId(volumeId);
+    const response = await getChaptersByVolumeId(volumeId);
+    console.log(response);
     const chapters = response.map((chapter: any) => ({
       id: chapter.id,
+      volumeId: chapter.volumeId,
       chapterTitle: chapter.chapterTitle,
+      chapterNumber: chapter.chapterNumber,
       content: chapter.content,
       created: chapter.created,
       createdDate: chapter.createdDate,
@@ -311,7 +315,9 @@ onMounted(() => {
                 </div>
                 <div class="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   <div v-for="chapter in volume.chapters" :key="chapter.id" class="text-left relative">
-                    <button @click="toggleChapterDropdown(chapter.id)" class="text-sm text-blue-600 hover:underline">{{ chapter.chapterTitle }}</button>
+                    <button @click="toggleChapterDropdown(chapter.id)" class="text-sm text-blue-600 hover:underline">
+                    Chương  {{ chapter.chapterNumber }} - {{ chapter.chapterTitle }}
+                    </button>
                     <div v-if="activeDropdown === chapter.id" class="z-10 absolute left-0 mt-2 bg-[#F8F8F7] border border-gray-300 rounded-md shadow-lg">
                       <ul class="py-1 text-sm text-gray-700">
                         <li><button @click="() => { viewChapter(chapter.id)}" class="block w-full px-4 py-2 hover:bg-gray-100">Xem chương</button></li>

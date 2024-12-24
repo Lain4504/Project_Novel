@@ -34,7 +34,7 @@ public class PostCategoryController {
                 .result(postCategoryService.updatePostCategory(postCategory, request))
                 .build();
     }
-    @GetMapping("/all")
+    @GetMapping("/get/all")
     public ApiResponse<PageResponse<PostCategoryResponse>> getAllPostCategories(
             @RequestParam(value = "page", required = false, defaultValue = "1") int page,
             @RequestParam(value = "size", required = false, defaultValue = "10") int size
@@ -43,13 +43,13 @@ public class PostCategoryController {
                 .result(postCategoryService.getAllPostCategories(page, size))
                 .build();
     }
-    @GetMapping("/all-without-pagination")
+    @GetMapping("/get/all-without-pagination")
     public ApiResponse<List<PostCategoryResponse>> getAllPostCategories(){
         return ApiResponse.<List<PostCategoryResponse>>builder()
                 .result(postCategoryService.getAllPostCategories())
                 .build();
     }
-    @GetMapping("/{postCategoryId}")
+    @GetMapping("/get/{postCategoryId}")
     public ApiResponse<PostCategoryResponse> getPostCategory(@PathVariable("postCategoryId") String postCategoryId){
         return ApiResponse.<PostCategoryResponse>builder()
                 .result(postCategoryService.getPostCategory(postCategoryId))

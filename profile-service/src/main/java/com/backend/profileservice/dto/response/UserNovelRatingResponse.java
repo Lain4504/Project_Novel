@@ -5,10 +5,10 @@ import lombok.experimental.FieldDefaults;
 
 @Getter
 @Setter
-@FieldDefaults(level = lombok.AccessLevel.PRIVATE)
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserNovelRatingResponse {
     String id;
     String userId;
