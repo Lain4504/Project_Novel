@@ -16,9 +16,10 @@ const deleteChapter = (id: string) => {
     return axios.delete(`${CHAPTER_API}/delete/${id}`)
         .then((response) => response.data.result);
 }
-const getChapterByVolumeId = (volumeId: string) => {
-    return axios.get(`${CHAPTER_API}/get/${volumeId}/chapters`)
-        .then((response) => response.data.result);
+const getChaptersByVolumeId = (volumeId: string, status?: string) => {
+    return axios.get(`${CHAPTER_API}/get/${volumeId}/chapters`, {
+        params: { status }
+    }).then((response) => response.data.result);
 }
 const getPreviousChapter = (volumeId: string, chapterNumber: number) => {
     return axios.get(`${CHAPTER_API}/get/${volumeId}/${chapterNumber}/previous`)
@@ -28,5 +29,5 @@ const getNextChapter = (volumeId: string, chapterNumber: number) => {
     return axios.get(`${CHAPTER_API}/get/${volumeId}/${chapterNumber}/next`)
         .then((response) => response.data.result);
 }
-export { createChapter, getChapter, updateChapter, deleteChapter, getChapterByVolumeId , getPreviousChapter, getNextChapter };
+export { createChapter, getChapter, updateChapter, deleteChapter, getChaptersByVolumeId , getPreviousChapter, getNextChapter };
 

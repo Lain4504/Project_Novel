@@ -6,8 +6,8 @@ import ReviewNovel from '@/components/home/ReviewNovelForm.vue';
 import Ads from '@/components/home/Banner.vue';
 import {getNovel} from '@/api/novel';
 import {getVolumesByNovelId} from '@/api/volume';
-import {getChapterByVolumeId} from '@/api/chapter';
-import {followNovel, getReviewList, isFollowingNovel, unfollowNovel} from "@/api/user";
+import {getChaptersByVolumeId} from '@/api/chapter';
+import {followNovel, getReviewList, isFollowingNovel, unfollowNovel, createRating, updateRating, hasRated,} from "@/api/user";
 import store from "@/store";
 import {
   createNovelComment,
@@ -24,13 +24,14 @@ const novel = ref<Novel | Record<string, any>>({});
 const reviews = ref([]);
 const volumes = ref<Volume[]>([]);
 const isCollected = ref(false);
-const showRatingMenu = ref(false);
 const currentTab = ref('Thảo Luận');
 const tabs = ['Thảo Luận', 'Đánh Giá'];
+const userRating = ref<number | null>(null);
 
 interface Chapter {
   id: string;
   chapterTitle: string;
+  chapterNumber: number;
 }
 
 interface Category {
@@ -122,8 +123,9 @@ const fetchVolumes = async (novelId: string) => {
 };
 
 const fetchChapters = async (volumeIndex: number, volumeId: string) => {
+  const status = "COMPLETED";
   try {
-    const data = await getChapterByVolumeId(volumeId);
+    const data = await getChaptersByVolumeId(volumeId, status);
     volumes.value[volumeIndex].chapters = data;
   } catch (error) {
     console.error(error);
@@ -185,12 +187,36 @@ const currentTabComponent = computed(() => {
   }
 });
 
+const rateNovel = async (rating: number) => {
+  try {
+    if (!novelId || !userId) {
+      throw new Error('Novel ID or User ID is missing');
+    }
+    if (userRating.value !== null) {
+      await updateRating({userId, novelId, rating});
+    } else {
+      await createRating({userId, novelId, rating});
+    }
+    userRating.value = rating;
+  } catch (error) {
+    console.error('Failed to rate novel:', error);
+  }
+};
+const checkUserRating = async () => {
+  try {
+    const response = await hasRated(userId, novelId);
+    userRating.value = response ? response : null;
+  } catch (error) {
+    console.error('Failed to check user rating:', error);
+  }
+};
 onMounted(() => {
   fetchNovelData();
   fetchComments(currentPage.value, pageSize.value);
   fetchReviews();
   fetchVolumes(novelId);
   checkFollowStatus();
+  checkUserRating();
 });
 </script>
 
@@ -231,20 +257,16 @@ onMounted(() => {
             </button>
           </div>
           <div class="flex justify-center items-center">
-            <div class="flex flex-col items-center text-center text-gray-700 hover:text-blue-600 relative"
-                 @mouseover="showRatingMenu = true" @mouseleave="showRatingMenu = false">
-              <a>
-                <label for="open-rating" class="flex flex-col items-center">
-                  <font-awesome-icon :icon="['far', 'star']" class="text-yellow-500"/>
-                  <span class="text-sm">Đánh giá</span>
-                </label>
-              </a>
-              <div v-show="showRatingMenu"
-                   class="absolute top-full mt-2 bg-white border border-gray-200 rounded-lg shadow-lg p-2">
-                <div class="flex space-x-1">
-                  <font-awesome-icon v-for="n in 5" :key="n" :icon="['far', 'star']"
-                                     class="text-yellow-500 cursor-pointer"/>
-                </div>
+            <div class="flex flex-col items-center text-center text-gray-700">
+              <label for="open-rating" class="flex flex-col items-center">
+                <font-awesome-icon :icon="userRating !== null ? 'fas fa-star' : 'far fa-star'"
+                                   class="text-yellow-500"/>
+                <span class="text-sm">{{ userRating !== null ? `Rated: ${userRating}` : 'Rate' }}</span>
+              </label>
+              <div class="flex space-x-1 mt-2">
+                <font-awesome-icon v-for="n in 5" :key="n" :icon="['far', 'star']"
+                                   class="text-yellow-500 cursor-pointer"
+                                   @click="rateNovel(n)"/>
               </div>
             </div>
           </div>
@@ -299,7 +321,9 @@ onMounted(() => {
                     class="group relative">
                   <div
                       class="p-3 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow border border-gray-100 hover:border-gray-200">
-                    <span class="text-sm text-gray-700 truncate block">{{ chapter.chapterTitle }}</span>
+                    <span class="text-sm text-gray-700 truncate block">
+                      Chương  {{ chapter.chapterNumber }} - {{ chapter.chapterTitle }}
+                  </span>
                     <div
                         class="absolute left-1/2 transform -translate-x-1/2 bottom-full mb-2 hidden group-hover:block z-10 bg-black text-white text-xs py-1 px-2 rounded">
                       {{ chapter.chapterTitle }}

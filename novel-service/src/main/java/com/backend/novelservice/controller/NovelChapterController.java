@@ -20,40 +20,47 @@ import java.util.Optional;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class NovelChapterController {
     NovelChapterService novelChapterService;
+
     @PostMapping("/create/{volumeId}")
-    ApiResponse<NovelChapterResponse> createChapter( @PathVariable("volumeId") String volumeId,  @RequestBody NovelChapterRequest request) {
+    ApiResponse<NovelChapterResponse> createChapter(@PathVariable("volumeId") String volumeId, @RequestBody NovelChapterRequest request) {
         return ApiResponse.<NovelChapterResponse>builder()
                 .result(novelChapterService.createChapter(volumeId, request)).build();
     }
+
     @PutMapping("/update/{chapterId}")
     ApiResponse<NovelChapterResponse> updateChapter(@PathVariable("chapterId") String chapterId, @RequestBody NovelChapterRequest request) {
         return ApiResponse.<NovelChapterResponse>builder()
                 .result(novelChapterService.updateChapter(chapterId, request)).build();
     }
+
     @DeleteMapping("/delete/{chapterId}")
     ApiResponse<Void> deleteChapter(@PathVariable("chapterId") String chapterId) {
         novelChapterService.deleteChapter(chapterId);
         return ApiResponse.<Void>builder().build();
     }
+
     @GetMapping("/get/{chapterId}")
     ApiResponse<NovelChapterResponse> getChapter(@PathVariable("chapterId") String chapterId) {
         return ApiResponse.<NovelChapterResponse>builder()
                 .result(novelChapterService.getChapter(chapterId)).build();
     }
+
     @GetMapping("/get/get-all/")
-    ApiResponse<PageResponse<NovelChapterResponse>> myPosts(
+    ApiResponse<PageResponse<NovelChapterResponse>> getChapters(
             @RequestParam(value = "page", required = false, defaultValue = "1") int page,
-            @RequestParam(value = "size", required = false, defaultValue = "10") int size){
+            @RequestParam(value = "size", required = false, defaultValue = "10") int size) {
         return ApiResponse.<PageResponse<NovelChapterResponse>>builder()
                 .result(novelChapterService.getChapters(page, size)).build();
     }
+
     @GetMapping("/get/{volumeId}/chapters")
     ApiResponse<List<NovelChapterResponse>> getChaptersByVolumeId(
-            @PathVariable("volumeId") String volumeId
-           ){
+            @PathVariable("volumeId") String volumeId,
+            @RequestParam(value = "status", required = false) String status) {
         return ApiResponse.<List<NovelChapterResponse>>builder()
-                .result(novelChapterService.getChaptersByVolumeId(volumeId)).build();
+                .result(novelChapterService.getChaptersByVolumeId(volumeId, status)).build();
     }
+
     @GetMapping("/get/{volumeId}/{chapterNumber}")
     public ApiResponse<NovelChapter> getChapter(@PathVariable String volumeId, @PathVariable Integer chapterNumber) {
         Optional<NovelChapter> chapter = novelChapterService.getChapterByNumber(volumeId, chapterNumber);
@@ -75,6 +82,11 @@ public class NovelChapterController {
         Optional<NovelChapter> nextChapter = novelChapterService.getNextChapter(volumeId, chapterNumber);
         return ApiResponse.<NovelChapter>builder()
                 .result(nextChapter.orElse(null)).build();
+    }
+    @GetMapping("/increment-visit-count/{chapterId}")
+    public ApiResponse<Void> incrementVisitCount(@PathVariable String chapterId) {
+        novelChapterService.incrementVisitCount(chapterId);
+        return ApiResponse.<Void>builder().build();
     }
 
 }

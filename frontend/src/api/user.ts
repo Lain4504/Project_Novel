@@ -4,6 +4,7 @@ const USER_API = '/identity/users';
 const PROFILE_API = '/profile/users';
 const USER_NOVEL_FOLLOW_API = '/profile/user-novel-follow';
 const USER_NOVEL_REVIEW_API = '/profile/user-novel-review';
+const USER_NOVEL_RATING_API = '/profile/user-novel-rating';
 interface AccountRequest {
     email: string;
     password: string;
@@ -70,5 +71,22 @@ const getMyFollowedNovels = (userId: string, page: number, size: number) => {
     return axios.get(`${USER_NOVEL_FOLLOW_API}/get/followed-novels/${userId}?page=${page}&size=${size}`)
         .then(response => response.data.result);
 };
+interface RatingRequest {
+    userId: string;
+    novelId: string;
+    rating: number;
+}
+const createRating = (data: RatingRequest) => {
+    return axios.post(`${USER_NOVEL_RATING_API}/rate`, data)
+        .then(response => response.data.result);
+}
+const updateRating = ( data: RatingRequest) => {
+    return axios.put(`${USER_NOVEL_RATING_API}/update`, data)
+        .then(response => response.data.result);
+}
+const hasRated = ( userId: string, novelId: string) => {
+    return axios.get(`${USER_NOVEL_RATING_API}/has-rated/${userId}/${novelId}`)
+        .then(response => response.data.result);
+}
 export {register, getMyInfo, getUserProfile, updateUserProfile, followNovel, unfollowNovel, isFollowingNovel, createReview, updateReview, deleteReview, getLatestReview, getReviewList,
-    getMyFollowedNovels};
+    getMyFollowedNovels, createRating, updateRating, hasRated};

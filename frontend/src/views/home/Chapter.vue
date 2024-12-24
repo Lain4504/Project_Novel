@@ -10,7 +10,6 @@ import {
   getAllRepliesByChapterCommentId
 } from "@/api/novelcomment";
 import CommentSection from "@/components/home/CommentSection.vue";
-import {getAllComments} from "@/api/postcomment";
 
 const route = useRoute();
 const router = useRouter();
@@ -29,6 +28,7 @@ const chapter = reactive({
 const fetchChapter = async (id: string) => {
   try {
     const response = await getChapter(id);
+    console.log('Chapter:', response);
     chapter.id = response.id;
     chapter.title = response.chapterTitle;
     chapter.content = response.content;

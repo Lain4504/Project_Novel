@@ -18,11 +18,11 @@ public class NovelChapterResponse {
     Integer chapterNumber;
     String chapterTitle;
     String content;
-    String status;
     Integer wordCount;
     Boolean isVip;
     String created;
     Instant createdDate;
-    Instant updateDateTime;
+    Instant updateDate;
     String authorId;
+    String status;
 }

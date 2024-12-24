@@ -96,4 +96,14 @@ public class NovelController {
         return ApiResponse.<PageResponse<NovelResponse>>builder()
                 .result(novelService.getNovelsByStatus(status, page, size)).build();
     }
+    @GetMapping("/get/find-by-fields/{fields}")
+    public ApiResponse<PageResponse<NovelResponse>> getNovelsByFields(
+            @PathVariable("fields") String fields,
+            @RequestParam(value = "page", required = false, defaultValue = "1") int page,
+            @RequestParam(value = "size", required = false, defaultValue = "10") int size
+    )
+    {
+        return ApiResponse.<PageResponse<NovelResponse>>builder()
+                .result(novelService.getNovelsByDynamicField(fields, page, size)).build();
+    }
 }

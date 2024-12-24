@@ -62,7 +62,7 @@ const deleteNovelReply = (id: string) => {
         .then((response) => response.data.result);
 };
 const getAllChapterComments = (chapterId: string, page: number, size: number) => {
-    return axios.get(`${NOVEL_CHAPTER_API}/get/${chapterId}?page=${page}&limit=${size}`)
+    return axios.get(`${NOVEL_CHAPTER_API}/get/${chapterId}?page=${page}&size=${size}`)
         .then((response) => response.data.result);
 }
 const createChapterComment = (data: NovelChapterComment) => {
@@ -78,7 +78,7 @@ const deleteChapterComment = (id: string) => {
         .then((response) => response.data.result);
 }
 const getAllRepliesByChapterCommentId = (commentId: string, page: number, size: number) => {
-    return axios.get(`${NOVEL_CHAPTER_API}/replies/get/${commentId}?page=${page}&limit=${size}`)
+    return axios.get(`${NOVEL_CHAPTER_API}/replies/get/${commentId}?page=${page}&size=${size}`)
         .then((response) => response.data.result);
 }
 const createChapterReply = (data: NovelChapterCommentReply) => {

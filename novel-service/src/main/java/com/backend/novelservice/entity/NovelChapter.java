@@ -4,6 +4,9 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.Set;
 
+import com.backend.enums.ChapterStatusEnum;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import lombok.*;
 
 import lombok.experimental.FieldDefaults;
@@ -25,9 +28,10 @@ public class NovelChapter {
     Integer chapterNumber;
     String chapterTitle;
     String content;
-    String status;
     Integer wordCount;
     Boolean isVip;
     Instant createdDate;
-    Instant updateDateTime;
+    Instant updateDate;
+    @Enumerated(EnumType.STRING)
+    ChapterStatusEnum status;
 }

@@ -4,6 +4,11 @@ import Tiptap from '@/components/common/Tiptap.vue';
 import { createChapter } from '@/api/chapter';
 import { notification, Input, Select, Radio, Button } from 'ant-design-vue';
 
+enum ChapterStatusEnum {
+  DRAFT = 'DRAFT',
+  COMPLETED = 'COMPLETED'
+}
+
 const showNotification = (type: string, message: string) => {
   notification[type]({
     message: type === 'success' ? 'Success' : 'Error',
@@ -21,7 +26,7 @@ const props = defineProps({
 
 const title = ref("");
 const chapterNumber = ref<number | null>(null);
-const status = ref("incomplete");
+const status = ref(ChapterStatusEnum.DRAFT);
 const content = ref("");
 const isPaid = ref(false);
 const price = ref(0);
@@ -30,10 +35,9 @@ const emit = defineEmits(['chapter-added']);
 
 const handleSubmit = async () => {
   try {
-    const chapterTitle = `Chapter ${chapterNumber.value} - ${title.value}`;
     await createChapter(props.volumeId, {
       chapterNumber: chapterNumber.value,
-      chapterTitle,
+      chapterTitle: title.value,
       status: status.value,
       content: content.value,
       isPaid: isPaid.value,
@@ -45,7 +49,7 @@ const handleSubmit = async () => {
     // Reset form fields
     title.value = "";
     chapterNumber.value = null;
-    status.value = "incomplete";
+    status.value = ChapterStatusEnum.DRAFT;
     content.value = ""; // Reset Tiptap content
     isPaid.value = false;
     price.value = 0;
@@ -77,8 +81,8 @@ const handleSubmit = async () => {
       <div class="mt-4">
         <label for="status" class="block text-sm font-medium text-gray-700">Trạng thái</label>
         <a-select v-model:value="status" id="status" class="block w-1/2">
-          <a-select-option value="completed">Đã hoàn thành</a-select-option>
-          <a-select-option value="incomplete">Chưa hoàn thành</a-select-option>
+          <a-select-option :value="ChapterStatusEnum.COMPLETED">Đã hoàn thành</a-select-option>
+          <a-select-option :value="ChapterStatusEnum.DRAFT">Chưa hoàn thành</a-select-option>
         </a-select>
       </div>
       <div class="mt-4">

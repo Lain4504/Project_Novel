@@ -9,6 +9,7 @@ import com.backend.novelservice.dto.response.NovelDetailsResponse;
 import com.backend.novelservice.dto.response.NovelResponse;
 import com.backend.dto.response.PageResponse;
 import com.backend.novelservice.entity.Image;
+import com.backend.novelservice.entity.Novel;
 import com.backend.novelservice.entity.NovelCategory;
 import com.backend.novelservice.mapper.NovelMapper;
 import com.backend.novelservice.repository.NovelCategoryRepository;
@@ -51,6 +52,7 @@ public class NovelService {
         var novel = novelMapper.toNovel(request);
         HashSet<NovelCategory> categories = new HashSet<>();
         novelCategoryRepository.findAllById(request.getCategories()).forEach(categories::add);
+        novel.setStatus(NovelStatusEnum.ON_GOING);
         novel.setCategories(categories);
         novel.setCreatedDate(Instant.now());
         novel.setUpdateDateTime(Instant.now());
@@ -210,6 +212,40 @@ public class NovelService {
         Sort sort = Sort.by(Sort.Order.desc("createdDate"));
         Pageable pageable = PageRequest.of(page - 1, size, sort);
         var pageData = novelRepository.findByStatus(status, pageable);
+        var novelList = pageData.getContent().stream().map(novel -> {
+            var novelResponse = novelMapper.toNovelResponse(novel);
+            novelResponse.setCreated(dateTimeFormatter.format(novel.getCreatedDate()));
+            return novelResponse;
+        }).toList();
+        return PageResponse.<NovelResponse>builder()
+                .currentPage(page)
+                .pageSize(pageData.getSize())
+                .totalPages(pageData.getTotalPages())
+                .totalElements(pageData.getTotalElements())
+                .data(novelList)
+                .build();
+    }
+
+    public void updateNovelScore(NovelDataSenderEvent event) {
+        String novelId = (String) event.getParam().get("novelId");
+        Map<String, Object> ratingData = (Map<String, Object>) event.getParam().get("data");
+        double newRating = (double) ratingData.get("rating");
+
+        Novel novel = novelRepository.findById(novelId)
+                .orElseThrow(() -> new IllegalArgumentException("Novel with id " + novelId + " not found"));
+        double currentScore = novel.getScore();
+        long ratingCount = novel.getRatingCount();
+
+        double updatedScore = ((currentScore * ratingCount) + newRating) / (ratingCount + 1);
+        novel.setScore(updatedScore);
+        novel.setRatingCount(ratingCount + 1);
+
+        novelRepository.save(novel);
+    }
+    public PageResponse<NovelResponse> getNovelsByDynamicField(String fields, int page, int size){
+        Sort sort = Sort.by(Sort.Order.desc(fields).nullsLast());
+        Pageable pageable = PageRequest.of(page - 1, size, sort);
+        var pageData = novelRepository.findAll(pageable);
         var novelList = pageData.getContent().stream().map(novel -> {
             var novelResponse = novelMapper.toNovelResponse(novel);
             novelResponse.setCreated(dateTimeFormatter.format(novel.getCreatedDate()));

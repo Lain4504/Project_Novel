@@ -37,9 +37,9 @@ public class Novel {
     String authorId;
     String authorName;
     String description;
-    Integer score;
-    Integer bookStatus;
+    double score;
     Long visitCount;
+    Long followCount;
     Long wordCount;
     Long commentCount;
     Integer isVip;
@@ -54,4 +54,5 @@ public class Novel {
     Instant latestChapterTime;
     @Enumerated(EnumType.STRING)
     NovelStatusEnum status;
+    Long ratingCount;
 }
