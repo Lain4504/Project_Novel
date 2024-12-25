@@ -1,6 +1,8 @@
 package com.backend.novelservice.service;
 
 import com.backend.dto.response.PageResponse;
+import com.backend.enums.ChapterStatusEnum;
+import com.backend.enums.NovelStatusEnum;
 import com.backend.novelservice.dto.request.NovelChapterRequest;
 import com.backend.novelservice.dto.response.NovelChapterResponse;
 import com.backend.novelservice.entity.Novel;
@@ -76,6 +78,8 @@ public class NovelChapterService {
         NovelVolume volume = novelVolumeRepository.findById(chapter.getVolumeId()).orElseThrow(() -> new RuntimeException("Volume not found"));
         Novel novel = novelRepository.findById(volume.getNovelId()).orElseThrow(() -> new RuntimeException("Novel not found"));
         novel.setWordCount(novel.getWordCount() + wordCountDiff);
+        novel.setLatestChapterId(chapterId);
+        novel.setLatestChapterTitle(chapter.getChapterTitle());
         novelRepository.save(novel);
         return novelChapterMapper.toNovelChapterResponse(chapter);
     }
@@ -160,14 +164,19 @@ public class NovelChapterService {
         return novelChapterRepository.findByVolumeIdAndChapterNumber(volumeId, chapterNumber);
     }
 
-    // Lấy chapter trước đó
-    public Optional<NovelChapter> getPreviousChapter(String volumeId, Integer currentChapterNumber) {
-        return novelChapterRepository.findTopByVolumeIdAndChapterNumberLessThanOrderByChapterNumberDesc(volumeId, currentChapterNumber);
-    }
+   public NovelChapterResponse getPreviousChapter(String volumeId, Integer currentChapterNumber) {
+    Optional<NovelChapter> previousChapterOpt = novelChapterRepository.findTopByVolumeIdAndChapterNumberLessThanOrderByChapterNumberDesc(volumeId, currentChapterNumber);
+    return previousChapterOpt
+            .filter(chapter -> chapter.getStatus() != ChapterStatusEnum.DRAFT)
+            .map(novelChapterMapper::toNovelChapterResponse)
+            .orElse(null);
+}
 
-    // Lấy chapter sau đó
-    public Optional<NovelChapter> getNextChapter(String volumeId, Integer currentChapterNumber) {
-        return novelChapterRepository.findTopByVolumeIdAndChapterNumberGreaterThanOrderByChapterNumberAsc(volumeId, currentChapterNumber);
-    }
-
+public NovelChapterResponse getNextChapter(String volumeId, Integer currentChapterNumber) {
+    Optional<NovelChapter> nextChapterOpt = novelChapterRepository.findTopByVolumeIdAndChapterNumberGreaterThanOrderByChapterNumberAsc(volumeId, currentChapterNumber);
+    return nextChapterOpt
+            .filter(chapter -> chapter.getStatus() != ChapterStatusEnum.DRAFT)
+            .map(novelChapterMapper::toNovelChapterResponse)
+            .orElse(null);
+}
 }

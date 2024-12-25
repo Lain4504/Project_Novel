@@ -10,11 +10,12 @@ import {
   getAllRepliesByChapterCommentId
 } from "@/api/novelComment";
 import CommentSection from "@/components/home/CommentSection.vue";
+import {getNovel} from "@/api/novel";
 
 const route = useRoute();
 const router = useRouter();
-const chapterId = route.params.id as string;
-
+const chapterId = route.params.chapter as string;
+const novelId = route.params.novel as string;
 const chapter = reactive({
   id: '',
   title: '',
@@ -23,8 +24,22 @@ const chapter = reactive({
   chapterNumber: '',
   volumeId: '',
   userId: '',
+  wordCount: 0,
 });
-
+const novel = reactive({
+  id: '',
+  authorName: '',
+})
+const fetchNovel = async (id: string) => {
+  try {
+    const response = await getNovel(id);
+    console.log('Novel:', response);
+    novel.id = response.id;
+    novel.authorName = response.authorName;
+  } catch (error) {
+    console.error('Failed to fetch novel:', error);
+  }
+};
 const fetchChapter = async (id: string) => {
   try {
     const response = await getChapter(id);
@@ -36,6 +51,7 @@ const fetchChapter = async (id: string) => {
     chapter.chapterNumber = response.chapterNumber;
     chapter.volumeId = response.volumeId;
     chapter.userId = response.authorId;
+    chapter.wordCount = response.wordCount;
   } catch (error) {
     console.error('Failed to fetch chapter:', error);
   }
@@ -55,7 +71,7 @@ const fetchNextChapter = async () => {
   try {
     const response = await getNextChapter(chapter.volumeId, parseInt(chapter.chapterNumber));
     await fetchChapter(response.id);
-    router.push({name: 'chapter', params: {id: response.id}});
+    await router.push({name: 'chapter', params: {id: response.id}});
   } catch (error) {
     console.error('Failed to fetch next chapter:', error);
   }
@@ -84,13 +100,14 @@ const handlePageChange = (page: number) => {
   fetchComments(page, pageSize.value);
 };
 onMounted(() => {
+  fetchNovel(novelId);
   fetchChapter(chapterId);
   fetchComments(currentPage.value, pageSize.value);
 });
 </script>
 
 <template>
-  <ChapterContent :chapter="chapter" @previous-chapter="fetchPreviousChapter" @next-chapter="fetchNextChapter"/>
+  <ChapterContent :chapter="chapter" :novel="novel" @previous-chapter="fetchPreviousChapter" @next-chapter="fetchNextChapter"/>
   <CommentSection :comments="comments" :create-comment-api="createChapterComment"
                   :create-reply-api="createChapterReply" :current-page="currentPage"
                   :fetch-comments="fetchComments"

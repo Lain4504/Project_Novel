@@ -4,7 +4,7 @@ import com.backend.dto.response.ApiResponse;
 import com.backend.dto.response.PageResponse;
 import com.backend.profileservice.dto.request.UserNovelFollowRequest;
 import com.backend.profileservice.dto.response.UserNovelFollowResponse;
-import com.backend.profileservice.repository.httpclient.NovelDetailsResponse;
+import com.backend.profileservice.dto.response.NovelDetailsResponse;
 import com.backend.profileservice.service.UserNovelFollowService;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;

@@ -6,7 +6,7 @@ import store from "@/store";
 import {getNovelCategoriesWithoutPagination} from "@/api/novelCategory";
 import {notification} from "ant-design-vue";
 
-const showNotification = (type: string, message: string) => {
+const showNotification = (type: 'success' | 'error', message: string) => {
   notification[type]({
     message: type === 'success' ? 'Success' : 'Error',
     description: message,
@@ -31,9 +31,8 @@ const state = reactive({
   imageUrl: props.novel.image.path || ""
 });
 
-const selectedCategories = ref<string[]>(state.categories.map((cat: { name: string }) => cat.name));
+const selectedCategories = ref<string[]>(state.categories.map((cat: { id: string }) => cat.id));
 const categories = ref<{ value: string; label: string }[]>([]);
-const isDropdownOpen = ref(false);
 
 const emit = defineEmits(['novel-updated']);
 
@@ -45,21 +44,8 @@ const loadCategories = async () => {
   }));
 };
 
-const toggleCategory = (category: string) => {
-  const selectedCategory = categories.value.find(cat => cat.value === category)?.label;
-  const index = selectedCategories.value.indexOf(selectedCategory || '');
-  if (index === -1) {
-    selectedCategories.value.push(selectedCategory || '');
-  } else {
-    selectedCategories.value.splice(index, 1);
-  }
-};
-
 const getCategoryIds = () => {
-  return selectedCategories.value.map(categoryName => {
-    const category = categories.value.find(cat => cat.label === categoryName);
-    return category?.value;
-  });
+  return selectedCategories.value;
 };
 
 const handleSubmit = async () => {
@@ -88,14 +74,15 @@ const handleSubmit = async () => {
   } catch (error: any) {
     console.error('Failed to update novel:', error);
     if (error.response) {
-      showNotification('danger', error.response.data.message || 'Novel update failed. Please try again.');
+      showNotification('error', error.response.data.message || 'Novel update failed. Please try again.');
     } else if (error.request) {
-      showNotification('danger', 'No response from server. Please try again.');
+      showNotification('error', 'No response from server. Please try again.');
     } else {
-      showNotification('danger', 'An unexpected error occurred. Please try again.');
+      showNotification('error', 'An unexpected error occurred. Please try again.');
     }
   }
 };
+
 const selectedImage = ref<File | null>(null);
 
 const handleImageChange = (event: Event) => {
@@ -110,6 +97,7 @@ onMounted(() => {
   loadCategories();
 });
 </script>
+
 <template>
   <main class="flex-1 p-6 bg-[#f8f8f7] shadow-sm">
     <h1>Edit Novel</h1>
@@ -149,18 +137,26 @@ onMounted(() => {
       </div>
       <div class="mt-4 relative">
         <label class="block text-sm font-medium text-gray-700" for="floating_category">Chọn thể loại</label>
-        <input :value="selectedCategories.join(', ')" class="block w-full p-2 mt-1 text-sm text-gray-900 border rounded-md bg-transparent border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500" readonly
-               type="text"
-               @click="isDropdownOpen = !isDropdownOpen"/>
-        <div v-if="isDropdownOpen"
-             class="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-md max-h-60 overflow-y-auto">
-          <div v-for="category in categories" :key="category.value" class="p-2 text-sm cursor-pointer hover:bg-gray-100"
-               @click="toggleCategory(category.value)">
-            <input :id="category.value" :checked="selectedCategories.includes(category.label)" :value="category.value"
-                   class="mr-2" type="checkbox"/>
+        <a-select
+            v-model:value="selectedCategories"
+            mode="multiple"
+            allow-clear
+            show-search
+            placeholder="Chọn thể loại"
+            class="w-full"
+            :filter-option="(input: string, option: { label: string }) => {
+              return option.label.toLowerCase().includes(input.toLowerCase());
+            }"
+        >
+          <a-select-option
+              v-for="category in categories"
+              :key="category.value"
+              :value="category.value"
+              :label="category.label"
+          >
             {{ category.label }}
-          </div>
-        </div>
+          </a-select-option>
+        </a-select>
       </div>
       <div class="flex justify-end mt-4">
         <button class="px-4 py-2 text-sm font-medium text-blue-500 transition-all duration-300 border-[1px] border-blue-500 rounded hover:border-blue-700 hover:scale-105"

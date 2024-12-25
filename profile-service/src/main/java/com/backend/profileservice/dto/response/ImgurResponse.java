@@ -1,4 +1,4 @@
-package com.backend.profileservice.repository.httpclient;
+package com.backend.profileservice.dto.response;
 
 import lombok.Data;
 

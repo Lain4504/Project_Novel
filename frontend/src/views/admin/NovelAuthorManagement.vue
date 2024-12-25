@@ -143,11 +143,12 @@ const toggleChapterDropdown = (chapterId: string) => {
   isDropdownVisible.value = false;
 };
 
-const viewChapter = (chapterId: string) => {
-  router.push(`/novel/${chapterId}`);
+const viewChapter = (chapterId: string, novelId: string) => {
+  router.push({ name: 'chapter', params: { novel: novelId, chapter: chapterId } });
 };
+
 const viewNovel = (novelId: string) => {
-  router.push(`/noveldetail/${novelId}`);
+  router.push({ name: 'noveldetail', params: { id: novelId } });
 };
 const showModal = (modalName: string) => {
   showEditNovel.value = false;
@@ -334,14 +335,14 @@ onMounted(() => {
                 <div class="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   <div v-for="chapter in volume.chapters" :key="chapter.id" class="text-left relative">
                     <button class="text-sm text-blue-600 hover:underline" @click="toggleChapterDropdown(chapter.id)">
-                      Chương {{ chapter.chapterNumber }} - {{ chapter.chapterTitle }}
+                      {{ chapter.chapterTitle }}
                     </button>
                     <div v-if="activeDropdown === chapter.id"
                          class="z-10 absolute left-0 mt-2 bg-[#F8F8F7] border border-gray-300 rounded-md shadow-lg">
                       <ul class="py-1 text-sm text-gray-700">
                         <li>
                           <button class="block w-full px-4 py-2 hover:bg-gray-100"
-                                  @click="() => { viewChapter(chapter.id)}">Xem chương
+                                  @click="() => { viewChapter(chapter.id, novel.id)}">Xem chương
                           </button>
                         </li>
                         <li>

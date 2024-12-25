@@ -24,7 +24,7 @@ public class NovelChapter {
     Integer chapterNumber;
     String chapterTitle;
     String content;
-    Integer wordCount;
+    Long wordCount;
     Boolean isVip;
     Instant createdDate;
     Instant updateDate;

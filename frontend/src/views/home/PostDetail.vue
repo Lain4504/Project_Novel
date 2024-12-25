@@ -4,6 +4,7 @@ import Ads from '@/components/home/Banner.vue';
 import {getPost} from '@/api/post';
 import {createComment, createReply, getAllComments, getAllRepliesByCommentId} from '@/api/postComment';
 import CommentSection from '@/components/home/CommentSection.vue';
+import {getUserProfile} from "@/api/user";
 
 const props = defineProps({
   id: {
@@ -19,23 +20,42 @@ interface Post {
   userId: string;
   created: string;
 }
-
-const post = ref<Post>({
-  id: '',
-  title: '',
-  content: '',
-  userId: '',
-  created: ''
-});
+interface User {
+  id: string;
+  username: string;
+  email: string;
+  image: string;
+}
+const post = ref<Post | null>(null);
+const user = ref<User | null>(null);
 const comments = ref([]);
 const currentPage = ref(1);
 const pageSize = ref(10);
 const totalComments = ref(0);
 
+const fetchPostOwner = async () => {
+  try {
+    if (post.value) {
+      const result = await getUserProfile(post.value.userId);
+      console.log('Post owner:', result);
+      user.value = result;
+    }
+  } catch (error) {
+    console.error('Failed to fetch post owner:', error);
+  }
+};
+
 const fetchPost = async () => {
   try {
     const result = await getPost(props.id);
-    post.value = result;
+    post.value = {
+      id: result.id,
+      title: result.title,
+      content: result.content,
+      userId: result.userId,
+      created: result.created,
+    };
+    await fetchPostOwner(); // Call fetchPostOwner after setting post details
   } catch (error) {
     console.error('Failed to fetch post:', error);
   }
@@ -73,20 +93,20 @@ onMounted(() => {
     <div class="bg-white p-6 mt-6 rounded-lg shadow-md">
       <div class="flex items-center justify-between mb-6">
         <div class="flex items-center">
-          <img alt="Avatar" class="w-10 h-10 rounded-full mr-3" src="https://via.placeholder.com/40">
-          <div class="font-semibold text-lg">User <span class="text-gray-500 text-sm">Administrators</span></div>
+          <img alt="Avatar" class="w-10 h-10 rounded-full mr-3" :src="user?.image.path">
+          <div class="font-semibold text-lg">{{ user?.username }} <span class="text-gray-500 text-sm"></span></div>
         </div>
-        <div class="text-sm text-gray-500">{{ post.created }}</div>
+        <div class="text-sm text-gray-500">{{ post?.created }}</div>
       </div>
-      <h1 class="text-3xl font-bold text-gray-800 mb-4">{{ post.title }}</h1>
-      <div class="content-body mb-6" v-html="post.content"></div>
+      <h1 class="text-3xl font-bold text-gray-800 mb-4">{{ post?.title }}</h1>
+      <div class="content-body mb-6" v-html="post?.content"></div>
       <CommentSection :comments="comments" :create-comment-api="createComment"
                       :create-reply-api="createReply" :current-page="currentPage"
                       :fetch-comments="fetchComments"
                       :get-all-replies-api="getAllRepliesByCommentId"
-                      :item-name="post.title"
+                      :item-name="post?.title"
                       :itemId="props.id"
-                      :owner-id="post.userId"
+                      :owner-id="post?.userId"
                       :page-size="pageSize"
                       :total-comments="totalComments"
                       itemType="post"

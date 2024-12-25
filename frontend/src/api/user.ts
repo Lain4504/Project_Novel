@@ -27,7 +27,7 @@ const getMyInfo = () => {
 };
 
 const getUserProfile = (userId: string) => {
-    return axios.get(`${PROFILE_API}/get//${userId}`)
+    return axios.get(`${PROFILE_API}/get/${userId}`)
         .then(response => response.data.result);
 };
 const updateUserProfile = (id: string, data: any) => {
@@ -62,8 +62,8 @@ const deleteReview = (id: string) => {
     return axios.delete(`${USER_NOVEL_REVIEW_API}/${id}`)
         .then(response => response.data.result);
 }
-const getLatestReview = (id: string) => {
-    return axios.get(`${USER_NOVEL_REVIEW_API}/get/get-latest`)
+const getLatestReview = (page: number, size: number) => {
+    return axios.get(`${USER_NOVEL_REVIEW_API}/get/get-latest?page=${page}&size=${size}`)
         .then(response => response.data.result);
 }
 const getReviewList = (novelId: string, page: number, size: number) => {

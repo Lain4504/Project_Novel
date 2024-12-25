@@ -67,10 +67,9 @@ const fetchMyNovels = async () => {
 
 onMounted(() => {
   fetchMyNovels();
+  fetchLatestPosts();
 });
 
-// Computed property
-const limitedReadings = computed(() => readings.value.slice(0, 4));
 </script>
 <template>
   <div class="flex flex-col md:flex-row md:space-x-4 space-y-4 md:space-y-0 mt-10">
@@ -79,7 +78,7 @@ const limitedReadings = computed(() => readings.value.slice(0, 4));
       <section class="p-4 border rounded">
         <div class="flex justify-between items-center">
           <h4 class="text-md font-bold">Bài viết mới nhất</h4>
-          <router-link class="text-[#98a77c] text-sm" to="#">Xem tất cả</router-link>
+          <router-link class="text-[#98a77c] text-sm" :to="{ name: 'postforum' }">Xem tất cả</router-link>
         </div>
         <div class="mt-4 text-sm">
           <ul class="space-y-4">
@@ -89,7 +88,11 @@ const limitedReadings = computed(() => readings.value.slice(0, 4));
                 :key="index"
                 class="border-b pb-2"
             >
-              <h5 class="font-semibold truncate">{{ post.title }}</h5>
+              <h5 class="font-semibold truncate">
+                <router-link :to="{ name: 'postdetail', params: { id: post.id } }">
+                  {{ post.title }}
+                </router-link>
+              </h5>
               <p class="text-gray-500 text-xs">
                 {{ post.created }} - {{ post.categoryId }}
               </p>
@@ -103,7 +106,7 @@ const limitedReadings = computed(() => readings.value.slice(0, 4));
       <section class="p-4 border rounded">
         <div class="flex justify-between items-center">
           <h4 class="text-md font-bold">Đang đọc</h4>
-          <router-link class="text-[#98a77c] text-sm" to="/list/readinglist">Xem tất cả</router-link>
+          <router-link class="text-[#98a77c] text-sm" :to="{ name: 'readinglist' }">Xem tất cả</router-link>
         </div>
         <div class="mt-4 text-sm">
           <div class="space-y-4">
@@ -119,7 +122,11 @@ const limitedReadings = computed(() => readings.value.slice(0, 4));
                   class="w-14 h-20 object-cover"
               />
               <div class="flex justify-between items-center w-full">
-                <h5 class="font-semibold truncate">{{ novel.title }}</h5>
+                <h5 class="font-semibold truncate">
+                  <router-link :to="{ name: 'noveldetail', params: { id: novel.id } }">
+                    {{ novel.title }}
+                  </router-link>
+                </h5>
                 <p class="text-gray-500 flex-shrink-0">
                   Chương 100/200
                 </p>

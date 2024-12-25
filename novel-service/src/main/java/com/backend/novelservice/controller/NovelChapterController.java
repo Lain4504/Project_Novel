@@ -68,20 +68,18 @@ public class NovelChapterController {
                 .result(chapter.orElse(null)).build();
     }
 
-    // API lấy chapter trước đó
     @GetMapping("/get/{volumeId}/{chapterNumber}/previous")
-    public ApiResponse<NovelChapter> getPreviousChapter(@PathVariable String volumeId, @PathVariable Integer chapterNumber) {
-        Optional<NovelChapter> previousChapter = novelChapterService.getPreviousChapter(volumeId, chapterNumber);
-        return ApiResponse.<NovelChapter>builder()
-                .result(previousChapter.orElse(null)).build();
+    public ApiResponse<NovelChapterResponse> getPreviousChapter(@PathVariable String volumeId, @PathVariable Integer chapterNumber) {
+        NovelChapterResponse previousChapter = novelChapterService.getPreviousChapter(volumeId, chapterNumber);
+        return ApiResponse.<NovelChapterResponse>builder()
+                .result(previousChapter).build();
     }
 
-    // API lấy chapter sau đó
     @GetMapping("/get/{volumeId}/{chapterNumber}/next")
-    public ApiResponse<NovelChapter> getNextChapter(@PathVariable String volumeId, @PathVariable Integer chapterNumber) {
-        Optional<NovelChapter> nextChapter = novelChapterService.getNextChapter(volumeId, chapterNumber);
-        return ApiResponse.<NovelChapter>builder()
-                .result(nextChapter.orElse(null)).build();
+    public ApiResponse<NovelChapterResponse> getNextChapter(@PathVariable String volumeId, @PathVariable Integer chapterNumber) {
+        NovelChapterResponse nextChapter = novelChapterService.getNextChapter(volumeId, chapterNumber);
+        return ApiResponse.<NovelChapterResponse>builder()
+                .result(nextChapter).build();
     }
 
     @GetMapping("/increment-visit-count/{chapterId}")

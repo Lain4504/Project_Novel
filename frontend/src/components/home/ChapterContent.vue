@@ -9,23 +9,15 @@ const props = defineProps<{
     created: string;
     chapterNumber: string;
     volumeId: string;
+    wordCount: number;
+  };
+  novel: {
+    id: string;
+    authorName: string;
   };
 }>();
 
 const emits = defineEmits(['previous-chapter', 'next-chapter']);
-
-const author = 'Nguyễn Văn A';
-const previousChapter = 'chapter-0';
-const nextChapter = 'chapter-2';
-
-const wordCount = props.chapter.content.replace(/<[^>]*>/g, '').split(/\s+/).length;
-
-const comments = ref<string[]>([
-  "This is a very interesting chapter! I can't wait to read more.",
-  "I love how the story is developing. Keep up the great work!",
-  "The world-building in this chapter is fantastic, I feel immersed!",
-]);
-
 const sidebarOpen = ref(false);
 const toggleSidebar = () => {
   sidebarOpen.value = !sidebarOpen.value;
@@ -79,24 +71,22 @@ const toggleSidebar = () => {
         <h2 class="text-2xl font-semibold mb-2">
           Chương {{ chapter.chapterNumber }} - {{ chapter.title }}
         </h2>
-        <p class="text-gray-600 text-sm">Author: {{ author }}</p>
+        <p class="text-gray-600 text-sm">Author: {{novel.authorName}}</p>
         <div class="flex justify-center space-x-4 mt-2">
-          <p class="text-gray-600 text-sm">Comment: {{ comments.length }}</p>
-          <p class="text-gray-600 text-sm">Word: {{ wordCount }}</p>
-          <p class="text-gray-600 text-sm">Updated: {{ chapter.created }}</p>
+<!--          <p class="text-gray-600 text-sm">Comment: 3</p>-->
+          <p class="text-gray-600 text-sm">Word: {{ chapter.wordCount }}</p>
+          <p class="text-gray-600 text-sm">Created: {{ chapter.created }}</p>
         </div>
       </div>
       <div class="prose prose-blue mx-auto max-w-none" v-html="chapter.content"></div>
       <div class="flex justify-between mt-8">
         <Button
-            :disabled="!previousChapter"
             type="default"
             @click="$emit('previous-chapter')"
         >
           Previous Chapter
         </Button>
         <Button
-            :disabled="!nextChapter"
             type="default"
             @click="$emit('next-chapter')"
         >

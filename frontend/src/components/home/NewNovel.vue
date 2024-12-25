@@ -1,13 +1,24 @@
 <script lang="ts" setup>
-import {onMounted, ref} from 'vue';
-import {getLatestNovels, getNovels} from '@/api/novel';
+import { onMounted, ref } from 'vue';
+import { getLatestNovels, getNovels } from '@/api/novel';
+
+interface Category {
+  id: string;
+  name: string;
+  description: string;
+  createdDate: string;
+  modifiedDate: string;
+}
 
 interface Novel {
   id: string;
   title: string;
   description: string;
   image: string;
-  author: string;
+  authorName: string;
+  authorId: string
+  followCount?: number;
+  categories: Category[];
 }
 
 const trendingBooks = ref<Novel[]>([]);
@@ -24,12 +35,21 @@ const fetchLatestNovels = async () => {
       title: novel.title,
       description: novel.description,
       image: novel.image.path,
-      author: novel.author,
+      authorName: novel.authorName,
+      authorId: novel.authorId,
+      categories: novel.categories.map((category: any) => ({
+        id: category.id,
+        name: category.name,
+        description: category.description,
+        createdDate: category.createdDate,
+        modifiedDate: category.modifiedDate,
+      })),
     }));
   } catch (error) {
     console.error('Error fetching latest novels:', error);
   }
 };
+
 const fetchTrendingNovels = async () => {
   try {
     const page = 1;
@@ -41,16 +61,23 @@ const fetchTrendingNovels = async () => {
       title: novel.title,
       description: novel.description,
       image: novel.image.path,
-      author: novel.author,
+      authorName: novel.authorName,
+      followCount: novel.followCount,
+      categories: novel.categories.map((category: any) => ({
+        id: category.id,
+        name: category.name,
+        description: category.description,
+        createdDate: category.createdDate,
+        modifiedDate: category.modifiedDate,
+      })),
     }));
   } catch (error) {
     console.error('Error fetching latest novels:', error);
   }
 };
+
 onMounted(() => {
   fetchLatestNovels();
-});
-onMounted(() => {
   fetchTrendingNovels();
 });
 </script>
@@ -78,16 +105,24 @@ onMounted(() => {
                 class="w-24 h-36 object-cover rounded-lg"
             />
             <div class="flex-1">
-              <h3 class="text-lg font-semibold line-clamp-2">{{ novel.title }}</h3>
-              <p class="text-sm text-gray-500 line-clamp-3">{{ novel.description }}</p>
+              <h3 class="text-lg font-semibold line-clamp-2">
+                <router-link :to="{ name: 'noveldetail', params: { id: novel.id } }">
+                  {{ novel.title }}
+                </router-link>
+               </h3>
+              <p v-html="novel.description" class="text-sm text-gray-500 line-clamp-3"/>
               <div class="flex items-center text-sm text-gray-700 mt-2">
                 <i class="fas fa-user mr-2"></i>
-                {{ novel.author }}
+                <router-link :to="{ name: 'account', params: { id: novel.authorId } }">
+                {{ novel.authorName }}
+                </router-link>
               </div>
               <span
+                  v-for="category in novel.categories.slice(0, 4)"
+                  :key="category.id"
                   class="inline-block bg-yellow-100 text-yellow-600 text-xs font-semibold mt-3 px-3 py-1 rounded-full"
               >
-                dzdvaff
+                {{ category.name }}
               </span>
             </div>
           </div>
@@ -112,8 +147,12 @@ onMounted(() => {
             <div v-for="book in trendingBooks" :key="book.id" class="flex items-center mb-4">
               <img :src="book.image" alt="book cover" class="w-16 h-24 object-cover rounded-md"/>
               <div class="ml-4">
-                <h4 class="text-sm font-semibold text-gray-800">{{ book.title }}</h4>
-                <p class="text-xs text-gray-500">{{ book.followers }} theo dõi</p>
+                <h4 class="text-sm font-semibold text-gray-800">
+                  <router-link :to="{ name: 'noveldetail', params: { id: book.id } }">
+                    {{ book.title }}
+                  </router-link>
+                </h4>
+                <p class="text-xs text-gray-500">{{ book.followCount }} theo dõi</p>
               </div>
             </div>
           </div>

@@ -18,7 +18,6 @@ import BookMark from '@/components/home/BookMark.vue';
 import RecentlyReadingList from '@/components/home/RecentlyReadingList.vue';
 import UserProfileSetting from '@/views/home/UserProfileSetting.vue';
 import Library from '@/views/home/Library.vue';
-import TransactionHistory from '@/views/home/TransactionHistory.vue';
 import NovelAuthorManagement from '@/views/admin/NovelAuthorManagement.vue';
 import FAQ from '@/views/common/FAQ.vue';
 import AuthorAccount from '@/views/admin/AuthorAccount.vue';
@@ -77,9 +76,9 @@ const routes: Array<RouteRecordRaw> = [
     {name: 'login', path: '/login', component: Login},
     {name: 'register', path: '/register', component: Register},
     {name: 'home', path: '/', component: Home},
-    {name: 'chapter', path: '/chapter/:id', component: Chapter},
-    {name: 'noveldetail', path: '/noveldetail/:id', component: NovelDetail},
-    {name: 'account', path: '/account', component: Account},
+    {name: 'chapter', path: '/:novel/:chapter', component: Chapter},
+    {name: 'noveldetail', path: '/:id', component: NovelDetail},
+    {name: 'account', path: '/account/:id', component: Account},
     {
         name: 'list',
         path: '/list',
@@ -105,7 +104,6 @@ const routes: Array<RouteRecordRaw> = [
     },
     {name: 'userprofile', path: '/user-profile', component: UserProfileSetting},
     {name: 'library', path: '/library', component: Library},
-    {name: 'history', path: '/history', component: TransactionHistory},
     {name: 'faq', path: '/faq', component: FAQ},
     {name: 'postforum', path: '/post-forum', component: PostForum,},
     {name: 'postdetail', path: '/post/:id', component: PostDetail, props: true},

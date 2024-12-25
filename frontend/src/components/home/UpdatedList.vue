@@ -6,7 +6,7 @@ import {getLatestNovels} from "@/api/novel";
 interface Novel {
   id: number;
   title: string;
-  latestChapterTitle: string; // ISO 8601 Date String
+  latestChapterTitle: string;
   latestChapterId: string;
   authorId: string;
   authorName: string;
@@ -19,6 +19,7 @@ const fetchNewUpdateNovels = async () => {
   const size = 10;
   try {
     const result = await getLatestNovels(page, size);
+    console.log('New update novels:', result.data);
     novels.value = result.data;
   } catch (error) {
     console.error('Error fetching new update novels:', error);
@@ -57,14 +58,15 @@ onMounted(() => {
       <tr v-for="novel in novels" :key="novel.id" class="border-b hover:bg-gray-50">
         <!-- <td :style="{ width: columnWidths.category + 'px' }" class="px-4 py-2 text-gray-700">ssss</td>  -->
         <td :style="{ width: columnWidths.title + 'px' }" class="px-4 py-2 text-sm font-semibold text-blue-600">
-          {{ novel.title }}
+          <router-link :to="{ name: 'noveldetail', params: { id: novel.id } }">{{ novel.title }}</router-link>
         </td>
-        <td :style="{ width: columnWidths.author + 'px' }" class="px-4 py-2 text-sm text-gray-700">{{
-            novel.authorName
-          }}
+        <td :style="{ width: columnWidths.author + 'px' }" class="px-4 py-2 text-sm text-gray-700 hover:text-blue-700">
+          <router-link :to="{ name: 'account', params: { id: novel.authorId } }">{{ novel.authorName }}</router-link>
         </td>
-        <td :style="{ width: columnWidths.latestChapter + 'px' }" class="px-4 py-2 text-sm text-gray-700">
-          {{ novel.latestChapterTitle }}
+        <td :style="{ width: columnWidths.latestChapter + 'px' }" class="px-4 py-2 text-sm text-gray-700 hover:text-blue-700">
+          <router-link :to="{ name: 'chapter', params: { novel: novel.id, chapter: novel.latestChapterId } }">
+            {{ novel.latestChapterTitle }}
+          </router-link>
         </td>
         <td :style="{ width: columnWidths.updatedAt + 'px', textAlign: 'right' }"
             class="px-4 py-2 text-sm text-gray-500">{{ novel.created }}
@@ -77,12 +79,20 @@ onMounted(() => {
     <div v-else-if="novels.length > 0">
       <div v-for="novel in novels" :key="novel.id" class="border-b hover:bg-gray-50 mb-4 p-4">
         <!-- Title -->
-        <div class="text-sm font-semibold text-blue-600 mb-2">{{ novel.title }}</div>
+        <div class="text-sm font-semibold text-blue-600 mb-2">
+          <router-link :to="{ name: 'noveldetail', params: { id: novel.id } }">{{ novel.title }}</router-link>
+        </div>
 
         <!-- Author, Chapter (hàng ngang) -->
         <div class="flex justify-between mb-2">
-          <div class="text-sm text-gray-700">{{ novel.authorName }}</div>
-          <div class="text-sm text-gray-700">{{ novel.latestChapterTitle }}</div>
+          <div class="text-sm text-gray-700">
+            <router-link :to="{ name: 'account', params: { id: novel.authorId } }">{{ novel.authorName }}</router-link>
+          </div>
+          <div class="text-sm text-gray-700">
+            <router-link :to="{ name: 'chapter', params: { novel: novel.id, chapter: novel.latestChapterId } }">
+              {{ novel.latestChapterTitle }}
+            </router-link>
+          </div>
         </div>
 
         <!-- Category và UpdateAt (hàng ngang) -->
@@ -93,12 +103,10 @@ onMounted(() => {
       </div>
     </div>
 
-
     <!-- Hiển thị thông báo nếu không có tiểu thuyết -->
     <p v-else class="text-gray-500 text-center">Không có tiểu thuyết nào được cập nhật.</p>
   </div>
 </template>
-
 
 <style scoped>
 @media screen and (max-width: 768px) {
@@ -126,4 +134,3 @@ onMounted(() => {
   }
 }
 </style>
-  

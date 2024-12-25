@@ -24,7 +24,6 @@ public class UserReviewService {
     UserReviewRepository userReviewRepository;
     UserReviewMapper userReviewMapper;
     DateTimeFormatter dateTimeFormatter;
-    private final RestClient.Builder builder;
 
     public UserReviewResponse createReview(UserReviewRequest request) {
         UserReview userReview = userReviewMapper.toUserReview(request);

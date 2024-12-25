@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import {ref} from 'vue';
+import {ref, watch} from 'vue';
 import Tiptap from '@/components/common/Tiptap.vue';
 import {createChapter} from '@/api/novelChapter';
 import {notification} from 'ant-design-vue';
@@ -28,8 +28,7 @@ const title = ref("");
 const chapterNumber = ref<number | null>(null);
 const status = ref(ChapterStatusEnum.DRAFT);
 const content = ref("");
-const isPaid = ref(false);
-const price = ref(0);
+const wordCount = ref(0);
 
 const emit = defineEmits(['chapter-added']);
 
@@ -40,8 +39,7 @@ const handleSubmit = async () => {
       chapterTitle: title.value,
       status: status.value,
       content: content.value,
-      isPaid: isPaid.value,
-      price: isPaid.value ? price.value : 0
+      wordCount: wordCount.value
     });
     showNotification('success', 'Chapter created successfully.');
     emit('chapter-added');
@@ -51,8 +49,6 @@ const handleSubmit = async () => {
     chapterNumber.value = null;
     status.value = ChapterStatusEnum.DRAFT;
     content.value = ""; // Reset Tiptap content
-    isPaid.value = false;
-    price.value = 0;
   } catch (error: any) {
     console.error('Failed to create chapter:', error);
     if (error.response) {
@@ -64,6 +60,13 @@ const handleSubmit = async () => {
     }
   }
 };
+
+const countWords = (text: string) => {
+  return text.trim().split(/\s+/).length;
+};
+watch(content, (newContent) => {
+  wordCount.value = countWords(newContent);
+});
 </script>
 
 <template>
@@ -86,20 +89,10 @@ const handleSubmit = async () => {
           <a-select-option :value="ChapterStatusEnum.DRAFT">Chưa hoàn thành</a-select-option>
         </a-select>
       </div>
-      <div class="mt-4">
-        <span class="block text-sm font-medium text-gray-700">Chọn loại</span>
-        <a-radio-group v-model:value="isPaid" class="mt-2">
-          <a-radio :value="true">Trả phí</a-radio>
-          <a-radio :value="false">Không trả phí</a-radio>
-        </a-radio-group>
-      </div>
-      <div v-if="isPaid" class="mt-4 w-1/2">
-        <label class="block text-sm font-medium text-gray-700" for="price">Giá tiền</label>
-        <a-input-number id="price" v-model:value="price" placeholder="Nhập giá tiền"/>
-      </div>
-      <div class="mt-4">
+      <div class="mt-4 relative">
         <label class="block text-sm font-medium text-gray-700" for="content">Nội dung</label>
         <Tiptap :content="content" class="mt-1" @update:content="content = $event"/>
+        <p class="absolute top-0 right-0 mt-1 mr-2 text-sm text-gray-500">Số từ: {{ wordCount }}</p>
       </div>
       <div class="flex justify-end mt-4">
         <a-button html-type="submit" type="primary">

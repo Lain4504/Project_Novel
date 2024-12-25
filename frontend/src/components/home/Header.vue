@@ -6,6 +6,7 @@ import {logout} from '@/api/auth';
 import NotificationDropdown from '../common/BellNotificationDropdown.vue';
 import {getUserProfile} from "@/api/user";
 import {getNotificationByUserId} from "@/api/notification";
+import {useRouter} from "vue-router";
 
 const isAccountMenuOpen = ref(false);
 const isCategoryMenuOpen = ref(false);
@@ -81,7 +82,10 @@ watch(isNotificationListOpen, (newVal) => {
 
 const store = useStore();
 const isAuthenticated = computed(() => store.getters.isAuthenticated || '');
-
+const router = useRouter();
+const viewAccount = () => {
+  router.push({name: 'account', params: {id: store.getters.getUserId}});
+};
 const handleLogout = async () => {
   try {
     const accessToken = store.getters.getToken;
@@ -104,9 +108,9 @@ const handleLogout = async () => {
 
 const dropdownMenu = [
   {
-    label: 'User Profile',
+    label: 'Account',
     icon: 'fa-solid fa-user',
-    link: '/account',
+    action: viewAccount,
   },
   {
     label: 'Bookmark',
@@ -123,11 +127,6 @@ const dropdownMenu = [
     icon: 'fa-solid fa-gear',
     link: '/user-profile',
   },
-  // {
-  //   label: 'Transaction History',
-  //   icon: 'fa-solid fa-money-bill',
-  //   link: '/history',
-  // },
   {
     label: 'Logout',
     icon: 'fa-solid fa-right-from-bracket',
@@ -195,7 +194,7 @@ onUnmounted(() => {
           </transition>
         </div>
 
-        <router-link class="text-black text-sm hover:underline transition-all duration-300" to="/post-forum">Forum
+        <router-link class="text-black text-sm hover:underline transition-all duration-300" :to="{ name: 'postforum' }">Forum
         </router-link>
         <router-link class="text-black text-sm hover:underline transition-all duration-300" to="#">Support</router-link>
         <router-link class="text-black text-sm hover:underline transition-all duration-300" to="#">Ranking</router-link>
@@ -245,6 +244,11 @@ onUnmounted(() => {
                      @click="closeMenu">
                   <div v-if="item.label === 'Logout'" class="cursor-pointer flex items-center w-full"
                        @click.prevent="handleLogout">
+                    <font-awesome-icon :icon="item.icon" class="mr-2"/>
+                    {{ item.label }}
+                  </div>
+                  <div v-if="item.label === 'Account'" class="cursor-pointer flex items-center w-full"
+                  @click.prevent="viewAccount">
                     <font-awesome-icon :icon="item.icon" class="mr-2"/>
                     {{ item.label }}
                   </div>
@@ -305,6 +309,11 @@ onUnmounted(() => {
                      @click="closeMenu">
                   <div v-if="item.label === 'Logout'" class="cursor-pointer flex items-center w-full"
                        @click.prevent="handleLogout">
+                    <font-awesome-icon :icon="item.icon" class="mr-2"/>
+                    {{ item.label }}
+                  </div>
+                  <div v-if="item.label === 'Account'" class="cursor-pointer flex items-center w-full"
+                  @click.prevent="viewAccount">
                     <font-awesome-icon :icon="item.icon" class="mr-2"/>
                     {{ item.label }}
                   </div>

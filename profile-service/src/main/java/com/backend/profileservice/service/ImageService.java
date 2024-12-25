@@ -5,7 +5,7 @@ import com.backend.exception.ErrorCode;
 import com.backend.profileservice.entity.Image;
 import com.backend.profileservice.repository.ImageRepository;
 import com.backend.profileservice.repository.httpclient.ImgurClient;
-import com.backend.profileservice.repository.httpclient.ImgurResponse;
+import com.backend.profileservice.dto.response.ImgurResponse;
 import com.backend.utils.FileUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;

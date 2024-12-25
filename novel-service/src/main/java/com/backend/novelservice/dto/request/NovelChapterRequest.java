@@ -24,7 +24,7 @@ public class NovelChapterRequest {
     @Size(min = 1, message = "Content must not be empty")
     String content;
     @Positive(message = "Word count must be positive")
-    int wordCount;
+    Long wordCount;
     @NotNull(message = "Chapter type is mandatory")
     Boolean isVip;
     @NotBlank(message = "Status is mandatory")

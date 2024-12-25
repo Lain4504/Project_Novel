@@ -1,7 +1,7 @@
 <script lang="ts" setup>
-import {ref, watch} from 'vue';
+import {ref, watch, onMounted} from 'vue';
 import Tiptap from "@/components/common/Tiptap.vue";
-import {updateChapter} from '@/api/novelChapter';
+import {updateChapter, getChapter} from '@/api/novelChapter';
 import {notification} from "ant-design-vue";
 
 enum ChapterStatusEnum {
@@ -25,11 +25,27 @@ const props = defineProps({
 });
 const emit = defineEmits(['chapter-updated']);
 
-const title = ref(props.chapterData.chapterTitle || "");
-const status = ref(props.chapterData.status || ChapterStatusEnum.DRAFT);
-const content = ref(props.chapterData.content || "");
-const chapterNumber = ref<number | null>(props.chapterData.chapterNumber || null);
-
+const title = ref("");
+const status = ref(ChapterStatusEnum.DRAFT);
+const content = ref("");
+const chapterNumber = ref<number | null>(null);
+const wordCount = ref(0);
+const fetchChapterData = async () => {
+  try {
+    const data = await getChapter(props.chapterData.id);
+    title.value = data.chapterTitle || "";
+    status.value = data.status || ChapterStatusEnum.DRAFT;
+    content.value = data.content || "";
+    chapterNumber.value = data.chapterNumber || null;
+    wordCount.value = countWords(data.content || "");
+  } catch (error) {
+    console.error('Failed to fetch chapter data:', error);
+    showNotification('error', 'Failed to fetch chapter data. Please try again.');
+  }
+};
+const countWords = (text: string) => {
+  return text.trim().split(/\s+/).length;
+};
 const handleSubmit = async () => {
   try {
     await updateChapter(props.chapterData.id, {
@@ -37,7 +53,8 @@ const handleSubmit = async () => {
       chapterNumber: chapterNumber.value,
       chapterTitle: title.value,
       status: status.value,
-      content: content.value
+      content: content.value,
+      wordCount: wordCount.value
     });
     emit('chapter-updated');
     showNotification('success', 'Chapter updated successfully.');
@@ -52,12 +69,13 @@ const handleSubmit = async () => {
     }
   }
 };
+watch(content, (newContent) => {
+  wordCount.value = countWords(newContent);
+});
+onMounted(fetchChapterData);
 
 watch(() => props.chapterData, (newData) => {
-  title.value = newData.chapterTitle || "";
-  status.value = newData.status || ChapterStatusEnum.DRAFT;
-  content.value = newData.content || "";
-  chapterNumber.value = newData.chapterNumber || null;
+  fetchChapterData();
 }, {immediate: true});
 </script>
 
@@ -83,9 +101,10 @@ watch(() => props.chapterData, (newData) => {
           <option :value="ChapterStatusEnum.DRAFT">Chưa hoàn thành</option>
         </select>
       </div>
-      <div class="mt-4">
+      <div class="mt-4 relative">
         <label class="block text-sm font-medium text-gray-700" for="content">Nội dung</label>
         <Tiptap :content="content" class="mt-1" @update:content="content = $event"/>
+        <p class="absolute top-0 right-0 mt-1 mr-2 text-sm text-gray-500">Số từ: {{ wordCount }}</p>
       </div>
       <div class="flex justify-end mt-4">
         <button class="text-sm bg-transparent border-[1px] border-blue-500 text-blue-500 hover:border-blue-700 hover:scale-105 font-medium py-2 px-4 rounded transition-all duration-300"

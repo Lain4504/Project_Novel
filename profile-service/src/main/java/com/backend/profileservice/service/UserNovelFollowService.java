@@ -1,19 +1,22 @@
 package com.backend.profileservice.service;
 
 import com.backend.dto.response.PageResponse;
+import com.backend.event.NovelDataSenderEvent;
 import com.backend.profileservice.dto.request.UserNovelFollowRequest;
 import com.backend.profileservice.dto.response.UserNovelFollowResponse;
 import com.backend.profileservice.entity.UserNovelFollow;
 import com.backend.profileservice.mapper.UserNovelFollowMapper;
 import com.backend.profileservice.repository.UserNovelFollowRepository;
-import com.backend.profileservice.repository.httpclient.NovelDetailsResponse;
+import com.backend.profileservice.dto.response.NovelDetailsResponse;
 import com.backend.profileservice.repository.httpclient.NovelServiceClient;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE, makeFinal = true)
@@ -22,14 +25,15 @@ public class UserNovelFollowService {
     UserNovelFollowRepository userNovelFollowRepository;
     UserNovelFollowMapper userNovelFollowMapper;
     NovelServiceClient novelServiceClient;
-
     public UserNovelFollowResponse followNovel(UserNovelFollowRequest request) {
         UserNovelFollow userNovelFollow = userNovelFollowMapper.toUserNovelFollow(request);
+        novelServiceClient.updateNovelFollow(request.getNovelId(), true);
         userNovelFollowRepository.save(userNovelFollow);
         return userNovelFollowMapper.toUserNovelFollowResponse(userNovelFollow);
     }
 
     public void unfollowNovel(UserNovelFollowRequest request) {
+        novelServiceClient.updateNovelFollow(request.getNovelId(), false);
         userNovelFollowRepository.deleteByUserIdAndNovelId(request.getUserId(), request.getNovelId());
     }
 

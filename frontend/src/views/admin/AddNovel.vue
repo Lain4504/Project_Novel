@@ -1,23 +1,22 @@
 <script lang="ts" setup>
-import {inject, onMounted, ref} from 'vue';
-import {getNovelCategoriesWithoutPagination} from "@/api/novelCategory";
-import {createNovel} from "@/api/novel";
+import { inject, onMounted, ref } from 'vue';
+import { getNovelCategoriesWithoutPagination } from "@/api/novelCategory";
+import { createNovel } from "@/api/novel";
 import Tiptap from "@/components/common/Tiptap.vue";
 import Rules from "@/components/admin/Rules.vue";
 import store from "@/store";
+import {notification} from "ant-design-vue";
 
-const showAlert = inject('showAlert') as ((type: string, message: string) => void);
 const showNotification = (type: string, message: string) => {
-  if (showAlert) {
-    showAlert(type, message);
-  } else {
-    console.error('showAlert is not available in this context');
-  }
+  notification[type]({
+    message: type === 'success' ? 'Success' : 'Error',
+    description: message,
+    duration: 3
+  });
 };
 
 const selectedCategories = ref<string[]>([]);
 const categories = ref<{ value: string; label: string }[]>([]);
-const isDropdownOpen = ref(false);
 
 const loadCategories = async () => {
   const data = await getNovelCategoriesWithoutPagination();
@@ -27,16 +26,6 @@ const loadCategories = async () => {
   }));
 };
 
-const toggleCategory = (category: string) => {
-  const selectedCategory = categories.value.find(cat => cat.value === category)?.label;
-  const index = selectedCategories.value.indexOf(selectedCategory || '');
-  if (index === -1) {
-    selectedCategories.value.push(selectedCategory || '');
-  } else {
-    selectedCategories.value.splice(index, 1);
-  }
-};
-
 const form = ref({
   title: '',
   author: '',
@@ -44,10 +33,7 @@ const form = ref({
 });
 
 const getCategoryIds = () => {
-  return selectedCategories.value.map(categoryName => {
-    const category = categories.value.find(cat => cat.label === categoryName);
-    return category?.value;
-  });
+  return selectedCategories.value;
 };
 
 const selectedImage = ref<File | null>(null);
@@ -64,7 +50,7 @@ const saveNovel = async () => {
   };
 
   const formData = new FormData();
-  formData.append("novel", new Blob([JSON.stringify(novelData)], {type: "application/json"}));
+  formData.append("novel", new Blob([JSON.stringify(novelData)], { type: "application/json" }));
   if (selectedImage.value) {
     formData.append("image", selectedImage.value);
   }
@@ -76,17 +62,13 @@ const saveNovel = async () => {
   } catch (error: any) {
     console.error('Failed to save novel:', error);
     if (error.response) {
-      showNotification('danger', error.response.data.message || 'Novel save failed. Please try again.');
+      showNotification('error', error.response.data.message || 'Novel save failed. Please try again.');
     } else if (error.request) {
-      showNotification('danger', 'No response from server. Please try again.');
+      showNotification('error', 'No response from server. Please try again.');
     } else {
-      showNotification('danger', 'An unexpected error occurred. Please try again.');
+      showNotification('error', 'An unexpected error occurred. Please try again.');
     }
   }
-};
-const isSelected = (category: string) => {
-  const selectedCategory = categories.value.find(cat => cat.value === category)?.label;
-  return selectedCategories.value.includes(selectedCategory || '');
 };
 
 const handleImageChange = (event: Event) => {
@@ -96,10 +78,16 @@ const handleImageChange = (event: Event) => {
     imageUrl.value = URL.createObjectURL(file);
   }
 };
-
 onMounted(() => {
   loadCategories();
 });
+
+const handleSearch = (value: string) => {
+  if (!value) {
+    console.log("Search input cleared.");
+    selectedCategories.value = [];
+  }
+};
 </script>
 
 <template>
@@ -154,33 +142,28 @@ onMounted(() => {
 
         <div class="md:col-span-1 my-4 relative">
           <label class="block text-sm font-medium text-gray-700" for="floating_category">Chọn thể loại</label>
-          <input
-              :value="selectedCategories.join(', ')"
-              class="bg-white mt-1 block w-full p-2 border rounded-md text-sm text-gray-900 bg-transparent border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              readonly
-              type="text"
-              @click="isDropdownOpen = !isDropdownOpen"
-          />
-          <div
-              v-if="isDropdownOpen"
-              class="absolute z-10 bg-white border border-gray-300 rounded-md mt-1 shadow-md max-h-60 overflow-y-auto w-full">
-            <div
+          <a-select
+              v-model:value="selectedCategories"
+              mode="multiple"
+              allow-clear
+              show-search
+              placeholder="Chọn thể loại"
+              class="w-full"
+              :filter-option="(input, option) => {
+    return option.label.toLowerCase().includes(input.toLowerCase());
+  }"
+              @search="handleSearch"
+          >
+            <a-select-option
                 v-for="category in categories"
                 :key="category.value"
-                class="p-2 cursor-pointer hover:bg-gray-100 text-sm"
-                @click="toggleCategory(category.value)">
-              <input
-                  :id="category.value"
-                  :checked="isSelected(category.value)"
-                  :value="category.value"
-                  class="mr-2"
-                  type="checkbox"
-              />
+                :value="category.value"
+                :label="category.label"
+            >
               {{ category.label }}
-            </div>
-          </div>
+            </a-select-option>
+          </a-select>
         </div>
-
         <div class="my-4">
           <label class="block text-sm font-medium text-gray-700" for="novel_description">Mô tả</label>
           <Tiptap :content="form.content" @update:content="form.content = $event"/>
