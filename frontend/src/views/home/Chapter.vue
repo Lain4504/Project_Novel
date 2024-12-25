@@ -1,14 +1,14 @@
-<script setup lang="ts">
-import { onMounted, reactive, ref } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
-import { getChapter, getPreviousChapter, getNextChapter } from '@/api/chapter';
+<script lang="ts" setup>
+import {onMounted, reactive, ref} from 'vue';
+import {useRoute, useRouter} from 'vue-router';
+import {getChapter, getNextChapter, getPreviousChapter} from '@/api/novelChapter';
 import ChapterContent from '@/components/home/ChapterContent.vue';
 import {
   createChapterComment,
   createChapterReply,
   getAllChapterComments,
   getAllRepliesByChapterCommentId
-} from "@/api/novelcomment";
+} from "@/api/novelComment";
 import CommentSection from "@/components/home/CommentSection.vue";
 
 const route = useRoute();
@@ -45,7 +45,7 @@ const fetchPreviousChapter = async () => {
   try {
     const response = await getPreviousChapter(chapter.volumeId, parseInt(chapter.chapterNumber));
     await fetchChapter(response.id);
-    router.push({ name: 'chapter', params: { id: response.id } });
+    router.push({name: 'chapter', params: {id: response.id}});
   } catch (error) {
     console.error('Failed to fetch previous chapter:', error);
   }
@@ -55,7 +55,7 @@ const fetchNextChapter = async () => {
   try {
     const response = await getNextChapter(chapter.volumeId, parseInt(chapter.chapterNumber));
     await fetchChapter(response.id);
-    router.push({ name: 'chapter', params: { id: response.id } });
+    router.push({name: 'chapter', params: {id: response.id}});
   } catch (error) {
     console.error('Failed to fetch next chapter:', error);
   }
@@ -90,18 +90,18 @@ onMounted(() => {
 </script>
 
 <template>
-  <ChapterContent :chapter="chapter" @previous-chapter="fetchPreviousChapter" @next-chapter="fetchNextChapter" />
-  <CommentSection :itemId="chapterId"  itemType="chapter"
-                  :comments="comments" @commentAdded="handleCommentAdded"
-                  :create-comment-api="createChapterComment"
-                  :create-reply-api="createChapterReply"
-                  :owner-id="chapter.userId"
-                  :item-name="chapter.title"
-                  :get-all-replies-api="getAllRepliesByChapterCommentId"
+  <ChapterContent :chapter="chapter" @previous-chapter="fetchPreviousChapter" @next-chapter="fetchNextChapter"/>
+  <CommentSection :comments="comments" :create-comment-api="createChapterComment"
+                  :create-reply-api="createChapterReply" :current-page="currentPage"
                   :fetch-comments="fetchComments"
-                  :current-page="currentPage"
+                  :get-all-replies-api="getAllRepliesByChapterCommentId"
+                  :item-name="chapter.title"
+                  :itemId="chapterId"
+                  :owner-id="chapter.userId"
                   :page-size="pageSize"
                   :total-comments="totalComments"
+                  itemType="chapter"
+                  @commentAdded="handleCommentAdded"
                   @pageChange="handlePageChange"
   />
 </template>

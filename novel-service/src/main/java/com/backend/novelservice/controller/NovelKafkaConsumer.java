@@ -11,8 +11,9 @@ import org.springframework.kafka.annotation.KafkaListener;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class NovelKafkaConsumer {
     NovelService novelService;
-      @KafkaListener(topics = "novel-rating", groupId = "group_id")
-        public void consume(NovelDataSenderEvent event) {
-            novelService.updateNovelScore(event);
-        }
+
+    @KafkaListener(topics = "novel-rating", groupId = "group_id")
+    public void consume(NovelDataSenderEvent event) {
+        novelService.updateNovelScore(event);
+    }
 }

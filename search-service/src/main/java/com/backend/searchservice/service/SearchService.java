@@ -7,7 +7,6 @@ import co.elastic.clients.elasticsearch.core.SearchRequest;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.elasticsearch.core.search.Hit;
 import co.elastic.clients.json.JsonData;
-import co.elastic.clients.util.DateTime;
 import com.backend.event.NovelDataSenderEvent;
 import com.backend.searchservice.dto.request.NovelSearchRequest;
 import com.backend.searchservice.dto.response.NovelSearchResponse;
@@ -20,7 +19,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.time.Instant;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;

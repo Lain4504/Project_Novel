@@ -26,8 +26,6 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -45,25 +43,25 @@ public class PostCommentService {
     DateTimeFormatter dateTimeFormatter;
 
     public PageResponse<PostCommentResponse> getAllComments(String postId, int page, int size) {
-    Sort sort = Sort.by(Sort.Order.desc("createdDate"));
-    Pageable pageable = PageRequest.of(page - 1, size, sort);
-    var pageData = postCommentRepository.findAllByPostId(postId, pageable);
-    var commentList = pageData.getContent().stream()
-            .map(this::enrichCommentWithUserProfile)
-            .map(postComment -> {
-                PostCommentResponse response = postCommentMapper.toPostCommentResponse(postComment);
-                response.setCreated(dateTimeFormatter.format(postComment.getCreatedDate()));
-                return response;
-            })
-            .collect(Collectors.toList());
-    return PageResponse.<PostCommentResponse>builder()
-            .currentPage(page)
-            .pageSize(pageData.getSize())
-            .totalPages(pageData.getTotalPages())
-            .totalElements(pageData.getTotalElements())
-            .data(commentList)
-            .build();
-}
+        Sort sort = Sort.by(Sort.Order.desc("createdDate"));
+        Pageable pageable = PageRequest.of(page - 1, size, sort);
+        var pageData = postCommentRepository.findAllByPostId(postId, pageable);
+        var commentList = pageData.getContent().stream()
+                .map(this::enrichCommentWithUserProfile)
+                .map(postComment -> {
+                    PostCommentResponse response = postCommentMapper.toPostCommentResponse(postComment);
+                    response.setCreated(dateTimeFormatter.format(postComment.getCreatedDate()));
+                    return response;
+                })
+                .collect(Collectors.toList());
+        return PageResponse.<PostCommentResponse>builder()
+                .currentPage(page)
+                .pageSize(pageData.getSize())
+                .totalPages(pageData.getTotalPages())
+                .totalElements(pageData.getTotalElements())
+                .data(commentList)
+                .build();
+    }
 
     public PostCommentResponse createComment(PostCommentRequest request) {
         PostComment postComment = postCommentMapper.toPostComment(request);
@@ -106,7 +104,7 @@ public class PostCommentService {
         var pageData = postCommentReplyRepository.findAllByCommentId(commentId, pageable);
         var replyList = pageData.getContent().stream()
                 .map(this::enrichReplyWithUserProfile)
-                .map(reply ->{
+                .map(reply -> {
                     PostCommentReplyResponse response = postCommentReplyMapper.toPostCommentReplyResponse(reply);
                     response.setCreated(dateTimeFormatter.format(reply.getCreatedDate()));
                     return response;
@@ -167,7 +165,7 @@ public class PostCommentService {
         postCommentReplyRepository.deleteById(id);
     }
 
-     PostComment enrichCommentWithUserProfile(PostComment comment) {
+    PostComment enrichCommentWithUserProfile(PostComment comment) {
         UserProfileResponse userProfile = userProfileClient.getUserProfile(comment.getUserId());
         comment.setUsername(userProfile.getUsername());
         if (userProfile.getImage() != null) {
@@ -178,7 +176,7 @@ public class PostCommentService {
         return comment;
     }
 
-     PostCommentReply enrichReplyWithUserProfile(PostCommentReply reply) {
+    PostCommentReply enrichReplyWithUserProfile(PostCommentReply reply) {
         UserProfileResponse userProfile = userProfileClient.getUserProfile(reply.getUserId());
         reply.setUsername(userProfile.getUsername());
         if (userProfile.getImage() != null) {

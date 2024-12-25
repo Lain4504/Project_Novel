@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface UserReviewRepository extends MongoRepository<UserReview, String> {
     UserReview findByUserIdAndNovelId(String userId, String novelId);
+
     void deleteByUserIdAndNovelId(String userId, String novelId);
 
     Page<UserReview> findAllByNovelId(String novelId, Pageable pageable);

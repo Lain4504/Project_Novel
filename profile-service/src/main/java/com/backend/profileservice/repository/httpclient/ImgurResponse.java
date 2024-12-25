@@ -1,4 +1,5 @@
 package com.backend.profileservice.repository.httpclient;
+
 import lombok.Data;
 
 @Data

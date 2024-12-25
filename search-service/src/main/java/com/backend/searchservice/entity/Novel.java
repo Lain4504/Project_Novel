@@ -16,22 +16,22 @@ import java.util.Set;
 @ToString
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Novel {
-     String id;
-     String title;
-     Set<String> categories;
-     String authorId;
-     String authorName;
-     String description;
-     Integer score;
-     Integer bookStatus;
-     Long visitCount;
-     Long wordCount;
-     Long commentCount;
-     Integer isVip;
-     List<String> volumeIds;
-     String imageUrl;
-     Integer chapterCount;
-     String latestChapterTitle;
-     String latestChapterId;
-     String status;
+    String id;
+    String title;
+    Set<String> categories;
+    String authorId;
+    String authorName;
+    String description;
+    Integer score;
+    Integer bookStatus;
+    Long visitCount;
+    Long wordCount;
+    Long commentCount;
+    Integer isVip;
+    List<String> volumeIds;
+    String imageUrl;
+    Integer chapterCount;
+    String latestChapterTitle;
+    String latestChapterId;
+    String status;
 }

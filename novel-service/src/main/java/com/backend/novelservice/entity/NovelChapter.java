@@ -1,18 +1,14 @@
 package com.backend.novelservice.entity;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.util.Set;
-
 import com.backend.enums.ChapterStatusEnum;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import lombok.*;
-
 import lombok.experimental.FieldDefaults;
-import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.MongoId;
+
+import java.time.Instant;
 
 @Getter
 @Setter

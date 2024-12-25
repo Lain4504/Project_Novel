@@ -11,11 +11,11 @@ import java.util.Date;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class NovelSearchRequest {
-     String keyword;
-     Integer categoryId;
-     Integer bookStatus;
-     Integer wordCountMin;
-     Integer wordCountMax;
-     Date updateTimeMin;
-     String sort;
+    String keyword;
+    Integer categoryId;
+    Integer bookStatus;
+    Integer wordCountMin;
+    Integer wordCountMax;
+    Date updateTimeMin;
+    String sort;
 }

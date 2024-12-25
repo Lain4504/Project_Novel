@@ -1,25 +1,18 @@
 package com.backend.novelservice.entity;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Set;
-
 import com.backend.enums.NovelStatusEnum;
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.ManyToMany;
 import lombok.*;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.aggregation.ArrayOperators.In;
-
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.MongoId;
+
+import java.time.Instant;
+import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter

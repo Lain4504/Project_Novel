@@ -1,10 +1,11 @@
-<script setup lang="ts">
-import { useRoute } from 'vue-router'; // Import useRoute từ vue-router
-import Header from '@/components/home/Header.vue'; // Import Header component
-import { computed, ref, provide } from 'vue';
+<script lang="ts" setup>
+import {useRoute} from 'vue-router';
+import Header from '@/components/home/Header.vue';
+import {computed} from 'vue';
 import ScrollToTop from '@/components/common/ScrollToTop.vue';
 import Footer from '@/components/common/Footer.vue';
-const route = useRoute(); // Lấy route hiện tại
+
+const route = useRoute();
 
 const routesIncludeHome = ['home', 'chapter', 'noveldetail', 'userprofile', 'account', 'list', 'bookmark', 'readinglist', 'library', 'history', 'faq', 'postforum',
   'postdetail', 'postcreateform', 'activation/:token', "postupdateform", 'filterbycategory', "searchadvanced", "notificationlist"
@@ -15,8 +16,8 @@ const showAdmin = computed(() => {
 </script>
 
 <template>
-    <Header v-if="showAdmin" />
-    <RouterView/>
-    <ScrollToTop />
-    <Footer v-if="showAdmin" />
+  <Header v-if="showAdmin"/>
+  <RouterView class=" min-h-screen"/>
+  <ScrollToTop/>
+  <Footer v-if="showAdmin"/>
 </template>

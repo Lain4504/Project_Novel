@@ -17,7 +17,7 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     private static final String[] PUBLIC_ENDPOINTS = {
-         "/notifications/**"
+            "/notifications/**"
     };
 
     private final CustomJwtDecoder customJwtDecoder;

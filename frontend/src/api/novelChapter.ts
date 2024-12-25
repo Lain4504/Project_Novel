@@ -1,4 +1,5 @@
 import axios from "@/utils/axiosInstance";
+
 const CHAPTER_API = "/novel/novel-chapters";
 const createChapter = (volumeId: string, data = {}) => {
     return axios.post(`${CHAPTER_API}/create/${volumeId}`, data)
@@ -8,7 +9,7 @@ const getChapter = (id: string) => {
     return axios.get(`${CHAPTER_API}/get/${id}`)
         .then((response) => response.data.result);
 }
-const updateChapter = (id: string, data: Record<any, any>) =>{
+const updateChapter = (id: string, data: Record<any, any>) => {
     return axios.put(`${CHAPTER_API}/update/${id}`, data)
         .then((response) => response.data.result);
 }
@@ -18,7 +19,7 @@ const deleteChapter = (id: string) => {
 }
 const getChaptersByVolumeId = (volumeId: string, status?: string) => {
     return axios.get(`${CHAPTER_API}/get/${volumeId}/chapters`, {
-        params: { status }
+        params: {status}
     }).then((response) => response.data.result);
 }
 const getPreviousChapter = (volumeId: string, chapterNumber: number) => {
@@ -29,5 +30,13 @@ const getNextChapter = (volumeId: string, chapterNumber: number) => {
     return axios.get(`${CHAPTER_API}/get/${volumeId}/${chapterNumber}/next`)
         .then((response) => response.data.result);
 }
-export { createChapter, getChapter, updateChapter, deleteChapter, getChaptersByVolumeId , getPreviousChapter, getNextChapter };
+export {
+    createChapter,
+    getChapter,
+    updateChapter,
+    deleteChapter,
+    getChaptersByVolumeId,
+    getPreviousChapter,
+    getNextChapter
+};
 

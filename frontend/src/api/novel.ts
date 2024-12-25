@@ -1,4 +1,5 @@
 import axios from "@/utils/axiosInstance";
+
 const NOVEL_API = "/novel/novels";
 const createNovel = (data: FormData) => {
     return axios.post(`${NOVEL_API}/create`, data, {
@@ -42,4 +43,14 @@ const getNovelsByStatus = (status: string, page: number, size: number) => {
     return axios.get(`${NOVEL_API}/get/find-by-status/${status}?page=${page}&size=${size}`)
         .then((response) => response.data.result);
 }
-export { createNovel, updateNovel, deleteNovel, getNovel, getNovels, getMyNovels, getNovelsByAuthorId, getLatestNovels, getNovelsByStatus };
+export {
+    createNovel,
+    updateNovel,
+    deleteNovel,
+    getNovel,
+    getNovels,
+    getMyNovels,
+    getNovelsByAuthorId,
+    getLatestNovels,
+    getNovelsByStatus
+};

@@ -1,8 +1,8 @@
-<script setup lang="ts">
-import { inject, reactive, ref } from 'vue';
-import { createVolume } from "@/api/volume";
+<script lang="ts" setup>
+import {reactive} from 'vue';
+import {createVolume} from "@/api/novelVolume";
 import Tiptap from "@/components/common/Tiptap.vue";
-import { notification, Input, Select, Button } from "ant-design-vue";
+import {notification} from "ant-design-vue";
 
 const showNotification = (type: string, message: string) => {
   notification[type]({
@@ -55,22 +55,22 @@ const handleSubmit = async () => {
     <form @submit.prevent="handleSubmit">
       <!-- Title Input -->
       <div class="mt-4">
-        <label for="title" class="block text-sm font-medium text-gray-700">Title</label>
-        <a-input v-model:value="state.title" id="title" placeholder="Enter title" class="w-full text-sm p-[0.4rem]" />
+        <label class="block text-sm font-medium text-gray-700" for="title">Title</label>
+        <a-input id="title" v-model:value="state.title" class="w-full text-sm p-[0.4rem]" placeholder="Enter title"/>
       </div>
       <div class="mt-4">
-        <label for="status" class="block text-sm font-medium text-gray-700">Status</label>
-        <a-select v-model:value="state.status" id="status" class="block w-1/2">
+        <label class="block text-sm font-medium text-gray-700" for="status">Status</label>
+        <a-select id="status" v-model:value="state.status" class="block w-1/2">
           <a-select-option value="ongoing">Ongoing</a-select-option>
           <a-select-option value="completed">Completed</a-select-option>
         </a-select>
       </div>
       <div class="mt-4">
-        <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
-        <Tiptap :content="state.description" @update:content="state.description = $event" />
+        <label class="block text-sm font-medium text-gray-700" for="description">Description</label>
+        <Tiptap :content="state.description" @update:content="state.description = $event"/>
       </div>
       <div class="flex justify-end mt-4">
-        <a-button type="primary" html-type="submit">
+        <a-button html-type="submit" type="primary">
           Submit
         </a-button>
       </div>

@@ -1,6 +1,8 @@
 import axios from "@/utils/axiosInstance";
+
 const NOVEL_COMMENT_API = "/comment/novel-comments";
 const NOVEL_CHAPTER_API = "/comment/novel-chapter-comments";
+
 interface NovelComment {
     id?: string;
     novelId: string;
@@ -8,6 +10,7 @@ interface NovelComment {
     userId: string;
     replyCount?: number;
 }
+
 interface NovelCommentReply {
     id?: string;
     commentId: string;
@@ -15,20 +18,23 @@ interface NovelCommentReply {
     replyTo: string;
     content: string;
 }
-interface NovelChapterComment{
+
+interface NovelChapterComment {
     id?: string;
     chapterId: string;
     content: string;
     userId: string;
     replyCount?: number;
 }
-interface NovelChapterCommentReply{
+
+interface NovelChapterCommentReply {
     id?: string;
     commentId: string;
     userId: string;
     replyTo: string;
     content: string;
 }
+
 const getAllNovelComments = (novelId: string, page: number, size: number) => {
     return axios.get(`${NOVEL_COMMENT_API}/get/${novelId}?page=${page}&limit=${size}`)
         .then((response) => response.data.result);
@@ -93,4 +99,21 @@ const deleteChapterReply = (id: string) => {
     return axios.delete(`${NOVEL_CHAPTER_API}/replies/${id}`)
         .then((response) => response.data.result);
 }
-export { getAllNovelComments, createNovelComment, updateNovelComment, deleteNovelComment, getAllNovelRepliesByCommentId, createNovelReply, updateNovelReply, deleteNovelReply, getAllChapterComments, createChapterComment, updateChapterComment, deleteChapterComment, getAllRepliesByChapterCommentId, createChapterReply, updateChapterReply, deleteChapterReply };
+export {
+    getAllNovelComments,
+    createNovelComment,
+    updateNovelComment,
+    deleteNovelComment,
+    getAllNovelRepliesByCommentId,
+    createNovelReply,
+    updateNovelReply,
+    deleteNovelReply,
+    getAllChapterComments,
+    createChapterComment,
+    updateChapterComment,
+    deleteChapterComment,
+    getAllRepliesByChapterCommentId,
+    createChapterReply,
+    updateChapterReply,
+    deleteChapterReply
+};

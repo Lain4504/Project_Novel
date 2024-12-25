@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import Ads from '@/components/home/Banner.vue';
 import Banner from '@/components/home/Carousel.vue';
 import CompletedNovel from '@/components/home/CompletedNovel.vue';
@@ -12,15 +12,14 @@ import UpdatedList from '@/components/home/UpdatedList.vue';
 <template>
   <!-- Wrapper to limit width and ensure padding on smaller screens -->
   <div class="max-w-[83rem] mx-auto px-4 sm:px-6 lg:px-8 my-5 ">
-    <Banner />
-    <StoryList />
+    <Banner/>
+    <StoryList/>
     <PromtNovel/>
-<!--    <Ads/>-->
     <UpdatedList/>
     <NewNovel/>
     <Ads/>
     <CompletedNovel/>
     <Reviews/>
-    </div>
+  </div>
 </template>
 

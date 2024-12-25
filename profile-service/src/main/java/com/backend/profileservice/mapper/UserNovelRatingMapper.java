@@ -9,6 +9,8 @@ import org.mapstruct.MappingTarget;
 @Mapper(componentModel = "spring")
 public interface UserNovelRatingMapper {
     UserNovelRating toUserNovelRating(UserNovelRatingRequest request);
+
     UserNovelRatingResponse toUserNovelRatingResponse(UserNovelRating userNovelRating);
+
     void updateUserNovelRating(@MappingTarget UserNovelRating userNovelRating, UserNovelRatingRequest request);
 }

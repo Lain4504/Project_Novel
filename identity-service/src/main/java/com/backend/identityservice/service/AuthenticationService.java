@@ -14,9 +14,14 @@ import com.backend.identityservice.entity.User;
 import com.backend.identityservice.enums.UserState;
 import com.backend.identityservice.repository.InvalidatedTokenRepository;
 import com.backend.identityservice.repository.RefreshTokenRepository;
+import com.backend.identityservice.repository.UserRepository;
 import com.backend.identityservice.repository.httpclient.OutboundIdentityClient;
 import com.backend.identityservice.repository.httpclient.OutboundUserClient;
-import com.backend.identityservice.repository.UserRepository;
+import com.nimbusds.jose.*;
+import com.nimbusds.jose.crypto.MACSigner;
+import com.nimbusds.jose.crypto.MACVerifier;
+import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.SignedJWT;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -37,17 +42,13 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 
-import com.nimbusds.jose.*;
-import com.nimbusds.jose.crypto.MACSigner;
-import com.nimbusds.jose.crypto.MACVerifier;
-import com.nimbusds.jwt.JWTClaimsSet;
-import com.nimbusds.jwt.SignedJWT;
-import com.nimbusds.jose.Payload;
 @Service
 @Slf4j
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AuthenticationService {
+    @NonFinal
+    protected final String GRANT_TYPE = "authorization_code";
     UserRepository userRepository;
     OutboundIdentityClient outboundIdentityClient;
     RefreshTokenRepository refreshTokenRepository;
@@ -72,26 +73,26 @@ public class AuthenticationService {
     @NonFinal
     @Value("${outbound.identity.redirect-uri}")
     protected String REDIRECT_URI;
-    @NonFinal
-    protected final String GRANT_TYPE = "authorization_code";
+
     public IntrospectResponse introspect(IntrospectRequest request) throws JOSEException, ParseException {
         var token = request.getToken();
         boolean isValid = true;
-        try{
+        try {
             verifyToken(token);
-        } catch (Exception e){
+        } catch (Exception e) {
             isValid = false;
         }
         return IntrospectResponse.builder().valid(isValid).build();
     }
-    public AuthenticationResponse outboundAuthenticate(String code){
+
+    public AuthenticationResponse outboundAuthenticate(String code) {
         var response = outboundIdentityClient.exchangeToken(ExchangeTokenRequest.builder()
-                        .code(code)
-                        .clientId(CLIENT_ID)
-                        .clientSecret(CLIENT_SECRET)
-                        .redirectUri(REDIRECT_URI)
-                        .grantType(GRANT_TYPE)
-                        .build());
+                .code(code)
+                .clientId(CLIENT_ID)
+                .clientSecret(CLIENT_SECRET)
+                .redirectUri(REDIRECT_URI)
+                .grantType(GRANT_TYPE)
+                .build());
         log.info("TOKEN RESPONSE {}", response);
         var userInfo = outboundUserClient.getUserInfo("json", response.getAccessToken());
         log.info("User Info {}", userInfo);
@@ -107,13 +108,14 @@ public class AuthenticationService {
         return AuthenticationResponse.builder()
                 .token(token).build();
     }
-    public AuthenticationResponse authenticate(AuthenticationRequest request){
+
+    public AuthenticationResponse authenticate(AuthenticationRequest request) {
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
         var user = userRepository.findByEmail(request.getEmail()).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
         boolean authenticated = passwordEncoder.matches(request.getPassword(), user.getPassword());
-        if(!authenticated) throw new AppException(ErrorCode.INCORRECT_CREDENTIALS);
+        if (!authenticated) throw new AppException(ErrorCode.INCORRECT_CREDENTIALS);
         boolean isActivated = user.getState().equals(UserState.ACTIVE);
-        if(!isActivated) throw new AppException(ErrorCode.INACTIVE_USER);
+        if (!isActivated) throw new AppException(ErrorCode.INACTIVE_USER);
         var accessToken = generateToken(user);
         var refreshToken = generateRefreshToken(user);
         return AuthenticationResponse.builder().token(accessToken).refreshToken(refreshToken).authenticated(true).build();
@@ -124,7 +126,7 @@ public class AuthenticationService {
         RefreshToken refreshToken = RefreshToken.builder()
                 .token(token)
                 .user(user)
-                .expiryDate(LocalDateTime.now().plus(REFRESHABLE_DURATION, ChronoUnit.SECONDS))
+                .expiryDate(LocalDateTime.now().plusSeconds(REFRESHABLE_DURATION))
                 .build();
         refreshTokenRepository.save(refreshToken);
         return token;
@@ -138,12 +140,13 @@ public class AuthenticationService {
             InvalidatedToken invalidatedToken =
                     InvalidatedToken.builder().id(jit).expiryTime(expiryTime).build();
             invalidatedTokenRepository.save(invalidatedToken);
-            var refreshToken = refreshTokenRepository.findByToken(request.getRefreshToken()).orElseThrow(() ->  new AppException(ErrorCode.INVALID_REFRESH_TOKEN));
+            var refreshToken = refreshTokenRepository.findByToken(request.getRefreshToken()).orElseThrow(() -> new AppException(ErrorCode.INVALID_REFRESH_TOKEN));
             refreshTokenRepository.delete(refreshToken);
-        } catch (AppException exception){
+        } catch (AppException exception) {
             log.info("Token already expired");
         }
     }
+
     public AuthenticationResponse refreshToken(RefreshRequest request) throws ParseException, JOSEException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated()) {
@@ -167,6 +170,7 @@ public class AuthenticationService {
                 .authenticated(true)
                 .build();
     }
+
     private String generateToken(User user) {
         JWSHeader header = new JWSHeader(JWSAlgorithm.HS512);
         JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
@@ -211,6 +215,7 @@ public class AuthenticationService {
             });
         return stringJoiner.toString();
     }
+
     public void resetPassword(ResetPasswordRequest request) throws ParseException, JOSEException {
         if (!request.getNewPassword().equals(request.getConfirmPassword())) {
             throw new RuntimeException("Password not match");
@@ -224,7 +229,8 @@ public class AuthenticationService {
         user.setPassword(encodedPassword);
         userRepository.save(user);
     }
-    public void changePassword(ChangePasswordRequest request){
+
+    public void changePassword(ChangePasswordRequest request) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated()) {
             throw new RuntimeException("User not authenticated");
@@ -255,11 +261,12 @@ public class AuthenticationService {
                 .build();
         kafkaTemplate.send("reset-password-request", event);
     }
-    public String activeAccountCode (String userId) {
+
+    public String activeAccountCode(String userId) {
         return generateToken(userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found")));
     }
 
-    public void activeAccount(ActivationTokenRequest request){
+    public void activeAccount(ActivationTokenRequest request) {
         try {
             var signedJWT = verifyToken(request.getToken());
             String id = signedJWT.getJWTClaimsSet().getSubject();
@@ -267,7 +274,7 @@ public class AuthenticationService {
                     .orElseThrow(() -> new RuntimeException("User not found"));
             user.setState(UserState.ACTIVE);
             userRepository.save(user);
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new RuntimeException("Invalid token");
         }
     }

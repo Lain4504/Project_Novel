@@ -83,6 +83,7 @@ public class NovelChapterController {
         return ApiResponse.<NovelChapter>builder()
                 .result(nextChapter.orElse(null)).build();
     }
+
     @GetMapping("/increment-visit-count/{chapterId}")
     public ApiResponse<Void> incrementVisitCount(@PathVariable String chapterId) {
         novelChapterService.incrementVisitCount(chapterId);

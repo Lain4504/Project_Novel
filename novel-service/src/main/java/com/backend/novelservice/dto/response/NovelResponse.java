@@ -1,11 +1,8 @@
 package com.backend.novelservice.dto.response;
 
-import com.backend.enums.NovelStatusEnum;
 import com.backend.novelservice.entity.Image;
 import com.backend.novelservice.entity.NovelCategory;
 import com.backend.novelservice.entity.NovelVolume;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -13,7 +10,6 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 

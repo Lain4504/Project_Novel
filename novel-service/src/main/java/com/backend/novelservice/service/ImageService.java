@@ -2,10 +2,10 @@ package com.backend.novelservice.service;
 
 import com.backend.exception.AppException;
 import com.backend.exception.ErrorCode;
-import com.backend.novelservice.repository.httpclient.ImgurClient;
-import com.backend.novelservice.repository.httpclient.ImgurResponse;
 import com.backend.novelservice.entity.Image;
 import com.backend.novelservice.repository.ImageRepository;
+import com.backend.novelservice.repository.httpclient.ImgurClient;
+import com.backend.novelservice.repository.httpclient.ImgurResponse;
 import com.backend.utils.FileUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;

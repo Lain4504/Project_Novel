@@ -23,13 +23,13 @@ public enum ErrorCode {
     FILE_SIZE_INVALID("1014", "File size is invalid", HttpStatus.BAD_REQUEST),
     IMAGE_NOT_FOUND("1015", "Image not found", HttpStatus.NOT_FOUND),
     INVALID_INPUT("1016", "Invalid input", HttpStatus.BAD_REQUEST);
+
+    private final String code;
+    private final String message;
+    private final HttpStatusCode statusCode;
     ErrorCode(String code, String message, HttpStatusCode statusCode) {
         this.code = code;
         this.message = message;
         this.statusCode = statusCode;
     }
-
-    private final String code;
-    private final String message;
-    private final HttpStatusCode statusCode;
 }

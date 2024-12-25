@@ -1,5 +1,7 @@
 import axios from "@/utils/axiosInstance";
+
 const POST_COMMENT_API = "/comment/post-comments";
+
 interface PostComment {
     id?: string;
     postId: string;
@@ -57,4 +59,13 @@ const deleteReply = (id: string) => {
         .then((response) => response.data.result);
 };
 
-export { getAllComments, createComment, updateComment, deleteComment, getAllRepliesByCommentId, createReply, updateReply, deleteReply };
+export {
+    getAllComments,
+    createComment,
+    updateComment,
+    deleteComment,
+    getAllRepliesByCommentId,
+    createReply,
+    updateReply,
+    deleteReply
+};

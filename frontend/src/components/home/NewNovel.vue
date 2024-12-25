@@ -1,7 +1,6 @@
-<script setup lang="ts">
-import { onMounted, ref } from 'vue';
+<script lang="ts" setup>
+import {onMounted, ref} from 'vue';
 import {getLatestNovels, getNovels} from '@/api/novel';
-import {get} from "axios";
 
 interface Novel {
   id: string;
@@ -10,6 +9,7 @@ interface Novel {
   image: string;
   author: string;
 }
+
 const trendingBooks = ref<Novel[]>([]);
 const latestNovels = ref<Novel[]>([]);
 
@@ -68,14 +68,14 @@ onMounted(() => {
         </div>
         <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
           <div
-            v-for="novel in latestNovels"
-            :key="novel.id"
-            class="flex space-x-4 border p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200"
+              v-for="novel in latestNovels"
+              :key="novel.id"
+              class="flex space-x-4 border p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200"
           >
             <img
-              :src="novel.image"
-              alt="book cover"
-              class="w-24 h-36 object-cover rounded-lg"
+                :src="novel.image"
+                alt="book cover"
+                class="w-24 h-36 object-cover rounded-lg"
             />
             <div class="flex-1">
               <h3 class="text-lg font-semibold line-clamp-2">{{ novel.title }}</h3>
@@ -85,7 +85,7 @@ onMounted(() => {
                 {{ novel.author }}
               </div>
               <span
-                class="inline-block bg-yellow-100 text-yellow-600 text-xs font-semibold mt-3 px-3 py-1 rounded-full"
+                  class="inline-block bg-yellow-100 text-yellow-600 text-xs font-semibold mt-3 px-3 py-1 rounded-full"
               >
                 dzdvaff
               </span>

@@ -6,14 +6,10 @@ import com.backend.commentservice.dto.response.NovelCommentReplyResponse;
 import com.backend.commentservice.dto.response.NovelCommentResponse;
 import com.backend.commentservice.entity.NovelComment;
 import com.backend.commentservice.entity.NovelCommentReply;
-import com.backend.commentservice.entity.NovelComment;
-import com.backend.commentservice.entity.NovelCommentReply;
 import com.backend.commentservice.mapper.NovelCommentMapper;
 import com.backend.commentservice.mapper.NovelCommentReplyMapper;
 import com.backend.commentservice.repository.NovelCommentReplyRepository;
 import com.backend.commentservice.repository.NovelCommentRepository;
-import com.backend.commentservice.repository.PostCommentReplyRepository;
-import com.backend.commentservice.repository.PostCommentRepository;
 import com.backend.commentservice.repository.httpclient.UserProfileClient;
 import com.backend.commentservice.repository.httpclient.UserProfileResponse;
 import com.backend.dto.response.PageResponse;
@@ -30,8 +26,6 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 

@@ -2,13 +2,10 @@ package com.backend.commentservice.service;
 
 import com.backend.commentservice.dto.request.NovelChapterCommentReplyRequest;
 import com.backend.commentservice.dto.request.NovelChapterCommentRequest;
-import com.backend.commentservice.dto.request.PostCommentReplyRequest;
 import com.backend.commentservice.dto.response.NovelChapterCommentReplyResponse;
 import com.backend.commentservice.dto.response.NovelChapterCommentResponse;
-import com.backend.commentservice.dto.response.PostCommentReplyResponse;
 import com.backend.commentservice.entity.NovelChapterComment;
 import com.backend.commentservice.entity.NovelChapterCommentReply;
-import com.backend.commentservice.entity.PostCommentReply;
 import com.backend.commentservice.mapper.NovelChapterCommentMapper;
 import com.backend.commentservice.mapper.NovelChapterCommentReplyMapper;
 import com.backend.commentservice.repository.NovelChapterCommentReplyRepository;
@@ -29,8 +26,6 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 

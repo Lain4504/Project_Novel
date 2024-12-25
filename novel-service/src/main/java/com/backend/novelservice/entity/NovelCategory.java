@@ -2,12 +2,10 @@ package com.backend.novelservice.entity;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.time.Instant;
-import java.time.LocalDateTime;
-
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.MongoId;
+
+import java.time.Instant;
 
 @Getter
 @Setter

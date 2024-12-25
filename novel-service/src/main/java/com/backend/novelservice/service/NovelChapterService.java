@@ -16,7 +16,6 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -130,19 +129,15 @@ public class NovelChapterService {
     }
 
     public List<NovelChapterResponse> getChaptersByVolumeId(String volumeId, String status) {
-        var volume = novelVolumeRepository.findById(volumeId)
-                .orElseThrow(() -> new RuntimeException("Volume not found"));
-        List<String> chapterIds = volume.getChapterIds();
-        if (chapterIds == null || chapterIds.isEmpty()) {
-            return List.of();
-        }
-        List<NovelChapter> chapters = novelChapterRepository.findAllById(chapterIds);
+        List<NovelChapter> chapters;
         if (status != null && !status.isEmpty()) {
+            chapters = novelChapterRepository.findChaptersByVolumeIdWithoutContent(volumeId, status);
             chapters = chapters.stream()
                     .filter(chapter -> chapter.getStatus().toString().equals(status))
                     .sorted(Comparator.comparing(NovelChapter::getChapterNumber))
                     .toList();
         } else {
+            chapters = novelChapterRepository.findAllChaptersByVolumeIdWithoutContent(volumeId);
             chapters = chapters.stream()
                     .sorted(Comparator.comparing(NovelChapter::getChapterNumber))
                     .toList();
@@ -151,13 +146,15 @@ public class NovelChapterService {
                 .map(novelChapterMapper::toNovelChapterResponse)
                 .toList();
     }
-    public void incrementVisitCount(String chapterId){
+
+    public void incrementVisitCount(String chapterId) {
         NovelChapter chapter = novelChapterRepository.findById(chapterId).orElseThrow(() -> new RuntimeException("Chapter not found"));
         NovelVolume volume = novelVolumeRepository.findById(chapter.getVolumeId()).orElseThrow(() -> new RuntimeException("Volume not found"));
         Novel novel = novelRepository.findById(volume.getNovelId()).orElseThrow(() -> new RuntimeException("Novel not found"));
         novel.setVisitCount(novel.getVisitCount() + 1);
         novelRepository.save(novel);
     }
+
     // Lấy chapter theo số thứ tự( hiện tại đang dùng getChapter)
     public Optional<NovelChapter> getChapterByNumber(String volumeId, Integer chapterNumber) {
         return novelChapterRepository.findByVolumeIdAndChapterNumber(volumeId, chapterNumber);

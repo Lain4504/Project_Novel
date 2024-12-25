@@ -9,6 +9,7 @@ import java.util.List;
 @Repository
 public interface UserNovelFollowRepository extends MongoRepository<UserNovelFollow, String> {
     UserNovelFollow findByUserIdAndNovelId(String userId, String novelId);
+
     void deleteByUserIdAndNovelId(String userId, String novelId);
 
     UserNovelFollow findByUserId(String userId);

@@ -1,12 +1,13 @@
-<script setup lang="ts">
-import { ref, onMounted, watch } from "vue";
+<script lang="ts" setup>
+import {onMounted, ref, watch} from "vue";
 import DynamicDataTable from "@/components/common/DynamicDataTable.vue";
-import { getPosts, deletePost } from "@/api/post";
+import {deletePost, getPosts} from "@/api/post";
 import router from "@/router";
+
 const postColumns = [
-  { field: "id", headerName: "ID", width: 70 },
-  { field: "title", headerName: "Tiêu đề", width: 200 },
-  { field: "created", headerName: "Thời gian tạo", width: 200 },
+  {field: "id", headerName: "ID", width: 70},
+  {field: "title", headerName: "Tiêu đề", width: 200},
+  {field: "created", headerName: "Thời gian tạo", width: 200},
   {
     field: "actions",
     headerName: "Hành động",
@@ -33,7 +34,7 @@ const fetchPosts = async (page: number, size: number) => {
   }
 };
 const handleEdit = (row: any) => {
-  router.push({ name: 'postupdateform', params: { id: row.id } });
+  router.push({name: 'postupdateform', params: {id: row.id}});
 };
 const handleDelete = (row: any) => {
   rowToDelete.value = row;
@@ -81,11 +82,13 @@ const viewPost = (row: any) => {
       <h4 class="text-xl font-semibold mb-4">Bạn có chắc chắn muốn xóa không?</h4>
       <div class="flex justify-end space-x-4">
         <!-- Cancel Button -->
-        <button @click="cancelDelete" class="px-[1.2rem] py-[0.4rem] border border-gray-400 text-gray-700 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500">
+        <button class="px-[1.2rem] py-[0.4rem] border border-gray-400 text-gray-700 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500"
+                @click="cancelDelete">
           Cancel
         </button>
         <!-- Confirm Delete Button -->
-        <button @click="confirmDelete" class="px-[1.2rem] py-[0.4rem] border border-red-500 text-red-500 rounded-md hover:bg-red-600 hover:text-white focus:outline-none focus:ring-2 focus:ring-red-500">
+        <button class="px-[1.2rem] py-[0.4rem] border border-red-500 text-red-500 rounded-md hover:bg-red-600 hover:text-white focus:outline-none focus:ring-2 focus:ring-red-500"
+                @click="confirmDelete">
           Delete
         </button>
       </div>
@@ -95,14 +98,14 @@ const viewPost = (row: any) => {
   <!-- Pass the fetched rows and columns to the DynamicDataTable component -->
   <DynamicDataTable
       :columns="postColumns"
-      :rows="postRows"
       :currentPage="currentPage"
-      :totalPages="totalPages"
       :emits="['page-change', 'view', 'delete', 'edit']"
-      @page-change="handlePageChange"
-      @edit="handleEdit"
-      @delete="handleDelete"
-      @view="viewPost"
+      :rows="postRows"
       :show-go-to-page="true"
+      :totalPages="totalPages"
+      @delete="handleDelete"
+      @edit="handleEdit"
+      @view="viewPost"
+      @page-change="handlePageChange"
   />
 </template>

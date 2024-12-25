@@ -1,6 +1,5 @@
 package com.backend.novelservice.controller;
 
-import com.backend.dto.response.ApiResponse;
 import com.backend.novelservice.dto.response.NovelDetailsResponse;
 import com.backend.novelservice.service.NovelService;
 import lombok.AccessLevel;

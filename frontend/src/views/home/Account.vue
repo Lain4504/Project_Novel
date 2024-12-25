@@ -1,13 +1,13 @@
-<script setup lang="ts">
-import { Card, Avatar, Descriptions, List, Pagination, Typography, Row, Col, Breadcrumb } from 'ant-design-vue';
-import { UserOutlined } from '@ant-design/icons-vue';
-import { ref, onMounted, computed } from 'vue';
-import { getUserProfile } from '@/api/user';
-import { getNovelsByAuthorId } from '@/api/novel';
+<script lang="ts" setup>
+import {Avatar, Breadcrumb, Card, Col, Descriptions, List, Pagination, Row, Typography} from 'ant-design-vue';
+import {UserOutlined} from '@ant-design/icons-vue';
+import {computed, onMounted, ref} from 'vue';
+import {getUserProfile} from '@/api/user';
+import {getNovelsByAuthorId} from '@/api/novel';
 import store from '@/store';
 import Ads from '@/components/home/Banner.vue';
 
-const { Title, Paragraph, Text } = Typography;
+const {Title, Paragraph, Text} = Typography;
 
 const userProfile = ref({
   id: '',
@@ -32,17 +32,17 @@ const totalPages = ref(1);
 const loading = ref(false);
 
 const userStats = computed(() => [
-  { key: 'Read', value: `${userProfile.value.readNovels} novels` },
-  { key: 'Marked', value: userProfile.value.marked },
-  { key: 'Recommended', value: userProfile.value.recommended },
-  { key: 'Comments', value: userProfile.value.comments },
-  { key: 'Ratings', value: userProfile.value.ratings }
+  {key: 'Read', value: `${userProfile.value.readNovels} novels`},
+  {key: 'Marked', value: userProfile.value.marked},
+  {key: 'Recommended', value: userProfile.value.recommended},
+  {key: 'Comments', value: userProfile.value.comments},
+  {key: 'Ratings', value: userProfile.value.ratings}
 ]);
 
 const breadcrumbItems = [
-  { title: 'Home', path: '/' },
-  { title: 'Account', path: '/templates' },
-  { title: 'Member' }
+  {title: 'Home', path: '/'},
+  {title: 'Account', path: '/templates'},
+  {title: 'Member'}
 ];
 
 const fetchNovelsData = async (page: number, size: number) => {
@@ -84,7 +84,7 @@ onMounted(() => {
 <template>
   <div class="min-h-screen bg-[#f0f2f5] py-8">
     <div class="max-w-7xl mx-auto px-4">
-      <Ads class="mb-6" />
+      <Ads class="mb-6"/>
 
       <Breadcrumb class="mb-6">
         <Breadcrumb.Item v-for="(item, index) in breadcrumbItems" :key="index">
@@ -95,7 +95,7 @@ onMounted(() => {
 
       <Row :gutter="24">
         <!-- User Profile Card -->
-        <Col :xs="24" :sm="24" :md="8">
+        <Col :md="8" :sm="24" :xs="24">
           <Card :bordered="false" class="shadow-sm">
             <template #title>
               <Title :level="4">User Information</Title>
@@ -103,9 +103,9 @@ onMounted(() => {
 
             <div class="flex items-center mb-6">
               <Avatar
+                  :icon="!userProfile.image && UserOutlined"
                   :size="80"
                   :src="userProfile.image"
-                  :icon="!userProfile.image && UserOutlined"
                   class="mr-4"
               />
               <div>
@@ -114,7 +114,7 @@ onMounted(() => {
               </div>
             </div>
 
-            <Descriptions layout="vertical" :column="1">
+            <Descriptions :column="1" layout="vertical">
               <Descriptions.Item label="Date Join">
                 {{ userProfile.created || 'No date available' }}
               </Descriptions.Item>
@@ -131,7 +131,7 @@ onMounted(() => {
         </Col>
 
         <!-- Published Novels Card -->
-        <Col :xs="24" :sm="24" :md="16">
+        <Col :md="16" :sm="24" :xs="24">
           <Card :bordered="false" class="shadow-sm">
             <template #title>
               <Title :level="4">Your Published Novels</Title>
@@ -147,8 +147,8 @@ onMounted(() => {
                 <List.Item>
                   <div class="flex">
                     <img
-                        :src="item.image.path"
                         :alt="item.title"
+                        :src="item.image.path"
                         class="w-32 h-48 object-cover rounded mr-6"
                     />
                     <div class="flex-1">
@@ -165,7 +165,7 @@ onMounted(() => {
                         {{ item.categories.map((cat: { name: string }) => cat.name).join(', ') }}
                       </Paragraph>
 
-                      <Paragraph class="italic" v-html="item.description" />
+                      <Paragraph class="italic" v-html="item.description"/>
 
                       <div class="flex justify-between text-gray-500 text-sm">
                         <span>{{ item.chapters }} Chapters</span>
@@ -180,11 +180,11 @@ onMounted(() => {
             <div class="flex justify-center mt-6">
               <Pagination
                   :current="currentPage"
-                  :total="totalPages * pageSize"
                   :pageSize="pageSize"
-                  @change="handlePageChange"
-                  show-quick-jumper
                   :show-total="(total: number) => `Total ${total} items`"
+                  :total="totalPages * pageSize"
+                  show-quick-jumper
+                  @change="handlePageChange"
               />
             </div>
           </Card>

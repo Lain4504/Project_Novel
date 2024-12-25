@@ -1,6 +1,6 @@
-<script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue';
-import { getNovelsByStatus } from "@/api/novel";
+<script lang="ts" setup>
+import {computed, onMounted, onUnmounted, ref} from 'vue';
+import {getNovelsByStatus} from "@/api/novel";
 
 interface Novel {
   id: number;
@@ -79,16 +79,16 @@ const handleResize = () => {
         <span class="text-sm text-gray-600">{{ currentPage }}/{{ totalPages }}</span>
         <div class="flex gap-2">
           <button
-              @click="prevPage"
               :disabled="currentPage === 1"
               class="text-amber-600 hover:text-amber-700 disabled:opacity-50 disabled:cursor-not-allowed w-8 h-8 flex items-center justify-center"
+              @click="prevPage"
           >
             «
           </button>
           <button
-              @click="nextPage"
               :disabled="currentPage === totalPages"
               class="text-amber-600 hover:text-amber-700 disabled:opacity-50 disabled:cursor-not-allowed w-8 h-8 flex items-center justify-center"
+              @click="nextPage"
           >
             »
           </button>
@@ -100,8 +100,8 @@ const handleResize = () => {
       <div v-for="novel in paginatedNovels" :key="novel.id" class="flex flex-col">
         <div class="relative aspect-[3/4] mb-2 overflow-hidden rounded-lg bg-gray-100">
           <img
-              :src="novel.imageUrl"
               :alt="novel.title"
+              :src="novel.imageUrl"
               class="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
               loading="lazy"
           />

@@ -1,5 +1,5 @@
-<script setup lang="ts">
-import { ref } from 'vue';
+<script lang="ts" setup>
+import {ref} from 'vue';
 
 // Define the data structure for the books
 interface Book {
@@ -42,28 +42,28 @@ const limitedBooks = ref<Book[]>([
 </style>
 
 <template>
-    <section class="p-4 border rounded">
-      
-      <div class="mt-4 text-sm">
-        <div class="space-y-4">
-          <div
+  <section class="p-4 border rounded">
+
+    <div class="mt-4 text-sm">
+      <div class="space-y-4">
+        <div
             v-for="(item, index) in limitedBooks"
             :key="index"
             class="flex items-center space-x-4"
-          >
-            <img
+        >
+          <img
               :src="item.hinhanh"
               alt="Book Image"
               class="w-14 h-20 object-cover"
-            />
-            <div class="flex justify-between items-center w-full">
-              <h5 class="font-semibold truncate">{{ item.tentruyen }}</h5>
-              <p class="text-gray-500 flex-shrink-0">
-                Chương {{ item.dadoc }} / {{ item.total }}
-              </p>
-            </div>
+          />
+          <div class="flex justify-between items-center w-full">
+            <h5 class="font-semibold truncate">{{ item.tentruyen }}</h5>
+            <p class="text-gray-500 flex-shrink-0">
+              Chương {{ item.dadoc }} / {{ item.total }}
+            </p>
           </div>
         </div>
       </div>
-    </section>
-  </template>
+    </div>
+  </section>
+</template>

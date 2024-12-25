@@ -1,5 +1,5 @@
-<script setup lang="ts">
-import {Form, Input, Button, Card, message} from 'ant-design-vue';
+<script lang="ts" setup>
+import {Button, Form, Input, message} from 'ant-design-vue';
 import {LockOutlined, MailOutlined} from '@ant-design/icons-vue';
 import {ref} from 'vue';
 import {useStore} from 'vuex';
@@ -77,11 +77,11 @@ const handleConfirm = () => {
       <h2 class="text-center text-2xl font-bold mb-8">Register</h2>
 
       <Form
+          ref="form"
           :model="formState"
           :rules="rules"
-          @finish="handleFinish"
-          ref="form"
           scrollToFirstError
+          @finish="handleFinish"
       >
         <Form.Item name="email">
           <Input
@@ -120,14 +120,14 @@ const handleConfirm = () => {
         </Form.Item>
 
         <Form.Item>
-          <Button type="primary" html-type="submit" class="w-full" size="large">
+          <Button class="w-full" html-type="submit" size="large" type="primary">
             Register
           </Button>
         </Form.Item>
 
         <div class="text-center mt-4">
           <span class="text-gray-600">Already have an account? </span>
-          <router-link to="/login" class="text-primary hover:text-primary-dark">
+          <router-link class="text-primary hover:text-primary-dark" to="/login">
             Login
           </router-link>
         </div>
@@ -135,8 +135,8 @@ const handleConfirm = () => {
     </div>
     <ConfirmModal
         :visible="showModal"
-        title="Registration Successful"
         content="Your registration was successful. Please confirm to proceed to the login page."
+        title="Registration Successful"
         @close="handleConfirm"
     />
   </div>

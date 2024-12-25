@@ -9,6 +9,8 @@ import org.mapstruct.MappingTarget;
 @Mapper(componentModel = "spring")
 public interface NovelChapterCommentMapper {
     NovelChapterComment toNovelChapterComment(NovelChapterCommentRequest request);
+
     NovelChapterCommentResponse toNovelChapterCommentResponse(NovelChapterComment novelChapterComment);
+
     void updateNovelChapterComment(@MappingTarget NovelChapterComment novelChapterComment, NovelChapterCommentRequest request);
 }

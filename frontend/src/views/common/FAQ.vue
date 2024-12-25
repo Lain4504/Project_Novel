@@ -1,5 +1,4 @@
-<script setup lang="ts">
-import { Collapse } from 'ant-design-vue';
+<script lang="ts" setup>
 import Ads from '@/components/home/Banner.vue';
 
 // Fake data for the FAQ with multiple questions per section

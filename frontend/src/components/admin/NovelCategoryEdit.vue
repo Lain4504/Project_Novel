@@ -1,16 +1,15 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 
-import {getNovelCategory, updateNovelCategory} from "@/api/novelcategory";
-import {inject, onMounted, ref} from "vue";
+import {getNovelCategory, updateNovelCategory} from "@/api/novelCategory";
+import {onMounted, ref} from "vue";
 import router from "@/router";
 import DynamicFormEdit from "@/components/common/DynamicFormEdit.vue";
-import {notification} from "ant-design-vue";
 
 const fields = {
   title: 'Novel Category',
   inputs: [
-    { id: 'name', label: 'Name', type: 'text' },
-    { id: 'description', label: 'Description', type: 'tiptap' },
+    {id: 'name', label: 'Name', type: 'text'},
+    {id: 'description', label: 'Description', type: 'tiptap'},
   ],
 };
 const props = defineProps({
@@ -24,17 +23,15 @@ const loadNovelCategory = async () => {
   try {
     const response = await getNovelCategory(props.id);
     initialData.value = response;
-  }
-  catch (error){
+  } catch (error) {
     console.error('Failed to fetch novel category:', error);
   }
 }
-const handleSave = async (id: string, data: Record<string, any>) =>{
-  try{
+const handleSave = async (id: string, data: Record<string, any>) => {
+  try {
     await updateNovelCategory(id, data);
     router.push({name: 'novelCategoryList'});
-  }
-  catch (error){
+  } catch (error) {
     console.error('Failed to update novel category:', error);
     throw error;
   }
@@ -50,9 +47,9 @@ onMounted(() => {
   <DynamicFormEdit
       :fields="fields"
       :initialData="initialData"
-      :onSave="handleSave"
       :onCancel="handleCancel"
-      @success="() => showNotification('success', 'Post category updated successfully!')"
+      :onSave="handleSave"
       @error="() => showNotification('danger', 'Failed to update post category!')"
+      @success="() => showNotification('success', 'Post category updated successfully!')"
   />
 </template>

@@ -1,7 +1,7 @@
-<script setup lang="ts">
-import { createReview, getReviewList } from '@/api/user';
-import { computed, ref, onMounted } from 'vue';
-import { useStore } from 'vuex';
+<script lang="ts" setup>
+import {createReview, getReviewList} from '@/api/user';
+import {computed, onMounted, ref} from 'vue';
+import {useStore} from 'vuex';
 
 interface Review {
   id: string;
@@ -24,14 +24,14 @@ const totalPages = ref(0);
 
 const fetchReviews = (page: number, size: number) => {
   getReviewList(props.itemId, page, size)
-    .then(response => {
-      reviews.value = response.data;
-      totalReviews.value = response.totalElements;
-      totalPages.value = response.totalPages;
-    })
-    .catch(error => {
-      console.error('Error fetching reviews:', error);
-    });
+      .then(response => {
+        reviews.value = response.data;
+        totalReviews.value = response.totalElements;
+        totalPages.value = response.totalPages;
+      })
+      .catch(error => {
+        console.error('Error fetching reviews:', error);
+      });
 };
 
 const submitReview = () => {
@@ -42,14 +42,14 @@ const submitReview = () => {
   };
 
   createReview(reviewData)
-    .then(() => {
-      console.log('Review created successfully');
-      emit('reviewCreated');
-      fetchReviews(currentPage.value, pageSize.value);
-    })
-    .catch(error => {
-      console.error('Error:', error);
-    });
+      .then(() => {
+        console.log('Review created successfully');
+        emit('reviewCreated');
+        fetchReviews(currentPage.value, pageSize.value);
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
 };
 
 const handlePageChange = (page: number) => {
@@ -76,8 +76,8 @@ onMounted(() => {
         ></textarea>
       </div>
       <button
-          @click="submitReview"
           class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          @click="submitReview"
       >
         Gửi đánh giá
       </button>
@@ -97,11 +97,11 @@ onMounted(() => {
         </li>
       </ul>
       <a-pagination
-        :current="currentPage"
-        :pageSize="pageSize"
-        :total="totalReviews"
-        @change="handlePageChange"
-        class="mt-4"
+          :current="currentPage"
+          :pageSize="pageSize"
+          :total="totalReviews"
+          class="mt-4"
+          @change="handlePageChange"
       />
     </div>
 

@@ -1,14 +1,15 @@
-<script setup lang="ts">
-import { ref, onMounted } from "vue";
+<script lang="ts" setup>
+import {onMounted, ref} from "vue";
 import DynamicFormEdit from "@/components/common/DynamicFormEdit.vue";
-import { getPost, updatePost } from "@/api/post";
+import {getPost, updatePost} from "@/api/post";
 import router from "@/router";
 import Ads from "@/components/home/Banner.vue";
+
 const fields = {
   title: "Edit Post",
   inputs: [
-    { id: "title", label: "Title", type: "text", required: true },
-    { id: "content", label: "Content", type: "tiptap", required: true },
+    {id: "title", label: "Title", type: "text", required: true},
+    {id: "content", label: "Content", type: "tiptap", required: true},
     {
       id: "categoryId",
       label: "Category",
@@ -35,12 +36,12 @@ const categoryMap = ref(new Map());
 
 const loadCategories = async () => {
   try {
-    const categories = await import("@/api/postcategory").then((module) =>
+    const categories = await import("@/api/postCategory").then((module) =>
         module.getPostCategoriesWithoutPagination()
     );
     // Tạo map categoryName -> categoryId
     categoryMap.value = new Map(
-        categories.map((category: { name: string; id: string }) => [category.name, category.id])    );
+        categories.map((category: { name: string; id: string }) => [category.name, category.id]));
 
     // Ánh xạ options cho select
     const categoryInput = fields.inputs.find((input) => input.id === "categoryId");
@@ -78,7 +79,7 @@ const handleSave = async (id: string, data: Record<string, any>) => {
   try {
     await updatePost(id, data);
     console.log("Post updated successfully!");
-    router.push({ name: "postList" });
+    router.push({name: "postList"});
   } catch (error) {
     console.error("Failed to update post:", error);
     throw error; // Ném lỗi để component con xử lý
@@ -99,7 +100,7 @@ onMounted(async () => {
 
 <template>
   <div class="max-w-7xl mx-auto p-8">
-    <Ads class="my-4" />
+    <Ads class="my-4"/>
     <Breadcrumb
         :breadcrumbs="[
         { label: 'Home', href: '/' },
@@ -108,13 +109,13 @@ onMounted(async () => {
       ]"
     />
 
-  <DynamicFormEdit
-      :fields="fields"
-      :initialData="initialData"
-      :onSave="handleSave"
-      :onCancel="handleCancel"
-      @success="() => console.log('Update successful!')"
-      @error="() => console.error('Update failed!')"
-  />
+    <DynamicFormEdit
+        :fields="fields"
+        :initialData="initialData"
+        :onCancel="handleCancel"
+        :onSave="handleSave"
+        @error="() => console.error('Update failed!')"
+        @success="() => console.log('Update successful!')"
+    />
   </div>
 </template>

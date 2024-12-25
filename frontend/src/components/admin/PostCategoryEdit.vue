@@ -1,16 +1,15 @@
-<script setup lang="ts">
-import {ref, onMounted, inject} from 'vue';
+<script lang="ts" setup>
+import {onMounted, ref} from 'vue';
 import DynamicFormEdit from "@/components/common/DynamicFormEdit.vue";
-import { updatePostCategory } from "@/api/postcategory";
-import { getPostCategory } from "@/api/postcategory";
+import {getPostCategory, updatePostCategory} from "@/api/postCategory";
 import router from "@/router";
 
 // Inject hàm showAlert từ context
 const fields = {
   title: 'Post Category',
   inputs: [
-    { id: 'name', label: 'Name', type: 'text' },
-    { id: 'description', label: 'Description', type: 'tiptap' },
+    {id: 'name', label: 'Name', type: 'text'},
+    {id: 'description', label: 'Description', type: 'tiptap'},
   ],
 };
 
@@ -39,7 +38,7 @@ const handleSave = async (id: string, data: Record<string, any>) => {
   try {
     await updatePostCategory(id, data);
     console.log('Post category updated successfully!');
-    router.push({ name: 'postCategoryList' });
+    router.push({name: 'postCategoryList'});
   } catch (error) {
     console.error('Failed to update post category:', error);
     throw error; // Ném lỗi để component con xử lý
@@ -61,7 +60,7 @@ onMounted(() => {
   <DynamicFormEdit
       :fields="fields"
       :initialData="initialData"
-      :onSave="handleSave"
       :onCancel="handleCancel"
+      :onSave="handleSave"
   />
 </template>

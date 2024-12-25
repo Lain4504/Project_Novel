@@ -3,9 +3,6 @@ package com.backend.commentservice.dto.response;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
-
 @Getter
 @Setter
 @NoArgsConstructor

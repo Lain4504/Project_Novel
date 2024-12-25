@@ -1,9 +1,9 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import Ads from "@/components/home/Banner.vue";
 import DynamicFormNew from "@/components/common/DynamicFormNew.vue"; // Import dynamic form component
-import { reactive, ref, onMounted } from "vue";
-import { createPost } from "@/api/post";
-import { getPostCategoriesWithoutPagination } from "@/api/postcategory";
+import {onMounted, ref, watch} from "vue";
+import {createPost} from "@/api/post";
+import {getPostCategoriesWithoutPagination} from "@/api/postCategory";
 import store from "@/store";
 
 // State for categories
@@ -21,13 +21,13 @@ const fetchCategories = async () => {
     console.error("Failed to fetch post categories:", error);
   }
 };
-import { watch } from "vue";
 
 watch(categories, (newCategories) => {
   const categoryInput = inputs.value.find((input) => input.id === "categoryId");
   if (categoryInput) {
     categoryInput.options = newCategories;
-  }});
+  }
+});
 onMounted(() => {
   fetchCategories();
 });
@@ -38,7 +38,7 @@ const handleAddPost = async (formData: any) => {
     ...formData,
     userId: store.getters.getUserId, // Lấy userId từ store
   };
-    await createPost(postData);
+  await createPost(postData);
 };
 
 // Form inputs
@@ -68,7 +68,7 @@ const inputs = ref([
 
 <template>
   <div class="max-w-7xl mx-auto p-8">
-    <Ads class="my-4" />
+    <Ads class="my-4"/>
     <Breadcrumb
         :breadcrumbs="[
         { label: 'Home', href: '/' },
@@ -78,10 +78,10 @@ const inputs = ref([
     />
     <!-- Dynamic Form -->
     <DynamicFormNew
-        :inputs="inputs"
-        title="Tạo bài viết mới"
         :handle-add="handleAddPost"
+        :inputs="inputs"
         location="/post-forum"
+        title="Tạo bài viết mới"
     />
   </div>
 </template>

@@ -1,18 +1,18 @@
 <template>
   <a-modal
-    v-model:visible="visible"
-    :title="title"
-    @ok="handleConfirm"
-    @cancel="handleCancel"
-    okText="Confirm"
-    cancelText="Cancel"
+      v-model:visible="visible"
+      :title="title"
+      cancelText="Cancel"
+      okText="Confirm"
+      @cancel="handleCancel"
+      @ok="handleConfirm"
   >
     <p>{{ content }}</p>
   </a-modal>
 </template>
 
-<script setup lang="ts">
-import { ref, defineProps, defineEmits, watch } from 'vue';
+<script lang="ts" setup>
+import {defineEmits, defineProps, ref, watch} from 'vue';
 
 const props = defineProps({
   title: String,

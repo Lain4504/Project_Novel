@@ -1,14 +1,17 @@
-<script setup lang="ts">
-import {ref, onMounted, onBeforeUnmount} from 'vue';
+<script lang="ts" setup>
+import {onBeforeUnmount, onMounted, ref} from 'vue';
+import NotificationDropdown from '@/components/common/BellNotificationDropdown.vue';
+import {getUserProfile} from "@/api/user";
+import store from "@/store";
+import {getNotificationByUserId} from "@/api/notification";
+import {logout} from "@/api/auth";
+import router from "@/router";
 
 enum Routes {
   NewNovel = '/create-novel',
   ExistingNovels = '/novels-of-author',
   Analytics = '/analytics',
-  Support = '/support',
   AdminNotification = '/system-notification',
-  // Account = '/author-account',
-  // Payment = '/payment',
   FAQ = '/faq',
   PostCategory = '/post-category-for-author',
   BookCategory = '/novel-category-for-author',
@@ -20,13 +23,6 @@ enum Routes {
   UserManagement = '/user-admin',
   AdminDashboard = '/admin-dashboard',
 }
-
-import NotificationDropdown from '@/components/common/BellNotificationDropdown.vue';
-import {getUserProfile} from "@/api/user";
-import store from "@/store";
-import {getNotificationByUserId} from "@/api/notification";
-import {logout} from "@/api/auth";
-import router from "@/router";
 
 const showDropDown = ref<boolean>(false);
 const showSide = ref<boolean>(true);
@@ -102,7 +98,6 @@ const MenuItems = [
     label: 'Notification',
     isParent: true,
     children: [
-      // {to: Routes.Support, label: 'Support', icon: 'fa-solid fa-phone'},
       {to: Routes.AdminNotification, label: 'Notification', icon: 'fa-solid fa-bullhorn'},
     ]
   },
@@ -169,9 +164,7 @@ const handleLogout = async () => {
   }
 };
 const dropdownItems = [
-  // {to: Routes.Account, label: 'Account'},
-  // {to: Routes.Payment, label: 'Payment'},
-  { label: 'Sign out', action: handleLogout }, // Thêm mục Sign out
+  {label: 'Sign out', action: handleLogout}, // Thêm mục Sign out
 ];
 const isNotificationListOpen = ref(false);
 
@@ -200,7 +193,8 @@ onMounted(() => {
 <template>
   <div class="w-screen h-screen flex">
     <!-- Sidebar for larger screens -->
-    <div class="w-[260px] h-full bg-white text-black border-r border-gray-300 overflow-hidden" v-show="showSide && !isMobile">
+    <div v-show="showSide && !isMobile"
+         class="w-[260px] h-full bg-white text-black border-r border-gray-300 overflow-hidden">
       <div class="h-[50px] bg-white flex justify-start items-center border-b border-gray-300">
         <div class="px-[20px]">
           <h3 class="font-bold text-xl">Admin Panel</h3>
@@ -218,8 +212,8 @@ onMounted(() => {
                 <!-- Child Items (Menu Links) -->
                 <div v-if="item.isParent" class="flex flex-col justify-between">
                   <router-link v-for="subItem in item.children" :key="subItem.to" :to="subItem.to"
-                               class="inline-flex relative items-center py-[10px] px-[10px] w-full text-sm font-medium rounded-md border-gray-200 transition duration-500 ease-in-out hover:bg-gray-100 hover:text-black"
-                               active-class="bg-gray-300 text-black font-semibold">
+                               active-class="bg-gray-300 text-black font-semibold"
+                               class="inline-flex relative items-center py-[10px] px-[10px] w-full text-sm font-medium rounded-md border-gray-200 transition duration-500 ease-in-out hover:bg-gray-100 hover:text-black">
                     <font-awesome-icon :icon="subItem.icon" class="mr-2"/>
                     {{ subItem.label }}
                   </router-link>
@@ -233,7 +227,7 @@ onMounted(() => {
                   class="text-sm text-gray-700 font-semibold cursor-pointer flex justify-between items-center py-2 px-3 bg-gray-200 rounded-md"
                   @click="toggleDropdown">
                 <div class="flex items-center space-x-2">
-                  <font-awesome-icon icon="fa-solid fa-bars-progress" size="lg" class="mx-2 my-[0.2rem]"/>
+                  <font-awesome-icon class="mx-2 my-[0.2rem]" icon="fa-solid fa-bars-progress" size="lg"/>
                   <span>Advanced Features</span>
                 </div>
                 <span :class="{ 'rotate-180': isDropdownOpen }"
@@ -244,8 +238,8 @@ onMounted(() => {
 
               <div v-if="isDropdownOpen" class="mt-2 flex flex-col space-y-1">
                 <router-link v-for="item in featureMenuItems" :key="item.to" :to="item.to"
-                             class="inline-flex items-center py-2 px-3 text-sm font-medium rounded-md border-gray-200 transition duration-500 ease-in-out hover:bg-gray-100 hover:text-black"
-                             active-class="bg-gray-300 text-black font-semibold" @click="handleItemClick">
+                             active-class="bg-gray-300 text-black font-semibold"
+                             class="inline-flex items-center py-2 px-3 text-sm font-medium rounded-md border-gray-200 transition duration-500 ease-in-out hover:bg-gray-100 hover:text-black" @click="handleItemClick">
                   {{ item.label }}
                 </router-link>
               </div>
@@ -261,8 +255,8 @@ onMounted(() => {
         <div class="p-4">
           <div class="flex justify-between items-center">
             <h3 class="font-bold text-xl">Admin Panel</h3>
-            <button @click="toggleSideBar"
-                    class="text-black transition-transform duration-200 hover:scale-125 focus:scale-150 active:animate-pulse focus:outline-none">
+            <button class="text-black transition-transform duration-200 hover:scale-125 focus:scale-150 active:animate-pulse focus:outline-none"
+                    @click="toggleSideBar">
               <font-awesome-icon icon="fa-solid fa-xmark" size="lg"/>
             </button>
           </div>
@@ -272,8 +266,8 @@ onMounted(() => {
 
                 <div class="text-sm text-gray-700 font-semibold">{{ item.label }}</div>
                 <router-link v-for="subItem in item.children" :key="subItem.to" :to="subItem.to"
-                             class="inline-flex relative items-center py-2 px-3 w-full text-sm font-medium rounded-md transition duration-500 ease-in-out hover:bg-gray-100 hover:text-black"
-                             active-class="bg-gray-300 text-black font-semibold" @click="toggleSideBar">
+                             active-class="bg-gray-300 text-black font-semibold"
+                             class="inline-flex relative items-center py-2 px-3 w-full text-sm font-medium rounded-md transition duration-500 ease-in-out hover:bg-gray-100 hover:text-black" @click="toggleSideBar">
                   <font-awesome-icon :icon="subItem.icon" class="mr-2"/>
                   {{ subItem.label }}
                 </router-link>
@@ -285,21 +279,22 @@ onMounted(() => {
                   class="text-xs text-gray-700 font-semibold cursor-pointer flex justify-between items-center py-2 px-3 bg-gray-200 rounded-md"
                   @click="toggleDropdown">
                 <div class="flex items-center space-x-2">
-                  <font-awesome-icon icon="fa-solid fa-bars-progress" size="lg" class="mx-2 my-[0.2rem]"/>
+                  <font-awesome-icon class="mx-2 my-[0.2rem]" icon="fa-solid fa-bars-progress" size="lg"/>
                   <span>Advanced Features</span>
                 </div>
-                <span :class="{ 'rotate-180': isDropdownOpen }" class="transform transition-transform duration-300">▼</span>
+                <span :class="{ 'rotate-180': isDropdownOpen }"
+                      class="transform transition-transform duration-300">▼</span>
               </div>
               <!-- Menu items (dropdown content) -->
               <div v-if="isDropdownOpen" class="mt-2 flex flex-col space-y-1">
                 <router-link v-for="item in featureMenuItems" :key="item.to" :to="item.to"
-                             class="inline-flex items-center py-2 px-3 text-sm font-medium rounded-md border-gray-200 transition duration-500 ease-in-out hover:bg-gray-100 hover:text-black"
-                             active-class="bg-gray-300 text-black font-semibold" @click="handleItemClick">
+                             active-class="bg-gray-300 text-black font-semibold"
+                             class="inline-flex items-center py-2 px-3 text-sm font-medium rounded-md border-gray-200 transition duration-500 ease-in-out hover:bg-gray-100 hover:text-black" @click="handleItemClick">
                   {{ item.label }}
                 </router-link>
               </div>
             </div>
-            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -320,17 +315,17 @@ onMounted(() => {
         <div class="relative flex items-center space-x-4 cursor-pointer">
 
           <div class="relative">
-            <router-link to="/"
-                         class="flex items-center text-black hover:underline transition-all duration-300 text-sm">
+            <router-link class="flex items-center text-black hover:underline transition-all duration-300 text-sm"
+                         to="/">
               <!-- Writer Icon -->
               <font-awesome-icon :icon="['fas', 'house']" size="lg"/>
             </router-link>
           </div>
           <div class="relative mr-1">
-            <div @click="toggleNotificationList" class="relative">
+            <div class="relative" @click="toggleNotificationList">
 
-              <font-awesome-icon icon="fa-regular fa-bell" size="xl"
-                                 class="cursor-pointer w-[30px] text-gray-700 hover:text-black transition-transform duration-200 hover:scale-110 focus:scale-125 active:animate-pulse focus:outline-none"/>
+              <font-awesome-icon class="cursor-pointer w-[30px] text-gray-700 hover:text-black transition-transform duration-200 hover:scale-110 focus:scale-125 active:animate-pulse focus:outline-none" icon="fa-regular fa-bell"
+                                 size="xl"/>
               <span
                   className='absolute right-[-5px] bottom-[-5px] w-4 text-center leading-4 bg-black text-white aspect-square rounded-full text-[8px]'>
                                 {{ unreadNotifications }}
@@ -346,8 +341,8 @@ onMounted(() => {
             </transition>
           </div>
           <img
-              class="w-10 h-10 rounded-full border-2 border-gray-50 ml-[-4px] transition-transform duration-200 hover:scale-110 hover:border-blue-500"
-              :src="userProfile.image" alt="" @click="toggleDropdownMenu"/>
+              :src="userProfile.image"
+              alt="" class="w-10 h-10 rounded-full border-2 border-gray-50 ml-[-4px] transition-transform duration-200 hover:scale-110 hover:border-blue-500" @click="toggleDropdownMenu"/>
           <transition name="dropdown-fade">
             <div v-show="showDropDown"
                  class="absolute top-full mt-2 right-0 z-10 w-44 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
@@ -376,7 +371,7 @@ onMounted(() => {
 /* Custom scrollbar for sidebar */
 .custom-scrollbar {
   scrollbar-width: thin;
-  scrollbar-color: rgba(0,0,0,0.2) transparent;
+  scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
 }
 
 .custom-scrollbar::-webkit-scrollbar {
@@ -388,11 +383,11 @@ onMounted(() => {
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background-color: rgba(0,0,0,0.2);
+  background-color: rgba(0, 0, 0, 0.2);
   border-radius: 4px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(0,0,0,0.3);
+  background-color: rgba(0, 0, 0, 0.3);
 }
 </style>

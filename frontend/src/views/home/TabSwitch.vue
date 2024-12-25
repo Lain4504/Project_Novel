@@ -1,44 +1,44 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import Ads from '@/components/home/Banner.vue';
+
 interface TabSwitch {
   name: string;
   label: string;
 }
 
 const tabs: TabSwitch[] = [
-  { name: 'readinglist', label: 'TRUYỆN ĐANG ĐỌC' },
-  { name: 'bookmark', label: 'BOOKMARK' }
+  {name: 'readinglist', label: 'TRUYỆN ĐANG ĐỌC'},
+  {name: 'bookmark', label: 'BOOKMARK'}
 ];
 </script>
 <template>
   <div class="max-w-7xl mx-auto">
 
-    <Ads class="my-4" />
+    <Ads class="my-4"/>
     <Breedcrumb :breadcrumbs="[
       { label: 'Home', href: '/' },
       { label: 'Reading List', href: '/list/readinglist', isCurrent: true }
-    ]" />
+    ]"/>
     <div class="flex space-x-4 my-2">
       <router-link
-        v-for="tab in tabs"
-        :key="tab.name"
-        :to="`/list/${tab.name}`"
-        class="px-4 py-2 text-sm font-semibold cursor-pointer"
-        :class="{
+          v-for="tab in tabs"
+          :key="tab.name"
+          :class="{
           'text-blue-500 border-b-2 border-blue-500': $route.name === tab.name,
           'text-gray-500': $route.name !== tab.name
         }"
+          :to="`/list/${tab.name}`"
+          class="px-4 py-2 text-sm font-semibold cursor-pointer"
       >
         {{ tab.label }}
       </router-link>
     </div>
 
     <div class="mt-4">
-      <router-view />
+      <router-view/>
     </div>
   </div>
 </template>
-
 
 
 <style scoped>

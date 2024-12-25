@@ -1,8 +1,8 @@
 package com.backend.novelservice.service;
 
+import com.backend.dto.response.PageResponse;
 import com.backend.novelservice.dto.request.NovelCategoryRequest;
 import com.backend.novelservice.dto.response.NovelCategoryResponse;
-import com.backend.dto.response.PageResponse;
 import com.backend.novelservice.entity.NovelCategory;
 import com.backend.novelservice.mapper.NovelCategoryMapper;
 import com.backend.novelservice.repository.NovelCategoryRepository;
@@ -16,7 +16,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -27,7 +26,7 @@ public class NovelCategoryService {
     NovelCategoryRepository novelCategoryRepository;
     DateTimeFormatter dateTimeFormatter;
 
-    public NovelCategoryResponse createNovelCategory(NovelCategoryRequest request){
+    public NovelCategoryResponse createNovelCategory(NovelCategoryRequest request) {
         NovelCategory newNovelCategory = NovelCategory.builder()
                 .name(request.getName())
                 .description(request.getDescription())
@@ -37,10 +36,12 @@ public class NovelCategoryService {
         newNovelCategory = novelCategoryRepository.save(newNovelCategory);
         return novelCategoryMapper.toNovelCategoryResponse(newNovelCategory);
     }
+
     public NovelCategoryResponse getNovelCategoryById(String id) {
         var category = novelCategoryRepository.findById(id).orElse(null);
         return novelCategoryMapper.toNovelCategoryResponse(category);
     }
+
     public PageResponse<NovelCategoryResponse> getNovelCategories(int page, int size) {
         Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
         Pageable pageable = PageRequest.of(page - 1, size, sort);
@@ -58,9 +59,11 @@ public class NovelCategoryService {
                 .data(categoryList)
                 .build();
     }
+
     public void deleteNovelCategory(String id) {
         novelCategoryRepository.deleteById(id);
     }
+
     public NovelCategoryResponse updateNovelCategory(String id, NovelCategoryRequest request) {
         var category = novelCategoryRepository.findById(id).orElse(null);
         if (category == null) {

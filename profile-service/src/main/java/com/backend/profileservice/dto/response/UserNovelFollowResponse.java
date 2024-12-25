@@ -2,9 +2,6 @@ package com.backend.profileservice.dto.response;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import org.springframework.data.mongodb.core.mapping.MongoId;
-
-import java.time.Instant;
 
 @Getter
 @Setter

@@ -1,9 +1,8 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import Ads from "@/components/home/Banner.vue";
-import { ref, computed, onMounted, watch } from 'vue';
-import { getPosts } from "@/api/post";
-import { getPostCategoriesWithoutPagination } from "@/api/postcategory";
-import { Pagination } from 'ant-design-vue';
+import {onMounted, ref, watch} from 'vue';
+import {getPosts} from "@/api/post";
+import {getPostCategoriesWithoutPagination} from "@/api/postCategory";
 
 // Logic for post list
 const currentPage = ref(1);
@@ -13,7 +12,7 @@ const pageSize = 10;
 
 const fetchPosts = async (page: number, categoryId: string) => {
   try {
-    const result = await getPosts({ page, size: pageSize, categoryId: categoryId || undefined });
+    const result = await getPosts({page, size: pageSize, categoryId: categoryId || undefined});
     data.value = result.data;
     totalPages.value = result.totalPages;
     currentPage.value = result.currentPage;
@@ -63,8 +62,8 @@ onMounted(() => {
       <div class="mb-6">
         <div class="flex justify-between items-center mb-2">
           <h1 class="text-xl font-semibold text-gray-800">Thảo luận</h1>
-          <router-link to="/post-create-form"
-              class="flex items-center justify-center w-10 h-10 bg-[#C96442] text-white rounded-full hover:bg-[#BA5B38]">
+          <router-link class="flex items-center justify-center w-10 h-10 bg-[#C96442] text-white rounded-full hover:bg-[#BA5B38]"
+                       to="/post-create-form">
             <font-awesome-icon :icon="['fas', 'plus']" class="text-lg"/>
           </router-link>
         </div>
@@ -96,7 +95,8 @@ onMounted(() => {
         <tr v-for="(item, index) in data" :key="index"
             class="border-t hover:bg-gray-100 transition text-sm">
           <td class="px-4 py-3 flex items-center">
-            <router-link :to="{ name: 'postdetail', params: { id: item.id } }" class="text-black font-medium hover:underline">
+            <router-link :to="{ name: 'postdetail', params: { id: item.id } }"
+                         class="text-black font-medium hover:underline">
               <i v-if="item.isImportant" class="fas fa-star text-yellow-400 mr-2"></i>
               {{ item.title }}
             </router-link>
@@ -121,10 +121,10 @@ onMounted(() => {
       </table>
       <div class="flex justify-center mt-4">
         <a-pagination
-          :current="currentPage"
-          :total="totalPages * pageSize"
-          :pageSize="pageSize"
-          @change="goToPage"
+            :current="currentPage"
+            :pageSize="pageSize"
+            :total="totalPages * pageSize"
+            @change="goToPage"
         />
       </div>
     </div>

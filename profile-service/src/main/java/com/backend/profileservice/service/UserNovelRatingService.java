@@ -1,6 +1,5 @@
 package com.backend.profileservice.service;
 
-import com.backend.event.NotificationEvent;
 import com.backend.event.NovelDataSenderEvent;
 import com.backend.profileservice.dto.request.UserNovelRatingRequest;
 import com.backend.profileservice.dto.response.UserNovelRatingResponse;
@@ -24,6 +23,7 @@ public class UserNovelRatingService {
     UserNovelRatingRepository userNovelRatingRepository;
     UserNovelRatingMapper userNovelRatingMapper;
     KafkaTemplate<String, Object> kafkaTemplate;
+
     public UserNovelRatingResponse rateNovel(UserNovelRatingRequest request) {
         UserNovelRating userNovelRating = userNovelRatingMapper.toUserNovelRating(request);
         NovelDataSenderEvent novelDataSenderEvent = NovelDataSenderEvent.builder()
@@ -33,6 +33,7 @@ public class UserNovelRatingService {
         userNovelRating = userNovelRatingRepository.save(userNovelRating);
         return userNovelRatingMapper.toUserNovelRatingResponse(userNovelRating);
     }
+
     public UserNovelRatingResponse updateRating(UserNovelRatingRequest request) {
         UserNovelRating userNovelRating = userNovelRatingRepository.findByUserIdAndNovelId(request.getUserId(), request.getNovelId());
         userNovelRatingMapper.updateUserNovelRating(userNovelRating, request);
@@ -44,6 +45,7 @@ public class UserNovelRatingService {
         userNovelRatingRepository.save(userNovelRating);
         return userNovelRatingMapper.toUserNovelRatingResponse(userNovelRating);
     }
+
     public boolean hasRatedNovel(String userId, String novelId) {
         return userNovelRatingRepository.findByUserIdAndNovelId(userId, novelId) != null;
     }

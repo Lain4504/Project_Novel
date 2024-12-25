@@ -1,13 +1,13 @@
 package com.backend.profileservice.entity;
 
-import java.time.Instant;
-import java.time.LocalDate;
-
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.MongoId;
+
+import java.time.Instant;
+import java.time.LocalDate;
 
 @Data
 @Builder

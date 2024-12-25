@@ -1,6 +1,7 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import DynamicFormNew from "@/components/common/DynamicFormNew.vue";
-import {createNovelCategory} from "@/api/novelcategory";
+import {createNovelCategory} from "@/api/novelCategory";
+
 const collectionInputs = [
   {
     id: 'name',
@@ -16,7 +17,7 @@ const collectionInputs = [
   },
 ];
 const handleCreateNovelCategory = async (data: any) => {
-    const response = await createNovelCategory(data);
+  const response = await createNovelCategory(data);
 }
 const location = '/novel-category-list';
 
@@ -24,9 +25,9 @@ const location = '/novel-category-list';
 
 <template>
   <DynamicFormNew
-      :inputs="collectionInputs"
-      title="Create Novel Category"
       :handleAdd="handleCreateNovelCategory"
+      :inputs="collectionInputs"
       :location="location"
+      title="Create Novel Category"
   />
 </template>

@@ -15,7 +15,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
-import java.sql.Time;
 import java.time.Instant;
 
 @Service
@@ -33,18 +32,21 @@ public class UserReviewService {
         userReviewRepository.save(userReview);
         return userReviewMapper.toUserReviewResponse(userReview);
     }
+
     public UserReviewResponse updateReview(UserReviewRequest request) {
         userReviewMapper.updateUserReview(userReviewRepository.findByUserIdAndNovelId(request.getUserId(), request.getNovelId()), request);
         return userReviewMapper.toUserReviewResponse(userReviewRepository.save(userReviewMapper.toUserReview(request)));
     }
+
     public void deleteReview(UserReviewRequest request) {
         userReviewRepository.deleteByUserIdAndNovelId(request.getUserId(), request.getNovelId());
     }
+
     public PageResponse<UserReviewResponse> getReviewsByNovelId(String novelId, int page, int size) {
         Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
         Pageable pageable = PageRequest.of(page - 1, size, sort);
         var pageData = userReviewRepository.findAllByNovelId(novelId, pageable);
-        var novelReviews = pageData.getContent().stream().map(novelReview ->{
+        var novelReviews = pageData.getContent().stream().map(novelReview -> {
             var userReviewResponse = userReviewMapper.toUserReviewResponse(novelReview);
             userReviewResponse.setCreated(dateTimeFormatter.format(novelReview.getCreatedAt()));
             return userReviewResponse;
@@ -62,7 +64,7 @@ public class UserReviewService {
         Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
         Pageable pageable = PageRequest.of(page - 1, size, sort);
         var pageData = userReviewRepository.findAll(pageable);
-        var novelReviews = pageData.getContent().stream().map(novelReview ->{
+        var novelReviews = pageData.getContent().stream().map(novelReview -> {
             var userReviewResponse = userReviewMapper.toUserReviewResponse(novelReview);
             userReviewResponse.setCreated(dateTimeFormatter.format(novelReview.getCreatedAt()));
             return userReviewResponse;

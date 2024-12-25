@@ -15,7 +15,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -23,8 +22,9 @@ import java.util.List;
 public class NotificationService {
     NotificationRepository notificationRepository;
     DateTimeFormatter dateTimeFormatter;
+
     public void sendNotification(NotificationEvent message) {
-              String template;
+        String template;
         switch (message.getTemplateCode()) {
             case "POST_COMMENT_OWNER_NOTIFICATION":
                 template = NotificationTemplate.POST_COMMENT_OWNER_NOTIFICATION.getTemplate()
@@ -64,6 +64,7 @@ public class NotificationService {
                 .build();
         notificationRepository.save(notification);
     }
+
     public PageResponse<Notification> getNotifications(String userId, int page, int size) {
         Sort sort = Sort.by(Sort.Order.desc("createdDate"));
         Pageable pageable = PageRequest.of(page - 1, size, sort);
@@ -72,12 +73,12 @@ public class NotificationService {
             notification.setCreated(dateTimeFormatter.format(notification.getCreatedDate()));
             return notification;
         }).toList();
-            return PageResponse.<Notification>builder()
-                    .currentPage(page)
-                    .pageSize(pageData.getSize())
-                    .totalPages(pageData.getTotalPages())
-                    .totalElements(pageData.getTotalElements())
-                    .data(notificationList)
-                    .build();
+        return PageResponse.<Notification>builder()
+                .currentPage(page)
+                .pageSize(pageData.getSize())
+                .totalPages(pageData.getTotalPages())
+                .totalElements(pageData.getTotalElements())
+                .data(notificationList)
+                .build();
     }
 }

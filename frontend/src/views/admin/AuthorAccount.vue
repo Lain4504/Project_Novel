@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import {reactive} from 'vue';
 
 const formData = reactive({
@@ -20,34 +20,34 @@ const submitForm = () => {
     <form @submit.prevent="submitForm">
       <div class="space-y-4">
         <div>
-          <label for="accountHolder" class="block text-gray-700">Tên chủ khoản</label>
-          <input v-model="formData.accountHolder" type="text" id="accountHolder"
-                 class="mt-1 block w-full p-1 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-500"
-                 required/>
+          <label class="block text-gray-700" for="accountHolder">Tên chủ khoản</label>
+          <input id="accountHolder" v-model="formData.accountHolder" class="mt-1 block w-full p-1 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-500"
+                 required
+                 type="text"/>
         </div>
         <div>
-          <label for="accountNumber" class="block text-gray-700">Số tài khoản</label>
-          <input v-model="formData.accountNumber" type="text" id="accountNumber"
-                 class="mt-1 block w-full p-1 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-500"
-                 required/>
+          <label class="block text-gray-700" for="accountNumber">Số tài khoản</label>
+          <input id="accountNumber" v-model="formData.accountNumber" class="mt-1 block w-full p-1 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-500"
+                 required
+                 type="text"/>
         </div>
         <div>
-          <label for="bank" class="block text-gray-700">Ngân hàng</label>
-          <input v-model="formData.bank" type="text" id="bank"
-                 class="mt-1 block w-full p-1 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-500"
-                 required/>
+          <label class="block text-gray-700" for="bank">Ngân hàng</label>
+          <input id="bank" v-model="formData.bank" class="mt-1 block w-full p-1 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-500"
+                 required
+                 type="text"/>
         </div>
         <div>
-          <label for="branch" class="block text-gray-700">Chi nhánh</label>
-          <input v-model="formData.branch" type="text" id="branch"
-                 class="mt-1 block w-full p-1 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-500"
-                 required/>
+          <label class="block text-gray-700" for="branch">Chi nhánh</label>
+          <input id="branch" v-model="formData.branch" class="mt-1 block w-full p-1 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-500"
+                 required
+                 type="text"/>
         </div>
         <div>
-          <label for="city" class="block text-gray-700">Tỉnh thành</label>
-          <input v-model="formData.city" type="text" id="city"
-                 class="mt-1 block w-full p-1 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-500"
-                 required/>
+          <label class="block text-gray-700" for="city">Tỉnh thành</label>
+          <input id="city" v-model="formData.city" class="mt-1 block w-full p-1 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-500"
+                 required
+                 type="text"/>
         </div>
       </div>
       <div class="flex justify-end mt-4">

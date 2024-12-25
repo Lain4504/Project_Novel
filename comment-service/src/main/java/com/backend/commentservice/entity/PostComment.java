@@ -1,6 +1,5 @@
 package com.backend.commentservice.entity;
 
-import com.backend.commentservice.repository.httpclient.UserProfileResponse;
 import jakarta.persistence.Column;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -8,7 +7,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.MongoId;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
 
 @Getter
 @Setter

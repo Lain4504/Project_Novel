@@ -1,12 +1,13 @@
 import axios from "@/utils/axiosInstance";
+
 const POST_API = "/post/posts";
 
 const createPost = (data: Record<string, any>) => {
     return axios.post(`${POST_API}/create`, data)
         .then((response) => response.data.result);
 }
-const getPosts = ({ page, size, categoryId }: { page: number, size: number, categoryId?: string }) => {
-    const params: any = { page, size };
+const getPosts = ({page, size, categoryId}: { page: number, size: number, categoryId?: string }) => {
+    const params: any = {page, size};
     if (categoryId) {
         params.categoryId = categoryId;
     }
@@ -34,4 +35,4 @@ const getMyPosts = (params: { page: number, size: number }) => {
         }
     }).then((response) => response.data.result);
 }
-export { createPost, getPosts, getPost, deletePost, updatePost, getMyPosts };
+export {createPost, getPosts, getPost, deletePost, updatePost, getMyPosts};

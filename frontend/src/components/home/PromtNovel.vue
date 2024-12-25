@@ -1,6 +1,6 @@
-<script setup lang="ts">
-import { computed, ref, onMounted, watch } from 'vue';
-import { getMyNovels } from '@/api/novel';
+<script lang="ts" setup>
+import {computed, onMounted, ref, watch} from 'vue';
+import {getMyNovels} from '@/api/novel';
 
 interface Novel {
   id: string;
@@ -11,8 +11,8 @@ interface Novel {
 }
 
 const tabs = [
-  { label: 'TOP THÁNG', value: 'top', sort: '' },
-  { label: 'ĐỀ CỬ', value: 'recommentation', sort: 'recommentation' },
+  {label: 'TOP THÁNG', value: 'top', sort: ''},
+  {label: 'ĐỀ CỬ', value: 'recommentation', sort: 'recommentation'},
 ];
 
 const activeTab = ref(tabs[0].value);
@@ -64,13 +64,13 @@ watch(activeTab, (newTab) => {
       <li
           v-for="tab in tabs"
           :key="tab.value"
-          class="item cursor-pointer transition-transform duration-300 ease-in-out"
           :class="[
           activeTab === tab.value
             ? 'text-blue-600 font-bold border-b-2 border-blue-600'
             : 'text-gray-600',
           'hover:scale-105',
         ]"
+          class="item cursor-pointer transition-transform duration-300 ease-in-out"
           @click="setActiveTab(tab)"
       >
         {{ tab.label }}
@@ -108,11 +108,11 @@ watch(activeTab, (newTab) => {
       <button
           v-for="page in [1, 2]"
           :key="page"
-          @click="() => changePage(page)"
           :class="[
           'w-3 h-3 rounded-full transition-all',
           currentPage === page ? 'bg-yellow-600' : 'bg-gray-300',
         ]"
+          @click="() => changePage(page)"
       ></button>
     </div>
   </div>

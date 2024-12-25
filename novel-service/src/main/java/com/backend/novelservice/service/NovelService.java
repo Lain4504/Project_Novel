@@ -1,13 +1,12 @@
 package com.backend.novelservice.service;
 
+import com.backend.dto.response.PageResponse;
 import com.backend.enums.NovelStatusEnum;
-import com.backend.event.NotificationEvent;
 import com.backend.event.NovelDataSenderEvent;
 import com.backend.novelservice.dto.request.NovelCreationRequest;
 import com.backend.novelservice.dto.request.NovelUpdateRequest;
 import com.backend.novelservice.dto.response.NovelDetailsResponse;
 import com.backend.novelservice.dto.response.NovelResponse;
-import com.backend.dto.response.PageResponse;
 import com.backend.novelservice.entity.Image;
 import com.backend.novelservice.entity.Novel;
 import com.backend.novelservice.entity.NovelCategory;
@@ -33,6 +32,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -208,6 +208,7 @@ public class NovelService {
                 .data(novelList)
                 .build();
     }
+
     public PageResponse<NovelResponse> getNovelsByStatus(String status, int page, int size) {
         Sort sort = Sort.by(Sort.Order.desc("createdDate"));
         Pageable pageable = PageRequest.of(page - 1, size, sort);
@@ -242,7 +243,8 @@ public class NovelService {
 
         novelRepository.save(novel);
     }
-    public PageResponse<NovelResponse> getNovelsByDynamicField(String fields, int page, int size){
+
+    public PageResponse<NovelResponse> getNovelsByDynamicField(String fields, int page, int size) {
         Sort sort = Sort.by(Sort.Order.desc(fields).nullsLast());
         Pageable pageable = PageRequest.of(page - 1, size, sort);
         var pageData = novelRepository.findAll(pageable);

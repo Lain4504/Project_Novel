@@ -1,14 +1,14 @@
 <template>
   <div v-if="props.createPath" class="mt-4 flex justify-end my-4">
     <router-link :to="props.createPath">
-    <a-button
-    type="primary"
-    shape="circle"
-    class="bg-blue-400 hover:bg-blue-600 border-none text-white flex items-center justify-center"
-    style="width: 40px; height: 40px;"
->
-      <font-awesome-icon :icon="['fas', 'plus']" class="text-xl"/>
-</a-button>
+      <a-button
+          class="bg-blue-400 hover:bg-blue-600 border-none text-white flex items-center justify-center"
+          shape="circle"
+          style="width: 40px; height: 40px;"
+          type="primary"
+      >
+        <font-awesome-icon :icon="['fas', 'plus']" class="text-xl"/>
+      </a-button>
     </router-link>
   </div>
   <div class="relative sm:rounded-lg">
@@ -16,8 +16,8 @@
       <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
         <thead class="text-xs text-gray-700 uppercase bg-[#F8F8F7] dark:bg-gray-700 dark:text-gray-400">
         <tr>
-          <th v-for="column in props.columns" :key="column.field" class="py-3 px-6"
-              :style="{ width: column.width ? `${column.width}px` : 'auto' }">
+          <th v-for="column in props.columns" :key="column.field" :style="{ width: column.width ? `${column.width}px` : 'auto' }"
+              class="py-3 px-6">
             {{ column.headerName }}
           </th>
         </tr>
@@ -28,21 +28,21 @@
             Không có dữ liệu
           </td>
         </tr>
-        <tr v-else v-for="(row, rowIndex) in props.rows" :key="rowIndex"
+        <tr v-for="(row, rowIndex) in props.rows" v-else :key="rowIndex"
             class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
           <td v-for="column in props.columns" :key="column.field" class="py-4 px-6 dark:text-white">
             <template v-if="column.isAction">
               <div class="flex justify-center items-center space-x-3">
-                <button v-if="props.emits.includes('view')" @click="$emit('view', row)"
-                        class="bg-transparent border-[1px] border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-white font-medium py-2 px-3 rounded transition duration-300 flex items-center">
+                <button v-if="props.emits.includes('view')" class="bg-transparent border-[1px] border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-white font-medium py-2 px-3 rounded transition duration-300 flex items-center"
+                        @click="$emit('view', row)">
                   <font-awesome-icon :icon="['far', 'eye']"/>
                 </button>
-                <button v-if="props.emits.includes('edit')" @click="$emit('edit', row)"
-                        class="bg-transparent border-[1px] border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white font-medium py-2 px-3 rounded transition duration-300 flex items-center">
+                <button v-if="props.emits.includes('edit')" class="bg-transparent border-[1px] border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white font-medium py-2 px-3 rounded transition duration-300 flex items-center"
+                        @click="$emit('edit', row)">
                   <font-awesome-icon :icon="['fas', 'pen']"/>
                 </button>
-                <button v-if="props.emits.includes('delete')" @click="$emit('delete', row)"
-                        class="bg-transparent border-[1px] border-red-500 text-red-500 hover:bg-red-500 hover:text-white font-medium py-2 px-3 rounded transition duration-300 flex items-center">
+                <button v-if="props.emits.includes('delete')" class="bg-transparent border-[1px] border-red-500 text-red-500 hover:bg-red-500 hover:text-white font-medium py-2 px-3 rounded transition duration-300 flex items-center"
+                        @click="$emit('delete', row)">
                   <font-awesome-icon :icon="['fas', 'trash']"/>
                 </button>
               </div>
@@ -66,15 +66,15 @@
           :pageSize="pageSize"
           :total="totalPages * pageSize"
           show-size-changer
-          @showSizeChange="onShowSizeChange"
           @change="handlePageChange"
+          @showSizeChange="onShowSizeChange"
       />
     </div>
   </div>
 </template>
 
-<script setup lang="ts">
-import {defineProps, defineEmits, ref, watch} from 'vue';
+<script lang="ts" setup>
+import {defineEmits, defineProps, ref, watch} from 'vue';
 
 const props = defineProps<{
   columns: Column[];

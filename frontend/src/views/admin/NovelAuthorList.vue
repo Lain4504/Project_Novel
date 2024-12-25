@@ -1,16 +1,16 @@
-<script setup lang="ts">
-import { onMounted, ref, watch } from "vue";
-import { deleteNovel, getMyNovels } from "@/api/novel";
+<script lang="ts" setup>
+import {onMounted, ref, watch} from "vue";
+import {deleteNovel, getMyNovels} from "@/api/novel";
 import router from "@/router";
 import ConfirmDeleteModal from "@/components/common/ConfirmDeleteModal.vue";
 import DynamicDataTable from "@/components/common/DynamicDataTable.vue";
 
 const novelColumns = [
-  { field: "id", headerName: "ID", width: 70 },
-  { field: "title", headerName: "Tiêu đề", width: 200 },
-  { field: "authorName", headerName: "Tác giả", width: 200 },
-  { field: "created", headerName: "Thời gian tạo", width: 200 },
-  { field: "actions", headerName: "Hành động", width: 200, isAction: true }
+  {field: "id", headerName: "ID", width: 70},
+  {field: "title", headerName: "Tiêu đề", width: 200},
+  {field: "authorName", headerName: "Tác giả", width: 200},
+  {field: "created", headerName: "Thời gian tạo", width: 200},
+  {field: "actions", headerName: "Hành động", width: 200, isAction: true}
 ];
 
 const totalPages = ref(1);
@@ -68,11 +68,11 @@ const handlePageChange = (page: number, size: number = pageSize.value) => {
   pageSize.value = size;
 };
 const handleEdit = (row: any) => {
-  router.push({ name: 'novelAuthorManagement', params: { id: row.id } });
+  router.push({name: 'novelAuthorManagement', params: {id: row.id}});
 };
 
 const handleView = (row: any) => {
-  router.push({ name: 'noveldetail', params: { id: row.id } });
+  router.push({name: 'noveldetail', params: {id: row.id}});
 };
 </script>
 
@@ -80,21 +80,21 @@ const handleView = (row: any) => {
   <h3 class="text-2xl font-bold text-left py-2">Novel Management</h3>
   <ConfirmDeleteModal
       :show="showConfirmModal"
-      title="Bạn có chắc chắn muốn xóa không?"
-      message="Thao tác này sẽ gửi yêu cầu xóa tiểu thuyết tới admin để xem xét, thời gian giải quyết tối đa 3 ngày làm việc."
       confirmText="Xóa"
-      @confirm="confirmDelete"
+      message="Thao tác này sẽ gửi yêu cầu xóa tiểu thuyết tới admin để xem xét, thời gian giải quyết tối đa 3 ngày làm việc."
+      title="Bạn có chắc chắn muốn xóa không?"
       @cancel="cancelDelete"
+      @confirm="confirmDelete"
   />
   <DynamicDataTable
       :columns="novelColumns"
-      :rows="novelRows"
       :currentPage="currentPage"
-      :totalPages="totalPages"
       :emits="['page-change', 'delete', 'view', 'edit']"
-      @page-change="handlePageChange"
+      :rows="novelRows"
+      :totalPages="totalPages"
+      @delete="handleDelete"
       @edit="handleEdit"
       @view="handleView"
-      @delete="handleDelete"
+      @page-change="handlePageChange"
   />
 </template>

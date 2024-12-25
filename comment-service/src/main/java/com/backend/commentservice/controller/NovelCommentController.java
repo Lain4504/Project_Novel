@@ -4,8 +4,6 @@ import com.backend.commentservice.dto.request.NovelCommentReplyRequest;
 import com.backend.commentservice.dto.request.NovelCommentRequest;
 import com.backend.commentservice.dto.response.NovelCommentReplyResponse;
 import com.backend.commentservice.dto.response.NovelCommentResponse;
-import com.backend.commentservice.entity.NovelComment;
-import com.backend.commentservice.entity.NovelCommentReply;
 import com.backend.commentservice.service.NovelCommentService;
 import com.backend.dto.response.ApiResponse;
 import com.backend.dto.response.PageResponse;
@@ -13,10 +11,7 @@ import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/novel-comments")
@@ -64,7 +59,7 @@ public class NovelCommentController {
     }
 
     @PutMapping("/replies/{id}")
-    public ApiResponse<NovelCommentReplyResponse> updateReply(@PathVariable String id,@Valid @RequestBody NovelCommentReplyRequest request) {
+    public ApiResponse<NovelCommentReplyResponse> updateReply(@PathVariable String id, @Valid @RequestBody NovelCommentReplyRequest request) {
         return ApiResponse.<NovelCommentReplyResponse>builder()
                 .result(novelCommentService.updateReply(id, request))
                 .build();
@@ -75,12 +70,13 @@ public class NovelCommentController {
         novelCommentService.deleteReply(id);
         return ApiResponse.<Void>builder().build();
     }
+
     @GetMapping("/replies/get/{commentId}")
     public ApiResponse<PageResponse<NovelCommentReplyResponse>> getAllRepliesByCommentId(
             @PathVariable String commentId,
             @RequestParam(value = "page", required = false, defaultValue = "1") int page,
             @RequestParam(value = "size", required = false, defaultValue = "10") int size
-            ) {
+    ) {
         return ApiResponse.<PageResponse<NovelCommentReplyResponse>>builder()
                 .result(novelCommentService.getAllRepliesByCommentId(commentId, page, size))
                 .build();

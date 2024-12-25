@@ -1,11 +1,11 @@
-<script setup lang="ts">
-import {ref, computed, onMounted} from 'vue';
+<script lang="ts" setup>
+import {computed, onMounted, ref} from 'vue';
 import {getUserProfile, updateUserProfile} from "@/api/user";
 import {changePassword} from "@/api/auth";
 import store from "@/store";
 import Banner from "@/components/home/Banner.vue";
 import Tiptap from "@/components/common/Tiptap.vue";
-import {Button, Input, Select, Form, message, Tabs} from 'ant-design-vue';
+import {Button, Form, Input, message, Select, Tabs} from 'ant-design-vue';
 
 const profile = ref({
   id: '',
@@ -132,9 +132,9 @@ onMounted(() => {
                     class="w-24 h-24 rounded-full object-cover border-4 border-blue-500"
                 />
                 <input
+                    class="absolute inset-0 opacity-0 cursor-pointer"
                     type="file"
                     @change="handleImageChange"
-                    class="absolute inset-0 opacity-0 cursor-pointer"
                 />
               </div>
               <div>
@@ -143,7 +143,7 @@ onMounted(() => {
               </div>
             </div>
 
-            <Form @submit.prevent="handleProfileSubmit" class="grid md:grid-cols-2 gap-6">
+            <Form class="grid md:grid-cols-2 gap-6" @submit.prevent="handleProfileSubmit">
               <div class="space-y-4">
                 <Form.Item label="Username">
                   <Input v-model:value="profile.username"/>
@@ -167,7 +167,7 @@ onMounted(() => {
                 </Form.Item>
               </div>
               <div class="md:col-span-2 flex justify-end">
-                <Button type="primary" html-type="submit">
+                <Button html-type="submit" type="primary">
                   Update Profile
                 </Button>
               </div>
@@ -176,21 +176,21 @@ onMounted(() => {
         </Tabs.TabPane>
         <Tabs.TabPane key="security" tab="Security">
           <div class="p-6 space-y-6">
-            <Form @submit.prevent="handleChangePassword" class="space-y-4">
-              <Form.Item label="Current Password" class="form-item-stacked" :labelCol="{ span: 6 }"
-                         :wrapperCol="{ span: 18 }">
+            <Form class="space-y-4" @submit.prevent="handleChangePassword">
+              <Form.Item :labelCol="{ span: 6 }" :wrapperCol="{ span: 18 }" class="form-item-stacked"
+                         label="Current Password">
                 <Input.Password v-model:value="passwords.oldPassword"/>
               </Form.Item>
-              <Form.Item label="New Password" class="form-item-stacked" :labelCol="{ span: 6 }"
-                         :wrapperCol="{ span: 18 }">
+              <Form.Item :labelCol="{ span: 6 }" :wrapperCol="{ span: 18 }" class="form-item-stacked"
+                         label="New Password">
                 <Input.Password v-model:value="passwords.newPassword"/>
               </Form.Item>
-              <Form.Item label="Confirm New Password" class="form-item-stacked" :labelCol="{ span: 6 }"
-                         :wrapperCol="{ span: 18 }">
+              <Form.Item :labelCol="{ span: 6 }" :wrapperCol="{ span: 18 }" class="form-item-stacked"
+                         label="Confirm New Password">
                 <Input.Password v-model:value="passwords.confirmPassword"/>
               </Form.Item>
               <div class="flex justify-end">
-                <Button type="primary" html-type="submit">
+                <Button html-type="submit" type="primary">
                   Change Password
                 </Button>
               </div>
@@ -204,8 +204,8 @@ onMounted(() => {
                 <h3 class="text-lg font-medium dark:text-white">Theme</h3>
                 <p class="text-sm text-gray-500">Switch between light and dark modes</p>
               </div>
-              <Button @click="toggleTheme" shape="circle" icon="sun" v-if="!isDarkMode"/>
-              <Button @click="toggleTheme" shape="circle" icon="moon" v-else/>
+              <Button v-if="!isDarkMode" icon="sun" shape="circle" @click="toggleTheme"/>
+              <Button v-else icon="moon" shape="circle" @click="toggleTheme"/>
             </div>
           </div>
         </Tabs.TabPane>

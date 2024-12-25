@@ -8,11 +8,11 @@
       <p class="text-sm md:text-base mb-4 text-gray-700">{{ message }}</p>
       <div class="flex flex-row justify-end space-x-4">
         <!-- Cancel Button -->
-        <a-button @click="cancel" class="w-full sm:w-auto" type="default">
+        <a-button class="w-full sm:w-auto" type="default" @click="cancel">
           Cancel
         </a-button>
         <!-- Confirm Button -->
-        <a-button @click="confirm" class="w-full sm:w-auto" type="primary" danger>
+        <a-button class="w-full sm:w-auto" danger type="primary" @click="confirm">
           {{ confirmText }}
         </a-button>
       </div>
@@ -20,8 +20,8 @@
   </div>
 </template>
 
-<script setup lang="ts">
-import { defineProps, defineEmits } from 'vue';
+<script lang="ts" setup>
+import {defineEmits, defineProps} from 'vue';
 
 const props = defineProps({
   show: {

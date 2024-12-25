@@ -1,6 +1,7 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import DynamicFormNew from "@/components/common/DynamicFormNew.vue";
-import { createPostCategory} from "@/api/postcategory";
+import {createPostCategory} from "@/api/postCategory";
+
 const collectionInputs = [
   {
     id: 'name',
@@ -31,9 +32,9 @@ const location = '/post-category-list';
 
 <template>
   <DynamicFormNew
-      :inputs="collectionInputs"
-       title="Create Post Category"
       :handleAdd="handleCreatePostCategory"
+      :inputs="collectionInputs"
       :location="location"
+      title="Create Post Category"
   />
 </template>

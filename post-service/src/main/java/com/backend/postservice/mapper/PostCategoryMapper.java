@@ -11,5 +11,6 @@ public interface PostCategoryMapper {
     PostCategoryResponse toPostCategoryResponse(PostCategory postCategory);
 
     PostCategory toPostCategory(PostCategoryRequest postCategory);
+
     void updatePostCategory(@MappingTarget PostCategory postCategory, PostCategoryRequest postCategoryRequest);
 }

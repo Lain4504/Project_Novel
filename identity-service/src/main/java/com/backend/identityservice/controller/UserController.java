@@ -13,8 +13,6 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/users")
 @RequiredArgsConstructor
@@ -22,29 +20,33 @@ import java.util.List;
 @Slf4j
 public class UserController {
     UserService userService;
+
     @PostMapping("/registration")
     ApiResponse<UserResponse> createUser(@Valid @RequestBody UserCreationRequest request) {
         return ApiResponse.<UserResponse>builder().result(userService.createUser(request)).build();
     }
+
     @GetMapping
     ApiResponse<PageResponse<UserResponse>> getUsers(
             @RequestParam(value = "page", required = false, defaultValue = "1") int page,
             @RequestParam(value = "size", required = false, defaultValue = "10") int size
-    )
-    {
+    ) {
 
         return ApiResponse.<PageResponse<UserResponse>>builder()
                 .result(userService.getAllUsers(page, size))
                 .build();
     }
+
     @GetMapping("/{userId}")
     ApiResponse<UserResponse> getUser(@PathVariable("userId") String userId) {
         return ApiResponse.<UserResponse>builder().result(userService.getUserById(userId)).build();
     }
+
     @PutMapping("/{userId}")
     ApiResponse<UserResponse> updateUser(@PathVariable("userId") String userId, @RequestBody UserUpdateRequest request) {
         return ApiResponse.<UserResponse>builder().result(userService.updateUser(userId, request)).build();
     }
+
     @GetMapping("/my-info")
     ApiResponse<UserResponse> getMyInfo() {
         return ApiResponse.<UserResponse>builder().result(userService.getMyInfo()).build();

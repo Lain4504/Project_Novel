@@ -1,6 +1,6 @@
-<script setup lang="ts">
-import { ref } from 'vue';
-import { RuleObject } from 'ant-design-vue/es/form';
+<script lang="ts" setup>
+import {ref} from 'vue';
+import {RuleObject} from 'ant-design-vue/es/form';
 
 const props = defineProps({
   isModalVisible: Boolean,
@@ -16,8 +16,8 @@ const message = ref('');
 
 const rules: { [key: string]: RuleObject | RuleObject[] } = {
   email: [
-    { required: true, message: 'Please input your email!' },
-    { type: 'email', message: 'Please enter a valid email address!' }
+    {required: true, message: 'Please input your email!'},
+    {type: 'email', message: 'Please enter a valid email address!'}
   ],
 };
 
@@ -30,25 +30,25 @@ const handleSubmit = () => {
   form.value.validate().then(() => {
     // Handle form submission
     message.value = 'Một email đã được gửi tới địa chỉ của bạn. Vui lòng kiểm tra hộp thư đến và thư mục spam.';
-  }).catch((error : any ) => {
+  }).catch((error: any) => {
     console.log('Validation failed:', error);
   });
 };
 </script>
 <template>
   <a-modal
-    :visible="isModalVisible"
-    title="Quên mật khẩu"
-    @cancel="closeModal"
-    okText="Gửi yêu cầu khôi phục mật khẩu"
-    @ok="handleSubmit"
+      :visible="isModalVisible"
+      okText="Gửi yêu cầu khôi phục mật khẩu"
+      title="Quên mật khẩu"
+      @cancel="closeModal"
+      @ok="handleSubmit"
   >
-    <a-form :model="formState" :rules="rules" ref="form">
+    <a-form ref="form" :model="formState" :rules="rules">
       <a-form-item name="email">
         <a-input
-          v-model:value="formState.email"
-          placeholder="name@company.com"
-          type="email"
+            v-model:value="formState.email"
+            placeholder="name@company.com"
+            type="email"
         />
       </a-form-item>
     </a-form>

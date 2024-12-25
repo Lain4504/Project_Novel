@@ -1,14 +1,14 @@
-<script setup lang="ts">
-import { ref, onMounted, watch } from "vue";
+<script lang="ts" setup>
+import {onMounted, ref, watch} from "vue";
 import DynamicDataTable from "@/components/common/DynamicDataTable.vue";
-import { getNovelCategories, deleteNovelCategory } from "@/api/novelcategory";
+import {deleteNovelCategory, getNovelCategories} from "@/api/novelCategory";
 import router from "@/router";
 import ConfirmDeleteModal from "@/components/common/ConfirmDeleteModal.vue";
 
 const novelCategoryColumns = [
-  { field: "id", headerName: "ID", width: 70 },
-  { field: "name", headerName: "Tiêu đề", width: 200 },
-  { field: "created", headerName: "Thời gian tạo", width: 200 },
+  {field: "id", headerName: "ID", width: 70},
+  {field: "name", headerName: "Tiêu đề", width: 200},
+  {field: "created", headerName: "Thời gian tạo", width: 200},
   {
     field: "actions",
     headerName: "Hành động",
@@ -74,7 +74,7 @@ const handlePageSizeChange = (current: number, size: number) => {
 };
 
 const handleEdit = (row: any) => {
-  router.push({ name: 'updateNovelCategory', params: { id: row.id } });
+  router.push({name: 'updateNovelCategory', params: {id: row.id}});
 };
 </script>
 
@@ -83,21 +83,21 @@ const handleEdit = (row: any) => {
 
   <ConfirmDeleteModal
       :show="showConfirmModal"
-      title="Bạn có chắc chắn muốn xóa không?"
-      message="Việc xóa sẽ không thể khôi phục lại được!"
       confirmText="Xóa"
-      @confirm="confirmDelete"
+      message="Việc xóa sẽ không thể khôi phục lại được!"
+      title="Bạn có chắc chắn muốn xóa không?"
       @cancel="cancelDelete"
+      @confirm="confirmDelete"
   />
   <DynamicDataTable
       :columns="novelCategoryColumns"
-      :rows="novelCategoryRows"
-      :currentPage="currentPage"
-      :totalPages="totalPages"
       :createPath="createPath"
+      :currentPage="currentPage"
       :emits="['page-change', 'delete', 'edit']"
-      @page-change="handlePageSizeChange"
-      @edit="handleEdit"
+      :rows="novelCategoryRows"
+      :totalPages="totalPages"
       @delete="handleDelete"
+      @edit="handleEdit"
+      @page-change="handlePageSizeChange"
   />
 </template>

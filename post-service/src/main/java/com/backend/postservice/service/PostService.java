@@ -31,7 +31,7 @@ public class PostService {
     PostMapper postMapper;
     DateTimeFormatter dateTimeFormatter;
 
-    public PostResponse createPost(PostRequest request){
+    public PostResponse createPost(PostRequest request) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         Post post = Post.builder()
@@ -48,16 +48,18 @@ public class PostService {
                 .orElseThrow(() -> new RuntimeException("Category not found"));
         return postMapper.toPostResponse(post, category);
     }
-    public void deletePost(String postId){
+
+    public void deletePost(String postId) {
         var post = postRepository.findById(postId)
                 .orElseThrow(() -> new RuntimeException("Post not found"));
         postRepository.delete(post);
     }
-    public PostResponse updatePost(String postId, PostRequest request){
+
+    public PostResponse updatePost(String postId, PostRequest request) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new RuntimeException("Post not found"));
-        if(!post.getUserId().equals(authentication.getName())) {
+        if (!post.getUserId().equals(authentication.getName())) {
             throw new RuntimeException("You are not allowed to update this post");
         }
         post.setTitle(request.getTitle());
@@ -69,7 +71,8 @@ public class PostService {
                 .orElseThrow(() -> new RuntimeException("Category not found"));
         return postMapper.toPostResponse(post, category);
     }
-    public PageResponse<PostResponse> getMyPosts(int page, int size){
+
+    public PageResponse<PostResponse> getMyPosts(int page, int size) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userId = authentication.getName();
         Sort sort = Sort.by(Sort.Order.desc("createdDate"));
@@ -90,7 +93,8 @@ public class PostService {
                 .data(postList)
                 .build();
     }
-    public PostResponse getPost(String postId){
+
+    public PostResponse getPost(String postId) {
         var post = postRepository.findById(postId)
                 .orElseThrow(() -> new RuntimeException("Post not found"));
         PostCategory category = postCategoryRepository.findById(post.getCategoryId())

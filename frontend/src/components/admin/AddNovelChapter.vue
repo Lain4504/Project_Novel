@@ -1,8 +1,8 @@
-<script setup lang="ts">
-import { inject, ref } from 'vue';
+<script lang="ts" setup>
+import {ref} from 'vue';
 import Tiptap from '@/components/common/Tiptap.vue';
-import { createChapter } from '@/api/chapter';
-import { notification, Input, Select, Radio, Button } from 'ant-design-vue';
+import {createChapter} from '@/api/novelChapter';
+import {notification} from 'ant-design-vue';
 
 enum ChapterStatusEnum {
   DRAFT = 'DRAFT',
@@ -71,16 +71,17 @@ const handleSubmit = async () => {
     <h1 class="my-2">Add Chapter</h1>
     <form @submit.prevent="handleSubmit">
       <div>
-        <label for="title" class="block text-sm font-medium text-gray-700">Tiêu đề</label>
-        <a-input v-model:value="title" id="title" placeholder="Nhập tiêu đề" class="w-full text-sm p-2" />
+        <label class="block text-sm font-medium text-gray-700" for="title">Tiêu đề</label>
+        <a-input id="title" v-model:value="title" class="w-full text-sm p-2" placeholder="Nhập tiêu đề"/>
       </div>
       <div class="mt-4">
-        <label for="chapterNumber" class="block text-sm font-medium text-gray-700">Số chương</label>
-        <a-input-number v-model:value="chapterNumber" id="chapterNumber" placeholder="Nhập số chương" class="p-[0.15rem] w-1/2 text-sm" />
+        <label class="block text-sm font-medium text-gray-700" for="chapterNumber">Số chương</label>
+        <a-input-number id="chapterNumber" v-model:value="chapterNumber" class="p-[0.15rem] w-1/2 text-sm"
+                        placeholder="Nhập số chương"/>
       </div>
       <div class="mt-4">
-        <label for="status" class="block text-sm font-medium text-gray-700">Trạng thái</label>
-        <a-select v-model:value="status" id="status" class="block w-1/2">
+        <label class="block text-sm font-medium text-gray-700" for="status">Trạng thái</label>
+        <a-select id="status" v-model:value="status" class="block w-1/2">
           <a-select-option :value="ChapterStatusEnum.COMPLETED">Đã hoàn thành</a-select-option>
           <a-select-option :value="ChapterStatusEnum.DRAFT">Chưa hoàn thành</a-select-option>
         </a-select>
@@ -93,15 +94,15 @@ const handleSubmit = async () => {
         </a-radio-group>
       </div>
       <div v-if="isPaid" class="mt-4 w-1/2">
-        <label for="price" class="block text-sm font-medium text-gray-700">Giá tiền</label>
-        <a-input-number v-model:value="price" id="price" placeholder="Nhập giá tiền" />
+        <label class="block text-sm font-medium text-gray-700" for="price">Giá tiền</label>
+        <a-input-number id="price" v-model:value="price" placeholder="Nhập giá tiền"/>
       </div>
       <div class="mt-4">
-        <label for="content" class="block text-sm font-medium text-gray-700">Nội dung</label>
-        <Tiptap :content="content" @update:content="content = $event" class="mt-1" />
+        <label class="block text-sm font-medium text-gray-700" for="content">Nội dung</label>
+        <Tiptap :content="content" class="mt-1" @update:content="content = $event"/>
       </div>
       <div class="flex justify-end mt-4">
-        <a-button type="primary" html-type="submit">
+        <a-button html-type="submit" type="primary">
           Submit
         </a-button>
       </div>

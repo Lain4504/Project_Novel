@@ -9,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 public interface ImgurClient {
     @PostMapping(value = "/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     ImgurResponse uploadImage(@RequestHeader("Authorization") String authorization, @RequestPart("image") MultipartFile image);
+
     @DeleteMapping(value = "/image/{deleteHash}")
     void deleteImage(@RequestHeader("Authorization") String authorization, @RequestParam("deleteHash") String deleteHash);
 }

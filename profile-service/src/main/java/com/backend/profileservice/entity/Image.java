@@ -15,10 +15,10 @@ import java.time.Instant;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Image {
-     @MongoId
-     String id;
-     String name;
-     String type;
-     String path;
-     Instant createdAt;
+    @MongoId
+    String id;
+    String name;
+    String type;
+    String path;
+    Instant createdAt;
 }

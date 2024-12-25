@@ -1,4 +1,5 @@
 import axios from "@/utils/axiosInstance";
+
 const VOLUME_API = "/novel/novel-volumes";
 
 const createVolume = (novelId: string, data: Record<string, any>) => {
@@ -25,4 +26,4 @@ const deleteVolume = (id: string) => {
     return axios.delete(`${VOLUME_API}/${id}`)
         .then((response) => response.data.result);
 }
-export { createVolume, getVolumes, getVolume, updateVolume, getVolumesByNovelId, deleteVolume };
+export {createVolume, getVolumes, getVolume, updateVolume, getVolumesByNovelId, deleteVolume};

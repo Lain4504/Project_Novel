@@ -1,21 +1,20 @@
 package com.backend.profileservice.service;
 
-import com.backend.dto.response.ApiResponse;
-import com.backend.dto.response.PageResponse;
 import com.backend.profileservice.entity.UserReadHistory;
 import com.backend.profileservice.repository.UserReadHistoryRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 import java.util.Optional;
+
 @Service
 public class UserReadHistoryService {
     UserReadHistoryRepository userReadHistoryRepository;
+
     public List<UserReadHistory> getReadHistoryByUserId(String userId, String type) {
         return userReadHistoryRepository.findByUserIdAndType(userId, type);
     }
+
     public UserReadHistory createBookmark(UserReadHistory userReadHistory) {
         if (!"bookmark".equals(userReadHistory.getType())) {
             return createOrUpdate(userReadHistory);
@@ -33,6 +32,7 @@ public class UserReadHistoryService {
         bookmark.setType("bookmark");
         return userReadHistoryRepository.save(userReadHistory);
     }
+
     public UserReadHistory createOrUpdate(UserReadHistory userReadHistory) {
         if (!"history".equals(userReadHistory.getType())) {
             return createBookmark(userReadHistory);
@@ -51,6 +51,7 @@ public class UserReadHistoryService {
             return userReadHistoryRepository.save(userReadHistory);
         }
     }
+
     // Delete
     public void delete(String id) {
         userReadHistoryRepository.deleteById(id);

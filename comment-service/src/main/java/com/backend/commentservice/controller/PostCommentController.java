@@ -1,10 +1,9 @@
 package com.backend.commentservice.controller;
+
 import com.backend.commentservice.dto.request.PostCommentReplyRequest;
 import com.backend.commentservice.dto.request.PostCommentRequest;
 import com.backend.commentservice.dto.response.PostCommentReplyResponse;
 import com.backend.commentservice.dto.response.PostCommentResponse;
-import com.backend.commentservice.entity.PostComment;
-import com.backend.commentservice.entity.PostCommentReply;
 import com.backend.commentservice.service.PostCommentService;
 import com.backend.dto.response.ApiResponse;
 import com.backend.dto.response.PageResponse;
@@ -12,9 +11,7 @@ import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.util.List;
 
 @RestController
 @RequestMapping("/post-comments")
@@ -28,7 +25,7 @@ public class PostCommentController {
             @PathVariable("postId") String postId,
             @RequestParam(value = "page", required = false, defaultValue = "1") int page,
             @RequestParam(value = "size", required = false, defaultValue = "10") int size
-         ) {
+    ) {
         return ApiResponse.<PageResponse<PostCommentResponse>>builder()
                 .result(postCommentService.getAllComments(postId, page, size))
                 .build();
@@ -65,6 +62,7 @@ public class PostCommentController {
                 .result(postCommentService.getAllRepliesByCommentId(commentId, page, size))
                 .build();
     }
+
     @PostMapping("/replies")
     public ApiResponse<PostCommentReplyResponse> createReply(@Valid @RequestBody PostCommentReplyRequest request) {
         return ApiResponse.<PostCommentReplyResponse>builder()

@@ -1,10 +1,11 @@
-<script setup lang="ts">
-import { reactive, ref, onMounted, inject } from 'vue';
-import { updateNovel } from "@/api/novel";
+<script lang="ts" setup>
+import {onMounted, reactive, ref} from 'vue';
+import {updateNovel} from "@/api/novel";
 import Tiptap from "@/components/common/Tiptap.vue";
 import store from "@/store";
-import { getNovelCategoriesWithoutPagination } from "@/api/novelcategory";
+import {getNovelCategoriesWithoutPagination} from "@/api/novelCategory";
 import {notification} from "ant-design-vue";
+
 const showNotification = (type: string, message: string) => {
   notification[type]({
     message: type === 'success' ? 'Success' : 'Error',
@@ -75,7 +76,7 @@ const handleSubmit = async () => {
   };
 
   const formData = new FormData();
-  formData.append("novel", new Blob([JSON.stringify(novelData)], { type: "application/json" }));
+  formData.append("novel", new Blob([JSON.stringify(novelData)], {type: "application/json"}));
   if (selectedImage.value) {
     formData.append("image", selectedImage.value);
   }
@@ -114,17 +115,17 @@ onMounted(() => {
     <h1>Edit Novel</h1>
     <form @submit.prevent="handleSubmit">
       <div class="mt-4">
-        <label for="title" class="block text-sm font-medium text-gray-700">Title</label>
-        <input type="text" id="title" v-model="state.title"
-               class="block w-2/3 px-4 py-2 mt-1 text-gray-900 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"/>
+        <label class="block text-sm font-medium text-gray-700" for="title">Title</label>
+        <input id="title" v-model="state.title" class="block w-2/3 px-4 py-2 mt-1 text-gray-900 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+               type="text"/>
       </div>
       <div class="mt-4">
-        <label for="author" class="block text-sm font-medium text-gray-700">Author</label>
-        <input type="text" id="author" v-model="state.author"
-               class="block w-2/3 px-4 py-2 mt-1 text-gray-900 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"/>
+        <label class="block text-sm font-medium text-gray-700" for="author">Author</label>
+        <input id="author" v-model="state.author" class="block w-2/3 px-4 py-2 mt-1 text-gray-900 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+               type="text"/>
       </div>
       <div class="mt-4">
-        <label for="status" class="block text-sm font-medium text-gray-700">Status</label>
+        <label class="block text-sm font-medium text-gray-700" for="status">Status</label>
         <select id="status" v-model="state.status"
                 class="block w-1/2 px-4 py-2 mt-1 text-gray-900 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
           <option value="COMPLETED">Completed</option>
@@ -133,32 +134,37 @@ onMounted(() => {
         </select>
       </div>
       <div class="mt-4">
-        <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
+        <label class="block text-sm font-medium text-gray-700" for="description">Description</label>
         <Tiptap :content="state.description" @update:content="state.description = $event"/>
       </div>
       <div class="mt-4">
-        <label for="file_input" class="block text-sm font-medium text-gray-800">Upload File</label>
-        <input type="file" id="file_input" @change="handleImageChange"
-               class="bg-white block w-full text-sm text-gray-900 border rounded-lg cursor-pointer bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:text-gray-400 dark:bg-gray-800 dark:border-gray-600 dark:focus:ring-blue-400 dark:focus:border-blue-400 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" />
+        <label class="block text-sm font-medium text-gray-800" for="file_input">Upload File</label>
+        <input id="file_input" class="bg-white block w-full text-sm text-gray-900 border rounded-lg cursor-pointer bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:text-gray-400 dark:bg-gray-800 dark:border-gray-600 dark:focus:ring-blue-400 dark:focus:border-blue-400 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" type="file"
+               @change="handleImageChange"/>
         <p class="text-sm text-gray-500">SVG, PNG, JPG, or GIF (MAX. 800x400px)</p>
         <div v-if="state.imageUrl" class="mt-4">
-          <img :src="state.imageUrl" alt="Selected image" class="object-cover w-48 h-60 rounded-lg border border-gray-300 shadow-sm"/>
+          <img :src="state.imageUrl" alt="Selected image"
+               class="object-cover w-48 h-60 rounded-lg border border-gray-300 shadow-sm"/>
         </div>
       </div>
       <div class="mt-4 relative">
-        <label for="floating_category" class="block text-sm font-medium text-gray-700">Chọn thể loại</label>
-        <input type="text" readonly :value="selectedCategories.join(', ')"
-               class="block w-full p-2 mt-1 text-sm text-gray-900 border rounded-md bg-transparent border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        <label class="block text-sm font-medium text-gray-700" for="floating_category">Chọn thể loại</label>
+        <input :value="selectedCategories.join(', ')" class="block w-full p-2 mt-1 text-sm text-gray-900 border rounded-md bg-transparent border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500" readonly
+               type="text"
                @click="isDropdownOpen = !isDropdownOpen"/>
-        <div v-if="isDropdownOpen" class="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-md max-h-60 overflow-y-auto">
-          <div v-for="category in categories" :key="category.value" class="p-2 text-sm cursor-pointer hover:bg-gray-100" @click="toggleCategory(category.value)">
-            <input type="checkbox" :id="category.value" :value="category.value" :checked="selectedCategories.includes(category.label)" class="mr-2"/>
+        <div v-if="isDropdownOpen"
+             class="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-md max-h-60 overflow-y-auto">
+          <div v-for="category in categories" :key="category.value" class="p-2 text-sm cursor-pointer hover:bg-gray-100"
+               @click="toggleCategory(category.value)">
+            <input :id="category.value" :checked="selectedCategories.includes(category.label)" :value="category.value"
+                   class="mr-2" type="checkbox"/>
             {{ category.label }}
           </div>
         </div>
       </div>
       <div class="flex justify-end mt-4">
-        <button type="submit" class="px-4 py-2 text-sm font-medium text-blue-500 transition-all duration-300 border-[1px] border-blue-500 rounded hover:border-blue-700 hover:scale-105">
+        <button class="px-4 py-2 text-sm font-medium text-blue-500 transition-all duration-300 border-[1px] border-blue-500 rounded hover:border-blue-700 hover:scale-105"
+                type="submit">
           Submit
         </button>
       </div>

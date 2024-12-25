@@ -1,5 +1,6 @@
-<script setup lang="ts">
-import { ref } from 'vue';
+<script lang="ts" setup>
+import {ref} from 'vue';
+
 // Define the data structure for the books
 interface Book {
   hinhanh: string;
@@ -38,19 +39,19 @@ const limitedBooks = ref<Book[]>([
 </script>
 
 <template>
-    <div class=" max-w-7xl mx-auto "> 
+  <div class=" max-w-7xl mx-auto ">
     <section class="p-4 border rounded ">
       <div class="mt-4 text-sm">
         <div class="space-y-4">
           <div
-            v-for="(item, index) in limitedBooks"
-            :key="index"
-            class="flex items-center space-x-4"
+              v-for="(item, index) in limitedBooks"
+              :key="index"
+              class="flex items-center space-x-4"
           >
             <img
-              :src="item.hinhanh"
-              alt="Book Image"
-              class="w-14 h-20 object-cover"
+                :src="item.hinhanh"
+                alt="Book Image"
+                class="w-14 h-20 object-cover"
             />
             <div class="flex justify-between items-center w-full">
               <h5 class="font-semibold truncate">{{ item.tentruyen }}</h5>
@@ -62,7 +63,7 @@ const limitedBooks = ref<Book[]>([
         </div>
       </div>
     </section>
-</div>
-  </template>
+  </div>
+</template>
   
 

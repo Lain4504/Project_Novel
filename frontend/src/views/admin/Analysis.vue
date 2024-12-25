@@ -1,8 +1,8 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 </script>
 <template>
-    <div>
-        Analysis
-    </div>
+  <div>
+    Analysis
+  </div>
 </template>
 

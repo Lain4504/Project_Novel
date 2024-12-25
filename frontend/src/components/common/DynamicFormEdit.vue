@@ -1,7 +1,7 @@
-<script setup lang="ts">
-import { inject, ref, watch } from 'vue';
+<script lang="ts" setup>
+import {ref, watch} from 'vue';
 import Tiptap from "@/components/common/Tiptap.vue";
-import { Input, Select, Button, notification } from 'ant-design-vue';
+import {Button, Input, notification, Select} from 'ant-design-vue';
 
 interface Field {
   id: string;
@@ -18,13 +18,13 @@ interface Props {
 }
 
 const props = defineProps<Props>();
-const formData = ref({ ...props.initialData });
+const formData = ref({...props.initialData});
 
 watch(
-  () => props.initialData,
-  (newData) => {
-    formData.value = { ...newData };
-  }
+    () => props.initialData,
+    (newData) => {
+      formData.value = {...newData};
+    }
 );
 
 const showNotification = (type: 'success' | 'error', message: string) => {
@@ -65,20 +65,20 @@ const handleSave = async () => {
             <div class="mt-1">
               <template v-if="field.type === 'tiptap'">
                 <Tiptap
-                  :content="formData[field.id]"
-                  @update:content="formData[field.id] = $event"
+                    :content="formData[field.id]"
+                    @update:content="formData[field.id] = $event"
                 />
               </template>
               <template v-else-if="field.type === 'select'">
                 <Select
-                  :id="field.id"
-                  v-model:value="formData[field.id]"
-                  class="w-full"
+                    :id="field.id"
+                    v-model:value="formData[field.id]"
+                    class="w-full"
                 >
                   <Select.Option
-                    v-for="option in field.options"
-                    :key="option.value"
-                    :value="option.value"
+                      v-for="option in field.options"
+                      :key="option.value"
+                      :value="option.value"
                   >
                     {{ option.label }}
                   </Select.Option>
@@ -86,10 +86,10 @@ const handleSave = async () => {
               </template>
               <template v-else>
                 <Input
-                  :type="field.type"
-                  :id="field.id"
-                  v-model:value="formData[field.id]"
-                  class="w-full"
+                    :id="field.id"
+                    v-model:value="formData[field.id]"
+                    :type="field.type"
+                    class="w-full"
                 />
               </template>
             </div>
@@ -98,14 +98,14 @@ const handleSave = async () => {
 
         <div class="flex justify-end space-x-4">
           <Button
-            type="default"
-            @click="props.onCancel"
+              type="default"
+              @click="props.onCancel"
           >
             Cancel
           </Button>
           <Button
-            type="primary"
-            @click="handleSave"
+              type="primary"
+              @click="handleSave"
           >
             Save
           </Button>

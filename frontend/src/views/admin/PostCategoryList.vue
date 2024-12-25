@@ -1,15 +1,15 @@
-<script setup lang="ts">
-import { ref, onMounted, watch } from 'vue';
+<script lang="ts" setup>
+import {onMounted, ref, watch} from 'vue';
 import DynamicDataTable from "@/components/common/DynamicDataTable.vue";
-import { getPostCategories, deletePostCategory } from "@/api/postcategory";
+import {deletePostCategory, getPostCategories} from "@/api/postCategory";
 import router from "@/router";
 import ConfirmDeleteModal from "@/components/common/ConfirmDeleteModal.vue";
 
 // Define columns for the data table
 const postCategoryColumns = [
-  { field: "id", headerName: "ID", width: 70 },
-  { field: "name", headerName: "Tiêu đề", width: 200 },
-  { field: "created", headerName: "Thời gian tạo", width: 200 },
+  {field: "id", headerName: "ID", width: 70},
+  {field: "name", headerName: "Tiêu đề", width: 200},
+  {field: "created", headerName: "Thời gian tạo", width: 200},
   {
     field: "actions",
     headerName: "Hành động",
@@ -78,7 +78,7 @@ const handlePageChange = (page: number) => {
 };
 
 const handleEdit = (row: any) => {
-  router.push({ name: 'updatePostCategory', params: { id: row.id } });
+  router.push({name: 'updatePostCategory', params: {id: row.id}});
 };
 </script>
 
@@ -87,22 +87,22 @@ const handleEdit = (row: any) => {
 
   <ConfirmDeleteModal
       :show="showConfirmModal"
-      title="Bạn có chắc chắn muốn xóa không?"
-      message="Việc xóa sẽ không thể khôi phục lại được!"
       confirmText="Xóa"
-      @confirm="confirmDelete"
+      message="Việc xóa sẽ không thể khôi phục lại được!"
+      title="Bạn có chắc chắn muốn xóa không?"
       @cancel="cancelDelete"
+      @confirm="confirmDelete"
   />
 
   <DynamicDataTable
       :columns="postCategoryColumns"
-      :rows="postRows"
-      :currentPage="currentPage"
-      :totalPages="totalPages"
       :createPath="createPath"
+      :currentPage="currentPage"
       :emits="['page-change', 'delete', 'edit']"
-      @page-change="handlePageChange"
-      @edit="handleEdit"
+      :rows="postRows"
+      :totalPages="totalPages"
       @delete="handleDelete"
+      @edit="handleEdit"
+      @page-change="handlePageChange"
   />
 </template>

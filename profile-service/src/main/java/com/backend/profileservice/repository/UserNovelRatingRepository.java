@@ -7,5 +7,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface UserNovelRatingRepository extends MongoRepository<UserNovelRating, String> {
     UserNovelRating findByUserIdAndNovelId(String userId, String novelId);
+
     void deleteByUserIdAndNovelId(String userId, String novelId);
 }

@@ -19,16 +19,19 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class PermissionController {
     PermissionService permissionService;
+
     @PostMapping
     ApiResponse<PermissionResponse> createPermission(@RequestBody PermissionRequest request) {
         return ApiResponse.<PermissionResponse>builder().result(permissionService.create(request)).build();
     }
+
     @GetMapping
     ApiResponse<List<PermissionResponse>> getPermissions() {
         return ApiResponse.<List<PermissionResponse>>builder()
                 .result(permissionService.getAll())
                 .build();
     }
+
     @DeleteMapping("/{permissionId}")
     ApiResponse<Void> deletePermission(@PathVariable("permissionId") String permissionId) {
         permissionService.delete(permissionId);

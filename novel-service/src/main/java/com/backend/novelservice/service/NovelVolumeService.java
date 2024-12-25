@@ -1,6 +1,5 @@
 package com.backend.novelservice.service;
 
-import com.backend.dto.response.PageResponse;
 import com.backend.novelservice.dto.request.NovelVolumeRequest;
 import com.backend.novelservice.dto.response.NovelVolumeResponse;
 import com.backend.novelservice.entity.Novel;
@@ -12,12 +11,8 @@ import com.backend.utils.DateTimeFormatter;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -65,7 +60,7 @@ public class NovelVolumeService {
                 .collect(Collectors.toList());
     }
 
-    public NovelVolumeResponse updateNovelVolume(String novelVolumeId, NovelVolumeRequest request){
+    public NovelVolumeResponse updateNovelVolume(String novelVolumeId, NovelVolumeRequest request) {
         NovelVolume novelVolume = novelVolumeRepository.findById(novelVolumeId).orElseThrow(() -> new RuntimeException("Novel Volume not found"));
         novelVolumeMapper.updateNovelVolume(novelVolume, request);
         novelVolumeRepository.save(novelVolume);

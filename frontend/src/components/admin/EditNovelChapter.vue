@@ -1,8 +1,8 @@
-<script setup lang="ts">
-import { inject, ref, watch } from 'vue';
+<script lang="ts" setup>
+import {ref, watch} from 'vue';
 import Tiptap from "@/components/common/Tiptap.vue";
-import { updateChapter } from '@/api/chapter';
-import { notification } from "ant-design-vue";
+import {updateChapter} from '@/api/novelChapter';
+import {notification} from "ant-design-vue";
 
 enum ChapterStatusEnum {
   DRAFT = 'DRAFT',
@@ -58,7 +58,7 @@ watch(() => props.chapterData, (newData) => {
   status.value = newData.status || ChapterStatusEnum.DRAFT;
   content.value = newData.content || "";
   chapterNumber.value = newData.chapterNumber || null;
-}, { immediate: true });
+}, {immediate: true});
 </script>
 
 <template>
@@ -66,17 +66,17 @@ watch(() => props.chapterData, (newData) => {
     <h1 class="my-2">Edit Chapter</h1>
     <form @submit.prevent="handleSubmit">
       <div>
-        <label for="title" class="block text-sm font-medium text-gray-700">Tiêu đề</label>
-        <input type="text" id="title" v-model="title"
-               class="block w-2/3 px-4 py-2 mt-1 text-gray-900 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"/>
+        <label class="block text-sm font-medium text-gray-700" for="title">Tiêu đề</label>
+        <input id="title" v-model="title" class="block w-2/3 px-4 py-2 mt-1 text-gray-900 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+               type="text"/>
       </div>
       <div class="mt-4">
-        <label for="chapterNumber" class="block text-sm font-medium text-gray-700">Số chương</label>
-        <input type="number" id="chapterNumber" v-model="chapterNumber"
-               class="block w-full px-4 py-2 mt-1 text-gray-900 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
+        <label class="block text-sm font-medium text-gray-700" for="chapterNumber">Số chương</label>
+        <input id="chapterNumber" v-model="chapterNumber" class="block w-full px-4 py-2 mt-1 text-gray-900 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+               type="number"/>
       </div>
       <div class="mt-4">
-        <label for="status" class="block text-sm font-medium text-gray-700">Trạng thái</label>
+        <label class="block text-sm font-medium text-gray-700" for="status">Trạng thái</label>
         <select id="status" v-model="status"
                 class="block w-1/2 px-4 py-2 mt-1 text-gray-900 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
           <option :value="ChapterStatusEnum.COMPLETED">Đã hoàn thành</option>
@@ -84,11 +84,12 @@ watch(() => props.chapterData, (newData) => {
         </select>
       </div>
       <div class="mt-4">
-        <label for="content" class="block text-sm font-medium text-gray-700">Nội dung</label>
-        <Tiptap :content="content" @update:content="content = $event" class="mt-1" />
+        <label class="block text-sm font-medium text-gray-700" for="content">Nội dung</label>
+        <Tiptap :content="content" class="mt-1" @update:content="content = $event"/>
       </div>
       <div class="flex justify-end mt-4">
-        <button type="submit" class="text-sm bg-transparent border-[1px] border-blue-500 text-blue-500 hover:border-blue-700 hover:scale-105 font-medium py-2 px-4 rounded transition-all duration-300">
+        <button class="text-sm bg-transparent border-[1px] border-blue-500 text-blue-500 hover:border-blue-700 hover:scale-105 font-medium py-2 px-4 rounded transition-all duration-300"
+                type="submit">
           Submit
         </button>
       </div>

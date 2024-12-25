@@ -1,6 +1,6 @@
 <template>
   <div class="container max-w-7xl mx-auto min-h-screen flex flex-col">
-    <Ads class="my-4" />
+    <Ads class="my-4"/>
     <Breadcrumb class="mb-6">
       <Breadcrumb.Item v-for="(item, index) in breadcrumbItems" :key="index">
         <router-link v-if="item.path" :to="item.path">{{ item.title }}</router-link>
@@ -39,11 +39,11 @@
         <div class="flex justify-center mt-6">
           <Pagination
               :current="currentPage"
-              :total="totalElements"
               :pageSize="pageSize"
-              @change="handlePageChange"
-              show-quick-jumper
               :show-total="(total: number) => `Total ${total} items`"
+              :total="totalElements"
+              show-quick-jumper
+              @change="handlePageChange"
           />
         </div>
       </section>
@@ -51,13 +51,12 @@
   </div>
 </template>
 
-<script setup lang="ts">
-import { onMounted, ref } from "vue";
+<script lang="ts" setup>
+import {onMounted, ref} from "vue";
 import Ads from "@/components/home/Banner.vue";
-import { getMyFollowedNovels } from "@/api/user";
+import {getMyFollowedNovels} from "@/api/user";
 import store from "@/store";
-import { Pagination } from 'ant-design-vue';
-import {Breadcrumb} from 'ant-design-vue';
+import {Breadcrumb, Pagination} from 'ant-design-vue';
 
 // Define the data structure for the novels
 interface Novel {
@@ -94,9 +93,9 @@ onMounted(() => {
   fetchFollowNovels(currentPage.value, pageSize.value);
 });
 const breadcrumbItems = [
-  { title: 'Home', path: '/' },
-  { title: 'Account', path: '/templates' },
-  { title: 'Library' }
+  {title: 'Home', path: '/'},
+  {title: 'Account', path: '/templates'},
+  {title: 'Library'}
 ];
 </script>
 

@@ -21,26 +21,31 @@ import java.text.ParseException;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AuthenticationController {
     AuthenticationService authenticationService;
+
     @PostMapping("/outbound/authentication")
-    ApiResponse<AuthenticationResponse> outboundAuthenticate(@RequestParam("code") String code){
+    ApiResponse<AuthenticationResponse> outboundAuthenticate(@RequestParam("code") String code) {
         var result = authenticationService.outboundAuthenticate(code);
         return ApiResponse.<AuthenticationResponse>builder().result(result).build();
     }
+
     @PostMapping("/token")
     ApiResponse<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest request) {
         var result = authenticationService.authenticate(request);
         return ApiResponse.<AuthenticationResponse>builder().result(result).build();
     }
+
     @PostMapping("/introspect")
     ApiResponse<IntrospectResponse> authenticate(@RequestBody IntrospectRequest request) throws JOSEException, ParseException {
         var result = authenticationService.introspect(request);
         return ApiResponse.<IntrospectResponse>builder().result(result).build();
     }
+
     @PostMapping("/refresh")
     ApiResponse<AuthenticationResponse> authenticate(@RequestBody RefreshRequest request) throws ParseException, JOSEException {
         var result = authenticationService.refreshToken(request);
         return ApiResponse.<AuthenticationResponse>builder().result(result).build();
     }
+
     @PostMapping("/logout")
     public ApiResponse<Void> logout(@RequestBody LogoutRequest request) throws ParseException, JOSEException {
         authenticationService.logout(request);
@@ -52,16 +57,19 @@ public class AuthenticationController {
         authenticationService.changePassword(request);
         return ApiResponse.<Void>builder().build();
     }
+
     @PostMapping("/reset-password")
     ApiResponse<Void> resetPassword(@RequestBody ResetPasswordRequest request) throws ParseException, JOSEException {
         authenticationService.resetPassword(request);
         return ApiResponse.<Void>builder().build();
     }
+
     @PostMapping("/forgot-password")
     ApiResponse<Void> forgotPassword(@RequestBody ForgotPasswordRequest request) {
         authenticationService.forgotPassword(request);
         return ApiResponse.<Void>builder().build();
     }
+
     @PostMapping("/active-account")
     ApiResponse<Void> activeAccount(@RequestBody ActivationTokenRequest request) {
         authenticationService.activeAccount(request);

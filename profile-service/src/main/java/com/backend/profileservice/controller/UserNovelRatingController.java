@@ -14,18 +14,21 @@ import org.springframework.web.bind.annotation.*;
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE, makeFinal = true)
 public class UserNovelRatingController {
     UserNovelRatingService userNovelRatingService;
+
     @PostMapping("/rate")
     public ApiResponse<UserNovelRatingResponse> rateNovel(@RequestBody UserNovelRatingRequest request) {
         return ApiResponse.<UserNovelRatingResponse>builder()
                 .result(userNovelRatingService.rateNovel(request))
                 .build();
     }
+
     @PutMapping("/update")
     public ApiResponse<UserNovelRatingResponse> updateRating(@RequestBody UserNovelRatingRequest request) {
         return ApiResponse.<UserNovelRatingResponse>builder()
                 .result(userNovelRatingService.updateRating(request))
                 .build();
     }
+
     @GetMapping("/has-rated/{userId}/{novelId}")
     public ApiResponse<Boolean> hasRatedNovel(@PathVariable String userId, @PathVariable String novelId) {
         return ApiResponse.<Boolean>builder()

@@ -1,20 +1,28 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import {computed, onMounted, ref} from 'vue';
 import {useRoute} from 'vue-router';
 import Comment from '@/components/home/CommentSection.vue';
 import ReviewNovel from '@/components/home/ReviewNovelForm.vue';
 import Ads from '@/components/home/Banner.vue';
 import {getNovel} from '@/api/novel';
-import {getVolumesByNovelId} from '@/api/volume';
-import {getChaptersByVolumeId} from '@/api/chapter';
-import {followNovel, getReviewList, isFollowingNovel, unfollowNovel, createRating, updateRating, hasRated,} from "@/api/user";
+import {getVolumesByNovelId} from '@/api/novelVolume';
+import {getChaptersByVolumeId} from '@/api/novelChapter';
+import {
+  createRating,
+  followNovel,
+  getReviewList,
+  hasRated,
+  isFollowingNovel,
+  unfollowNovel,
+  updateRating,
+} from "@/api/user";
 import store from "@/store";
 import {
   createNovelComment,
   createNovelReply,
   getAllNovelComments,
   getAllNovelRepliesByCommentId
-} from "@/api/novelcomment";
+} from "@/api/novelComment";
 
 const route = useRoute();
 const novelId = Array.isArray(route.params.id) ? route.params.id[0] : route.params.id;
@@ -231,7 +239,7 @@ onMounted(() => {
   <div class="bg-gray-50 p-6 rounded-lg shadow-lg max-w-7xl mx-auto">
     <div class="flex flex-col lg:flex-row items-center space-y-6 lg:space-y-0 lg:space-x-8">
       <div class="w-full lg:w-1/4 flex justify-center">
-        <img :src="novel.image?.path" class="w-56 h-72 object-cover rounded-lg shadow-lg" alt="Novel Cover"/>
+        <img :src="novel.image?.path" alt="Novel Cover" class="w-56 h-72 object-cover rounded-lg shadow-lg"/>
       </div>
       <div class="w-full lg:w-3/4 space-y-4 text-left lg:text-left">
         <h1 class="text-xl font-semibold text-gray-800 hover:text-[#728156]">{{ novel.title }}</h1>
@@ -251,14 +259,14 @@ onMounted(() => {
           <div class="flex justify-center items-center">
             <button id="collect" class="flex flex-col items-center text-center text-gray-700 cursor-pointer"
                     @click="toggleCollect">
-              <font-awesome-icon :icon="['fa', 'heart']" :class="isCollected ? 'text-red-700' : 'text-red-300'"
+              <font-awesome-icon :class="isCollected ? 'text-red-700' : 'text-red-300'" :icon="['fa', 'heart']"
                                  class="text-xl transition-colors duration-200"/>
               <span class="text-sm">{{ isCollected ? 'Following' : 'Follow' }}</span>
             </button>
           </div>
           <div class="flex justify-center items-center">
             <div class="flex flex-col items-center text-center text-gray-700">
-              <label for="open-rating" class="flex flex-col items-center">
+              <label class="flex flex-col items-center" for="open-rating">
                 <font-awesome-icon :icon="userRating !== null ? 'fas fa-star' : 'far fa-star'"
                                    class="text-yellow-500"/>
                 <span class="text-sm">{{ userRating !== null ? `Rated: ${userRating}` : 'Rate' }}</span>
@@ -271,19 +279,19 @@ onMounted(() => {
             </div>
           </div>
           <div class="flex justify-center items-center">
-            <router-link to="#" class="flex flex-col items-center text-center text-gray-700 hover:text-blue-600">
+            <router-link class="flex flex-col items-center text-center text-gray-700 hover:text-blue-600" to="#">
               <font-awesome-icon :icon="['far', 'comments']"/>
               <span class="text-sm">Bàn luận</span>
             </router-link>
           </div>
           <div class="flex justify-center items-center">
-            <label for="open-sharing" class="flex flex-col items-center text-center text-gray-700 hover:text-blue-600">
+            <label class="flex flex-col items-center text-center text-gray-700 hover:text-blue-600" for="open-sharing">
               <font-awesome-icon :icon="['fas', 'share-nodes']"/>
               <span class="text-sm">Chia sẻ</span>
             </label>
-            <input type="checkbox" id="open-sharing" class="hidden"/>
+            <input id="open-sharing" class="hidden" type="checkbox"/>
             <div class="sharing-box hidden mt-2">
-              <a x-data="" href="#" class="sharing-item block text-sm text-blue-600 hover:text-blue-800">Link rút
+              <a class="sharing-item block text-sm text-blue-600 hover:text-blue-800" href="#" x-data="">Link rút
                 gọn</a>
               <a class="sharing-item block text-xl text-blue-600 hover:text-blue-800" href="#" target="_blank"><i
                   class="fab fa-facebook-f"></i></a>
@@ -296,15 +304,15 @@ onMounted(() => {
     </div>
     <div class="mt-10 text-left lg:text-left">
       <h3 class="font-bold text-md items-start justify-start flex">Description:</h3>
-      <p v-html="novel.description" class="text-md text-gray-600 mt-4 text-left"/>
+      <p class="text-md text-gray-600 mt-4 text-left" v-html="novel.description"/>
     </div>
     <div class="w-full max-w-7xl mx-auto mt-10">
       <h2 class="text-xl font-semibold text-gray-800 mb-6">Chapter List</h2>
       <div class="space-y-6">
         <div v-for="(volume, volumeIndex) in volumes" :key="volumeIndex"
              class="border border-gray-200 rounded-lg overflow-hidden">
-          <button @click="toggleVolume(volumeIndex, volume.id)"
-                  class="w-full px-4 py-3 bg-gray-50 flex items-center justify-between hover:bg-gray-100 transition-colors">
+          <button class="w-full px-4 py-3 bg-gray-50 flex items-center justify-between hover:bg-gray-100 transition-colors"
+                  @click="toggleVolume(volumeIndex, volume.id)">
             <h3 class="text-lg font-medium text-gray-800">{{ volume.volumeName }}</h3>
             <font-awesome-icon :icon="volume.expanded ? 'fa-solid fa-sort-up' : 'fa-solid fa-sort-down'"/>
           </button>
@@ -332,8 +340,8 @@ onMounted(() => {
                 </router-link>
               </div>
               <div v-if="volume.chapters.length > 6" class="mt-4 text-center">
-                <button @click="toggleShowMore(volumeIndex)"
-                        class="inline-flex items-center justify-center gap-2 px-4 py-2 text-sm text-gray-600 hover:text-gray-800 transition-colors">
+                <button class="inline-flex items-center justify-center gap-2 px-4 py-2 text-sm text-gray-600 hover:text-gray-800 transition-colors"
+                        @click="toggleShowMore(volumeIndex)">
                   <span>{{ volume.showMore ? 'Show Less' : 'Show More' }}</span>
                   <font-awesome-icon :icon="volume.showMore ? 'fa-solid fa-angles-up' : 'fa-solid fa-angles-down'"/>
                 </button>
@@ -352,19 +360,19 @@ onMounted(() => {
         </button>
       </div>
       <component :is="currentTabComponent"
-                 :reviews="reviews" @reviewCreated="handleReviewCreated"
-                 :itemId="novel.id" itemType="novel"
-                 :comments="comments" @commentAdded="handleCommentAdded"
-                 :create-comment-api="createNovelComment"
-                 :create-reply-api="createNovelReply"
-                 :owner-id="novel.authorId"
+                 :comments="comments" :create-comment-api="createNovelComment"
+                 :create-reply-api="createNovelReply" :current-page="currentPage"
+                 :fetch-comments="fetchComments" :get-all-replies-api="getAllNovelRepliesByCommentId"
                  :item-name="novel.title"
-                 :get-all-replies-api="getAllNovelRepliesByCommentId"
-                 :fetch-comments="fetchComments"
-                 :current-page="currentPage"
+                 :itemId="novel.id"
+                 :owner-id="novel.authorId"
                  :page-size="pageSize"
+                 :reviews="reviews"
                  :total-comments="totalComments"
+                 itemType="novel"
+                 @commentAdded="handleCommentAdded"
                  @pageChange="handlePageChange"
+                 @reviewCreated="handleReviewCreated"
       />
     </div>
   </div>

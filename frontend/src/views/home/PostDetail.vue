@@ -1,8 +1,8 @@
-<script setup lang="ts">
-import { onMounted, ref } from 'vue';
+<script lang="ts" setup>
+import {onMounted, ref} from 'vue';
 import Ads from '@/components/home/Banner.vue';
-import { getPost } from '@/api/post';
-import { getAllComments, createComment, createReply, getAllRepliesByCommentId } from '@/api/postcomment';
+import {getPost} from '@/api/post';
+import {createComment, createReply, getAllComments, getAllRepliesByCommentId} from '@/api/postComment';
 import CommentSection from '@/components/home/CommentSection.vue';
 
 const props = defineProps({
@@ -73,24 +73,24 @@ onMounted(() => {
     <div class="bg-white p-6 mt-6 rounded-lg shadow-md">
       <div class="flex items-center justify-between mb-6">
         <div class="flex items-center">
-          <img src="https://via.placeholder.com/40" alt="Avatar" class="w-10 h-10 rounded-full mr-3">
+          <img alt="Avatar" class="w-10 h-10 rounded-full mr-3" src="https://via.placeholder.com/40">
           <div class="font-semibold text-lg">User <span class="text-gray-500 text-sm">Administrators</span></div>
         </div>
         <div class="text-sm text-gray-500">{{ post.created }}</div>
       </div>
       <h1 class="text-3xl font-bold text-gray-800 mb-4">{{ post.title }}</h1>
       <div class="content-body mb-6" v-html="post.content"></div>
-      <CommentSection :itemId="props.id" itemType="post"
-                      :comments="comments" @commentAdded="handleCommentAdded"
-                      :create-comment-api="createComment"
-                      :create-reply-api="createReply"
-                      :owner-id="post.userId"
-                      :item-name="post.title"
-                      :get-all-replies-api="getAllRepliesByCommentId"
+      <CommentSection :comments="comments" :create-comment-api="createComment"
+                      :create-reply-api="createReply" :current-page="currentPage"
                       :fetch-comments="fetchComments"
-                      :current-page="currentPage"
+                      :get-all-replies-api="getAllRepliesByCommentId"
+                      :item-name="post.title"
+                      :itemId="props.id"
+                      :owner-id="post.userId"
                       :page-size="pageSize"
                       :total-comments="totalComments"
+                      itemType="post"
+                      @commentAdded="handleCommentAdded"
                       @pageChange="handlePageChange"
       />
     </div>

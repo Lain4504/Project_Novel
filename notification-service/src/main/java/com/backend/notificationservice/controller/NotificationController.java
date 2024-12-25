@@ -14,8 +14,6 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.MessagingException;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/notifications")
 @Slf4j
@@ -24,6 +22,7 @@ import java.util.List;
 public class NotificationController {
     @Autowired
     NotificationService notificationService;
+
     @KafkaListener(topics = "comment-notification")
     public void listen(NotificationEvent message) {
         log.info("Received message: {}", message);
@@ -34,12 +33,13 @@ public class NotificationController {
             log.error("Error sending notification to {}: {}", message.getRecipient(), e.getMessage());
         }
     }
+
     @GetMapping("/{userId}")
     ApiResponse<PageResponse<Notification>> getNotificationByUserId(
             @PathVariable("userId") String userId,
             @RequestParam(value = "page", required = false, defaultValue = "1") int page,
             @RequestParam(value = "size", required = false, defaultValue = "10") int size
-            ) {
+    ) {
         return ApiResponse.<PageResponse<Notification>>builder()
                 .result(notificationService.getNotifications(userId, page, size))
                 .build();

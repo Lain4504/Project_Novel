@@ -1,7 +1,7 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import {inject, ref} from 'vue';
-import { useRoute, useRouter } from 'vue-router';
-import { activeAccount} from "@/api/auth";
+import {useRoute, useRouter} from 'vue-router';
+import {activeAccount} from "@/api/auth";
 
 const router = useRouter();
 const route = useRoute();
@@ -13,8 +13,8 @@ const showNotification = (type: string, message: string) => {
 };
 
 const breadcrumbs = [
-  { title: 'Trang chủ', href: '/' },
-  { title: 'Active' },
+  {title: 'Trang chủ', href: '/'},
+  {title: 'Active'},
 ];
 const token = route.params.token as string;
 const activate = async () => {
@@ -41,8 +41,8 @@ const activate = async () => {
     <div class="flex justify-center items-center">
       <div class="md:w-1/2 lg:w-1/3 text-center">
         <a-button
-            type="primary"
             class="mt-5 mb-5"
+            type="primary"
             @click="activate"
         >
           Kích hoạt

@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 interface Review {
   id: string;
   title: string;
@@ -67,22 +67,22 @@ const getRatingStars = (rating: number) => {
 <template>
   <div class="max-w-7xl mx-auto p-4">
     <h1 class="text-2xl font-bold mb-6 text-gray-800">Latest Reviews</h1>
-    
+
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-      <div v-for="review in reviews" 
-           :key="review.id" 
+      <div v-for="review in reviews"
+           :key="review.id"
            class="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow duration-200">
         <h2 class="text-xl font-semibold mb-2">{{ review.title }}</h2>
-        
+
         <p class="text-gray-600 italic mb-4">
           {{ review.comment }}
         </p>
-        
+
         <div class="flex items-center mb-4">
-          <img :src="review.reviewer.avatar" 
-               :alt="review.reviewer.name"
-               class="w-10 h-10 rounded-full mr-3" />
-          
+          <img :alt="review.reviewer.name"
+               :src="review.reviewer.avatar"
+               class="w-10 h-10 rounded-full mr-3"/>
+
           <div>
             <div class="font-medium">{{ review.reviewer.name }}</div>
             <div class="text-yellow-400">{{ getRatingStars(review.rating) }}</div>

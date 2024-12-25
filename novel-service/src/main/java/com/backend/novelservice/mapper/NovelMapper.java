@@ -13,6 +13,7 @@ public interface NovelMapper {
     // Map NovelCreationRequest to Novel, ignoring volumes and categories
     @Mapping(target = "categories", ignore = true)
     Novel toNovel(NovelCreationRequest request);
+
     NovelResponse toNovelResponse(Novel novel);
 
     // Update Novel with NovelUpdateRequest, ignoring volumes and categories

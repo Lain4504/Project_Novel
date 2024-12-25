@@ -22,24 +22,28 @@ public class UserNovelFollowService {
     UserNovelFollowRepository userNovelFollowRepository;
     UserNovelFollowMapper userNovelFollowMapper;
     NovelServiceClient novelServiceClient;
+
     public UserNovelFollowResponse followNovel(UserNovelFollowRequest request) {
         UserNovelFollow userNovelFollow = userNovelFollowMapper.toUserNovelFollow(request);
         userNovelFollowRepository.save(userNovelFollow);
         return userNovelFollowMapper.toUserNovelFollowResponse(userNovelFollow);
     }
+
     public void unfollowNovel(UserNovelFollowRequest request) {
         userNovelFollowRepository.deleteByUserIdAndNovelId(request.getUserId(), request.getNovelId());
     }
+
     public boolean isFollowingNovel(UserNovelFollowRequest request) {
         return userNovelFollowRepository.findByUserIdAndNovelId(request.getUserId(), request.getNovelId()) != null;
     }
 
-     List<String> getFollowingNovelIds(String userId) {
+    List<String> getFollowingNovelIds(String userId) {
         List<UserNovelFollow> userNovelFollows = userNovelFollowRepository.findAllByUserId(userId);
         return userNovelFollows.stream()
                 .map(UserNovelFollow::getNovelId) //  Chỉ trích xuất novelId
                 .toList();
     }
+
     public PageResponse<NovelDetailsResponse> getFollowingNovelsWithDetails(String userId, int page, int size) {
         List<String> novelIds = getFollowingNovelIds(userId);
         if (novelIds.isEmpty()) {

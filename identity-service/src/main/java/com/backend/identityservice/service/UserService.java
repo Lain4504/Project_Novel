@@ -1,16 +1,16 @@
 package com.backend.identityservice.service;
 
 import com.backend.dto.response.PageResponse;
+import com.backend.event.NotificationEvent;
 import com.backend.exception.AppException;
 import com.backend.exception.ErrorCode;
-import com.backend.identityservice.enums.UserState;
 import com.backend.identityservice.constant.PredefinedRole;
 import com.backend.identityservice.dto.request.UserCreationRequest;
 import com.backend.identityservice.dto.request.UserUpdateRequest;
 import com.backend.identityservice.dto.response.UserResponse;
 import com.backend.identityservice.entity.Role;
 import com.backend.identityservice.entity.User;
-import com.backend.event.NotificationEvent;
+import com.backend.identityservice.enums.UserState;
 import com.backend.identityservice.mapper.ProfileMapper;
 import com.backend.identityservice.mapper.UserMapper;
 import com.backend.identityservice.repository.RoleRepository;
@@ -27,11 +27,10 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -48,6 +47,7 @@ public class UserService {
     ProfileMapper profileMapper;
     KafkaTemplate<String, Object> kafkaTemplate;
     AuthenticationService authenticationService;
+
     public UserResponse createUser(UserCreationRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) throw new AppException(ErrorCode.USER_EXISTED);
         User user = userMapper.toUser(request);
@@ -75,6 +75,7 @@ public class UserService {
         kafkaTemplate.send("onboard-successfully", event);
         return userMapper.toUserResponse(user);
     }
+
     @PostAuthorize("returnObject.email == authentication.name")
     public UserResponse updateUser(String userId, UserUpdateRequest request) {
         User user = userRepository.findById(userId).orElseThrow(() -> new MessageDescriptorFormatException("User not found"));
@@ -83,12 +84,14 @@ public class UserService {
         user.setRoles(new HashSet<>(roles));
         return userMapper.toUserResponse(userRepository.save(user));
     }
-    public UserResponse getMyInfo(){
+
+    public UserResponse getMyInfo() {
         var context = SecurityContextHolder.getContext();
         String id = context.getAuthentication().getName();
         User user = userRepository.findById(id).orElseThrow(() -> new MessageDescriptorFormatException("User not found"));
         return userMapper.toUserResponse(user);
     }
+
     @PreAuthorize("hasRole('ADMIN')")
     public PageResponse<UserResponse> getAllUsers(int page, int size) {
         Sort sort = Sort.by(Sort.Order.desc("createdDate"));
@@ -102,6 +105,7 @@ public class UserService {
                 .data(userList)
                 .build();
     }
+
     @PreAuthorize("hasRole('ADMIN')")
     public UserResponse getUserById(String userId) {
         return userMapper.toUserResponse(userRepository.findById(userId).orElseThrow(() -> new MessageDescriptorFormatException("User not found")));

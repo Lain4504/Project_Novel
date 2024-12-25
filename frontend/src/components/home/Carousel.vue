@@ -1,5 +1,5 @@
-<script setup lang="ts">
-import { ref, onMounted } from 'vue';
+<script lang="ts" setup>
+import {onMounted, ref} from 'vue';
 
 interface BannerItem {
   id: number;
@@ -43,8 +43,8 @@ const nextSlide = () => {
 
 const prevSlide = () => {
   currentSlide.value = currentSlide.value === 0
-    ? banners.value.length - 1
-    : currentSlide.value - 1;
+      ? banners.value.length - 1
+      : currentSlide.value - 1;
 };
 
 const startAutoPlay = () => {
@@ -63,18 +63,18 @@ onMounted(() => {
     <!-- Banner Slides -->
     <div class="relative w-full h-full">
       <div
-        v-for="(banner, index) in banners"
-        :key="banner.id"
-        class="absolute w-full h-full transition-opacity duration-500"
-        :class="{ 'opacity-0': currentSlide !== index }"
+          v-for="(banner, index) in banners"
+          :key="banner.id"
+          :class="{ 'opacity-0': currentSlide !== index }"
+          class="absolute w-full h-full transition-opacity duration-500"
       >
         <!-- Banner Content -->
         <div class="relative w-full h-full">
           <!-- Background Image -->
           <img
-            :src="banner.coverImage"
-            :alt="banner.title"
-            class="w-full h-full object-cover"
+              :alt="banner.title"
+              :src="banner.coverImage"
+              class="w-full h-full object-cover"
           />
 
           <!-- Gradient Overlay -->
@@ -85,8 +85,8 @@ onMounted(() => {
             <div class="max-w-2xl text-white">
               <!-- Status Badge -->
               <div
-                v-if="banner.status"
-                class="inline-block px-4 py-1 mb-4 text-sm bg-amber-600 rounded-full"
+                  v-if="banner.status"
+                  class="inline-block px-4 py-1 mb-4 text-sm bg-amber-600 rounded-full"
               >
                 {{ banner.status }}
               </div>
@@ -119,27 +119,27 @@ onMounted(() => {
     <!-- Navigation Dots -->
     <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
       <button
-        v-for="(_, index) in banners"
-        :key="index"
-        @click="currentSlide = index"
-        class="w-2 h-2 rounded-full transition-all duration-300"
-        :class="currentSlide === index ? 'bg-white w-4' : 'bg-white/50'"
+          v-for="(_, index) in banners"
+          :key="index"
+          :class="currentSlide === index ? 'bg-white w-4' : 'bg-white/50'"
+          class="w-2 h-2 rounded-full transition-all duration-300"
+          @click="currentSlide = index"
       ></button>
     </div>
 
     <!-- Navigation Arrows -->
     <button
-  @click="prevSlide"
-  class="absolute left-4 top-1/2 -translate-y-1/2 p-4 h-10 w-10 rounded-full bg-black/30 text-white hover:bg-black/50 transition-colors flex items-center justify-center"
->
-  <font-awesome-icon icon="fa-solid fa-chevron-left" size="lg"/>
-</button>
+        class="absolute left-4 top-1/2 -translate-y-1/2 p-4 h-10 w-10 rounded-full bg-black/30 text-white hover:bg-black/50 transition-colors flex items-center justify-center"
+        @click="prevSlide"
+    >
+      <font-awesome-icon icon="fa-solid fa-chevron-left" size="lg"/>
+    </button>
 
     <button
-      @click="nextSlide"
-      class="absolute right-4 top-1/2 -translate-y-1/2 p-4 h-10 w-10 rounded-full bg-black/30 text-white hover:bg-black/50 transition-colors flex items-center justify-center"
-      >
-    <font-awesome-icon icon="fa-solid fa-chevron-right" size="lg"/>
+        class="absolute right-4 top-1/2 -translate-y-1/2 p-4 h-10 w-10 rounded-full bg-black/30 text-white hover:bg-black/50 transition-colors flex items-center justify-center"
+        @click="nextSlide"
+    >
+      <font-awesome-icon icon="fa-solid fa-chevron-right" size="lg"/>
     </button>
   </div>
 </template>

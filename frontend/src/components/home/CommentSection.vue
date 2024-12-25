@@ -1,7 +1,7 @@
-<script setup lang="ts">
-import { ref, onMounted } from 'vue';
+<script lang="ts" setup>
+import {onMounted, ref} from 'vue';
 import store from "@/store";
-import { getUserProfile } from "@/api/user";
+import {getUserProfile} from "@/api/user";
 
 interface Comment {
   id: string;
@@ -200,10 +200,10 @@ const submitReplyForReply = async (replyId: string, commentId: string) => {
     <section class="bg-gray-50 py-4 px-6 max-w-5xl mx-auto">
       <h3 class="text-xl font-bold mb-4">Comment</h3>
       <div class="flex flex-col">
-        <textarea v-model="newComment" placeholder="Để lại bình luận..."
-          class="w-full p-4 text-lg border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:text-sm"></textarea>
+        <textarea v-model="newComment" class="w-full p-4 text-lg border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:text-sm"
+                  placeholder="Để lại bình luận..."></textarea>
         <div class="flex justify-end">
-          <a-button type="primary" @click="addComment" class="mt-2">
+          <a-button class="mt-2" type="primary" @click="addComment">
             Send
           </a-button>
         </div>
@@ -216,19 +216,19 @@ const submitReplyForReply = async (replyId: string, commentId: string) => {
               <p class="text-gray-700 font-semibold">{{ comment.username }}</p>
               <p class="text-gray-600">{{ comment.content }}</p>
               <div class="flex items-center space-x-4 mt-2">
-                <a-button type="link" @click="toggleReplyBox(comment.id)" class="p-0">
+                <a-button class="p-0" type="link" @click="toggleReplyBox(comment.id)">
                   💬 Reply
                 </a-button>
-                <a-button v-if="comment.replyCount > 0" type="link" @click="toggleShowReplies(comment.id)" class="p-0">
+                <a-button v-if="comment.replyCount > 0" class="p-0" type="link" @click="toggleShowReplies(comment.id)">
                   {{ showReplies[comment.id] ? 'Hide Replies' : `Show More (${comment.replyCount} replies)` }}
                 </a-button>
               </div>
               <div v-if="replyBoxes[comment.id]" class="mt-2">
                 <textarea v-model="replyText[comment.id]"
-                  class="w-full p-4 text-lg border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:text-sm"
-                  placeholder="Write your reply..."></textarea>
+                          class="w-full p-4 text-lg border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:text-sm"
+                          placeholder="Write your reply..."></textarea>
                 <div class="flex justify-end">
-                  <a-button type="primary" @click="submitReply(comment.id)" class="mt-2">
+                  <a-button class="mt-2" type="primary" @click="submitReply(comment.id)">
                     Reply
                   </a-button>
                 </div>
@@ -239,23 +239,23 @@ const submitReplyForReply = async (replyId: string, commentId: string) => {
                   <p class="text-gray-700 font-semibold">{{ reply.username }}</p>
                   <p class="text-gray-600">@{{ reply.replyTo }}: {{ reply.replyContent }}</p>
                   <div class="flex items-center space-x-4 mt-2">
-                    <a-button type="link" @click="toggleReplyBoxForReply(reply.id)" class="p-0">
+                    <a-button class="p-0" type="link" @click="toggleReplyBoxForReply(reply.id)">
                       💬 Reply
                     </a-button>
                   </div>
                   <div v-if="replyBoxes[reply.id]" class="mt-2">
                     <textarea v-model="replyText[reply.id]"
-                      class="w-full p-4 text-lg border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:text-sm"
-                      placeholder="Write your reply..."></textarea>
+                              class="w-full p-4 text-lg border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:text-sm"
+                              placeholder="Write your reply..."></textarea>
                     <div class="flex justify-end">
-                      <a-button type="primary" @click="submitReplyForReply(reply.id, comment.id)" class="mt-2">
+                      <a-button class="mt-2" type="primary" @click="submitReplyForReply(reply.id, comment.id)">
                         Reply
                       </a-button>
                     </div>
                   </div>
                 </li>
                 <li v-if="comment.replies.length < comment.replyCount" class="pl-4 border-l">
-                  <a-button type="link" @click="loadMoreReplies(comment.id)" class="p-0">
+                  <a-button class="p-0" type="link" @click="loadMoreReplies(comment.id)">
                     Show More ({{ comment.replyCount - comment.replies.length }} more)
                   </a-button>
                 </li>
@@ -266,10 +266,10 @@ const submitReplyForReply = async (replyId: string, commentId: string) => {
       </ul>
       <div class="flex justify-center mt-4">
         <a-pagination
-          :current="props.currentPage"
-          :total="props.totalComments"
-          :pageSize="props.pageSize"
-          @change="handlePageChange"
+            :current="props.currentPage"
+            :pageSize="props.pageSize"
+            :total="props.totalComments"
+            @change="handlePageChange"
         />
       </div>
     </section>

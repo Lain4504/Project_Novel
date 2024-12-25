@@ -1,5 +1,5 @@
-<script setup lang="ts">
-import { ref } from 'vue';
+<script lang="ts" setup>
+import {ref} from 'vue';
 
 interface GameAd {
   id: number;
@@ -29,42 +29,42 @@ const isHovered = ref(false);
 <template>
   <div class="w-full">
     <!-- Game Ad Banner Container -->
-    <div 
-      v-for="ad in gameAds" 
-      :key="ad.id"
-      class="relative w-full h-[300px] overflow-hidden rounded-lg cursor-pointer group"
-      @mouseenter="isHovered = true"
-      @mouseleave="isHovered = false"
+    <div
+        v-for="ad in gameAds"
+        :key="ad.id"
+        class="relative w-full h-[300px] overflow-hidden rounded-lg cursor-pointer group"
+        @mouseenter="isHovered = true"
+        @mouseleave="isHovered = false"
     >
       <!-- Background Image -->
-      <img 
-        :src="ad.backgroundImage"
-        :alt="ad.title"
-        class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+      <img
+          :alt="ad.title"
+          :src="ad.backgroundImage"
+          class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
       />
 
       <!-- Overlay Content -->
       <div class="absolute inset-0 flex flex-col justify-center items-center">
         <!-- Game Logo if exists -->
-        <img 
-          v-if="ad.logo"
-          :src="ad.logo"
-          alt="Game Logo"
-          class="h-16 md:h-20 object-contain absolute top-4 right-4"
+        <img
+            v-if="ad.logo"
+            :src="ad.logo"
+            alt="Game Logo"
+            class="h-16 md:h-20 object-contain absolute top-4 right-4"
         />
 
         <!-- Title Text with Game-style Font -->
-        <div 
-          class="text-center transform"
-          :class="[
+        <div
+            :class="[
             ad.className,
             'space-y-2'
           ]"
+            class="text-center transform"
         >
           <!-- Main Title with 3D Effect -->
-          <h1 
-            class="text-4xl md:text-6xl font-bold text-white tracking-wider"
-            style="text-shadow: 
+          <h1
+              class="text-4xl md:text-6xl font-bold text-white tracking-wider"
+              style="text-shadow:
               2px 2px 0 #000,
               -2px -2px 0 #000,
               2px -2px 0 #000,
@@ -79,9 +79,9 @@ const isHovered = ref(false);
           </h1>
 
           <!-- Subtitle -->
-          <h2 
-            class="text-3xl md:text-5xl font-bold text-white tracking-wide"
-            style="text-shadow: 
+          <h2
+              class="text-3xl md:text-5xl font-bold text-white tracking-wide"
+              style="text-shadow:
               2px 2px 0 #000,
               -2px -2px 0 #000,
               2px -2px 0 #000,
@@ -94,18 +94,18 @@ const isHovered = ref(false);
 
         <!-- Optional: Floating Effects -->
         <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent pointer-events-none"></div>
-        
+
         <!-- Sparkle Effects -->
         <div class="absolute inset-0 overflow-hidden pointer-events-none">
-          <div 
-            v-for="i in 5" 
-            :key="i"
-            class="absolute w-1 h-1 bg-white rounded-full animate-ping"
-            :style="{
+          <div
+              v-for="i in 5"
+              :key="i"
+              :style="{
               left: `${Math.random() * 100}%`,
               top: `${Math.random() * 100}%`,
               animationDelay: `${i * 0.5}s`
             }"
+              class="absolute w-1 h-1 bg-white rounded-full animate-ping"
           ></div>
         </div>
       </div>
@@ -116,8 +116,12 @@ const isHovered = ref(false);
 <style scoped>
 /* Custom Animation for Floating Effect */
 @keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
 }
 
 .font-game {
@@ -131,8 +135,14 @@ const isHovered = ref(false);
 
 /* Custom Sparkle Animation */
 @keyframes sparkle {
-  0%, 100% { opacity: 0; transform: scale(0); }
-  50% { opacity: 1; transform: scale(1); }
+  0%, 100% {
+    opacity: 0;
+    transform: scale(0);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 .animate-sparkle {

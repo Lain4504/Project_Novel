@@ -35,18 +35,18 @@ spring:
         - id: novel-service
           uri: http://localhost:8084
           predicates:
-                - Path=${app.api-prefix}/novel/**
+            - Path=${app.api-prefix}/novel/**
           filters:
             - StripPrefix=1
         - id: comment-service
           uri: http://localhost:8085
           predicates:
-                - Path=${app.api-prefix}/comment/**
+            - Path=${app.api-prefix}/comment/**
           filters:
-                - StripPrefix=1
+            - StripPrefix=1
         - id: search-service
           uri: http://localhost:8086
           predicates:
-                - Path=${app.api-prefix}/search/**
+            - Path=${app.api-prefix}/search/**
           filters:
-                - StripPrefix=1
+            - StripPrefix=1

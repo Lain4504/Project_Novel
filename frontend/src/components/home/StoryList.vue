@@ -1,7 +1,8 @@
-<script setup lang="ts">
-import { computed, ref, onMounted } from 'vue';
-import { getPosts } from "@/api/post";
+<script lang="ts" setup>
+import {computed, onMounted, ref} from 'vue';
+import {getPosts} from "@/api/post";
 import {getMyNovels} from "@/api/novel";
+
 interface Post {
   id: string;
   title: string;
@@ -10,13 +11,14 @@ interface Post {
   categoryId: string;
   created: string;
 }
+
 const latestPosts = ref<Post[]>([]);
 // Đảm bảo rằng getPosts trả về dữ liệu đúng định dạng
 const fetchLatestPosts = async () => {
   try {
     const page = 1;
     const size = 5;
-    const response = await getPosts({ page, size });
+    const response = await getPosts({page, size});
     const posts = response.data.map((post: any) => ({
       id: post.id,
       title: post.title,
@@ -30,16 +32,20 @@ const fetchLatestPosts = async () => {
   } catch (error) {
     console.error("Error fetching latest posts:", error);
   }
-};onMounted(() => {
+};
+onMounted(() => {
   fetchLatestPosts();
 });
+
 interface Novel {
   id: string;
   title: string;
   description: string;
   image: string;
   author: string;
-}const myNovels = ref<Novel[]>([]);
+}
+
+const myNovels = ref<Novel[]>([]);
 
 const fetchMyNovels = async () => {
   try {
@@ -73,7 +79,7 @@ const limitedReadings = computed(() => readings.value.slice(0, 4));
       <section class="p-4 border rounded">
         <div class="flex justify-between items-center">
           <h4 class="text-md font-bold">Bài viết mới nhất</h4>
-          <router-link to="#" class="text-[#98a77c] text-sm">Xem tất cả</router-link>
+          <router-link class="text-[#98a77c] text-sm" to="#">Xem tất cả</router-link>
         </div>
         <div class="mt-4 text-sm">
           <ul class="space-y-4">
@@ -97,7 +103,7 @@ const limitedReadings = computed(() => readings.value.slice(0, 4));
       <section class="p-4 border rounded">
         <div class="flex justify-between items-center">
           <h4 class="text-md font-bold">Đang đọc</h4>
-          <router-link to="/list/readinglist" class="text-[#98a77c] text-sm">Xem tất cả</router-link>
+          <router-link class="text-[#98a77c] text-sm" to="/list/readinglist">Xem tất cả</router-link>
         </div>
         <div class="mt-4 text-sm">
           <div class="space-y-4">

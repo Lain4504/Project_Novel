@@ -16,9 +16,9 @@ import java.time.LocalDateTime;
 @Builder
 public class NovelChapterRevision {
     @MongoId
-    String id;          
-    String chapterId;    
-    String content;     
-    LocalDateTime revisionDate;  
-    String updatedBy;  
+    String id;
+    String chapterId;
+    String content;
+    LocalDateTime revisionDate;
+    String updatedBy;
 }

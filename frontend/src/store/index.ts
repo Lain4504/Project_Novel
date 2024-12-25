@@ -1,13 +1,13 @@
-import { createStore } from "vuex";
+import {createStore} from "vuex";
 
 interface UserState {
-   token: string | null;
-   refreshToken: string | null;
-   user: {
-    id: string;
-    email: string;
-    role: string;
- } | null;
+    token: string | null;
+    refreshToken: string | null;
+    user: {
+        id: string;
+        email: string;
+        role: string;
+    } | null;
 }
 
 const store = createStore({

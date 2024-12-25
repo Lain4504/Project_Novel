@@ -1,11 +1,11 @@
-<script setup lang="ts">
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { ref, watch, computed, onMounted, onUnmounted } from 'vue';
-import { useStore } from 'vuex';
-import { logout } from '@/api/auth';
+<script lang="ts" setup>
+import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome';
+import {computed, onMounted, onUnmounted, ref, watch} from 'vue';
+import {useStore} from 'vuex';
+import {logout} from '@/api/auth';
 import NotificationDropdown from '../common/BellNotificationDropdown.vue';
-import { getUserProfile } from "@/api/user";
-import { getNotificationByUserId } from "@/api/notification";
+import {getUserProfile} from "@/api/user";
+import {getNotificationByUserId} from "@/api/notification";
 
 const isAccountMenuOpen = ref(false);
 const isCategoryMenuOpen = ref(false);
@@ -166,19 +166,19 @@ onUnmounted(() => {
   <nav class="bg-white p-4 shadow-md relative">
     <div class="max-w-[90rem] mx-auto flex items-center justify-between">
       <div class="flex items-center space-x-4 md:space-x-0">
-        <button @click.stop="isMobileMenuOpen = !isMobileMenuOpen"
-                class="text-black md:hidden w-6 h-6 hover:text-gray-600 transition-colors">
+        <button class="text-black md:hidden w-6 h-6 hover:text-gray-600 transition-colors"
+                @click.stop="isMobileMenuOpen = !isMobileMenuOpen">
           <font-awesome-icon icon="fa-solid fa-bars"/>
         </button>
-        <router-link to="/" class="text-black text-xl font-semibold">
+        <router-link class="text-black text-xl font-semibold" to="/">
           LOGO
         </router-link>
       </div>
 
       <div class="hidden md:flex space-x-3 items-center relative">
         <div class="relative dropdown">
-          <button @click="isCategoryMenuOpen = !isCategoryMenuOpen"
-                  class="text-black text-sm hover:underline transition-all duration-300">
+          <button class="text-black text-sm hover:underline transition-all duration-300"
+                  @click="isCategoryMenuOpen = !isCategoryMenuOpen">
             Category
           </button>
           <transition name="fade">
@@ -188,38 +188,38 @@ onUnmounted(() => {
                    class="text-black text-sm hover:underline transition-all duration-300">
                 {{ category }}
               </div>
-              <router-link to="" class="col-span-3 text-center text-blue-500 text-sm hover:underline">
+              <router-link class="col-span-3 text-center text-blue-500 text-sm hover:underline" to="">
                 <font-awesome-icon icon="fa-solid fa-arrow-up-right-from-square"/>
               </router-link>
             </div>
           </transition>
         </div>
 
-        <router-link to="/post-forum" class="text-black text-sm hover:underline transition-all duration-300">Forum
+        <router-link class="text-black text-sm hover:underline transition-all duration-300" to="/post-forum">Forum
         </router-link>
-        <router-link to="#" class="text-black text-sm hover:underline transition-all duration-300">Support</router-link>
-        <router-link to="#" class="text-black text-sm hover:underline transition-all duration-300">Ranking</router-link>
+        <router-link class="text-black text-sm hover:underline transition-all duration-300" to="#">Support</router-link>
+        <router-link class="text-black text-sm hover:underline transition-all duration-300" to="#">Ranking</router-link>
 
         <div class="relative flex items-center">
-          <input type="text" placeholder="Search by author or name..."
-                 class="p-[0.4rem] rounded-full placeholder:text-sm placeholder:pl-1 bg-gray-100 text-black focus:outline-none focus:ring-1 focus:ring-[#889b6c] transition-all duration-300">
-          <font-awesome-icon icon="fa-solid fa-magnifying-glass"
-                             class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-700 cursor-pointer"/>
+          <input class="p-[0.4rem] rounded-full placeholder:text-sm placeholder:pl-1 bg-gray-100 text-black focus:outline-none focus:ring-1 focus:ring-[#889b6c] transition-all duration-300" placeholder="Search by author or name..."
+                 type="text">
+          <font-awesome-icon class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-700 cursor-pointer"
+                             icon="fa-solid fa-magnifying-glass"/>
         </div>
 
         <div v-if="isAuthenticated" class="flex items-center space-x-3">
           <div class="relative dropdown">
-            <router-link to="/dashboard"
-                         class="flex items-center text-black hover:underline transition-all duration-300 text-sm">
-              <font-awesome-icon :icon="['far', 'pen-to-square']" size="lg" class="mr-1"/>
+            <router-link class="flex items-center text-black hover:underline transition-all duration-300 text-sm"
+                         to="/dashboard">
+              <font-awesome-icon :icon="['far', 'pen-to-square']" class="mr-1" size="lg"/>
               Writting
             </router-link>
           </div>
 
           <div class="relative dropdown">
-            <div @click="toggleNotificationList" class="relative">
-              <font-awesome-icon icon="fa-regular fa-bell" size="xl"
-                                 class="cursor-pointer text-gray-700 hover:text-black transition-transform duration-200 hover:scale-110 focus:scale-125 active:animate-pulse focus:outline-none"/>
+            <div class="relative" @click="toggleNotificationList">
+              <font-awesome-icon class="cursor-pointer text-gray-700 hover:text-black transition-transform duration-200 hover:scale-110 focus:scale-125 active:animate-pulse focus:outline-none" icon="fa-regular fa-bell"
+                                 size="xl"/>
               <span
                   class="absolute -right-1 -bottom-1 w-4 text-center leading-4 bg-black text-white aspect-square rounded-full text-[8px]">
                 {{ unreadNotifications }}
@@ -236,15 +236,15 @@ onUnmounted(() => {
 
           <div class="relative dropdown">
             <img
-                class="w-10 h-10 rounded-full border-2 border-gray-50 transition-transform duration-200 hover:scale-110 hover:border-blue-500 cursor-pointer"
-                :src="userProfile.image" alt="" @click="isAccountMenuOpen = !isAccountMenuOpen"/>
+                :src="userProfile.image"
+                alt="" class="w-10 h-10 rounded-full border-2 border-gray-50 transition-transform duration-200 hover:scale-110 hover:border-blue-500 cursor-pointer" @click="isAccountMenuOpen = !isAccountMenuOpen"/>
             <transition name="fade">
               <div v-if="isAccountMenuOpen"
                    class="absolute right-0 mt-2 w-[10rem] bg-white shadow-lg rounded-lg border border-gray-200 text-sm z-10">
-                <div v-for="item in dropdownMenu" :key="item.label" @click="closeMenu"
-                     class="flex items-center px-4 py-2 text-black hover:bg-gray-100 hover:underline transition-all duration-300">
-                  <div v-if="item.label === 'Logout'" @click.prevent="handleLogout"
-                       class="cursor-pointer flex items-center w-full">
+                <div v-for="item in dropdownMenu" :key="item.label" class="flex items-center px-4 py-2 text-black hover:bg-gray-100 hover:underline transition-all duration-300"
+                     @click="closeMenu">
+                  <div v-if="item.label === 'Logout'" class="cursor-pointer flex items-center w-full"
+                       @click.prevent="handleLogout">
                     <font-awesome-icon :icon="item.icon" class="mr-2"/>
                     {{ item.label }}
                   </div>
@@ -259,9 +259,9 @@ onUnmounted(() => {
         </div>
 
         <div v-else>
-          <router-link to="/login" class="text-black text-sm hover:underline transition-all duration-300">Login
+          <router-link class="text-black text-sm hover:underline transition-all duration-300" to="/login">Login
           </router-link>
-          <router-link to="/register" class="text-black text-sm ml-4 hover:underline transition-all duration-300">
+          <router-link class="text-black text-sm ml-4 hover:underline transition-all duration-300" to="/register">
             Register
           </router-link>
         </div>
@@ -270,17 +270,17 @@ onUnmounted(() => {
       <div class="flex items-center md:hidden">
         <div v-if="isAuthenticated" class="flex items-center space-x-4">
           <div class="relative dropdown">
-            <router-link to="/dashboard"
-                         class="flex items-center text-black hover:underline transition-all duration-300 text-sm">
-              <font-awesome-icon :icon="['far', 'pen-to-square']" size="lg" class="mr-1"/>
+            <router-link class="flex items-center text-black hover:underline transition-all duration-300 text-sm"
+                         to="/dashboard">
+              <font-awesome-icon :icon="['far', 'pen-to-square']" class="mr-1" size="lg"/>
               Writting
             </router-link>
           </div>
 
           <div class="relative dropdown">
-            <div @click="toggleNotificationList" class="relative">
-              <font-awesome-icon icon="fa-regular fa-bell" size="xl"
-                                 class="cursor-pointer text-gray-700 hover:text-black transition-transform duration-200 hover:scale-110 focus:scale-125 active:animate-pulse focus:outline-none"/>
+            <div class="relative" @click="toggleNotificationList">
+              <font-awesome-icon class="cursor-pointer text-gray-700 hover:text-black transition-transform duration-200 hover:scale-110 focus:scale-125 active:animate-pulse focus:outline-none" icon="fa-regular fa-bell"
+                                 size="xl"/>
               <span
                   class="absolute -right-1 -bottom-1 w-4 text-center leading-4 bg-black text-white aspect-square rounded-full text-[8px]">
                 {{ unreadNotifications }}
@@ -296,15 +296,15 @@ onUnmounted(() => {
           </div>
           <div class="relative dropdown">
             <img
-                class="w-10 h-10 rounded-full border-2 border-gray-50 transition-transform duration-200 hover:scale-110 hover:border-blue-500 cursor-pointer"
-                :src="userProfile.image" @click="isAccountMenuOpen = !isAccountMenuOpen"/>
+                :src="userProfile.image"
+                class="w-10 h-10 rounded-full border-2 border-gray-50 transition-transform duration-200 hover:scale-110 hover:border-blue-500 cursor-pointer" @click="isAccountMenuOpen = !isAccountMenuOpen"/>
             <transition name="fade">
               <div v-if="isAccountMenuOpen"
                    class="absolute right-0 mt-2 w-[10rem] bg-white shadow-lg rounded-lg border border-gray-200 text-sm z-10">
-                <div v-for="item in dropdownMenu" :key="item.label" @click="closeMenu"
-                     class="flex items-center px-4 py-2 text-black hover:bg-gray-100 hover:underline transition-all duration-300">
-                  <div v-if="item.label === 'Logout'" @click.prevent="handleLogout"
-                       class="cursor-pointer flex items-center w-full">
+                <div v-for="item in dropdownMenu" :key="item.label" class="flex items-center px-4 py-2 text-black hover:bg-gray-100 hover:underline transition-all duration-300"
+                     @click="closeMenu">
+                  <div v-if="item.label === 'Logout'" class="cursor-pointer flex items-center w-full"
+                       @click.prevent="handleLogout">
                     <font-awesome-icon :icon="item.icon" class="mr-2"/>
                     {{ item.label }}
                   </div>
@@ -319,10 +319,10 @@ onUnmounted(() => {
         </div>
 
         <div v-else class="flex items-center space-x-4">
-          <router-link to="/login" class="text-black text-sm hover:underline transition-all duration-300">
+          <router-link class="text-black text-sm hover:underline transition-all duration-300" to="/login">
             Login
           </router-link>
-          <router-link to="/register" class="text-black text-sm hover:underline transition-all duration-300">
+          <router-link class="text-black text-sm hover:underline transition-all duration-300" to="/register">
             Register
           </router-link>
         </div>
@@ -333,14 +333,14 @@ onUnmounted(() => {
       <div v-if="isMobileMenuOpen" class="md:hidden fixed top-16 left-0 w-full h-full bg-black bg-opacity-50 z-50">
         <div class="bg-white text-black p-4 space-y-4">
           <div class="relative">
-            <input type="text" placeholder="Search..."
-                   class="p-[0.4rem] pr-10 rounded-full placeholder:text-sm w-full bg-gray-100 text-black focus:outline-none focus:ring-1 focus:ring-[#889b6c] transition-all duration-300">
-            <font-awesome-icon icon="fa-solid fa-magnifying-glass"
-                               class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-700 cursor-pointer"/>
+            <input class="p-[0.4rem] pr-10 rounded-full placeholder:text-sm w-full bg-gray-100 text-black focus:outline-none focus:ring-1 focus:ring-[#889b6c] transition-all duration-300" placeholder="Search..."
+                   type="text">
+            <font-awesome-icon class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-700 cursor-pointer"
+                               icon="fa-solid fa-magnifying-glass"/>
           </div>
           <div>
-            <button @click.stop="isCategoryMenuOpen = !isCategoryMenuOpen"
-                    class="block w-full text-sm hover:underline text-left transition-all">
+            <button class="block w-full text-sm hover:underline text-left transition-all"
+                    @click.stop="isCategoryMenuOpen = !isCategoryMenuOpen">
               Category
             </button>
             <transition name="fade">
@@ -349,16 +349,16 @@ onUnmounted(() => {
                      class="text-black text-sm hover:underline transition-all duration-300">
                   {{ category }}
                 </div>
-                <router-link to="" class="col-span-3 text-center text-blue-500 text-sm hover:underline">
+                <router-link class="col-span-3 text-center text-blue-500 text-sm hover:underline" to="">
                   <font-awesome-icon icon="fa-solid fa-arrow-up-right-from-square"/>
                 </router-link>
               </div>
             </transition>
           </div>
-          <router-link to="/post-forum" class="block text-sm hover:underline transition-all duration-300">Forum
+          <router-link class="block text-sm hover:underline transition-all duration-300" to="/post-forum">Forum
           </router-link>
-          <router-link to="#" class="block text-sm hover:underline transition-all duration-300">Support</router-link>
-          <router-link to="#" class="block text-sm hover:underline transition-all duration-300">Ranking</router-link>
+          <router-link class="block text-sm hover:underline transition-all duration-300" to="#">Support</router-link>
+          <router-link class="block text-sm hover:underline transition-all duration-300" to="#">Ranking</router-link>
         </div>
       </div>
     </transition>

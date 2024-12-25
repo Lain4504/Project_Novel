@@ -1,14 +1,13 @@
-<script setup lang="ts">
-import { ref, onMounted, inject } from "vue";
-import { deleteNovel, getNovel } from "@/api/novel";
+<script lang="ts" setup>
+import {inject, onMounted, ref} from "vue";
+import {deleteNovel, getNovel} from "@/api/novel";
 import EditContentChapter from "@/components/admin/EditNovelChapter.vue";
 import AddChapter from "@/components/admin/AddNovelChapter.vue";
-import OrderSortChapter from "@/components/admin/OrderSortChapter.vue";
 import AddNovelVolume from "@/components/admin/AddNovelVolume.vue";
 import EditNovelVolume from "@/components/admin/EditNovelVolume.vue";
-import { useRoute } from "vue-router";
-import { deleteVolume, getVolumesByNovelId } from "@/api/volume";
-import {deleteChapter, getChaptersByVolumeId} from "@/api/chapter";
+import {useRoute} from "vue-router";
+import {deleteVolume, getVolumesByNovelId} from "@/api/novelVolume";
+import {deleteChapter, getChaptersByVolumeId} from "@/api/novelChapter";
 import router from "@/router";
 import ConfirmDeleteModal from "@/components/common/ConfirmDeleteModal.vue";
 import NovelEdit from "@/components/admin/NovelEdit.vue";
@@ -49,7 +48,6 @@ const novel = ref<Novel | Record<string, any>>({});
 const showEditNovel = ref(false);
 const showEditChapter = ref(false);
 const showAddChapter = ref(false);
-const showOrderSortChapter = ref(false);
 const showEditVolume = ref(false);
 const showAddVolume = ref(false);
 const selectedVolumeData = ref<Volume | Record<string, any>>({});
@@ -105,7 +103,7 @@ const refreshNovelData = async () => {
     const volumeData = await getVolumesByNovelId(id);
     volumes.value = volumeData;
 
-    const activeChaptersState = { ...activeChapters.value };
+    const activeChaptersState = {...activeChapters.value};
     activeChapters.value = {};
     volumes.value.forEach(volume => {
       activeChapters.value[volume.volumeName] = activeChaptersState[volume.volumeName] || false;
@@ -145,10 +143,10 @@ const toggleChapterDropdown = (chapterId: string) => {
   isDropdownVisible.value = false;
 };
 
-const viewChapter = ( chapterId: string) => {
+const viewChapter = (chapterId: string) => {
   router.push(`/novel/${chapterId}`);
 };
-const viewNovel = ( novelId: string) => {
+const viewNovel = (novelId: string) => {
   router.push(`/noveldetail/${novelId}`);
 };
 const showModal = (modalName: string) => {
@@ -157,18 +155,12 @@ const showModal = (modalName: string) => {
   showAddVolume.value = false;
   showEditChapter.value = false;
   showAddChapter.value = false;
-  showOrderSortChapter.value = false;
 
   if (modalName === 'editNovel') showEditNovel.value = true;
   if (modalName === 'editVolume') showEditVolume.value = true;
   if (modalName === 'addVolume') showAddVolume.value = true;
   if (modalName === 'editChapter') showEditChapter.value = true;
   if (modalName === 'addChapter') showAddChapter.value = true;
-  if (modalName === 'orderSortChapter') showOrderSortChapter.value = true;
-};
-
-const sortChapters = (novelId: string) => {
-  showModal('orderSortChapter');
 };
 
 const editChapter = (chapter: Chapter) => {
@@ -217,7 +209,7 @@ const handleVolumeCreated = async () => {
 };
 
 const handleDelete = (id: string, type: string) => {
-  itemToDelete.value = { id, type };
+  itemToDelete.value = {id, type};
   showConfirmModal.value = true;
 };
 const handleNovelUpdated = async () => {
@@ -273,11 +265,11 @@ onMounted(() => {
 <template>
   <ConfirmDeleteModal
       :show="showConfirmModal"
-      title="Are you sure you want to delete?"
-      message="This action cannot be undone."
       confirmText="Delete"
-      @confirm="confirmDelete"
+      message="This action cannot be undone."
+      title="Are you sure you want to delete?"
       @cancel="cancelDelete"
+      @confirm="confirmDelete"
   />
   <div class="flex justify-center items-center max-w-7xl mx-auto">
     <div class="bg-[#F8F8F7] p-8 rounded-lg shadow-md w-full">
@@ -285,28 +277,54 @@ onMounted(() => {
       <div class="space-y-4 mt-10">
         <div class="md:col-span-1 relative">
           <p class="text-lg font-bold cursor-pointer" @click="toggleDropdownNovel">{{ novel.title }}</p>
-          <div v-if="isDropdownVisible" class="absolute z-10 bg-[#F8F8F7] border border-gray-300 rounded-md mt-2 w-36 shadow-md">
-            <button class="block w-full p-2 cursor-pointer hover:bg-gray-100 text-sm" @click="viewNovel(novel.id)">Xem tiểu thuyết</button>
-            <button class="block w-full p-2 cursor-pointer hover:bg-gray-100 text-sm" @click="addVolume(novel.title)">Thêm tập</button>
-            <button class="block w-full p-2 cursor-pointer hover:bg-gray-100 text-sm" @click="editNovel">Sửa tiểu thuyết</button>
-            <button class="block w-full p-2 cursor-pointer hover:bg-gray-100 text-sm" @click="() => { handleDelete(novel.id, 'novel'); }">Xóa tiểu thuyết</button>
+          <div v-if="isDropdownVisible"
+               class="absolute z-10 bg-[#F8F8F7] border border-gray-300 rounded-md mt-2 w-36 shadow-md">
+            <button class="block w-full p-2 cursor-pointer hover:bg-gray-100 text-sm" @click="viewNovel(novel.id)">Xem
+              tiểu thuyết
+            </button>
+            <button class="block w-full p-2 cursor-pointer hover:bg-gray-100 text-sm" @click="addVolume(novel.title)">
+              Thêm tập
+            </button>
+            <button class="block w-full p-2 cursor-pointer hover:bg-gray-100 text-sm" @click="editNovel">Sửa tiểu
+              thuyết
+            </button>
+            <button class="block w-full p-2 cursor-pointer hover:bg-gray-100 text-sm"
+                    @click="() => { handleDelete(novel.id, 'novel'); }">Xóa tiểu thuyết
+            </button>
           </div>
         </div>
         <div>
           <ul class="space-y-4 text-gray-700">
             <li v-for="volume in volumes" :key="volume.volumeName" class="relative">
               <div class="flex items-center w-full">
-                <button @click="toggleChapters(volume.volumeName)" class="flex items-center text-left font-medium hover:underline mr-2">
-                  <font-awesome-icon :icon="activeChapters[volume.volumeName] ? 'fas fa-square-minus' : 'fas fa-square-plus'" size='xl'/>
+                <button class="flex items-center text-left font-medium hover:underline mr-2"
+                        @click="toggleChapters(volume.volumeName)">
+                  <font-awesome-icon
+                      :icon="activeChapters[volume.volumeName] ? 'fas fa-square-minus' : 'fas fa-square-plus'"
+                      size='xl'/>
                 </button>
-                <button @click="toggleDropdown(volume.volumeName)" class="text-left w-full font-medium hover:underline">{{ volume.volumeName }}</button>
+                <button class="text-left w-full font-medium hover:underline" @click="toggleDropdown(volume.volumeName)">
+                  {{ volume.volumeName }}
+                </button>
               </div>
-              <div v-if="activeDropdown === volume.volumeName" class="z-10 absolute mt-2 bg-[#F8F8F7] border border-gray-300 rounded-md shadow-lg">
+              <div v-if="activeDropdown === volume.volumeName"
+                   class="z-10 absolute mt-2 bg-[#F8F8F7] border border-gray-300 rounded-md shadow-lg">
                 <ul class="py-1 text-sm text-gray-700">
-                  <li><button @click="() => { addChapter(volume.id) }" class="block w-full px-4 py-2 hover:bg-gray-100">Thêm chương</button></li>
-                  <li><button @click="() => { editVolume(volume) }" class="block w-full px-4 py-2 hover:bg-gray-100">Sửa tập</button></li>
-                  <li><button @click="() => { sortChapters(volume.volumeName)}" class="block w-full px-4 py-2 hover:bg-gray-100">Sắp xếp chương</button></li>
-                  <li><button @click="() => { handleDelete(volume.id, 'volume')}" class="block w-full px-4 py-2 text-red-600 hover:bg-gray-100">Xóa tập</button></li>
+                  <li>
+                    <button class="block w-full px-4 py-2 hover:bg-gray-100" @click="() => { addChapter(volume.id) }">
+                      Thêm chương
+                    </button>
+                  </li>
+                  <li>
+                    <button class="block w-full px-4 py-2 hover:bg-gray-100" @click="() => { editVolume(volume) }">Sửa
+                      tập
+                    </button>
+                  </li>
+                  <li>
+                    <button class="block w-full px-4 py-2 text-red-600 hover:bg-gray-100"
+                            @click="() => { handleDelete(volume.id, 'volume')}">Xóa tập
+                    </button>
+                  </li>
                 </ul>
               </div>
               <div v-if="activeChapters[volume.volumeName]" class="mt-2 relative">
@@ -315,14 +333,27 @@ onMounted(() => {
                 </div>
                 <div class="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   <div v-for="chapter in volume.chapters" :key="chapter.id" class="text-left relative">
-                    <button @click="toggleChapterDropdown(chapter.id)" class="text-sm text-blue-600 hover:underline">
-                    Chương  {{ chapter.chapterNumber }} - {{ chapter.chapterTitle }}
+                    <button class="text-sm text-blue-600 hover:underline" @click="toggleChapterDropdown(chapter.id)">
+                      Chương {{ chapter.chapterNumber }} - {{ chapter.chapterTitle }}
                     </button>
-                    <div v-if="activeDropdown === chapter.id" class="z-10 absolute left-0 mt-2 bg-[#F8F8F7] border border-gray-300 rounded-md shadow-lg">
+                    <div v-if="activeDropdown === chapter.id"
+                         class="z-10 absolute left-0 mt-2 bg-[#F8F8F7] border border-gray-300 rounded-md shadow-lg">
                       <ul class="py-1 text-sm text-gray-700">
-                        <li><button @click="() => { viewChapter(chapter.id)}" class="block w-full px-4 py-2 hover:bg-gray-100">Xem chương</button></li>
-                        <li><button @click="() => { editChapter(chapter)}" class="block w-full px-4 py-2 hover:bg-gray-100">Chỉnh sửa chương</button></li>
-                        <li><button @click="() => { handleDelete(chapter.id, 'chapter')}" class="block w-full px-4 py-2 text-red-600 hover:bg-gray-100">Xóa chương</button></li>
+                        <li>
+                          <button class="block w-full px-4 py-2 hover:bg-gray-100"
+                                  @click="() => { viewChapter(chapter.id)}">Xem chương
+                          </button>
+                        </li>
+                        <li>
+                          <button class="block w-full px-4 py-2 hover:bg-gray-100"
+                                  @click="() => { editChapter(chapter)}">Chỉnh sửa chương
+                          </button>
+                        </li>
+                        <li>
+                          <button class="block w-full px-4 py-2 text-red-600 hover:bg-gray-100"
+                                  @click="() => { handleDelete(chapter.id, 'chapter')}">Xóa chương
+                          </button>
+                        </li>
                       </ul>
                     </div>
                   </div>
@@ -335,11 +366,13 @@ onMounted(() => {
     </div>
   </div>
   <div class="flex justify-center items-center max-w-7xl mx-auto">
-    <EditContentChapter v-if="showEditChapter" :chapterData="selectedChapterData" @chapter-updated="handleChapterUpdated" class="my-10"/>
-    <AddChapter v-if="showAddChapter" :volumeId="selectedVolumeData.id" @chapter-added="handleChapterUpdated" class="my-10"/>
-    <OrderSortChapter v-if="showOrderSortChapter" class="my-10"/>
+    <EditContentChapter v-if="showEditChapter" :chapterData="selectedChapterData"
+                        class="my-10" @chapter-updated="handleChapterUpdated"/>
+    <AddChapter v-if="showAddChapter" :volumeId="selectedVolumeData.id" class="my-10"
+                @chapter-added="handleChapterUpdated"/>
     <AddNovelVolume v-if="showAddVolume" :novelId="novel.id" class="my-10" @volume-added="handleVolumeCreated"/>
-    <EditNovelVolume v-if="showEditVolume" :volumeData="selectedVolumeData" @volume-updated="handleVolumeUpdated" class="my-10"/>
+    <EditNovelVolume v-if="showEditVolume" :volumeData="selectedVolumeData" class="my-10"
+                     @volume-updated="handleVolumeUpdated"/>
     <NovelEdit v-if="showEditNovel" :novel="novel" class="my-10" @novel-updated="handleNovelUpdated"/>
   </div>
 </template>

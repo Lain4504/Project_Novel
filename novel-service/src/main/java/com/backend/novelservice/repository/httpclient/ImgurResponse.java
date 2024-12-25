@@ -1,4 +1,5 @@
 package com.backend.novelservice.repository.httpclient;
+
 import lombok.Data;
 
 @Data

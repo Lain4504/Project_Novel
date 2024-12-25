@@ -1,4 +1,5 @@
 import axios from "@/utils/axiosInstance";
+
 const NOTIFICATION_API = "notification/notifications/";
 const getNotificationByUserId = async (userId: string, page: number, size: number) => {
     try {
@@ -8,4 +9,4 @@ const getNotificationByUserId = async (userId: string, page: number, size: numbe
         throw error;
     }
 }
-export { getNotificationByUserId };
+export {getNotificationByUserId};

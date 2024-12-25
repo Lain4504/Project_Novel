@@ -9,7 +9,9 @@ import org.mapstruct.MappingTarget;
 @Mapper(componentModel = "spring")
 public interface PostCommentReplyMapper {
     PostCommentReply toPostCommentReply(PostCommentReplyRequest request);
+
     PostCommentReplyResponse toPostCommentReplyResponse(PostCommentReply postCommentReply);
+
     void updatePostCommentReplyFromRequest(@MappingTarget PostCommentReply postCommentReply, PostCommentReplyRequest request);
 
 }

@@ -8,7 +8,9 @@ import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring")
 public interface UserReviewMapper {
-     UserReview toUserReview(UserReviewRequest request);
-     UserReviewResponse toUserReviewResponse(UserReview userReview);
-     void updateUserReview(@MappingTarget UserReview userReview, UserReviewRequest request);
+    UserReview toUserReview(UserReviewRequest request);
+
+    UserReviewResponse toUserReviewResponse(UserReview userReview);
+
+    void updateUserReview(@MappingTarget UserReview userReview, UserReviewRequest request);
 }

@@ -3,20 +3,15 @@ package com.backend.postservice.service;
 import com.backend.dto.response.PageResponse;
 import com.backend.postservice.dto.request.PostCategoryRequest;
 import com.backend.postservice.dto.response.PostCategoryResponse;
-import com.backend.postservice.dto.response.PostResponse;
-import com.backend.postservice.entity.Post;
 import com.backend.postservice.entity.PostCategory;
 import com.backend.postservice.mapper.PostCategoryMapper;
 import com.backend.postservice.repository.PostCategoryRepository;
 import com.backend.utils.DateTimeFormatter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -29,7 +24,8 @@ public class PostCategoryService {
     PostCategoryRepository postCategoryRepository;
     PostCategoryMapper postCategoryMapper;
     DateTimeFormatter dateTimeFormatter;
-    public PostCategoryResponse createPostCategory(PostCategoryRequest postCategory){
+
+    public PostCategoryResponse createPostCategory(PostCategoryRequest postCategory) {
         PostCategory newPostCategory = PostCategory.builder()
                 .name(postCategory.getName())
                 .description(postCategory.getDescription())
@@ -39,7 +35,8 @@ public class PostCategoryService {
         newPostCategory = postCategoryRepository.save(newPostCategory);
         return postCategoryMapper.toPostCategoryResponse(newPostCategory);
     }
-    public PageResponse<PostCategoryResponse> getAllPostCategories(int page, int size){
+
+    public PageResponse<PostCategoryResponse> getAllPostCategories(int page, int size) {
         Sort sort = Sort.by(Sort.Order.desc("createdDate"));
         Pageable pageable = PageRequest.of(page - 1, size, sort);
         var pageData = postCategoryRepository.findAll(pageable);
@@ -56,22 +53,25 @@ public class PostCategoryService {
                 .data(postCategoryList)
                 .build();
     }
-    public PostCategoryResponse getPostCategory(String postCategoryId){
+
+    public PostCategoryResponse getPostCategory(String postCategoryId) {
         var postCategory = postCategoryRepository.findById(postCategoryId)
                 .orElseThrow(() -> new RuntimeException("Post category not found"));
         return postCategoryMapper.toPostCategoryResponse(postCategory);
     }
-    public List<PostCategoryResponse> getAllPostCategories(){
+
+    public List<PostCategoryResponse> getAllPostCategories() {
         var postCategoryList = postCategoryRepository.findAll(Sort.by(Sort.Order.desc("createdDate")));
         return postCategoryList.stream().map(postCategoryMapper::toPostCategoryResponse).toList();
     }
-    public void deletePostCategory(String postCategoryId){
+
+    public void deletePostCategory(String postCategoryId) {
         var postCategory = postCategoryRepository.findById(postCategoryId)
                 .orElseThrow(() -> new RuntimeException("Post category not found"));
         postCategoryRepository.delete(postCategory);
     }
 
-    public PostCategoryResponse updatePostCategory(String postCategoryId, PostCategoryRequest postCategoryRequest){
+    public PostCategoryResponse updatePostCategory(String postCategoryId, PostCategoryRequest postCategoryRequest) {
         var postCategory = postCategoryRepository.findById(postCategoryId)
                 .orElseThrow(() -> new RuntimeException("Post category not found"));
         postCategory.setName(postCategoryRequest.getName());
