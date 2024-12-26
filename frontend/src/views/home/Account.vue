@@ -4,11 +4,12 @@ import {UserOutlined} from '@ant-design/icons-vue';
 import {computed, onMounted, ref} from 'vue';
 import {getUserProfile} from '@/api/user';
 import {getNovelsByAuthorId} from '@/api/novel';
-import store from '@/store';
 import Ads from '@/components/home/Banner.vue';
+import {useRoute} from "vue-router";
 
 const {Title, Paragraph, Text} = Typography;
-
+const route = useRoute();
+const userId = route.params.id as string;
 const userProfile = ref({
   id: '',
   image: '',
@@ -24,8 +25,19 @@ const userProfile = ref({
   publishedNovels: '0',
   created: ''
 });
-
-const novels = ref<any[]>([]);
+interface Novel {
+  id: string;
+  title: string;
+  authorName: string;
+  description: string;
+  image: {
+    path: string;
+  };
+  categories: { name: string }[];
+  chapterCount: number;
+  created: string;
+}
+const novels = ref<Novel[]>([]);
 const currentPage = ref(1);
 const pageSize = 3;
 const totalPages = ref(1);
@@ -41,15 +53,16 @@ const userStats = computed(() => [
 
 const breadcrumbItems = [
   {title: 'Home', path: '/'},
-  {title: 'Account', path: '/templates'},
-  {title: 'Member'}
+  {title: 'Account' },
 ];
-
+const totalElements = ref(0);
 const fetchNovelsData = async (page: number, size: number) => {
   loading.value = true;
   try {
-    const novelsData = await getNovelsByAuthorId(store.getters.getUserId, page, size);
+    const novelsData = await getNovelsByAuthorId(userId, page, size);
+    console.log('Novels:', novelsData);
     novels.value = novelsData.data;
+    totalElements.value = novelsData.totalElements;
     totalPages.value = novelsData.totalPages;
   } catch (error) {
     console.error('Error fetching novels data:', error);
@@ -60,7 +73,7 @@ const fetchNovelsData = async (page: number, size: number) => {
 
 const fetchUserProfile = async () => {
   try {
-    const userProfileData = await getUserProfile(store.getters.getUserId);
+    const userProfileData = await getUserProfile(userId);
     userProfile.value = {
       ...userProfileData,
       image: userProfileData.image.path
@@ -152,7 +165,7 @@ onMounted(() => {
                         class="w-32 h-48 object-cover rounded mr-6"
                     />
                     <div class="flex-1">
-                      <router-link :to="`noveldetail/${item.id}`">
+                      <router-link :to="`/${item.id}`">
                         <Title :level="4" class="mb-2">{{ item.title }}</Title>
                       </router-link>
 
@@ -168,7 +181,7 @@ onMounted(() => {
                       <Paragraph class="italic" v-html="item.description"/>
 
                       <div class="flex justify-between text-gray-500 text-sm">
-                        <span>{{ item.chapters }} Chapters</span>
+                        <span>{{ item.chapterCount }} Chapters</span>
                         <span>Last Updated: {{ item.created }}</span>
                       </div>
                     </div>
@@ -181,7 +194,7 @@ onMounted(() => {
               <Pagination
                   :current="currentPage"
                   :pageSize="pageSize"
-                  :show-total="(total: number) => `Total ${total} items`"
+                  :show-total="() => `Total ${totalElements} items`"
                   :total="totalPages * pageSize"
                   show-quick-jumper
                   @change="handlePageChange"

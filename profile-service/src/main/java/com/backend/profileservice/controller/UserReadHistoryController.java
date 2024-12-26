@@ -1,6 +1,10 @@
 package com.backend.profileservice.controller;
 
 import com.backend.dto.response.ApiResponse;
+import com.backend.dto.response.PageResponse;
+import com.backend.profileservice.dto.request.UserReadHistoryRequest;
+import com.backend.profileservice.dto.response.NovelDetailsResponse;
+import com.backend.profileservice.dto.response.UserReadHistoryResponse;
 import com.backend.profileservice.entity.UserReadHistory;
 import com.backend.profileservice.service.UserReadHistoryService;
 import lombok.RequiredArgsConstructor;
@@ -17,17 +21,10 @@ import java.util.Optional;
 public class UserReadHistoryController {
     UserReadHistoryService userReadHistoryService;
 
-    @GetMapping("/all/{userId}")
-    public ApiResponse<List<UserReadHistory>> getAllUserReadHistory(@PathVariable String userId, @RequestParam(value = "type", required = false) String type) {
-        return ApiResponse.<List<UserReadHistory>>builder()
-                .result(userReadHistoryService.getReadHistoryByUserId(userId, type))
-                .build();
-    }
-
     @PostMapping
-    public ApiResponse<UserReadHistory> addReadHistory(@RequestBody UserReadHistory userReadHistory) {
-        return ApiResponse.<UserReadHistory>builder()
-                .result(userReadHistoryService.createOrUpdate(userReadHistory))
+    public ApiResponse<UserReadHistoryResponse> addReadHistory(@RequestBody UserReadHistoryRequest userReadHistory) {
+        return ApiResponse.<UserReadHistoryResponse>builder()
+                .result(userReadHistoryService.createOrUpdateHistory(userReadHistory))
                 .build();
     }
 
@@ -41,6 +38,16 @@ public class UserReadHistoryController {
     public ApiResponse<Optional> hasReadNovel(@PathVariable String novelId) {
         return ApiResponse.<Optional>builder()
                 .result(userReadHistoryService.getById(novelId))
+                .build();
+    }
+    @GetMapping("/reading-history/{userId}")
+    public ApiResponse<PageResponse<NovelDetailsResponse>> getReadingHistory(
+            @PathVariable String userId,
+            @RequestParam(value = "page", required = false, defaultValue = "1") int page,
+            @RequestParam(value = "size", required = false, defaultValue = "10") int size
+    ) {
+        return ApiResponse.<PageResponse<NovelDetailsResponse>>builder()
+                .result(userReadHistoryService.getReadHistoryWithDetails(userId,page, size))
                 .build();
     }
 }

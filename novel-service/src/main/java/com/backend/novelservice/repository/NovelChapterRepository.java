@@ -21,4 +21,8 @@ public interface NovelChapterRepository extends MongoRepository<NovelChapter, St
 
     @Query(value = "{ 'volumeId': ?0 }", fields = "{ 'content': 0 }")
     List<NovelChapter> findAllChaptersByVolumeIdWithoutContent(String volumeId);
+
+    Optional<NovelChapter> findTopByVolumeIdOrderByChapterNumberDesc(String volumeId);
+
+    List<NovelChapter> findAllByVolumeId(String volumeId);
 }

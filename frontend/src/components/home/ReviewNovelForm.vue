@@ -2,11 +2,16 @@
 import {createReview, getReviewList} from '@/api/user';
 import {computed, onMounted, ref} from 'vue';
 import {useStore} from 'vuex';
+import {Button, Pagination} from 'ant-design-vue';
 
 interface Review {
   id: string;
   review: string;
   userId: string;
+  novelName: string;
+  userName: string;
+  image: string;
+  created: string;
 }
 
 const props = defineProps<{ itemId: string }>();
@@ -75,12 +80,13 @@ onMounted(() => {
             placeholder="Nội dung bài đánh giá (ít nhất 100 từ)"
         ></textarea>
       </div>
-      <button
-          class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+      <Button
+          type="primary"
+          class="self-start"
           @click="submitReview"
       >
         Gửi đánh giá
-      </button>
+      </Button>
     </div>
 
     <!-- Danh sách đánh giá -->
@@ -92,11 +98,18 @@ onMounted(() => {
             :key="review.id"
             class="p-4 border rounded shadow-sm bg-gray-50"
         >
+          <h5 class="font-semibold">{{ review.novelName }}</h5>
           <p class="text-gray-800">{{ review.review }}</p>
-          <small class="text-gray-500">Người dùng: {{ review.userId }}</small>
+          <div class="mt-auto flex items-center justify-between">
+            <div class="flex items-center space-x-2">
+              <img :src="review.image" alt="User Avatar" class="w-8 h-8 rounded-full">
+              <div class="font-medium">{{ review.userName }}</div>
+            </div>
+            <div class="text-sm text-gray-500">{{ review.created }}</div>
+          </div>
         </li>
       </ul>
-      <a-pagination
+      <Pagination
           :current="currentPage"
           :pageSize="pageSize"
           :total="totalReviews"

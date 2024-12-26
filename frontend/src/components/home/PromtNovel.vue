@@ -2,12 +2,22 @@
 import {computed, onMounted, ref, watch} from 'vue';
 import {getMyNovels} from '@/api/novel';
 
+interface Category {
+  id: string;
+  name: string;
+  description: string;
+  createdDate: string;
+  modifiedDate: string;
+}
+
 interface Novel {
   id: string;
   title: string;
   description: string;
   image: string;
-  author: string;
+  authorName: string;
+  authorId: string;
+  categories: Category[];
 }
 
 const tabs = [
@@ -29,6 +39,15 @@ const fetchBooks = async (page: number, sort: string) => {
       title: book.title,
       description: book.description,
       image: book.image.path,
+      authorName: book.authorName,
+      authorId: book.authorId,
+      categories: book.categories.map((category: any) => ({
+        id: category.id,
+        name: category.name,
+        description: category.description,
+        createdDate: category.createdDate,
+        modifiedDate: category.modifiedDate,
+      })),
     }));
   } catch (error) {
     console.error('Error fetching books:', error);
@@ -89,16 +108,24 @@ watch(activeTab, (newTab) => {
             class="w-24 h-36 object-cover rounded-lg"
         />
         <div class="flex-1">
-          <h3 class="text-lg font-semibold line-clamp-2">{{ book.title }}</h3>
-          <p class="text-sm text-gray-500 line-clamp-3">{{ book.description }}</p>
+          <h3 class="text-lg font-semibold line-clamp-2">
+            <router-link :to="{ name: 'noveldetail', params: { id: book.id } }">
+              {{ book.title }}
+            </router-link>
+          </h3>
+          <p v-html="book.description" class="text-sm text-gray-500 line-clamp-3"/>
           <div class="flex items-center text-sm text-gray-700 mt-2">
             <i class="fas fa-user mr-2"></i>
-            {{ book.author }}
+            <router-link :to="{ name: 'account', params: { id: book.authorId } }">
+              {{ book.authorName }}
+            </router-link>
           </div>
           <span
-              class="inline-block bg-yellow-100 text-yellow-600 text-xs font-semibold mt-3 px-3 py-1 rounded-full"
+              v-for="category in book.categories.slice(0, 4)"
+              :key="category.id"
+              class="inline-block bg-yellow-100 text-yellow-600 text-xs font-semibold mt-3 px-2 py-1 rounded-full"
           >
-            dsasadsdssd
+              {{ category.name }}
           </span>
         </div>
       </div>

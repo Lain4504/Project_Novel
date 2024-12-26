@@ -6,6 +6,8 @@ import com.backend.profileservice.dto.response.UserNovelRatingResponse;
 import com.backend.profileservice.entity.UserNovelRating;
 import com.backend.profileservice.mapper.UserNovelRatingMapper;
 import com.backend.profileservice.repository.UserNovelRatingRepository;
+import com.backend.profileservice.repository.httpclient.NovelServiceClient;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
@@ -22,26 +24,20 @@ import java.util.Map;
 public class UserNovelRatingService {
     UserNovelRatingRepository userNovelRatingRepository;
     UserNovelRatingMapper userNovelRatingMapper;
-    KafkaTemplate<String, Object> kafkaTemplate;
-
+    NovelServiceClient client;
     public UserNovelRatingResponse rateNovel(UserNovelRatingRequest request) {
         UserNovelRating userNovelRating = userNovelRatingMapper.toUserNovelRating(request);
-        NovelDataSenderEvent novelDataSenderEvent = NovelDataSenderEvent.builder()
-                .channel("novel-rating")
-                .param(Map.of("novelId", request.getNovelId(), "data", userNovelRatingMapper.toUserNovelRatingResponse(userNovelRating)))
-                .build();
+        client.updateNovelRating(request.getNovelId(), request.getRating());
         userNovelRating = userNovelRatingRepository.save(userNovelRating);
         return userNovelRatingMapper.toUserNovelRatingResponse(userNovelRating);
     }
-
     public UserNovelRatingResponse updateRating(UserNovelRatingRequest request) {
         UserNovelRating userNovelRating = userNovelRatingRepository.findByUserIdAndNovelId(request.getUserId(), request.getNovelId());
+        long oldRating = userNovelRating.getRating();
+        long newRating = request.getRating();
         userNovelRatingMapper.updateUserNovelRating(userNovelRating, request);
-        List<UserNovelRatingResponse> list = getNovelRating(request.getNovelId());
-        NovelDataSenderEvent novelDataSenderEvent = NovelDataSenderEvent.builder()
-                .channel("novel-rating")
-                .param(Map.of("novelId", request.getNovelId(), "rating", list))
-                .build();
+        Map<String, Long> ratings = Map.of("newRating", newRating, "oldRating", oldRating);
+        client.updateNovelRatingWithSameUser(request.getNovelId(), ratings);
         userNovelRatingRepository.save(userNovelRating);
         return userNovelRatingMapper.toUserNovelRatingResponse(userNovelRating);
     }

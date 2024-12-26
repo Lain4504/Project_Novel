@@ -1,7 +1,7 @@
 <script lang="ts" setup>
-import {onMounted, reactive, ref} from 'vue';
+import {onMounted, reactive, ref, onBeforeUnmount, watch} from 'vue';
 import {useRoute, useRouter} from 'vue-router';
-import {getChapter, getNextChapter, getPreviousChapter} from '@/api/novelChapter';
+import {getChapter, getNextChapter, getPreviousChapter, incrementChapterView} from '@/api/novelChapter';
 import ChapterContent from '@/components/home/ChapterContent.vue';
 import {
   createChapterComment,
@@ -10,11 +10,13 @@ import {
   getAllRepliesByChapterCommentId
 } from "@/api/novelComment";
 import CommentSection from "@/components/home/CommentSection.vue";
+import {getNovel} from "@/api/novel";
+import {createReadingHistory} from "@/api/user"; // Import the createReadingHistory function
 
 const route = useRoute();
 const router = useRouter();
-const chapterId = route.params.id as string;
-
+const chapterId = route.params.chapter as string;
+const novelId = route.params.novel as string;
 const chapter = reactive({
   id: '',
   title: '',
@@ -23,7 +25,26 @@ const chapter = reactive({
   chapterNumber: '',
   volumeId: '',
   userId: '',
+  wordCount: 0,
 });
+const novel = reactive({
+  id: '',
+  authorName: '',
+  title: '',
+});
+let timeoutId: number | null = null;
+
+const fetchNovel = async (id: string) => {
+  try {
+    const response = await getNovel(id);
+    console.log('Novel:', response);
+    novel.id = response.id;
+    novel.authorName = response.authorName;
+    novel.title = response.title;
+  } catch (error) {
+    console.error('Failed to fetch novel:', error);
+  }
+};
 
 const fetchChapter = async (id: string) => {
   try {
@@ -36,9 +57,20 @@ const fetchChapter = async (id: string) => {
     chapter.chapterNumber = response.chapterNumber;
     chapter.volumeId = response.volumeId;
     chapter.userId = response.authorId;
+    chapter.wordCount = response.wordCount;
+    startIncrementViewTimer(id);
   } catch (error) {
     console.error('Failed to fetch chapter:', error);
   }
+};
+
+const startIncrementViewTimer = (id: string) => {
+  if (timeoutId) {
+    clearTimeout(timeoutId);
+  }
+  timeoutId = window.setTimeout(() => {
+    incrementChapterView(id);
+  }, 90000); // 1.5 minutes
 };
 
 const fetchPreviousChapter = async () => {
@@ -55,9 +87,24 @@ const fetchNextChapter = async () => {
   try {
     const response = await getNextChapter(chapter.volumeId, parseInt(chapter.chapterNumber));
     await fetchChapter(response.id);
-    router.push({name: 'chapter', params: {id: response.id}});
+    await router.push({name: 'chapter', params: {id: response.id}});
   } catch (error) {
     console.error('Failed to fetch next chapter:', error);
+  }
+};
+
+const trackReadingHistory = async () => {
+  try {
+    const data = {
+      userId: chapter.userId,
+      novelId: novel.id,
+      novelTitle: novel.title,
+      novelChapterId: chapter.id,
+      novelChapterTitle: chapter.title,
+    };
+    await createReadingHistory(data);
+  } catch (error) {
+    console.error('Failed to track reading history:', error);
   }
 };
 
@@ -83,14 +130,26 @@ const handlePageChange = (page: number) => {
   currentPage.value = page;
   fetchComments(page, pageSize.value);
 };
+
 onMounted(() => {
+  fetchNovel(novelId);
   fetchChapter(chapterId);
   fetchComments(currentPage.value, pageSize.value);
+
+  window.addEventListener('beforeunload', trackReadingHistory);
+});
+
+onBeforeUnmount(() => {
+  if (timeoutId) {
+    clearTimeout(timeoutId);
+  }
+  trackReadingHistory(); // Call the function to track reading history when the component is unmounted
+  window.removeEventListener('beforeunload', trackReadingHistory);
 });
 </script>
 
 <template>
-  <ChapterContent :chapter="chapter" @previous-chapter="fetchPreviousChapter" @next-chapter="fetchNextChapter"/>
+  <ChapterContent :chapter="chapter" :novel="novel" @previous-chapter="fetchPreviousChapter" @next-chapter="fetchNextChapter"/>
   <CommentSection :comments="comments" :create-comment-api="createChapterComment"
                   :create-reply-api="createChapterReply" :current-page="currentPage"
                   :fetch-comments="fetchComments"

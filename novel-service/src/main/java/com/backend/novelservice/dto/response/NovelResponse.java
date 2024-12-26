@@ -25,10 +25,11 @@ public class NovelResponse {
     String authorName;
     String description;
     double score;
-    Integer bookStatus;
     Long visitCount;
     Long wordCount;
     Long commentCount;
+    Long chapterCount;
+    Long followCount;
     Integer isVip;
     String created;
     Instant createdDate;

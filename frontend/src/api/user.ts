@@ -5,7 +5,7 @@ const PROFILE_API = '/profile/users';
 const USER_NOVEL_FOLLOW_API = '/profile/user-novel-follow';
 const USER_NOVEL_REVIEW_API = '/profile/user-novel-review';
 const USER_NOVEL_RATING_API = '/profile/user-novel-rating';
-
+const USER_NOVEL_READING_HISTORY_API = '/profile/user-read-history';
 interface AccountRequest {
     email: string;
     password: string;
@@ -27,7 +27,7 @@ const getMyInfo = () => {
 };
 
 const getUserProfile = (userId: string) => {
-    return axios.get(`${PROFILE_API}/get//${userId}`)
+    return axios.get(`${PROFILE_API}/get/${userId}`)
         .then(response => response.data.result);
 };
 const updateUserProfile = (id: string, data: any) => {
@@ -62,8 +62,8 @@ const deleteReview = (id: string) => {
     return axios.delete(`${USER_NOVEL_REVIEW_API}/${id}`)
         .then(response => response.data.result);
 }
-const getLatestReview = (id: string) => {
-    return axios.get(`${USER_NOVEL_REVIEW_API}/get/get-latest`)
+const getLatestReview = (page: number, size: number) => {
+    return axios.get(`${USER_NOVEL_REVIEW_API}/get/get-latest?page=${page}&size=${size}`)
         .then(response => response.data.result);
 }
 const getReviewList = (novelId: string, page: number, size: number) => {
@@ -93,6 +93,18 @@ const hasRated = (userId: string, novelId: string) => {
     return axios.get(`${USER_NOVEL_RATING_API}/has-rated/${userId}/${novelId}`)
         .then(response => response.data.result);
 }
+const createReadingHistory = (data: any) => {
+    return axios.post(`${USER_NOVEL_READING_HISTORY_API}`, data)
+        .then(response => response.data.result);
+}
+const getMyReadingList = (userId: string, page: number, size: number) => {
+    return axios.get(`${USER_NOVEL_READING_HISTORY_API}/reading-history/${userId}?page=${page}&size=${size}`)
+        .then(response => response.data.result);
+}
+const addBookmark = (data: any) => {
+    return axios.post(`${USER_NOVEL_READING_HISTORY_API}/add-bookmark`, data)
+        .then(response => response.data.result);
+}
 export {
     register,
     getMyInfo,
@@ -109,5 +121,8 @@ export {
     getMyFollowedNovels,
     createRating,
     updateRating,
-    hasRated
+    hasRated,
+    createReadingHistory,
+    getMyReadingList,
+    addBookmark
 };

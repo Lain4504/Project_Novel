@@ -1,41 +1,47 @@
 <script lang="ts" setup>
-import {ref} from 'vue';
+import {onMounted, ref} from 'vue';
+import {getMyReadingList} from "@/api/user";
+import store from "@/store";
 
-// Define the data structure for the books
-interface Book {
-  hinhanh: string;
-  tentruyen: string;
-  dadoc: number;
-  total: number;
+interface Novel {
+  novelId: string;
+  novelName: string;
+  author: string;
+  image: string;
+  novelChapterId: string;
+  novelChapterTitle: string;
 }
 
-// Sample data for books
-const limitedBooks = ref<Book[]>([
-  {
-    hinhanh: '/path/to/image1.jpg', // Replace with actual image paths
-    tentruyen: 'Làm Sao Rồi, Tình Dịch Liên Không Thể Biến Thành Lão Bà Sao?',
-    dadoc: 321,
-    total: 400
-  },
-  {
-    hinhanh: '/path/to/image2.jpg', // Replace with actual image paths
-    tentruyen: 'Chí Quái Thư',
-    dadoc: 280,
-    total: 306
-  },
-  {
-    hinhanh: '/path/to/image3.jpg', // Replace with actual image paths
-    tentruyen: 'Trận Hồi Trường Sinh',
-    dadoc: 900,
-    total: 1368
-  },
-  {
-    hinhanh: '/path/to/image4.jpg', // Replace with actual image paths
-    tentruyen: 'Hoàng Hôn Phân Giới',
-    dadoc: 813,
-    total: 896
+const currentPage = ref(1);
+const totalPages = ref(0);
+const pageSize = 10;
+const novel = ref<Novel[]>([]);
+
+const fetchNovel = async (page: number) => {
+  try {
+    const response = await getMyReadingList(store.getters.getUserId, page, pageSize);
+    console.log("Reading novels:", response);
+    novel.value = response.data.map((novel: any) => ({
+      novelId: novel.novelId,
+      novelName: novel.novelName,
+      image: novel.image,
+      novelChapterId: novel.novelChapterId,
+      novelChapterTitle: novel.novelChapterTitle,
+    }));
+    currentPage.value = response.currentPage;
+    totalPages.value = response.totalPages;
+  } catch (error) {
+    console.error("Error fetching novels:", error);
   }
-]);
+};
+
+const handlePageChange = (page: number) => {
+  fetchNovel(page);
+};
+
+onMounted(() => {
+  fetchNovel(currentPage.value);
+});
 </script>
 
 <template>
@@ -44,23 +50,35 @@ const limitedBooks = ref<Book[]>([
       <div class="mt-4 text-sm">
         <div class="space-y-4">
           <div
-              v-for="(item, index) in limitedBooks"
+              v-for="(item, index) in novel"
               :key="index"
               class="flex items-center space-x-4"
           >
             <img
-                :src="item.hinhanh"
+                :src="item.image"
                 alt="Book Image"
                 class="w-14 h-20 object-cover"
             />
             <div class="flex justify-between items-center w-full">
-              <h5 class="font-semibold truncate">{{ item.tentruyen }}</h5>
+              <h5 class="font-semibold truncate">
+                <router-link :to="{ name: 'noveldetail', params: { id: item.novelId } }">
+                  {{ item.novelName }}
+                </router-link>
+              </h5>
               <p class="text-gray-500 flex-shrink-0">
-                Chương {{ item.dadoc }} / {{ item.total }}
+                {{ item.novelChapterTitle }}
               </p>
             </div>
           </div>
         </div>
+      </div>
+      <div class="flex justify-center mt-4">
+        <a-pagination
+            :current="currentPage"
+            :pageSize="pageSize"
+            :total="totalPages * pageSize"
+            @change="handlePageChange"
+        />
       </div>
     </section>
   </div>

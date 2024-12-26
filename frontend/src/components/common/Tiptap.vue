@@ -21,7 +21,7 @@ const editor = useEditor({
   editorProps: {
     attributes: {
       class:
-          "border border-gray-300 rounded p-4 min-h-[12rem] max-h-[12rem] overflow-y-auto outline-none prose max-w-none",
+          "border border-gray-300 rounded p-4 min-h-[24rem] max-h-[24rem] overflow-y-auto outline-none prose max-w-none",
     },
   },
 });
@@ -105,4 +105,4 @@ watch(
     </section>
     <editor-content :editor="editor" class="bg-white border border-gray-300 rounded-b shadow-sm"/>
   </div>
-</template>z
+</template>

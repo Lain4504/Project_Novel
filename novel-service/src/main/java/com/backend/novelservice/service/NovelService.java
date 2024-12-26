@@ -226,24 +226,6 @@ public class NovelService {
                 .data(novelList)
                 .build();
     }
-
-    public void updateNovelScore(NovelDataSenderEvent event) {
-        String novelId = (String) event.getParam().get("novelId");
-        Map<String, Object> ratingData = (Map<String, Object>) event.getParam().get("data");
-        double newRating = (double) ratingData.get("rating");
-
-        Novel novel = novelRepository.findById(novelId)
-                .orElseThrow(() -> new IllegalArgumentException("Novel with id " + novelId + " not found"));
-        double currentScore = novel.getScore();
-        long ratingCount = novel.getRatingCount();
-
-        double updatedScore = ((currentScore * ratingCount) + newRating) / (ratingCount + 1);
-        novel.setScore(updatedScore);
-        novel.setRatingCount(ratingCount + 1);
-
-        novelRepository.save(novel);
-    }
-
     public PageResponse<NovelResponse> getNovelsByDynamicField(String fields, int page, int size) {
         Sort sort = Sort.by(Sort.Order.desc(fields).nullsLast());
         Pageable pageable = PageRequest.of(page - 1, size, sort);
@@ -261,4 +243,38 @@ public class NovelService {
                 .data(novelList)
                 .build();
     }
+
+    public void updateNovelRating(String novelId, long rating) {
+        double newRating = (double) rating;
+        Novel novel = novelRepository.findById(novelId)
+                .orElseThrow(() -> new IllegalArgumentException("Novel with id " + novelId + " not found"));
+        double currentScore = novel.getScore();
+        long ratingCount = novel.getRatingCount();
+        double updatedScore = ((currentScore * ratingCount) + newRating) / (ratingCount + 1);
+        novel.setScore(updatedScore);
+        novel.setRatingCount(ratingCount + 1);
+        novelRepository.save(novel);
+    }
+    public void updateNovelRatingWithSameUser(String novelId, long newRating, long oldRating) {
+          Novel novel = novelRepository.findById(novelId)
+                .orElseThrow(() -> new IllegalArgumentException("Novel with id " + novelId + " not found"));
+        double currentScore = novel.getScore();
+        long ratingCount = novel.getRatingCount();
+        double updatedScore = ((currentScore * ratingCount) - oldRating + newRating) / ratingCount;
+        novel.setScore(updatedScore);
+        novelRepository.save(novel);
+    }
+    public void updateNovelFollow(String novelId, boolean isNewFollow) {
+        Novel novel = novelRepository.findById(novelId)
+                .orElseThrow(() -> new IllegalArgumentException("Novel with id " + novelId + " not found"));
+        long followCount = novel.getFollowCount();
+        if (isNewFollow) {
+            novel.setFollowCount(followCount + 1);
+        } else {
+            novel.setFollowCount(followCount - 1);
+        }
+        novelRepository.save(novel);
+    }
+
+
 }

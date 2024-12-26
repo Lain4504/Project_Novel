@@ -58,6 +58,7 @@ interface Novel {
   description: string;
   bookStatus: string;
   categories: Category[];
+  wordCount: number;
   coverPicture: string;
   image: {
     id: string;
@@ -325,12 +326,12 @@ onMounted(() => {
                 <router-link
                     v-for="(chapter, chapterIndex) in volume.chapters.slice(0, volume.showMore ? undefined : 6)"
                     :key="chapterIndex"
-                    :to="{ name: 'chapter', params: { id: chapter.id } }"
+                    :to="{ name: 'chapter', params: { novel: novelId, chapter: chapter.id } }"
                     class="group relative">
                   <div
                       class="p-3 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow border border-gray-100 hover:border-gray-200">
                     <span class="text-sm text-gray-700 truncate block">
-                      Chương  {{ chapter.chapterNumber }} - {{ chapter.chapterTitle }}
+                    {{ chapter.chapterTitle }}
                   </span>
                     <div
                         class="absolute left-1/2 transform -translate-x-1/2 bottom-full mb-2 hidden group-hover:block z-10 bg-black text-white text-xs py-1 px-2 rounded">

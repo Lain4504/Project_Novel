@@ -43,7 +43,7 @@ public class NovelCategoryService {
     }
 
     public PageResponse<NovelCategoryResponse> getNovelCategories(int page, int size) {
-        Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
+        Sort sort = Sort.by(Sort.Direction.DESC, "createdDate");
         Pageable pageable = PageRequest.of(page - 1, size, sort);
         var pageData = novelCategoryRepository.findAll(pageable);
         var categoryList = pageData.getContent().stream().map(novelCategory -> {

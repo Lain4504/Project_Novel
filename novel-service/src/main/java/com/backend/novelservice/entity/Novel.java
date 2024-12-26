@@ -31,10 +31,10 @@ public class Novel {
     String authorName;
     String description;
     double score;
-    Long visitCount;
-    Long followCount;
-    Long wordCount;
-    Long commentCount;
+    Long visitCount = 0L;
+    Long followCount = 0L;
+    Long wordCount = 0L;
+    Long commentCount = 0L;
     Integer isVip;
     Instant createdDate;
     Instant updateDateTime;
@@ -47,5 +47,5 @@ public class Novel {
     Instant latestChapterTime;
     @Enumerated(EnumType.STRING)
     NovelStatusEnum status;
-    Long ratingCount;
+    Long ratingCount = 0L;
 }

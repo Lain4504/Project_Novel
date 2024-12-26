@@ -8,11 +8,6 @@ spring:
   data:
     mongodb:
       uri: mongodb://root:root@localhost:27017/profile-service?authSource=admin
-  kafka:
-    bootstrap-servers: localhost:9094
-    producer:
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
 imgur:
   client-id: 5797e36b930c74e
   client-secret: df8d93bbe36be2d30905605215152b92b7e96c97

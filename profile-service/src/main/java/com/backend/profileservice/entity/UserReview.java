@@ -17,6 +17,7 @@ public class UserReview {
     @MongoId
     String id;
     String userId;
+    String userName;
     String novelId;
     String review;
     Instant createdAt;

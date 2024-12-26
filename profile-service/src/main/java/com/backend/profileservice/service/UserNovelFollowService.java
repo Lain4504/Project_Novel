@@ -6,7 +6,7 @@ import com.backend.profileservice.dto.response.UserNovelFollowResponse;
 import com.backend.profileservice.entity.UserNovelFollow;
 import com.backend.profileservice.mapper.UserNovelFollowMapper;
 import com.backend.profileservice.repository.UserNovelFollowRepository;
-import com.backend.profileservice.repository.httpclient.NovelDetailsResponse;
+import com.backend.profileservice.dto.response.NovelDetailsResponse;
 import com.backend.profileservice.repository.httpclient.NovelServiceClient;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -22,14 +22,15 @@ public class UserNovelFollowService {
     UserNovelFollowRepository userNovelFollowRepository;
     UserNovelFollowMapper userNovelFollowMapper;
     NovelServiceClient novelServiceClient;
-
     public UserNovelFollowResponse followNovel(UserNovelFollowRequest request) {
         UserNovelFollow userNovelFollow = userNovelFollowMapper.toUserNovelFollow(request);
+        novelServiceClient.updateNovelFollow(request.getNovelId(), true);
         userNovelFollowRepository.save(userNovelFollow);
         return userNovelFollowMapper.toUserNovelFollowResponse(userNovelFollow);
     }
 
     public void unfollowNovel(UserNovelFollowRequest request) {
+        novelServiceClient.updateNovelFollow(request.getNovelId(), false);
         userNovelFollowRepository.deleteByUserIdAndNovelId(request.getUserId(), request.getNovelId());
     }
 
