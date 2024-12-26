@@ -1,20 +1,23 @@
 package com.backend.profileservice.dto.response;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.FieldDefaults;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class NovelDetailsResponse {
-    private String novelId;
-    private String novelName;
-    private String author;
-    private Integer chapterCount;
-    private String image;
-    private Long rating;
-    private boolean isNewFollow;
+    String novelId;
+    String novelName;
+    String author;
+    Integer chapterCount;
+    String image;
+    String novelChapterId;
+    String novelChapterTitle;
 }
 
 

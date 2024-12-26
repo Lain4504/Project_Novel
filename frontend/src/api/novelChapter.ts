@@ -30,6 +30,14 @@ const getNextChapter = (volumeId: string, chapterNumber: number) => {
     return axios.get(`${CHAPTER_API}/get/${volumeId}/${chapterNumber}/next`)
         .then((response) => response.data.result);
 }
+const reorderChapter = (volumeId: string, data: string[]) => {
+    return axios.put(`${CHAPTER_API}/reoder-chapter/${volumeId}`, data)
+        .then((response) => response.data.result);
+}
+const incrementChapterView = (chapterId: string) => {
+    return axios.put(`${CHAPTER_API}/increment-visit-count/${chapterId}`)
+        .then((response) => response.data.result);
+}
 export {
     createChapter,
     getChapter,
@@ -37,6 +45,8 @@ export {
     deleteChapter,
     getChaptersByVolumeId,
     getPreviousChapter,
-    getNextChapter
+    getNextChapter,
+    reorderChapter,
+    incrementChapterView
 };
 

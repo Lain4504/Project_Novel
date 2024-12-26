@@ -5,7 +5,7 @@ const PROFILE_API = '/profile/users';
 const USER_NOVEL_FOLLOW_API = '/profile/user-novel-follow';
 const USER_NOVEL_REVIEW_API = '/profile/user-novel-review';
 const USER_NOVEL_RATING_API = '/profile/user-novel-rating';
-
+const USER_NOVEL_READING_HISTORY_API = '/profile/user-read-history';
 interface AccountRequest {
     email: string;
     password: string;
@@ -93,6 +93,18 @@ const hasRated = (userId: string, novelId: string) => {
     return axios.get(`${USER_NOVEL_RATING_API}/has-rated/${userId}/${novelId}`)
         .then(response => response.data.result);
 }
+const createReadingHistory = (data: any) => {
+    return axios.post(`${USER_NOVEL_READING_HISTORY_API}`, data)
+        .then(response => response.data.result);
+}
+const getMyReadingList = (userId: string, page: number, size: number) => {
+    return axios.get(`${USER_NOVEL_READING_HISTORY_API}/reading-history/${userId}?page=${page}&size=${size}`)
+        .then(response => response.data.result);
+}
+const addBookmark = (data: any) => {
+    return axios.post(`${USER_NOVEL_READING_HISTORY_API}/add-bookmark`, data)
+        .then(response => response.data.result);
+}
 export {
     register,
     getMyInfo,
@@ -109,5 +121,8 @@ export {
     getMyFollowedNovels,
     createRating,
     updateRating,
-    hasRated
+    hasRated,
+    createReadingHistory,
+    getMyReadingList,
+    addBookmark
 };

@@ -54,5 +54,9 @@ public class NovelVolumeController {
         return ApiResponse.<List<NovelVolumeResponse>>builder()
                 .result(novelVolumeService.getVolumesByNovelId(novelId)).build();
     }
-
+    @PutMapping("/reorder/{novelId}")
+    ApiResponse<Void> reorderNovelVolumes(@PathVariable String novelId, @RequestBody List<String> volumeIds) {
+        novelVolumeService.reorderNovelVolumes(novelId, volumeIds);
+        return ApiResponse.<Void>builder().build();
+    }
 }

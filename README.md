@@ -119,20 +119,14 @@ scalability, modularity, and maintainability.
 
 ## Web Application
 
-- Base UI : 85%
-
-## Recommendation System
-
-- [ ] Personalized recommendations
-- [ ] Collaborative filtering
-- [ ] Content-based filtering
+- Base UI : 100%
 
 ## Social Features
 
 - [x] User profiles
 - [x] Follow system
 - [x] Commenting system
-- [ ] Likes and ratings
+- [x] Likes and ratings
 - [ ] Activity feed
 
 ## Authentication & Email
@@ -148,7 +142,7 @@ scalability, modularity, and maintainability.
 - [ ] Pay-per-chapter system
 - [x] Novel categories
 - [x] Upload Image
-- [ ] Setup for reading novels settings
+- [x] Setup for reading novels settings
 
 ## Posting
 
@@ -158,8 +152,8 @@ scalability, modularity, and maintainability.
 
 ## Search
 
-- [ ] Search system
-- [ ] Advanced search system(by author, by description, by category, by status)
+- [x] Search system
+- [x] Advanced search system(by author, by description, by category, by status)
 
 ## Author Dashboard
 
@@ -190,7 +184,7 @@ scalability, modularity, and maintainability.
 - [x] Notification system
 - [x] Email notifications
 - [x] Push notifications
-- [ ] Notification settings
+- [x] Notification settings
 - [x] Notification management
 
 ---TO BE COUNTINUED---

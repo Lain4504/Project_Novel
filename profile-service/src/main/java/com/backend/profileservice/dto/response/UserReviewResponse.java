@@ -14,7 +14,10 @@ import lombok.experimental.FieldDefaults;
 public class UserReviewResponse {
     String id;
     String userId;
+    String userName;
     String novelId;
     String review;
     String created;
+    String novelName;
+    String image;
 }

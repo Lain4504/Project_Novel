@@ -28,7 +28,6 @@ const emit = defineEmits(['chapter-updated']);
 const title = ref("");
 const status = ref(ChapterStatusEnum.DRAFT);
 const content = ref("");
-const chapterNumber = ref<number | null>(null);
 const wordCount = ref(0);
 const fetchChapterData = async () => {
   try {
@@ -36,7 +35,6 @@ const fetchChapterData = async () => {
     title.value = data.chapterTitle || "";
     status.value = data.status || ChapterStatusEnum.DRAFT;
     content.value = data.content || "";
-    chapterNumber.value = data.chapterNumber || null;
     wordCount.value = countWords(data.content || "");
   } catch (error) {
     console.error('Failed to fetch chapter data:', error);
@@ -50,7 +48,7 @@ const handleSubmit = async () => {
   try {
     await updateChapter(props.chapterData.id, {
       volumeId: props.chapterData.volumeId,
-      chapterNumber: chapterNumber.value,
+      chapterNumber: props.chapterData.chapterNumber,
       chapterTitle: title.value,
       status: status.value,
       content: content.value,
@@ -87,11 +85,6 @@ watch(() => props.chapterData, (newData) => {
         <label class="block text-sm font-medium text-gray-700" for="title">Tiêu đề</label>
         <input id="title" v-model="title" class="block w-2/3 px-4 py-2 mt-1 text-gray-900 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                type="text"/>
-      </div>
-      <div class="mt-4">
-        <label class="block text-sm font-medium text-gray-700" for="chapterNumber">Số chương</label>
-        <input id="chapterNumber" v-model="chapterNumber" class="block w-full px-4 py-2 mt-1 text-gray-900 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-               type="number"/>
       </div>
       <div class="mt-4">
         <label class="block text-sm font-medium text-gray-700" for="status">Trạng thái</label>

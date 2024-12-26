@@ -82,10 +82,14 @@ public class NovelChapterController {
                 .result(nextChapter).build();
     }
 
-    @GetMapping("/increment-visit-count/{chapterId}")
+    @PutMapping("/increment-visit-count/{chapterId}")
     public ApiResponse<Void> incrementVisitCount(@PathVariable String chapterId) {
         novelChapterService.incrementVisitCount(chapterId);
         return ApiResponse.<Void>builder().build();
     }
-
+    @PutMapping("/reoder-chapter/{volumeId}")
+    public ApiResponse<Void> reorderChapter(@PathVariable String volumeId, @RequestBody List<String> chapterIds) {
+        novelChapterService.reorderChapters(volumeId, chapterIds);
+        return ApiResponse.<Void>builder().build();
+    }
 }

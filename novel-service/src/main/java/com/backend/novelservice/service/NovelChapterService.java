@@ -2,7 +2,6 @@ package com.backend.novelservice.service;
 
 import com.backend.dto.response.PageResponse;
 import com.backend.enums.ChapterStatusEnum;
-import com.backend.enums.NovelStatusEnum;
 import com.backend.novelservice.dto.request.NovelChapterRequest;
 import com.backend.novelservice.dto.response.NovelChapterResponse;
 import com.backend.novelservice.entity.Novel;
@@ -15,17 +14,17 @@ import com.backend.novelservice.repository.NovelVolumeRepository;
 import com.backend.utils.DateTimeFormatter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE, makeFinal = true)
@@ -45,10 +44,17 @@ public class NovelChapterService {
         // Lấy thông tin NovelVolume theo volumeId
         NovelVolume volume = novelVolumeRepository.findById(volumeId)
                 .orElseThrow(() -> new RuntimeException("Volume not found"));
+
+        // Tìm chapter có chapterNumber lớn nhất trong volume
+        Optional<NovelChapter> lastChapterOpt = novelChapterRepository.findTopByVolumeIdOrderByChapterNumberDesc(volumeId);
+        int nextChapterNumber = lastChapterOpt.map(novelChapter -> novelChapter.getChapterNumber() + 1).orElse(1);
+
         NovelChapter novelChapter = novelChapterMapper.toNovelChapter(request);
         novelChapter.setVolumeId(volumeId);
+        novelChapter.setChapterNumber(nextChapterNumber); // Set chapterNumber tự động tăng
         novelChapter.setCreatedDate(Instant.now());
         NovelChapter savedChapter = novelChapterRepository.save(novelChapter);
+
         List<String> chapterIds = volume.getChapterIds();
         if (chapterIds == null) {
             chapterIds = new ArrayList<>();
@@ -57,6 +63,7 @@ public class NovelChapterService {
         volume.setChapterIds(chapterIds);
         volume.setChapterCount(chapterIds.size());
         novelVolumeRepository.save(volume);
+
         Novel novel = novelRepository.findById(volume.getNovelId())
                 .orElseThrow(() -> new RuntimeException("Novel not found"));
         novel.setLatestChapterId(savedChapter.getId());
@@ -65,6 +72,7 @@ public class NovelChapterService {
         novel.setChapterCount(sumChapterCountByNovelId(novel.getId())); // Cập nhật chapterCount
         novel.setWordCount(novel.getWordCount() + savedChapter.getWordCount());
         novelRepository.save(novel);
+
         return novelChapterMapper.toNovelChapterResponse(savedChapter);
     }
 
@@ -164,19 +172,42 @@ public class NovelChapterService {
         return novelChapterRepository.findByVolumeIdAndChapterNumber(volumeId, chapterNumber);
     }
 
-   public NovelChapterResponse getPreviousChapter(String volumeId, Integer currentChapterNumber) {
-    Optional<NovelChapter> previousChapterOpt = novelChapterRepository.findTopByVolumeIdAndChapterNumberLessThanOrderByChapterNumberDesc(volumeId, currentChapterNumber);
-    return previousChapterOpt
-            .filter(chapter -> chapter.getStatus() != ChapterStatusEnum.DRAFT)
-            .map(novelChapterMapper::toNovelChapterResponse)
-            .orElse(null);
-}
+    public NovelChapterResponse getPreviousChapter(String volumeId, Integer currentChapterNumber) {
+        Optional<NovelChapter> previousChapterOpt = novelChapterRepository.findTopByVolumeIdAndChapterNumberLessThanOrderByChapterNumberDesc(volumeId, currentChapterNumber);
+        return previousChapterOpt
+                .filter(chapter -> chapter.getStatus() != ChapterStatusEnum.DRAFT)
+                .map(novelChapterMapper::toNovelChapterResponse)
+                .orElse(null);
+    }
 
-public NovelChapterResponse getNextChapter(String volumeId, Integer currentChapterNumber) {
-    Optional<NovelChapter> nextChapterOpt = novelChapterRepository.findTopByVolumeIdAndChapterNumberGreaterThanOrderByChapterNumberAsc(volumeId, currentChapterNumber);
-    return nextChapterOpt
-            .filter(chapter -> chapter.getStatus() != ChapterStatusEnum.DRAFT)
-            .map(novelChapterMapper::toNovelChapterResponse)
-            .orElse(null);
-}
+    public NovelChapterResponse getNextChapter(String volumeId, Integer currentChapterNumber) {
+        Optional<NovelChapter> nextChapterOpt = novelChapterRepository.findTopByVolumeIdAndChapterNumberGreaterThanOrderByChapterNumberAsc(volumeId, currentChapterNumber);
+        return nextChapterOpt
+                .filter(chapter -> chapter.getStatus() != ChapterStatusEnum.DRAFT)
+                .map(novelChapterMapper::toNovelChapterResponse)
+                .orElse(null);
+    }
+
+    public void reorderChapters(String volumeId, List<String> chapterIds) {
+        // Lấy danh sách các chapter theo volumeId
+        List<NovelChapter> chapters = novelChapterRepository.findAllByVolumeId(volumeId);
+
+        // Tạo một map để dễ dàng truy cập các chapter theo id
+        Map<String, NovelChapter> chapterMap = chapters.stream()
+                .collect(Collectors.toMap(NovelChapter::getId, chapter -> chapter));
+
+        // Cập nhật lại chapterNumber theo thứ tự mới
+        List<NovelChapter> updatedChapters = new ArrayList<>();
+        for (int i = 0; i < chapterIds.size(); i++) {
+            String chapterId = chapterIds.get(i);
+            NovelChapter chapter = chapterMap.get(chapterId);
+            if (chapter != null) {
+                chapter.setChapterNumber(i + 1);
+                updatedChapters.add(chapter);
+            }
+        }
+
+        // Lưu lại các chapter với thứ tự mới
+        novelChapterRepository.saveAll(updatedChapters);
+    }
 }

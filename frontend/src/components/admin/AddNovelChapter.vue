@@ -25,7 +25,6 @@ const props = defineProps({
 });
 
 const title = ref("");
-const chapterNumber = ref<number | null>(null);
 const status = ref(ChapterStatusEnum.DRAFT);
 const content = ref("");
 const wordCount = ref(0);
@@ -35,7 +34,6 @@ const emit = defineEmits(['chapter-added']);
 const handleSubmit = async () => {
   try {
     await createChapter(props.volumeId, {
-      chapterNumber: chapterNumber.value,
       chapterTitle: title.value,
       status: status.value,
       content: content.value,
@@ -43,10 +41,8 @@ const handleSubmit = async () => {
     });
     showNotification('success', 'Chapter created successfully.');
     emit('chapter-added');
-
     // Reset form fields
     title.value = "";
-    chapterNumber.value = null;
     status.value = ChapterStatusEnum.DRAFT;
     content.value = ""; // Reset Tiptap content
   } catch (error: any) {
@@ -76,11 +72,6 @@ watch(content, (newContent) => {
       <div>
         <label class="block text-sm font-medium text-gray-700" for="title">Tiêu đề</label>
         <a-input id="title" v-model:value="title" class="w-full text-sm p-2" placeholder="Nhập tiêu đề"/>
-      </div>
-      <div class="mt-4">
-        <label class="block text-sm font-medium text-gray-700" for="chapterNumber">Số chương</label>
-        <a-input-number id="chapterNumber" v-model:value="chapterNumber" class="p-[0.15rem] w-1/2 text-sm"
-                        placeholder="Nhập số chương"/>
       </div>
       <div class="mt-4">
         <label class="block text-sm font-medium text-gray-700" for="status">Trạng thái</label>

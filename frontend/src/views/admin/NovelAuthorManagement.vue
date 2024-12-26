@@ -11,7 +11,9 @@ import {deleteChapter, getChaptersByVolumeId} from "@/api/novelChapter";
 import router from "@/router";
 import ConfirmDeleteModal from "@/components/common/ConfirmDeleteModal.vue";
 import NovelEdit from "@/components/admin/NovelEdit.vue";
-
+import OrderSortChapter from "@/components/admin/OrderSortChapter.vue";
+import OrderSortVolume from "@/components/admin/OrderSortVolume.vue";
+import {notification} from "ant-design-vue";
 interface Chapter {
   id: string;
   chapterTitle: string;
@@ -48,13 +50,14 @@ const novel = ref<Novel | Record<string, any>>({});
 const showEditNovel = ref(false);
 const showEditChapter = ref(false);
 const showAddChapter = ref(false);
+const showOrderSortChapter = ref(false);
+const showOrderSortVolume = ref(false);
 const showEditVolume = ref(false);
 const showAddVolume = ref(false);
 const selectedVolumeData = ref<Volume | Record<string, any>>({});
 const selectedChapterData = ref<Chapter | Record<string, any>>({});
 const showConfirmModal = ref(false);
 const itemToDelete = ref<{ id: string, type: string } | null>(null);
-const showAlert = inject('showAlert') as ((type: string, message: string) => void);
 
 const route = useRoute();
 const id = Array.isArray(route.params.id) ? route.params.id[0] : route.params.id;
@@ -156,12 +159,29 @@ const showModal = (modalName: string) => {
   showAddVolume.value = false;
   showEditChapter.value = false;
   showAddChapter.value = false;
-
+  showOrderSortChapter.value = false;
+  showOrderSortVolume.value = false;
   if (modalName === 'editNovel') showEditNovel.value = true;
   if (modalName === 'editVolume') showEditVolume.value = true;
   if (modalName === 'addVolume') showAddVolume.value = true;
   if (modalName === 'editChapter') showEditChapter.value = true;
   if (modalName === 'addChapter') showAddChapter.value = true;
+  if (modalName === 'orderSortChapter') showOrderSortChapter.value = true;
+  if (modalName === 'orderSortVolume') showOrderSortVolume.value = true;
+};
+const sortVolumes = () => {
+  showModal('orderSortVolume');
+}
+const sortChapters = (volumeId: string) => {
+  if (volumeId) {
+    const volume = volumes.value.find(v => v.id === volumeId);
+    if (volume) {
+      selectedVolumeData.value = volume;
+      showModal('orderSortChapter');
+    } else {
+      selectedVolumeData.value = {};
+    }
+  }
 };
 
 const editChapter = (chapter: Chapter) => {
@@ -181,7 +201,7 @@ const addChapter = (volumeId: string | null) => {
   }
 };
 
-const addVolume = (novelName: string) => {
+const addVolume = () => {
   showModal('addVolume');
 };
 
@@ -217,11 +237,11 @@ const handleNovelUpdated = async () => {
   await refreshNovelData();
 };
 const showNotification = (type: string, message: string) => {
-  if (showAlert) {
-    showAlert(type, message);
-  } else {
-    console.error('showAlert is not available in this context');
-  }
+  notification[type]({
+    message: type === 'success' ? 'Success' : 'Error',
+    description: message,
+    duration: 3
+  });
 };
 
 const confirmDelete = async () => {
@@ -283,9 +303,10 @@ onMounted(() => {
             <button class="block w-full p-2 cursor-pointer hover:bg-gray-100 text-sm" @click="viewNovel(novel.id)">Xem
               tiểu thuyết
             </button>
-            <button class="block w-full p-2 cursor-pointer hover:bg-gray-100 text-sm" @click="addVolume(novel.title)">
+            <button class="block w-full p-2 cursor-pointer hover:bg-gray-100 text-sm" @click="addVolume">
               Thêm tập
             </button>
+            <button class="block w-full p-2 cursor-pointer hover:bg-gray-100 text-sm" @click="sortVolumes">Sắp xếp tập</button>
             <button class="block w-full p-2 cursor-pointer hover:bg-gray-100 text-sm" @click="editNovel">Sửa tiểu
               thuyết
             </button>
@@ -316,6 +337,7 @@ onMounted(() => {
                       Thêm chương
                     </button>
                   </li>
+                  <li><button @click="() => { sortChapters(volume.id)}" class="block w-full px-4 py-2 hover:bg-gray-100">Sắp xếp chương</button></li>
                   <li>
                     <button class="block w-full px-4 py-2 hover:bg-gray-100" @click="() => { editVolume(volume) }">Sửa
                       tập
@@ -375,5 +397,7 @@ onMounted(() => {
     <EditNovelVolume v-if="showEditVolume" :volumeData="selectedVolumeData" class="my-10"
                      @volume-updated="handleVolumeUpdated"/>
     <NovelEdit v-if="showEditNovel" :novel="novel" class="my-10" @novel-updated="handleNovelUpdated"/>
+    <OrderSortChapter v-if="showOrderSortChapter" :volumeId="selectedVolumeData.id" class="my-10" @chapter-order-updated="handleChapterUpdated"/>
+    <OrderSortVolume v-if="showOrderSortVolume" :novelId="novel.id" class="my-10" @volume-order-updated="handleVolumeUpdated"/>
   </div>
 </template>

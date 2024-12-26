@@ -2,6 +2,8 @@
 import {computed, onMounted, ref} from 'vue';
 import {getPosts} from "@/api/post";
 import {getMyNovels} from "@/api/novel";
+import {getMyReadingList} from "@/api/user";
+import store from "@/store";
 
 interface Post {
   id: string;
@@ -11,8 +13,16 @@ interface Post {
   categoryId: string;
   created: string;
 }
-
+interface Novel {
+  novelId: string;
+  novelName: string;
+  author: string;
+  image: string;
+  novelChapterId: string;
+  novelChapterTitle: string;
+}
 const latestPosts = ref<Post[]>([]);
+const readingNovels = ref<Novel[]>([]);
 // Đảm bảo rằng getPosts trả về dữ liệu đúng định dạng
 const fetchLatestPosts = async () => {
   try {
@@ -33,43 +43,28 @@ const fetchLatestPosts = async () => {
     console.error("Error fetching latest posts:", error);
   }
 };
-onMounted(() => {
-  fetchLatestPosts();
-});
-
-interface Novel {
-  id: string;
-  title: string;
-  description: string;
-  image: string;
-  author: string;
-}
-
-const myNovels = ref<Novel[]>([]);
-
-const fetchMyNovels = async () => {
+const fetchReadingNovels = async () => {
   try {
     const page = 1;
     const size = 4;
-    const response = await getMyNovels(page, size);
-    console.log("My novels:", response);
-    myNovels.value = response.data.map((novel: any) => ({
-      id: novel.id,
-      title: novel.title,
-      description: novel.description,
-      image: novel.image.path,
+    const response = await getMyReadingList(store.getters.getUserId, page, size);
+    readingNovels.value = response.data.map((novel: any) => ({
+      novelId: novel.novelId,
+      novelName: novel.novelName,
       author: novel.author,
+      image: novel.image,
+      novelChapterId: novel.novelChapterId,
+      novelChapterTitle: novel.novelChapterTitle,
     }));
-  } catch (error) {
-    console.error("Error fetching my novels:", error);
   }
-};
-
+  catch (error) {
+    console.error("Error fetching reading novels:", error);
+  }
+}
 onMounted(() => {
-  fetchMyNovels();
   fetchLatestPosts();
+  fetchReadingNovels();
 });
-
 </script>
 <template>
   <div class="flex flex-col md:flex-row md:space-x-4 space-y-4 md:space-y-0 mt-10">
@@ -110,9 +105,9 @@ onMounted(() => {
         </div>
         <div class="mt-4 text-sm">
           <div class="space-y-4">
-            <div v-if="myNovels.length === 0">Bạn chưa đọc truyện nào</div>
+            <div v-if="readingNovels.length === 0">Bạn chưa đọc truyện nào</div>
             <div
-                v-for="(novel, index) in myNovels"
+                v-for="(novel, index) in readingNovels"
                 :key="index"
                 class="flex items-center space-x-4"
             >
@@ -123,12 +118,14 @@ onMounted(() => {
               />
               <div class="flex justify-between items-center w-full">
                 <h5 class="font-semibold truncate">
-                  <router-link :to="{ name: 'noveldetail', params: { id: novel.id } }">
-                    {{ novel.title }}
+                  <router-link :to="{ name: 'noveldetail', params: { id: novel.novelId } }">
+                    {{ novel.novelName }}
                   </router-link>
                 </h5>
                 <p class="text-gray-500 flex-shrink-0">
-                  Chương 100/200
+                  <router-link :to="{ name: 'chapter', params: { novel: novel.novelId, chapter: novel.novelChapterId}}">
+                  {{ novel.novelChapterTitle }}
+                  </router-link>
                 </p>
               </div>
             </div>
