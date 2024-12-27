@@ -6,6 +6,7 @@ import com.backend.profileservice.dto.response.NovelDetailsResponse;
 import com.backend.profileservice.dto.response.UserReadHistoryResponse;
 import com.backend.profileservice.entity.UserReadHistory;
 import com.backend.profileservice.mapper.UserReadHistoryMapper;
+import com.backend.profileservice.repository.UserProfileRepository;
 import com.backend.profileservice.repository.UserReadHistoryRepository;
 import com.backend.profileservice.repository.httpclient.NovelServiceClient;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +14,10 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -24,12 +28,15 @@ public class UserReadHistoryService {
     UserReadHistoryRepository userReadHistoryRepository;
     UserReadHistoryMapper userReadHistoryMapper;
     NovelServiceClient client;
+    UserProfileRepository userProfileRepository;
+
     public List<UserReadHistoryResponse> getReadHistoryByUserId(String userId) {
         List<UserReadHistory> userReadHistories = userReadHistoryRepository.findByUserId(userId);
         return userReadHistories.stream()
                 .map(userReadHistoryMapper::toUserReadHistoryResponse)
                 .toList();
     }
+
     public UserReadHistoryResponse createOrUpdateHistory(UserReadHistoryRequest userReadHistory) {
         Optional<UserReadHistory> existingHistory = userReadHistoryRepository.findByUserIdAndNovelId(userReadHistory.getUserId(), userReadHistory.getNovelId());
         if (existingHistory.isPresent()) {
@@ -50,7 +57,11 @@ public class UserReadHistoryService {
         return userReadHistoryRepository.findById(id)
                 .map(userReadHistoryMapper::toUserReadHistoryResponse);
     }
-    public PageResponse<NovelDetailsResponse> getReadHistoryWithDetails(String userId, int page, int size){
+
+    public PageResponse<NovelDetailsResponse> getReadHistoryWithDetails(String userId, int page, int size) {
+        if (!userProfileRepository.existsByUserId(userId)) {
+            throw new IllegalArgumentException("User does not exist");
+        }
         List<UserReadHistory> readHistoryResponse = userReadHistoryRepository.findByUserId(userId);
         List<String> novelIds = getReadHistoryByUserId(userId).stream()
                 .map(UserReadHistoryResponse::getNovelId)
@@ -68,7 +79,7 @@ public class UserReadHistoryService {
         Map<String, UserReadHistory> readHistoryMap = readHistoryResponse.stream()
                 .collect(Collectors.toMap(UserReadHistory::getNovelId, history -> history));
         List<NovelDetailsResponse> enrichedNovelDetails = novelDetails.stream()
-                .map(detail ->{
+                .map(detail -> {
                     UserReadHistory history = readHistoryMap.get(detail.getNovelId());
                     detail.setNovelName(history.getNovelTitle());
                     detail.setNovelChapterId(history.getNovelChapterId());

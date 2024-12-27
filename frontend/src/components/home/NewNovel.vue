@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import { onMounted, ref } from 'vue';
-import { getLatestNovels, getNovels } from '@/api/novel';
+import {onMounted, ref} from 'vue';
+import {getLatestNovels, getNovels} from '@/api/novel';
 
 interface Category {
   id: string;
@@ -109,12 +109,12 @@ onMounted(() => {
                 <router-link :to="{ name: 'noveldetail', params: { id: novel.id } }">
                   {{ novel.title }}
                 </router-link>
-               </h3>
-              <p v-html="novel.description" class="text-sm text-gray-500 line-clamp-3"/>
+              </h3>
+              <p class="text-sm text-gray-500 line-clamp-3" v-html="novel.description"/>
               <div class="flex items-center text-sm text-gray-700 mt-2">
                 <i class="fas fa-user mr-2"></i>
                 <router-link :to="{ name: 'account', params: { id: novel.authorId } }">
-                {{ novel.authorName }}
+                  {{ novel.authorName }}
                 </router-link>
               </div>
               <span

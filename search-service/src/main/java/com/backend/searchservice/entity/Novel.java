@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 import org.springframework.data.elasticsearch.annotations.Document;
 
-import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -17,21 +16,18 @@ import java.util.Set;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Novel {
     String id;
-    String title;
-    Set<String> categories;
+    Set<String> categoryId;
+    Set<String> categoryName;
+    String description;
+    String bookName;
     String authorId;
     String authorName;
-    String description;
-    Integer score;
-    Integer bookStatus;
+    double score;
+    String status;
     Long visitCount;
     Long wordCount;
-    Long commentCount;
-    Integer isVip;
-    List<String> volumeIds;
-    String imageUrl;
-    Integer chapterCount;
-    String latestChapterTitle;
-    String latestChapterId;
-    String status;
+    String lastChapterId;
+    String lastChapterName;
+    Long lastChapterUpdateTime;
+    String image;
 }

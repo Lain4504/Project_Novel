@@ -120,16 +120,20 @@ const router = createRouter({
     routes,
 });
 
-// Thêm Navigation Guard
+const adminRoutes = ['dashboard', 'novelOfAuthorList', 'novelCategoryForAuthor', 'postCategoryForAuthor', 'authorAccount'];
+
 router.beforeEach((to, from, next) => {
     const isAuthenticated = store.getters.isAuthenticated;
+    const userRole = store.getters.getUserRole;
 
-    // Nếu người dùng đã đăng nhập, chặn truy cập login và register
     if (isAuthenticated && (to.name === 'login' || to.name === 'register')) {
-        next({name: 'home'}); // Điều hướng đến trang Home
+        next({name: 'home'});
+    } else if (!isAuthenticated && to.matched.some(record => record.path.startsWith('/dashboard'))) {
+        next({name: 'login'});
+    } else if (adminRoutes.includes(to.name as string) && userRole !== 'ADMIN') {
+        next({name: 'home'});
     } else {
-        next(); // Cho phép truy cập
+        next();
     }
 });
-
 export default router;

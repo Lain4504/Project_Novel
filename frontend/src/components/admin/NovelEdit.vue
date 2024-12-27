@@ -103,17 +103,22 @@ onMounted(() => {
     <h1>Edit Novel</h1>
     <form @submit.prevent="handleSubmit">
       <div class="mt-4">
-        <label class="block text-sm font-medium text-gray-700" for="title">Title</label>
-        <input id="title" v-model="state.title" class="block w-2/3 px-4 py-2 mt-1 text-gray-900 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-               type="text"/>
+        <label class="block text-sm font-medium text-gray-700" for="title">Title<span
+            class="text-red-500">*</span></label>
+        <a-input id="title" v-model="state.title"
+                 class="w-full text-sm p-2"
+                 type="text"/>
       </div>
       <div class="mt-4">
-        <label class="block text-sm font-medium text-gray-700" for="author">Author</label>
-        <input id="author" v-model="state.author" class="block w-2/3 px-4 py-2 mt-1 text-gray-900 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-               type="text"/>
+        <label class="block text-sm font-medium text-gray-700" for="author">Author<span
+            class="text-red-500">*</span></label>
+        <a-input id="author" v-model="state.author"
+                 class="w-full text-sm p-2"
+                 type="text"/>
       </div>
       <div class="mt-4">
-        <label class="block text-sm font-medium text-gray-700" for="status">Status</label>
+        <label class="block text-sm font-medium text-gray-700" for="status">Status<span
+            class="text-red-500">*</span></label>
         <select id="status" v-model="state.status"
                 class="block w-1/2 px-4 py-2 mt-1 text-gray-900 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
           <option value="COMPLETED">Completed</option>
@@ -122,12 +127,16 @@ onMounted(() => {
         </select>
       </div>
       <div class="mt-4">
-        <label class="block text-sm font-medium text-gray-700" for="description">Description</label>
-        <Tiptap :content="state.description" @update:content="state.description = $event"/>
+        <label class="block text-sm font-medium text-gray-700" for="description">Description<span
+            class="text-red-500">*</span></label>
+        <Tiptap :content="state.description" @update:content="state.description = $event" width="100%" height="20rem"/>
       </div>
       <div class="mt-4">
-        <label class="block text-sm font-medium text-gray-800" for="file_input">Upload File</label>
-        <input id="file_input" class="bg-white block w-full text-sm text-gray-900 border rounded-lg cursor-pointer bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:text-gray-400 dark:bg-gray-800 dark:border-gray-600 dark:focus:ring-blue-400 dark:focus:border-blue-400 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" type="file"
+        <label class="block text-sm font-medium text-gray-800" for="file_input">Upload File<span
+            class="text-red-500">*</span></label>
+        <input id="file_input"
+               class="bg-white block w-full text-sm text-gray-900 border rounded-lg cursor-pointer focus:ring-blue-500 focus:border-blue-500 dark:text-gray-400 dark:bg-gray-800 dark:border-gray-600 dark:focus:ring-blue-400 dark:focus:border-blue-400 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+               type="file"
                @change="handleImageChange"/>
         <p class="text-sm text-gray-500">SVG, PNG, JPG, or GIF (MAX. 800x400px)</p>
         <div v-if="state.imageUrl" class="mt-4">
@@ -136,33 +145,36 @@ onMounted(() => {
         </div>
       </div>
       <div class="mt-4 relative">
-        <label class="block text-sm font-medium text-gray-700" for="floating_category">Chọn thể loại</label>
+        <label class="block text-sm font-medium text-gray-700" for="floating_category">Chọn thể loại<span
+            class="text-red-500">*</span></label>
         <a-select
             v-model:value="selectedCategories"
-            mode="multiple"
-            allow-clear
-            show-search
-            placeholder="Chọn thể loại"
-            class="w-full"
             :filter-option="(input: string, option: { label: string }) => {
               return option.label.toLowerCase().includes(input.toLowerCase());
             }"
+            allow-clear
+            class="w-full"
+            mode="multiple"
+            placeholder="Chọn thể loại"
+            show-search
         >
           <a-select-option
               v-for="category in categories"
               :key="category.value"
-              :value="category.value"
               :label="category.label"
+              :value="category.value"
           >
             {{ category.label }}
           </a-select-option>
         </a-select>
       </div>
       <div class="flex justify-end mt-4">
-        <button class="px-4 py-2 text-sm font-medium text-blue-500 transition-all duration-300 border-[1px] border-blue-500 rounded hover:border-blue-700 hover:scale-105"
-                type="submit">
+        <a-button
+            type="primary"
+            html-type="submit"
+        >
           Submit
-        </button>
+        </a-button>
       </div>
     </form>
   </main>

@@ -1,7 +1,7 @@
 <script lang="ts" setup>
-import {ref, watch, onMounted} from 'vue';
+import {onMounted, ref, watch} from 'vue';
 import Tiptap from "@/components/common/Tiptap.vue";
-import {updateChapter, getChapter} from '@/api/novelChapter';
+import {getChapter, updateChapter} from '@/api/novelChapter';
 import {notification} from "ant-design-vue";
 
 enum ChapterStatusEnum {
@@ -82,28 +82,28 @@ watch(() => props.chapterData, (newData) => {
     <h1 class="my-2">Edit Chapter</h1>
     <form @submit.prevent="handleSubmit">
       <div>
-        <label class="block text-sm font-medium text-gray-700" for="title">Tiêu đề</label>
-        <input id="title" v-model="title" class="block w-2/3 px-4 py-2 mt-1 text-gray-900 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-               type="text"/>
+        <label class="block text-sm font-medium text-gray-700" for="title">Tiêu đề <span class="text-red-500">*</span></label>
+        <a-input id="title" v-model:value="title"
+                 class="block w-2/3 px-4 py-2 mt-1 text-gray-900 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"/>
       </div>
       <div class="mt-4">
-        <label class="block text-sm font-medium text-gray-700" for="status">Trạng thái</label>
-        <select id="status" v-model="status"
-                class="block w-1/2 px-4 py-2 mt-1 text-gray-900 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-          <option :value="ChapterStatusEnum.COMPLETED">Đã hoàn thành</option>
-          <option :value="ChapterStatusEnum.DRAFT">Chưa hoàn thành</option>
-        </select>
+        <label class="block text-sm font-medium text-gray-700" for="status">Trạng thái <span class="text-red-500">*</span></label>
+        <a-radio-group id="status" v-model:value="status" class="block w-1/2">
+          <a-radio :value="ChapterStatusEnum.COMPLETED">Đã hoàn thành</a-radio>
+          <a-radio :value="ChapterStatusEnum.DRAFT">Chưa hoàn thành</a-radio>
+        </a-radio-group>
       </div>
       <div class="mt-4 relative">
-        <label class="block text-sm font-medium text-gray-700" for="content">Nội dung</label>
-        <Tiptap :content="content" class="mt-1" @update:content="content = $event"/>
+        <label class="block text-sm font-medium text-gray-700" for="content">Nội dung <span class="text-red-500">*</span></label>
+        <Tiptap :content="content" class="mt-1" @update:content="content = $event" width="100%" height="24rem"/>
         <p class="absolute top-0 right-0 mt-1 mr-2 text-sm text-gray-500">Số từ: {{ wordCount }}</p>
       </div>
       <div class="flex justify-end mt-4">
-        <button class="text-sm bg-transparent border-[1px] border-blue-500 text-blue-500 hover:border-blue-700 hover:scale-105 font-medium py-2 px-4 rounded transition-all duration-300"
-                type="submit">
+        <a-button
+            type="primary"
+            html-type="submit">
           Submit
-        </button>
+        </a-button>
       </div>
     </form>
   </main>

@@ -12,7 +12,6 @@ import com.backend.searchservice.dto.request.NovelSearchRequest;
 import com.backend.searchservice.dto.response.NovelSearchResponse;
 import com.backend.searchservice.entity.Novel;
 import com.backend.searchservice.repository.SearchRepository;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +21,7 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,7 +31,6 @@ import java.util.stream.Collectors;
 public class SearchService {
     SearchRepository searchRepository;
     ElasticsearchClient elasticsearchClient;
-    ObjectMapper objectMapper;
 
     public void handleCreate(NovelDataSenderEvent data) {
         Map<String, Object> novelData = (Map<String, Object>) data.getParam().get("data");
@@ -57,47 +56,41 @@ public class SearchService {
 
     private Novel mapToNovel(Map<String, Object> novelData) {
         return Novel.builder()
-                .id((String) novelData.get("id"))
-                .title((String) novelData.get("title"))
-                .categories(novelData.get("categories") != null ? new HashSet<>((List<String>) novelData.get("categories")) : new HashSet<>())
-                .authorId((String) novelData.get("authorId"))
-                .authorName((String) novelData.get("authorName"))
-                .description((String) novelData.get("description"))
-                .score((Integer) novelData.get("score"))
-                .bookStatus((Integer) novelData.get("bookStatus"))
-                .visitCount(novelData.get("visitCount") != null ? ((Number) novelData.get("visitCount")).longValue() : null)
-                .wordCount(novelData.get("wordCount") != null ? ((Number) novelData.get("wordCount")).longValue() : null)
-                .commentCount(novelData.get("commentCount") != null ? ((Number) novelData.get("commentCount")).longValue() : null)
-                .isVip((Integer) novelData.get("isVip"))
-                .imageUrl((String) novelData.get("imageUrl"))
-                .chapterCount((Integer) novelData.get("chapterCount"))
-                .latestChapterTitle((String) novelData.get("latestChapterTitle"))
-                .latestChapterId((String) novelData.get("latestChapterId"))
-                .status((String) novelData.get("status"))
+                .id(novelData.get("id") != null ? novelData.get("id").toString() : "")
+                .categoryId(novelData.get("categoryId") != null ? new HashSet<>((List<String>) novelData.get("categoryId")) : new HashSet<>())
+                .categoryName(novelData.get("categoryName") != null ? new HashSet<>((List<String>) novelData.get("categoryName")) : new HashSet<>())
+                .bookName(novelData.get("bookName") != null ? novelData.get("bookName").toString() : "")
+                .authorId(novelData.get("authorId") != null ? novelData.get("authorId").toString() : "")
+                .authorName(novelData.get("authorName") != null ? novelData.get("authorName").toString() : "")
+                .score(novelData.get("score") != null ? Double.parseDouble(novelData.get("score").toString()) : 0.0)
+                .status(novelData.get("status") != null ? novelData.get("status").toString() : "")
+                .visitCount(novelData.get("visitCount") != null ? Long.parseLong(novelData.get("visitCount").toString()) : 0L)
+                .wordCount(novelData.get("wordCount") != null ? Long.parseLong(novelData.get("wordCount").toString()) : 0L)
+                .lastChapterId(novelData.get("lastChapterId") != null ? novelData.get("lastChapterId").toString() : "")
+                .lastChapterName(novelData.get("lastChapterName") != null ? novelData.get("lastChapterName").toString() : "")
+                .lastChapterUpdateTime(novelData.get("lastChapterUpdateTime") != null ? Long.parseLong(novelData.get("lastChapterUpdateTime").toString()) : 0L)
+                .image(novelData.get("image") != null ? novelData.get("image").toString() : "")
+                .description(novelData.get("description") != null ? novelData.get("description").toString() : "")
                 .build();
     }
 
     public List<NovelSearchResponse> searchNovels(NovelSearchRequest request) throws IOException {
         BoolQuery.Builder boolQuery = QueryBuilders.bool();
-
         if (request.getKeyword() != null) {
-            boolQuery.should(QueryBuilders.match(m -> m.field("title").query(request.getKeyword()).boost(2.0f)));
-            boolQuery.should(QueryBuilders.match(m -> m.field("authorName").query(request.getKeyword())));
+            boolQuery.should(QueryBuilders.match(m -> m.field("bookName").query(request.getKeyword()).boost(2.0f).fuzziness("AUTO")));
+            boolQuery.should(QueryBuilders.match(m -> m.field("authorName").query(request.getKeyword()).fuzziness("AUTO")));
         }
-        if (request.getCategoryId() != null) {
-            boolQuery.filter(QueryBuilders.term(t -> t.field("categories").value(request.getCategoryId())));
+        if (request.getCategoryName() != null) {
+            boolQuery.filter(QueryBuilders.term(t -> t.field("categoryName").value(request.getCategoryName())));
         }
         if (request.getBookStatus() != null) {
-            boolQuery.filter(QueryBuilders.term(t -> t.field("bookStatus").value(request.getBookStatus())));
+            boolQuery.filter(QueryBuilders.term(t -> t.field("status").value(request.getBookStatus())));
         }
         if (request.getWordCountMin() != null) {
             boolQuery.filter(QueryBuilders.range(r -> r.field("wordCount").gte(JsonData.of(request.getWordCountMin()))));
         }
         if (request.getWordCountMax() != null) {
             boolQuery.filter(QueryBuilders.range(r -> r.field("wordCount").lte(JsonData.of(request.getWordCountMax()))));
-        }
-        if (request.getSort() != null) {
-            boolQuery.must(QueryBuilders.match(m -> m.field("sort").query(request.getSort())));
         }
 
         SearchRequest searchRequest = SearchRequest.of(s -> s
@@ -108,11 +101,14 @@ public class SearchService {
         SearchResponse<Novel> searchResponse = elasticsearchClient.search(searchRequest, Novel.class);
         log.info("Search response: " + searchResponse);
         return searchResponse.hits().hits().stream()
-                .map(Hit::source)
+                .map(Hit::source).filter(Objects::nonNull)
                 .map(novel -> NovelSearchResponse.builder()
                         .id(novel.getId())
-                        .title(novel.getTitle())
-                        .categories(novel.getCategories())
+                        .image(novel.getImage())
+                        .bookName(novel.getBookName())
+                        .categoryId(novel.getCategoryId())
+                        .categoryName(novel.getCategoryName())
+                        .status(novel.getStatus())
                         .authorId(novel.getAuthorId())
                         .authorName(novel.getAuthorName())
                         .description(novel.getDescription())

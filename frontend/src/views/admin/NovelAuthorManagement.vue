@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import {inject, onMounted, ref} from "vue";
+import {onMounted, ref} from "vue";
 import {deleteNovel, getNovel} from "@/api/novel";
 import EditContentChapter from "@/components/admin/EditNovelChapter.vue";
 import AddChapter from "@/components/admin/AddNovelChapter.vue";
@@ -14,6 +14,7 @@ import NovelEdit from "@/components/admin/NovelEdit.vue";
 import OrderSortChapter from "@/components/admin/OrderSortChapter.vue";
 import OrderSortVolume from "@/components/admin/OrderSortVolume.vue";
 import {notification} from "ant-design-vue";
+
 interface Chapter {
   id: string;
   chapterTitle: string;
@@ -147,11 +148,11 @@ const toggleChapterDropdown = (chapterId: string) => {
 };
 
 const viewChapter = (chapterId: string, novelId: string) => {
-  router.push({ name: 'chapter', params: { novel: novelId, chapter: chapterId } });
+  router.push({name: 'chapter', params: {novel: novelId, chapter: chapterId}});
 };
 
 const viewNovel = (novelId: string) => {
-  router.push({ name: 'noveldetail', params: { id: novelId } });
+  router.push({name: 'noveldetail', params: {id: novelId}});
 };
 const showModal = (modalName: string) => {
   showEditNovel.value = false;
@@ -306,7 +307,8 @@ onMounted(() => {
             <button class="block w-full p-2 cursor-pointer hover:bg-gray-100 text-sm" @click="addVolume">
               Thêm tập
             </button>
-            <button class="block w-full p-2 cursor-pointer hover:bg-gray-100 text-sm" @click="sortVolumes">Sắp xếp tập</button>
+            <button class="block w-full p-2 cursor-pointer hover:bg-gray-100 text-sm" @click="sortVolumes">Sắp xếp tập
+            </button>
             <button class="block w-full p-2 cursor-pointer hover:bg-gray-100 text-sm" @click="editNovel">Sửa tiểu
               thuyết
             </button>
@@ -337,7 +339,11 @@ onMounted(() => {
                       Thêm chương
                     </button>
                   </li>
-                  <li><button @click="() => { sortChapters(volume.id)}" class="block w-full px-4 py-2 hover:bg-gray-100">Sắp xếp chương</button></li>
+                  <li>
+                    <button class="block w-full px-4 py-2 hover:bg-gray-100" @click="() => { sortChapters(volume.id)}">
+                      Sắp xếp chương
+                    </button>
+                  </li>
                   <li>
                     <button class="block w-full px-4 py-2 hover:bg-gray-100" @click="() => { editVolume(volume) }">Sửa
                       tập
@@ -397,7 +403,9 @@ onMounted(() => {
     <EditNovelVolume v-if="showEditVolume" :volumeData="selectedVolumeData" class="my-10"
                      @volume-updated="handleVolumeUpdated"/>
     <NovelEdit v-if="showEditNovel" :novel="novel" class="my-10" @novel-updated="handleNovelUpdated"/>
-    <OrderSortChapter v-if="showOrderSortChapter" :volumeId="selectedVolumeData.id" class="my-10" @chapter-order-updated="handleChapterUpdated"/>
-    <OrderSortVolume v-if="showOrderSortVolume" :novelId="novel.id" class="my-10" @volume-order-updated="handleVolumeUpdated"/>
+    <OrderSortChapter v-if="showOrderSortChapter" :volumeId="selectedVolumeData.id" class="my-10"
+                      @chapter-order-updated="handleChapterUpdated"/>
+    <OrderSortVolume v-if="showOrderSortVolume" :novelId="novel.id" class="my-10"
+                     @volume-order-updated="handleVolumeUpdated"/>
   </div>
 </template>

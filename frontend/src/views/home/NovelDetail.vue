@@ -35,6 +35,7 @@ const isCollected = ref(false);
 const currentTab = ref('Thảo Luận');
 const tabs = ['Thảo Luận', 'Đánh Giá'];
 const userRating = ref<number | null>(null);
+const isAuthenticated = computed(() => store.getters.isAuthenticated);
 
 interface Chapter {
   id: string;
@@ -153,6 +154,7 @@ const toggleShowMore = (index: number) => {
 };
 
 const checkFollowStatus = async () => {
+  if (!isAuthenticated.value) return;
   try {
     const response = await isFollowingNovel({userId, novelId});
     isCollected.value = response;
@@ -162,6 +164,10 @@ const checkFollowStatus = async () => {
 };
 
 const toggleCollect = async () => {
+  if (!isAuthenticated.value) {
+    alert('Please log in to follow the novel.');
+    return;
+  }
   try {
     if (isCollected.value) {
       await unfollowNovel({userId, novelId});
@@ -197,6 +203,10 @@ const currentTabComponent = computed(() => {
 });
 
 const rateNovel = async (rating: number) => {
+  if (!isAuthenticated.value) {
+    alert('Please log in to rate the novel.');
+    return;
+  }
   try {
     if (!novelId || !userId) {
       throw new Error('Novel ID or User ID is missing');
@@ -212,6 +222,7 @@ const rateNovel = async (rating: number) => {
   }
 };
 const checkUserRating = async () => {
+  if (!isAuthenticated.value) return;
   try {
     const response = await hasRated(userId, novelId);
     userRating.value = response ? response : null;
@@ -312,8 +323,9 @@ onMounted(() => {
       <div class="space-y-6">
         <div v-for="(volume, volumeIndex) in volumes" :key="volumeIndex"
              class="border border-gray-200 rounded-lg overflow-hidden">
-          <button class="w-full px-4 py-3 bg-gray-50 flex items-center justify-between hover:bg-gray-100 transition-colors"
-                  @click="toggleVolume(volumeIndex, volume.id)">
+          <button
+              class="w-full px-4 py-3 bg-gray-50 flex items-center justify-between hover:bg-gray-100 transition-colors"
+              @click="toggleVolume(volumeIndex, volume.id)">
             <h3 class="text-lg font-medium text-gray-800">{{ volume.volumeName }}</h3>
             <font-awesome-icon :icon="volume.expanded ? 'fa-solid fa-sort-up' : 'fa-solid fa-sort-down'"/>
           </button>
@@ -341,8 +353,9 @@ onMounted(() => {
                 </router-link>
               </div>
               <div v-if="volume.chapters.length > 6" class="mt-4 text-center">
-                <button class="inline-flex items-center justify-center gap-2 px-4 py-2 text-sm text-gray-600 hover:text-gray-800 transition-colors"
-                        @click="toggleShowMore(volumeIndex)">
+                <button
+                    class="inline-flex items-center justify-center gap-2 px-4 py-2 text-sm text-gray-600 hover:text-gray-800 transition-colors"
+                    @click="toggleShowMore(volumeIndex)">
                   <span>{{ volume.showMore ? 'Show Less' : 'Show More' }}</span>
                   <font-awesome-icon :icon="volume.showMore ? 'fa-solid fa-angles-up' : 'fa-solid fa-angles-down'"/>
                 </button>

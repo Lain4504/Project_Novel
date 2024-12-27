@@ -5,13 +5,11 @@ import com.backend.dto.response.PageResponse;
 import com.backend.profileservice.dto.request.UserReadHistoryRequest;
 import com.backend.profileservice.dto.response.NovelDetailsResponse;
 import com.backend.profileservice.dto.response.UserReadHistoryResponse;
-import com.backend.profileservice.entity.UserReadHistory;
 import com.backend.profileservice.service.UserReadHistoryService;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -40,6 +38,7 @@ public class UserReadHistoryController {
                 .result(userReadHistoryService.getById(novelId))
                 .build();
     }
+
     @GetMapping("/reading-history/{userId}")
     public ApiResponse<PageResponse<NovelDetailsResponse>> getReadingHistory(
             @PathVariable String userId,
@@ -47,7 +46,7 @@ public class UserReadHistoryController {
             @RequestParam(value = "size", required = false, defaultValue = "10") int size
     ) {
         return ApiResponse.<PageResponse<NovelDetailsResponse>>builder()
-                .result(userReadHistoryService.getReadHistoryWithDetails(userId,page, size))
+                .result(userReadHistoryService.getReadHistoryWithDetails(userId, page, size))
                 .build();
     }
 }

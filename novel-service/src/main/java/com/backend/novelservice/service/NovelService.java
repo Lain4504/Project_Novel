@@ -6,6 +6,7 @@ import com.backend.event.NovelDataSenderEvent;
 import com.backend.novelservice.dto.request.NovelCreationRequest;
 import com.backend.novelservice.dto.request.NovelUpdateRequest;
 import com.backend.novelservice.dto.response.NovelDetailsResponse;
+import com.backend.novelservice.dto.response.NovelElasticResponse;
 import com.backend.novelservice.dto.response.NovelResponse;
 import com.backend.novelservice.entity.Image;
 import com.backend.novelservice.entity.Novel;
@@ -61,13 +62,7 @@ public class NovelService {
             novel.setImage(image);
         }
         novel = novelRepository.save(novel);
-        NovelDataSenderEvent event = NovelDataSenderEvent
-                .builder()
-                .channel("NOVEL")
-                .param(Map.of("data", novel))
-                .build();
-        //Publish message to kafka
-        kafkaTemplate.send("novel-create", event);
+        sendNovelDataToKafka(novel, "create");
         return novelMapper.toNovelResponse(novel);
     }
 
@@ -94,26 +89,14 @@ public class NovelService {
         }
 
         novel = novelRepository.save(novel);
-        NovelDataSenderEvent event = NovelDataSenderEvent
-                .builder()
-                .channel("NOVEL")
-                .param(Map.of("data", novel))
-                .build();
-        //Publish message to kafka
-        kafkaTemplate.send("novel-update", event);
+        sendNovelDataToKafka(novel, "update");
         return novelMapper.toNovelResponse(novel);
     }
 
     public void deleteNovel(String novelId) {
         var novel = novelRepository.findById(novelId).orElseThrow(() -> new IllegalArgumentException("Novel with id " + novelId + " not found"));
         novelRepository.deleteById(novelId);
-        NovelDataSenderEvent event = NovelDataSenderEvent
-                .builder()
-                .channel("NOVEL")
-                .param(Map.of("data", novel))
-                .build();
-        //Publish message to kafka
-        kafkaTemplate.send("novel-delete", event);
+        sendNovelDataToKafka(novel, "delete");
     }
 
     public NovelResponse getNovel(String novelId) {
@@ -226,6 +209,7 @@ public class NovelService {
                 .data(novelList)
                 .build();
     }
+
     public PageResponse<NovelResponse> getNovelsByDynamicField(String fields, int page, int size) {
         Sort sort = Sort.by(Sort.Order.desc(fields).nullsLast());
         Pageable pageable = PageRequest.of(page - 1, size, sort);
@@ -255,8 +239,9 @@ public class NovelService {
         novel.setRatingCount(ratingCount + 1);
         novelRepository.save(novel);
     }
+
     public void updateNovelRatingWithSameUser(String novelId, long newRating, long oldRating) {
-          Novel novel = novelRepository.findById(novelId)
+        Novel novel = novelRepository.findById(novelId)
                 .orElseThrow(() -> new IllegalArgumentException("Novel with id " + novelId + " not found"));
         double currentScore = novel.getScore();
         long ratingCount = novel.getRatingCount();
@@ -264,6 +249,7 @@ public class NovelService {
         novel.setScore(updatedScore);
         novelRepository.save(novel);
     }
+
     public void updateNovelFollow(String novelId, boolean isNewFollow) {
         Novel novel = novelRepository.findById(novelId)
                 .orElseThrow(() -> new IllegalArgumentException("Novel with id " + novelId + " not found"));
@@ -275,6 +261,30 @@ public class NovelService {
         }
         novelRepository.save(novel);
     }
-
+    private void sendNovelDataToKafka(Novel novel, String action) {
+        NovelElasticResponse elasticResponse = NovelElasticResponse.builder()
+                .id(novel.getId())
+                .categoryId(novel.getCategories().stream().map(NovelCategory::getId).collect(Collectors.toSet()))
+                .categoryName(novel.getCategories().stream().map(NovelCategory::getName).collect(Collectors.toSet()))
+                .bookName(novel.getTitle())
+                .authorId(novel.getAuthorId())
+                .authorName(novel.getAuthorName())
+                .score(novel.getScore())
+                .status(novel.getStatus().name())
+                .visitCount(novel.getVisitCount())
+                .wordCount(novel.getWordCount())
+                .lastChapterId(novel.getLatestChapterId())
+                .image(novel.getImage() != null ? novel.getImage().getPath() : null)
+                .lastChapterName(novel.getLatestChapterTitle())
+                .lastChapterId(novel.getLatestChapterId())
+                .lastChapterUpdateTime(novel.getLatestChapterTime() != null ? novel.getLatestChapterTime().toEpochMilli() : null)
+                .build();
+        NovelDataSenderEvent event = NovelDataSenderEvent
+                .builder()
+                .channel("NOVEL")
+                .param(Map.of("data", elasticResponse))
+                .build();
+        kafkaTemplate.send("novel-" + action, event);
+    }
 
 }

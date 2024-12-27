@@ -26,7 +26,7 @@ const deleteVolume = (id: string) => {
     return axios.delete(`${VOLUME_API}/${id}`)
         .then((response) => response.data.result);
 }
-const reorderVolume = (id: string, data : string[]) => {
+const reorderVolume = (id: string, data: string[]) => {
     return axios.put(`${VOLUME_API}/reorder/${id}`, data)
         .then((response) => response.data.result);
 }

@@ -62,8 +62,9 @@ onMounted(() => {
       <div class="mb-6">
         <div class="flex justify-between items-center mb-2">
           <h1 class="text-xl font-semibold text-gray-800">Thảo luận</h1>
-          <router-link class="flex items-center justify-center w-10 h-10 bg-[#C96442] text-white rounded-full hover:bg-[#BA5B38]"
-                       to="/post-create-form">
+          <router-link
+              class="flex items-center justify-center w-10 h-10 bg-[#C96442] text-white rounded-full hover:bg-[#BA5B38]"
+              to="/post-create-form">
             <font-awesome-icon :icon="['fas', 'plus']" class="text-lg"/>
           </router-link>
         </div>

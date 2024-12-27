@@ -2,11 +2,12 @@ package com.backend.profileservice.service;
 
 import com.backend.dto.response.PageResponse;
 import com.backend.profileservice.dto.request.UserNovelFollowRequest;
+import com.backend.profileservice.dto.response.NovelDetailsResponse;
 import com.backend.profileservice.dto.response.UserNovelFollowResponse;
 import com.backend.profileservice.entity.UserNovelFollow;
 import com.backend.profileservice.mapper.UserNovelFollowMapper;
 import com.backend.profileservice.repository.UserNovelFollowRepository;
-import com.backend.profileservice.dto.response.NovelDetailsResponse;
+import com.backend.profileservice.repository.UserProfileRepository;
 import com.backend.profileservice.repository.httpclient.NovelServiceClient;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -21,8 +22,13 @@ import java.util.List;
 public class UserNovelFollowService {
     UserNovelFollowRepository userNovelFollowRepository;
     UserNovelFollowMapper userNovelFollowMapper;
+    UserProfileRepository userProfileRepository;
     NovelServiceClient novelServiceClient;
+
     public UserNovelFollowResponse followNovel(UserNovelFollowRequest request) {
+        if (!userProfileRepository.existsByUserId(request.getUserId())) {
+            throw new IllegalArgumentException("User does not exist");
+        }
         UserNovelFollow userNovelFollow = userNovelFollowMapper.toUserNovelFollow(request);
         novelServiceClient.updateNovelFollow(request.getNovelId(), true);
         userNovelFollowRepository.save(userNovelFollow);
@@ -30,6 +36,9 @@ public class UserNovelFollowService {
     }
 
     public void unfollowNovel(UserNovelFollowRequest request) {
+        if (!userProfileRepository.existsByUserId(request.getUserId())) {
+            throw new IllegalArgumentException("User does not exist");
+        }
         novelServiceClient.updateNovelFollow(request.getNovelId(), false);
         userNovelFollowRepository.deleteByUserIdAndNovelId(request.getUserId(), request.getNovelId());
     }
@@ -46,6 +55,9 @@ public class UserNovelFollowService {
     }
 
     public PageResponse<NovelDetailsResponse> getFollowingNovelsWithDetails(String userId, int page, int size) {
+        if (!userProfileRepository.existsByUserId(userId)) {
+            throw new IllegalArgumentException("User does not exist");
+        }
         List<String> novelIds = getFollowingNovelIds(userId);
         if (novelIds.isEmpty()) {
             return PageResponse.<NovelDetailsResponse>builder()

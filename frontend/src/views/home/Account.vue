@@ -25,6 +25,7 @@ const userProfile = ref({
   publishedNovels: '0',
   created: ''
 });
+
 interface Novel {
   id: string;
   title: string;
@@ -37,6 +38,7 @@ interface Novel {
   chapterCount: number;
   created: string;
 }
+
 const novels = ref<Novel[]>([]);
 const currentPage = ref(1);
 const pageSize = 3;
@@ -53,7 +55,7 @@ const userStats = computed(() => [
 
 const breadcrumbItems = [
   {title: 'Home', path: '/'},
-  {title: 'Account' },
+  {title: 'Account'},
 ];
 const totalElements = ref(0);
 const fetchNovelsData = async (page: number, size: number) => {

@@ -16,10 +16,13 @@ import java.util.Map;
 public interface NovelServiceClient {
     @PostMapping(value = "/internal/novels", produces = MediaType.APPLICATION_JSON_VALUE)
     List<NovelDetailsResponse> getNovelDetails(@RequestBody List<String> novelIds);
+
     @PutMapping(value = "/internal/novels/rating-update/{novelId}", produces = MediaType.APPLICATION_JSON_VALUE)
     void updateNovelRating(@PathVariable("novelId") String novelId, @RequestBody long rating);
+
     @PutMapping(value = "/internal/novels/rating-update-with-same-user/{novelId}", produces = MediaType.APPLICATION_JSON_VALUE)
     void updateNovelRatingWithSameUser(@PathVariable("novelId") String novelId, @RequestBody Map<String, Long> ratings);
+
     @PutMapping(value = "/internal/novels/follow-update/{novelId}", produces = MediaType.APPLICATION_JSON_VALUE)
     void updateNovelFollow(@PathVariable("novelId") String novelId, @RequestBody boolean isNewFollow);
 }

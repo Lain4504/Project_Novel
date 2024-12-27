@@ -43,15 +43,20 @@ const currentUser = ref({
   username: '',
   image: ''
 });
+const isAuthenticated = store.getters.isAuthenticated;
+
 const fetchCurrentUser = async () => {
-  try {
-    const result = await getUserProfile(store.getters.getUserId);
-    currentUser.value.username = result.username;
-    currentUser.value.image = result.image.path;
-  } catch (error) {
-    console.error('Failed to fetch current user:', error);
+  if (isAuthenticated) {
+    try {
+      const result = await getUserProfile(store.getters.getUserId);
+      currentUser.value.username = result.username;
+      currentUser.value.image = result.image.path;
+    } catch (error) {
+      console.error('Failed to fetch current user:', error);
+    }
   }
 };
+
 onMounted(() => {
   fetchCurrentUser();
 });
@@ -199,8 +204,9 @@ const submitReplyForReply = async (replyId: string, commentId: string) => {
   <div class="bg-gray-50">
     <section class="bg-gray-50 py-4 px-6 max-w-5xl mx-auto">
       <h3 class="text-xl font-bold mb-4">Comment</h3>
-      <div class="flex flex-col">
-        <textarea v-model="newComment" class="w-full p-4 text-lg border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:text-sm"
+      <div v-if="isAuthenticated" class="flex flex-col">
+        <textarea v-model="newComment"
+                  class="w-full p-4 text-lg border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:text-sm"
                   placeholder="Để lại bình luận..."></textarea>
         <div class="flex justify-end">
           <a-button class="mt-2" type="primary" @click="addComment">

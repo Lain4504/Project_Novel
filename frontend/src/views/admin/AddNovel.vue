@@ -1,7 +1,7 @@
 <script lang="ts" setup>
-import { inject, onMounted, ref } from 'vue';
-import { getNovelCategoriesWithoutPagination } from "@/api/novelCategory";
-import { createNovel } from "@/api/novel";
+import {onMounted, ref} from 'vue';
+import {getNovelCategoriesWithoutPagination} from "@/api/novelCategory";
+import {createNovel} from "@/api/novel";
 import Tiptap from "@/components/common/Tiptap.vue";
 import Rules from "@/components/admin/Rules.vue";
 import store from "@/store";
@@ -50,7 +50,7 @@ const saveNovel = async () => {
   };
 
   const formData = new FormData();
-  formData.append("novel", new Blob([JSON.stringify(novelData)], { type: "application/json" }));
+  formData.append("novel", new Blob([JSON.stringify(novelData)], {type: "application/json"}));
   if (selectedImage.value) {
     formData.append("image", selectedImage.value);
   }
@@ -101,33 +101,36 @@ const handleSearch = (value: string) => {
       </div>
       <form class="my-5" @submit.prevent="saveNovel">
         <div class="md:col-span-1 my-4">
-          <label class="block text-sm font-medium text-gray-700" for="floating_title">Tiêu đề tiểu thuyết</label>
-          <input
+          <label class="block text-sm font-medium text-gray-700" for="floating_title">Tiêu đề tiểu thuyết<span
+              class="text-red-500">*</span></label>
+          <a-input
               id="floating_title"
               v-model="form.title"
-              class="bg-white mt-1 block w-full p-2 border rounded-md text-sm text-gray-900 bg-transparent border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              class="w-full text-sm p-2"
               required
               type="text"
           />
         </div>
 
         <div class="md:col-span-1 my-4">
-          <label class="block text-sm font-medium text-gray-700" for="floating_author">Tác giả</label>
-          <input
+          <label class="block text-sm font-medium text-gray-700" for="floating_author">Tác giả<span
+              class="text-red-500">*</span></label>
+          <a-input
               id="floating_author"
               v-model="form.author"
-              class="bg-white mt-1 block w-full p-2 border rounded-md text-sm text-gray-900 bg-transparent border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              class="w-full text-sm p-2"
               required
               type="text"
           />
         </div>
 
         <div class="space-y-4">
-          <label class="block text-sm font-medium text-gray-800" for="file_input">Upload File</label>
+          <label class="block text-sm font-medium text-gray-800" for="file_input">Upload File<span
+              class="text-red-500">*</span></label>
           <div class="relative">
             <input
                 id="file_input"
-                class="bg-white block w-full text-sm text-gray-900 border rounded-lg cursor-pointer bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:text-gray-400 dark:bg-gray-800 dark:border-gray-600 dark:focus:ring-blue-400 dark:focus:border-blue-400 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                class="bg-white block w-full text-sm text-gray-900 border rounded-lg cursor-pointer focus:ring-blue-500 focus:border-blue-500 dark:text-gray-400 dark:bg-gray-800 dark:border-gray-600 dark:focus:ring-blue-400 dark:focus:border-blue-400 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
                 type="file"
                 @change="handleImageChange"/>
           </div>
@@ -141,40 +144,43 @@ const handleSearch = (value: string) => {
         </div>
 
         <div class="md:col-span-1 my-4 relative">
-          <label class="block text-sm font-medium text-gray-700" for="floating_category">Chọn thể loại</label>
+          <label class="block text-sm font-medium text-gray-700" for="floating_category">Chọn thể loại<span
+              class="text-red-500">*</span></label>
           <a-select
               v-model:value="selectedCategories"
-              mode="multiple"
-              allow-clear
-              show-search
-              placeholder="Chọn thể loại"
-              class="w-full"
               :filter-option="(input, option) => {
     return option.label.toLowerCase().includes(input.toLowerCase());
   }"
+              allow-clear
+              class="w-full"
+              mode="multiple"
+              placeholder="Chọn thể loại"
+              show-search
               @search="handleSearch"
           >
             <a-select-option
                 v-for="category in categories"
                 :key="category.value"
-                :value="category.value"
                 :label="category.label"
+                :value="category.value"
             >
               {{ category.label }}
             </a-select-option>
           </a-select>
         </div>
         <div class="my-4">
-          <label class="block text-sm font-medium text-gray-700" for="novel_description">Mô tả</label>
-          <Tiptap :content="form.content" @update:content="form.content = $event"/>
+          <label class="block text-sm font-medium text-gray-700" for="novel_description">Mô tả<span
+              class="text-red-500">*</span></label>
+          <Tiptap :content="form.content" @update:content="form.content = $event" width="100%" height="20rem"/>
         </div>
 
         <div class="flex justify-end my-4">
-          <button
-              class="text-sm bg-blue-500 text-white hover:bg-blue-700 font-medium py-2 px-4 rounded transition-all duration-300"
-              type="submit">
+          <a-button
+              type="primary"
+              html-type="submit"
+          >
             Lưu tiểu thuyết
-          </button>
+          </a-button>
         </div>
       </form>
     </div>

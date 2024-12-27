@@ -21,31 +21,36 @@ const submitForm = () => {
       <div class="space-y-4">
         <div>
           <label class="block text-gray-700" for="accountHolder">Tên chủ khoản</label>
-          <input id="accountHolder" v-model="formData.accountHolder" class="mt-1 block w-full p-1 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-500"
+          <input id="accountHolder" v-model="formData.accountHolder"
+                 class="mt-1 block w-full p-1 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-500"
                  required
                  type="text"/>
         </div>
         <div>
           <label class="block text-gray-700" for="accountNumber">Số tài khoản</label>
-          <input id="accountNumber" v-model="formData.accountNumber" class="mt-1 block w-full p-1 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-500"
+          <input id="accountNumber" v-model="formData.accountNumber"
+                 class="mt-1 block w-full p-1 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-500"
                  required
                  type="text"/>
         </div>
         <div>
           <label class="block text-gray-700" for="bank">Ngân hàng</label>
-          <input id="bank" v-model="formData.bank" class="mt-1 block w-full p-1 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-500"
+          <input id="bank" v-model="formData.bank"
+                 class="mt-1 block w-full p-1 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-500"
                  required
                  type="text"/>
         </div>
         <div>
           <label class="block text-gray-700" for="branch">Chi nhánh</label>
-          <input id="branch" v-model="formData.branch" class="mt-1 block w-full p-1 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-500"
+          <input id="branch" v-model="formData.branch"
+                 class="mt-1 block w-full p-1 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-500"
                  required
                  type="text"/>
         </div>
         <div>
           <label class="block text-gray-700" for="city">Tỉnh thành</label>
-          <input id="city" v-model="formData.city" class="mt-1 block w-full p-1 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-500"
+          <input id="city" v-model="formData.city"
+                 class="mt-1 block w-full p-1 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-500"
                  required
                  type="text"/>
         </div>

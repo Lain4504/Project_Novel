@@ -3,8 +3,6 @@ package com.backend.profileservice.dto.request;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.time.LocalDateTime;
-
 @Getter
 @Setter
 @Builder

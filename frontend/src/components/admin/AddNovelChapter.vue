@@ -70,19 +70,23 @@ watch(content, (newContent) => {
     <h1 class="my-2">Add Chapter</h1>
     <form @submit.prevent="handleSubmit">
       <div>
-        <label class="block text-sm font-medium text-gray-700" for="title">Tiêu đề</label>
+        <label class="block text-sm font-medium text-gray-700" for="title">Tiêu đề <span
+            class="text-red-500">*</span></label>
+
         <a-input id="title" v-model:value="title" class="w-full text-sm p-2" placeholder="Nhập tiêu đề"/>
       </div>
       <div class="mt-4">
-        <label class="block text-sm font-medium text-gray-700" for="status">Trạng thái</label>
-        <a-select id="status" v-model:value="status" class="block w-1/2">
-          <a-select-option :value="ChapterStatusEnum.COMPLETED">Đã hoàn thành</a-select-option>
-          <a-select-option :value="ChapterStatusEnum.DRAFT">Chưa hoàn thành</a-select-option>
-        </a-select>
+        <label class="block text-sm font-medium text-gray-700" for="status">Trạng thái <span
+            class="text-red-500">*</span></label>
+        <a-radio-group id="status" v-model:value="status" class="block w-1/2">
+          <a-radio :value="ChapterStatusEnum.COMPLETED">Đã hoàn thành</a-radio>
+          <a-radio :value="ChapterStatusEnum.DRAFT">Chưa hoàn thành</a-radio>
+        </a-radio-group>
       </div>
       <div class="mt-4 relative">
-        <label class="block text-sm font-medium text-gray-700" for="content">Nội dung</label>
-        <Tiptap :content="content" class="mt-1" @update:content="content = $event"/>
+        <label class="block text-sm font-medium text-gray-700" for="content">Nội dung <span
+            class="text-red-500">*</span></label>
+        <Tiptap :content="content" class="mt-1" @update:content="content = $event" width="100%" height="24rem"/>
         <p class="absolute top-0 right-0 mt-1 mr-2 text-sm text-gray-500">Số từ: {{ wordCount }}</p>
       </div>
       <div class="flex justify-end mt-4">

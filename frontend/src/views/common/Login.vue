@@ -36,7 +36,6 @@ const handleFinish = async (values: any) => {
       email: values.email,
       password: values.password
     });
-
     store.commit('setToken', response.token);
     const userData = await getMyInfo();
     store.commit('setUser', userData);

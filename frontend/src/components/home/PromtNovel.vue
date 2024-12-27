@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import {computed, onMounted, ref, watch} from 'vue';
-import {getMyNovels} from '@/api/novel';
+import {getLatestNovels} from '@/api/novel';
 
 interface Category {
   id: string;
@@ -32,7 +32,7 @@ const itemsPerPage = 6;
 
 const fetchBooks = async (page: number, sort: string) => {
   try {
-    const response = await getMyNovels(page, itemsPerPage);
+    const response = await getLatestNovels(page, itemsPerPage);
     console.log('Books:', response);
     books.value = response.data.map((book: any) => ({
       id: book.id,
@@ -113,7 +113,7 @@ watch(activeTab, (newTab) => {
               {{ book.title }}
             </router-link>
           </h3>
-          <p v-html="book.description" class="text-sm text-gray-500 line-clamp-3"/>
+          <p class="text-sm text-gray-500 line-clamp-3" v-html="book.description"/>
           <div class="flex items-center text-sm text-gray-700 mt-2">
             <i class="fas fa-user mr-2"></i>
             <router-link :to="{ name: 'account', params: { id: book.authorId } }">

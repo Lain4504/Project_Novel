@@ -63,7 +63,8 @@ onMounted(() => {
         <td :style="{ width: columnWidths.author + 'px' }" class="px-4 py-2 text-sm text-gray-700 hover:text-blue-700">
           <router-link :to="{ name: 'account', params: { id: novel.authorId } }">{{ novel.authorName }}</router-link>
         </td>
-        <td :style="{ width: columnWidths.latestChapter + 'px' }" class="px-4 py-2 text-sm text-gray-700 hover:text-blue-700">
+        <td :style="{ width: columnWidths.latestChapter + 'px' }"
+            class="px-4 py-2 text-sm text-gray-700 hover:text-blue-700">
           <router-link :to="{ name: 'chapter', params: { novel: novel.id, chapter: novel.latestChapterId } }">
             {{ novel.latestChapterTitle }}
           </router-link>

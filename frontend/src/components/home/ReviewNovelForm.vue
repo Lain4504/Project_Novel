@@ -19,6 +19,7 @@ const emit = defineEmits(['reviewCreated']);
 
 const store = useStore();
 const userId = computed(() => store.getters.getUserId);
+const isAuthenticated = computed(() => store.getters.isAuthenticated);
 
 const reviewContent = ref('');
 const reviews = ref<Review[]>([]);
@@ -40,21 +41,25 @@ const fetchReviews = (page: number, size: number) => {
 };
 
 const submitReview = () => {
-  const reviewData = {
-    userId: userId.value,
-    novelId: props.itemId,
-    review: reviewContent.value,
-  };
+  if (isAuthenticated.value && reviewContent.value.trim()) {
+    const reviewData = {
+      userId: userId.value,
+      novelId: props.itemId,
+      review: reviewContent.value,
+    };
 
-  createReview(reviewData)
-      .then(() => {
-        console.log('Review created successfully');
-        emit('reviewCreated');
-        fetchReviews(currentPage.value, pageSize.value);
-      })
-      .catch(error => {
-        console.error('Error:', error);
-      });
+    createReview(reviewData)
+        .then(() => {
+          console.log('Review created successfully');
+          emit('reviewCreated');
+          fetchReviews(currentPage.value, pageSize.value);
+        })
+        .catch(error => {
+          console.error('Error:', error);
+        });
+  } else {
+    console.error('User is not authenticated or review content is empty');
+  }
 };
 
 const handlePageChange = (page: number) => {
@@ -72,7 +77,7 @@ onMounted(() => {
     <h3 class="text-xl font-bold mb-4">Chấm điểm nội dung truyện</h3>
 
     <!-- Form gửi đánh giá -->
-    <div class="flex flex-col space-y-4">
+    <div v-if="isAuthenticated" class="flex flex-col space-y-4">
       <div>
         <textarea
             v-model="reviewContent"
@@ -81,12 +86,15 @@ onMounted(() => {
         ></textarea>
       </div>
       <Button
-          type="primary"
           class="self-start"
+          type="primary"
           @click="submitReview"
       >
         Gửi đánh giá
       </Button>
+    </div>
+    <div v-else class="text-gray-500">
+      <p>Bạn cần đăng nhập để gửi đánh giá.</p>
     </div>
 
     <!-- Danh sách đánh giá -->

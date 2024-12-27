@@ -8,6 +8,7 @@ interface Field {
   label: string;
   type: string;
   options?: { value: string; label: string }[];
+  required?: boolean;
 }
 
 interface Props {

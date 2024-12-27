@@ -20,12 +20,14 @@ interface Post {
   userId: string;
   created: string;
 }
+
 interface User {
   id: string;
   username: string;
   email: string;
   image: string;
 }
+
 const post = ref<Post | null>(null);
 const user = ref<User | null>(null);
 const comments = ref([]);
@@ -93,7 +95,7 @@ onMounted(() => {
     <div class="bg-white p-6 mt-6 rounded-lg shadow-md">
       <div class="flex items-center justify-between mb-6">
         <div class="flex items-center">
-          <img alt="Avatar" class="w-10 h-10 rounded-full mr-3" :src="user?.image.path">
+          <img :src="user?.image.path" alt="Avatar" class="w-10 h-10 rounded-full mr-3">
           <div class="font-semibold text-lg">{{ user?.username }} <span class="text-gray-500 text-sm"></span></div>
         </div>
         <div class="text-sm text-gray-500">{{ post?.created }}</div>

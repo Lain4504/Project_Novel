@@ -19,7 +19,7 @@ const novel = ref<Novel[]>([]);
 
 const fetchNovel = async (page: number) => {
   try {
-    const response = await getMyReadingList(store.getters.getUserId,  page, pageSize);
+    const response = await getMyReadingList(store.getters.getUserId, page, pageSize);
     console.log("Reading novels:", response);
     novel.value = response.data.map((novel: any) => ({
       novelId: novel.novelId,
@@ -58,12 +58,12 @@ onMounted(() => {
               class="w-14 h-20 object-cover"
           />
           <div class="flex justify-between items-center w-full">
-            <h5 class="font-semibold truncate">
+            <h5 class="font-semibold truncate hover:underline">
               <router-link :to="{ name: 'noveldetail', params: { id: item.novelId } }">
                 {{ item.novelName }}
               </router-link>
             </h5>
-            <p class="text-gray-500 flex-shrink-0">
+            <p class="text-gray-500 flex-shrink-0 hover:underline">
               <router-link
                   :to="{ name: 'chapter', params: { novel: item.novelId, chapter: item.novelChapterId} }"
               >

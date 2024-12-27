@@ -28,28 +28,28 @@ public class NovelVolumeService {
     NovelRepository novelRepository;
 
     public NovelVolumeResponse createNovelVolume(String novelId, NovelVolumeRequest request) {
-    Novel novel = novelRepository.findById(novelId)
-            .orElseThrow(() -> new RuntimeException("Novel not found"));
+        Novel novel = novelRepository.findById(novelId)
+                .orElseThrow(() -> new RuntimeException("Novel not found"));
 
-    // Tìm volume có volumeNumber lớn nhất trong novel
-    Optional<NovelVolume> lastVolumeOpt = novelVolumeRepository.findTopByNovelIdOrderByVolumeNumberDesc(novelId);
-    int nextVolumeNumber = lastVolumeOpt.map(novelVolume -> novelVolume.getVolumeNumber() + 1).orElse(1);
+        // Tìm volume có volumeNumber lớn nhất trong novel
+        Optional<NovelVolume> lastVolumeOpt = novelVolumeRepository.findTopByNovelIdOrderByVolumeNumberDesc(novelId);
+        int nextVolumeNumber = lastVolumeOpt.map(novelVolume -> novelVolume.getVolumeNumber() + 1).orElse(1);
 
-    NovelVolume novelVolume = novelVolumeMapper.toNovelVolume(request);
-    novelVolume.setNovelId(novelId);
-    novelVolume.setVolumeNumber(nextVolumeNumber); // Set volumeNumber tự động tăng
-    NovelVolume savedVolume = novelVolumeRepository.save(novelVolume);
+        NovelVolume novelVolume = novelVolumeMapper.toNovelVolume(request);
+        novelVolume.setNovelId(novelId);
+        novelVolume.setVolumeNumber(nextVolumeNumber); // Set volumeNumber tự động tăng
+        NovelVolume savedVolume = novelVolumeRepository.save(novelVolume);
 
-    List<String> volumeIds = novel.getVolumeIds();
-    if (volumeIds == null) {
-        volumeIds = new ArrayList<>();
+        List<String> volumeIds = novel.getVolumeIds();
+        if (volumeIds == null) {
+            volumeIds = new ArrayList<>();
+        }
+        volumeIds.add(savedVolume.getId());
+        novel.setVolumeIds(volumeIds);
+        novelRepository.save(novel);
+
+        return novelVolumeMapper.toNovelVolumeResponse(savedVolume);
     }
-    volumeIds.add(savedVolume.getId());
-    novel.setVolumeIds(volumeIds);
-    novelRepository.save(novel);
-
-    return novelVolumeMapper.toNovelVolumeResponse(savedVolume);
-}
 
     public List<NovelVolumeResponse> getVolumesByNovelId(String novelId) {
         Novel novel = novelRepository.findById(novelId)
@@ -95,12 +95,13 @@ public class NovelVolumeService {
     public List<NovelVolumeResponse> getNovelVolumes() {
         return novelVolumeRepository.findAll().stream().map(novelVolumeMapper::toNovelVolumeResponse).collect(toList());
     }
+
     public void reorderNovelVolumes(String novelId, List<String> volumeIds) {
         List<NovelVolume> volumes = novelVolumeRepository.findAllByNovelId(novelId);
         Map<String, NovelVolume> volumeMap = volumes.stream()
                 .collect(Collectors.toMap(NovelVolume::getId, volume -> volume));
         List<NovelVolume> updatedVolumes = new ArrayList<>();
-        for (int i = 0; i < volumeIds.size(); i++){
+        for (int i = 0; i < volumeIds.size(); i++) {
             NovelVolume volume = volumeMap.get(volumeIds.get(i));
             if (volume != null) {
                 volume.setVolumeNumber(i + 1);

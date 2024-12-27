@@ -1,8 +1,9 @@
 <script lang="ts" setup>
-import { defineEmits, defineProps, ref, onMounted, onUnmounted } from 'vue';
-import { addBookmark } from '@/api/user';
+import {computed, defineEmits, defineProps, onMounted, onUnmounted, ref} from 'vue';
+import {addBookmark} from '@/api/user';
 import store from "@/store";
-import { Button } from 'ant-design-vue';
+import {Button} from 'ant-design-vue';
+import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 
 const props = defineProps<{
   chapter: {
@@ -22,15 +23,17 @@ const props = defineProps<{
 }>();
 
 const emits = defineEmits(['previous-chapter', 'next-chapter']);
-const bookmarkPosition = ref({ top: 0, left: 0 });
+const bookmarkPosition = ref({top: 0, left: 0});
 const bookmarkVisible = ref(false);
 const selectedText = ref('');
+const isAuthenticated = computed(() => store.getters.isAuthenticated);
 
 const handleContentClick = (event: MouseEvent | TouchEvent) => {
+  if (!isAuthenticated.value) return;
   const target = event.target as HTMLElement;
   if (target.tagName === 'P') {
     const rect = target.getBoundingClientRect();
-    bookmarkPosition.value = { top: rect.top + window.scrollY, left: rect.right + window.scrollX };
+    bookmarkPosition.value = {top: rect.top + window.scrollY, left: rect.right + window.scrollX};
     bookmarkVisible.value = true;
     selectedText.value = target.textContent || '';
   } else {
@@ -40,6 +43,7 @@ const handleContentClick = (event: MouseEvent | TouchEvent) => {
 };
 
 const handleAddBookmark = async () => {
+  if (!isAuthenticated.value) return;
   try {
     const data = {
       userId: store.getters.getUserId,
@@ -50,7 +54,7 @@ const handleAddBookmark = async () => {
       contentNote: selectedText.value,
     };
     console.log('Bookmark added successfully', data);
-    await addBookmark(data); // Save to backend
+    await addBookmark(store.getters.getUserId, data);
     bookmarkVisible.value = false;
   } catch (error) {
     console.error('Failed to add bookmark:', error);
@@ -76,12 +80,14 @@ onUnmounted(() => {
 
 <template>
   <div class="bg-gray-50 text-gray-800 relative content">
-    <div v-if="bookmarkVisible" :style="{ top: `${bookmarkPosition.top}px`, left: `${bookmarkPosition.left}px` }" class="absolute z-50 bookmark-button">
+    <div v-if="bookmarkVisible && isAuthenticated"
+         :style="{ top: `${bookmarkPosition.top}px`, left: `${bookmarkPosition.left}px` }"
+         class="absolute z-50 bookmark-button">
       <button
-        class="text-black"
-        @click.stop="handleAddBookmark"
+          class="text-black"
+          @click.stop="handleAddBookmark"
       >
-        <font-awesome-icon :icon="['fas', 'bookmark']" size="lg" />
+        <font-awesome-icon :icon="['fas', 'bookmark']" size="lg"/>
       </button>
     </div>
     <main class="container mx-auto px-4 py-6 max-w-5xl">
@@ -105,6 +111,59 @@ onUnmounted(() => {
         <Button type="primary" @click="$emit('next-chapter')">Next Chapter</Button>
       </div>
     </main>
+    <div class="sidebar fixed right-4 top-1/2 -translate-y-1/2 flex flex-col gap-1 z-10">
+      <nav class="bg-white/90 rounded-lg shadow-lg p-2 flex flex-col gap-4">
+        <button class="p-2 hover:bg-gray-100 rounded transition-colors">
+          <font-awesome-icon :icon="['fas', 'angles-right']" class="text-gray-600"/>
+        </button>
+
+        <button class="p-2 hover:bg-gray-100 rounded transition-colors">
+          <font-awesome-icon :icon="['fas', 'home']" class="text-gray-600"/>
+        </button>
+
+        <button class="p-2 hover:bg-gray-100 rounded transition-colors">
+          <font-awesome-icon :icon="['fas', 'font']"/>
+        </button>
+
+        <button class="p-2 hover:bg-gray-100 rounded transition-colors">
+          <font-awesome-icon :icon="['fas', 'list']" class="text-gray-600"/>
+        </button>
+
+        <button class="p-2 hover:bg-gray-100 rounded transition-colors">
+          <font-awesome-icon :icon="['fas', 'bookmark']" class="text-gray-600"/>
+        </button>
+
+        <button class="p-2 hover:bg-gray-100 rounded transition-colors">
+          <font-awesome-icon :icon="['fas', 'angles-left']" class="text-gray-600"/>
+        </button>
+      </nav>
+    </div>
+    <div class="mobile-menu fixed bottom-0 left-0 right-0 bg-white border-t border-gray-300 px-4 py-2 z-10">
+      <div class="max-w-screen-sm mx-auto flex justify-between items-center">
+        <button class="p-2 hover:bg-black/5 rounded-full transition-colors">
+          <font-awesome-icon :icon="['fas', 'angles-left']" class="w-5 h-5 text-gray-600"/>
+        </button>
+
+        <button class="p-2 hover:bg-black/5 rounded-full transition-colors">
+          <font-awesome-icon :icon="['fas', 'home']" class="w-5 h-5 text-gray-600"/>
+        </button>
+        <button class="p-2 hover:bg-black/5 rounded-full transition-colors">
+          <font-awesome-icon :icon="['fas', 'font']" class="w-5 h-5 text-gray-600"/>
+        </button>
+
+        <button class="p-2 hover:bg-black/5 rounded-full transition-colors">
+          <font-awesome-icon :icon="['fas', 'list']" class="w-5 h-5 text-gray-600"/>
+        </button>
+
+        <button class="p-2 hover:bg-black/5 rounded-full transition-colors">
+          <font-awesome-icon :icon="['fas', 'bookmark']" class="w-5 h-5 text-gray-600"/>
+        </button>
+
+        <button class="p-2 hover:bg-black/5 rounded-full transition-colors">
+          <font-awesome-icon :icon="['fas', 'angles-right']" class="w-5 h-5 text-gray-600"/>
+        </button>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -129,6 +188,24 @@ onUnmounted(() => {
 @media (max-width: 480px) {
   .bookmark-button {
     transform: translate(-50%, -225%);
+  }
+}
+
+.sidebar {
+  display: block;
+}
+
+.mobile-menu {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    display: none;
+  }
+
+  .mobile-menu {
+    display: block;
   }
 }
 </style>

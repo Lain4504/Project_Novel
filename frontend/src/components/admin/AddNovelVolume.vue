@@ -55,11 +55,11 @@ const handleSubmit = async () => {
     <form @submit.prevent="handleSubmit">
       <!-- Title Input -->
       <div class="mt-4">
-        <label class="block text-sm font-medium text-gray-700" for="title">Title</label>
+        <label class="block text-sm font-medium text-gray-700" for="title">Title   <span class="text-red-500">*</span></label>
         <a-input id="title" v-model:value="state.title" class="w-full text-sm p-[0.4rem]" placeholder="Enter title"/>
       </div>
       <div class="mt-4">
-        <label class="block text-sm font-medium text-gray-700" for="status">Status</label>
+        <label class="block text-sm font-medium text-gray-700" for="status">Status   <span class="text-red-500">*</span></label>
         <a-select id="status" v-model:value="state.status" class="block w-1/2">
           <a-select-option value="ongoing">Ongoing</a-select-option>
           <a-select-option value="completed">Completed</a-select-option>

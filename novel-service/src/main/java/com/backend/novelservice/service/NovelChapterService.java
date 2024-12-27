@@ -2,9 +2,12 @@ package com.backend.novelservice.service;
 
 import com.backend.dto.response.PageResponse;
 import com.backend.enums.ChapterStatusEnum;
+import com.backend.event.NovelDataSenderEvent;
 import com.backend.novelservice.dto.request.NovelChapterRequest;
 import com.backend.novelservice.dto.response.NovelChapterResponse;
+import com.backend.novelservice.dto.response.NovelElasticResponse;
 import com.backend.novelservice.entity.Novel;
+import com.backend.novelservice.entity.NovelCategory;
 import com.backend.novelservice.entity.NovelChapter;
 import com.backend.novelservice.entity.NovelVolume;
 import com.backend.novelservice.mapper.NovelChapterMapper;
@@ -18,8 +21,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
+import javax.swing.text.html.Option;
 import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -34,7 +39,7 @@ public class NovelChapterService {
     NovelRepository novelRepository;
     DateTimeFormatter dateTimeFormatter;
     NovelVolumeRepository novelVolumeRepository;
-
+    KafkaTemplate<String, Object> kafkaTemplate;
     private int sumChapterCountByNovelId(String novelId) {
         List<NovelVolume> volumes = novelVolumeRepository.findChapterCountsByNovelId(novelId);
         return volumes.stream().mapToInt(NovelVolume::getChapterCount).sum();
@@ -72,7 +77,7 @@ public class NovelChapterService {
         novel.setChapterCount(sumChapterCountByNovelId(novel.getId())); // Cập nhật chapterCount
         novel.setWordCount(novel.getWordCount() + savedChapter.getWordCount());
         novelRepository.save(novel);
-
+        sendNovelDataToKafka(novel, "update");
         return novelChapterMapper.toNovelChapterResponse(savedChapter);
     }
 
@@ -89,6 +94,7 @@ public class NovelChapterService {
         novel.setLatestChapterId(chapterId);
         novel.setLatestChapterTitle(chapter.getChapterTitle());
         novelRepository.save(novel);
+        sendNovelDataToKafka(novel, "update");
         return novelChapterMapper.toNovelChapterResponse(chapter);
     }
 
@@ -105,7 +111,25 @@ public class NovelChapterService {
         var novel = novelRepository.findById(volume.getNovelId()).orElseThrow(() -> new RuntimeException("Novel not found"));
         novel.setChapterCount(sumChapterCountByNovelId(novel.getId()));
         novel.setWordCount(novel.getWordCount() - chapter.getWordCount());
+        // Check if the chapter is the largest chapter of the largest volume
+        boolean isLargestChapter = novelChapterRepository.findTopByVolumeIdOrderByChapterNumberDesc(volume.getId())
+                .map(NovelChapter::getId).orElse("").equals(chapterId);
+        boolean isLargestVolume = novelVolumeRepository.findTopByNovelIdOrderByVolumeNumberDesc(volume.getNovelId())
+                .map(NovelVolume::getId).orElse("").equals(volume.getId());
+        // If the chapter is the largest chapter of the largest volume, update the latest chapter title
+        if (isLargestChapter && isLargestVolume) {
+            Optional<NovelChapter> previousChapterOpt = novelChapterRepository.findTopByVolumeIdAndChapterNumberLessThanOrderByChapterNumberDesc(volume.getId(), chapter.getChapterNumber());
+            if (previousChapterOpt.isPresent()) {
+                NovelChapter previousChapter = previousChapterOpt.get();
+                novel.setLatestChapterId(previousChapter.getId());
+                novel.setLatestChapterTitle(previousChapter.getChapterTitle());
+            } else {
+                novel.setLatestChapterId(null);
+                novel.setLatestChapterTitle(null);
+            }
+        }
         novelRepository.save(novel);
+        sendNovelDataToKafka(novel, "update");
         novelChapterRepository.delete(chapter);
     }
 
@@ -174,40 +198,117 @@ public class NovelChapterService {
 
     public NovelChapterResponse getPreviousChapter(String volumeId, Integer currentChapterNumber) {
         Optional<NovelChapter> previousChapterOpt = novelChapterRepository.findTopByVolumeIdAndChapterNumberLessThanOrderByChapterNumberDesc(volumeId, currentChapterNumber);
-        return previousChapterOpt
-                .filter(chapter -> chapter.getStatus() != ChapterStatusEnum.DRAFT)
-                .map(novelChapterMapper::toNovelChapterResponse)
-                .orElse(null);
+        if (previousChapterOpt.isPresent() && previousChapterOpt.get().getStatus() != ChapterStatusEnum.DRAFT) {
+            return novelChapterMapper.toNovelChapterResponse(previousChapterOpt.get());
+        }
+        // Nếu không có chapter trước đó trong volume hiện tại, tìm volume trước đó
+        Optional<NovelVolume> currentVolumeOpt = novelVolumeRepository.findById(volumeId);
+        if (currentVolumeOpt.isEmpty()) {
+            return null;
+        }
+        // Lấy volume trước đó
+        NovelVolume currentVolume = currentVolumeOpt.get();
+        Optional<NovelVolume> previousVolumeOpt = novelVolumeRepository.findPreviousVolume(currentVolume.getNovelId(), currentVolume.getVolumeNumber());
+        if (previousVolumeOpt.isEmpty()) {
+            return null;
+        }
+        NovelVolume previousVolume = previousVolumeOpt.get();
+        // Lấy chapter cuối cùng của volume trước đó
+        Optional<NovelChapter> lastChapterOpt = novelChapterRepository.findTopByVolumeIdOrderByChapterNumberDesc(previousVolume.getId());
+        if (lastChapterOpt.isPresent() && lastChapterOpt.get().getStatus() != ChapterStatusEnum.DRAFT) {
+            return novelChapterMapper.toNovelChapterResponse(lastChapterOpt.get());
+        }
+        return null;
     }
 
     public NovelChapterResponse getNextChapter(String volumeId, Integer currentChapterNumber) {
         Optional<NovelChapter> nextChapterOpt = novelChapterRepository.findTopByVolumeIdAndChapterNumberGreaterThanOrderByChapterNumberAsc(volumeId, currentChapterNumber);
-        return nextChapterOpt
-                .filter(chapter -> chapter.getStatus() != ChapterStatusEnum.DRAFT)
-                .map(novelChapterMapper::toNovelChapterResponse)
-                .orElse(null);
+        if (nextChapterOpt.isPresent() && nextChapterOpt.get().getStatus() != ChapterStatusEnum.DRAFT) {
+            return novelChapterMapper.toNovelChapterResponse(nextChapterOpt.get());
+        }
+        // Nếu không có chapter tiếp theo trong volume hiện tại, tìm volume tiếp theo
+        Optional<NovelVolume> currentVolumeOpt = novelVolumeRepository.findById(volumeId);
+        if (currentVolumeOpt.isEmpty()) {
+            return null;
+        }
+        // Lấy volume tiếp theo
+        NovelVolume currentVolume = currentVolumeOpt.get();
+        Optional<NovelVolume> nextVolumeOpt = novelVolumeRepository.findNextVolume(currentVolume.getNovelId(), currentVolume.getVolumeNumber());
+        if (nextVolumeOpt.isEmpty()) {
+            return null;
+        }
+        NovelVolume nextVolume = nextVolumeOpt.get();
+        // Lấy chapter đầu tiên của volume tiếp theo
+        Optional<NovelChapter> firstChapterOpt = novelChapterRepository.findTopByVolumeIdOrderByChapterNumberAsc(nextVolume.getId());
+        if (firstChapterOpt.isPresent() && firstChapterOpt.get().getStatus() != ChapterStatusEnum.DRAFT) {
+            return novelChapterMapper.toNovelChapterResponse(firstChapterOpt.get());
+        }
+        return null;
     }
 
-    public void reorderChapters(String volumeId, List<String> chapterIds) {
-        // Lấy danh sách các chapter theo volumeId
-        List<NovelChapter> chapters = novelChapterRepository.findAllByVolumeId(volumeId);
+public void reorderChapters(String volumeId, List<String> chapterIds) {
+    // Lấy danh sách các chapter theo volumeId
+    List<NovelChapter> chapters = novelChapterRepository.findAllByVolumeId(volumeId);
 
-        // Tạo một map để dễ dàng truy cập các chapter theo id
-        Map<String, NovelChapter> chapterMap = chapters.stream()
-                .collect(Collectors.toMap(NovelChapter::getId, chapter -> chapter));
+    // Tạo một map để dễ dàng truy cập các chapter theo id
+    Map<String, NovelChapter> chapterMap = chapters.stream()
+            .collect(Collectors.toMap(NovelChapter::getId, chapter -> chapter));
 
-        // Cập nhật lại chapterNumber theo thứ tự mới
-        List<NovelChapter> updatedChapters = new ArrayList<>();
-        for (int i = 0; i < chapterIds.size(); i++) {
-            String chapterId = chapterIds.get(i);
-            NovelChapter chapter = chapterMap.get(chapterId);
-            if (chapter != null) {
-                chapter.setChapterNumber(i + 1);
-                updatedChapters.add(chapter);
-            }
+    // Cập nhật lại chapterNumber theo thứ tự mới
+    List<NovelChapter> updatedChapters = new ArrayList<>();
+    for (int i = 0; i < chapterIds.size(); i++) {
+        String chapterId = chapterIds.get(i);
+        NovelChapter chapter = chapterMap.get(chapterId);
+        if (chapter != null) {
+            chapter.setChapterNumber(i + 1);
+            updatedChapters.add(chapter);
         }
+    }
 
-        // Lưu lại các chapter với thứ tự mới
-        novelChapterRepository.saveAll(updatedChapters);
+    // Lưu lại các chapter với thứ tự mới
+    novelChapterRepository.saveAll(updatedChapters);
+
+    // Kiểm tra xem volume này có phải là volume lớn nhất hay không
+    NovelVolume volume = novelVolumeRepository.findById(volumeId).orElseThrow(() -> new RuntimeException("Volume not found"));
+    Novel novel = novelRepository.findById(volume.getNovelId()).orElseThrow(() -> new RuntimeException("Novel not found"));
+    boolean isLargestVolume = novelVolumeRepository.findTopByNovelIdOrderByVolumeNumberDesc(volume.getNovelId())
+            .map(NovelVolume::getId).orElse("").equals(volumeId);
+
+    // Nếu volume này là lớn nhất, cập nhật latestChapterTitle
+    if (isLargestVolume) {
+        Optional<NovelChapter> latestChapterOpt = novelChapterRepository.findTopByVolumeIdOrderByChapterNumberDesc(volumeId);
+        if (latestChapterOpt.isPresent()) {
+            NovelChapter latestChapter = latestChapterOpt.get();
+            novel.setLatestChapterId(latestChapter.getId());
+            novel.setLatestChapterTitle(latestChapter.getChapterTitle());
+            novelRepository.save(novel);
+        }
+    }
+    sendNovelDataToKafka(novel, "update");
+}
+    private void sendNovelDataToKafka(Novel novel, String action) {
+        NovelElasticResponse elasticResponse = NovelElasticResponse.builder()
+                .id(novel.getId())
+                .categoryId(novel.getCategories().stream().map(NovelCategory::getId).collect(Collectors.toSet()))
+                .categoryName(novel.getCategories().stream().map(NovelCategory::getName).collect(Collectors.toSet()))
+                .bookName(novel.getTitle())
+                .authorId(novel.getAuthorId())
+                .authorName(novel.getAuthorName())
+                .score(novel.getScore())
+                .status(novel.getStatus().name())
+                .visitCount(novel.getVisitCount())
+                .wordCount(novel.getWordCount())
+                .lastChapterId(novel.getLatestChapterId())
+                .image(novel.getImage() != null ? novel.getImage().getPath() : null)
+                .lastChapterName(novel.getLatestChapterTitle())
+                .lastChapterId(novel.getLatestChapterId())
+                .lastChapterUpdateTime(novel.getLatestChapterTime() != null ? novel.getLatestChapterTime().toEpochMilli() : null)
+                .build();
+        NovelDataSenderEvent event = NovelDataSenderEvent
+                .builder()
+                .channel("NOVEL")
+                .param(Map.of("data", elasticResponse))
+                .build();
+        kafkaTemplate.send("novel-" + action, event);
     }
 }

@@ -8,8 +8,8 @@ import DynamicFormEdit from "@/components/common/DynamicFormEdit.vue";
 const fields = {
   title: 'Novel Category',
   inputs: [
-    {id: 'name', label: 'Name', type: 'text'},
-    {id: 'description', label: 'Description', type: 'tiptap'},
+    {id: 'name', label: 'Name', type: 'text', required: true},
+    {id: 'description', label: 'Description', type: 'tiptap', required: false},
   ],
 };
 const props = defineProps({
@@ -49,7 +49,5 @@ onMounted(() => {
       :initialData="initialData"
       :onCancel="handleCancel"
       :onSave="handleSave"
-      @error="() => showNotification('danger', 'Failed to update post category!')"
-      @success="() => showNotification('success', 'Post category updated successfully!')"
   />
 </template>

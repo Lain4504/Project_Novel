@@ -25,4 +25,6 @@ public interface NovelChapterRepository extends MongoRepository<NovelChapter, St
     Optional<NovelChapter> findTopByVolumeIdOrderByChapterNumberDesc(String volumeId);
 
     List<NovelChapter> findAllByVolumeId(String volumeId);
+
+    Optional<NovelChapter> findTopByVolumeIdOrderByChapterNumberAsc(String volumeId);
 }

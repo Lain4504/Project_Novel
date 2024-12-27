@@ -87,6 +87,7 @@ public class NovelChapterController {
         novelChapterService.incrementVisitCount(chapterId);
         return ApiResponse.<Void>builder().build();
     }
+
     @PutMapping("/reoder-chapter/{volumeId}")
     public ApiResponse<Void> reorderChapter(@PathVariable String volumeId, @RequestBody List<String> chapterIds) {
         novelChapterService.reorderChapters(volumeId, chapterIds);

@@ -82,13 +82,15 @@ const viewPost = (row: any) => {
       <h4 class="text-xl font-semibold mb-4">Bạn có chắc chắn muốn xóa không?</h4>
       <div class="flex justify-end space-x-4">
         <!-- Cancel Button -->
-        <button class="px-[1.2rem] py-[0.4rem] border border-gray-400 text-gray-700 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500"
-                @click="cancelDelete">
+        <button
+            class="px-[1.2rem] py-[0.4rem] border border-gray-400 text-gray-700 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500"
+            @click="cancelDelete">
           Cancel
         </button>
         <!-- Confirm Delete Button -->
-        <button class="px-[1.2rem] py-[0.4rem] border border-red-500 text-red-500 rounded-md hover:bg-red-600 hover:text-white focus:outline-none focus:ring-2 focus:ring-red-500"
-                @click="confirmDelete">
+        <button
+            class="px-[1.2rem] py-[0.4rem] border border-red-500 text-red-500 rounded-md hover:bg-red-600 hover:text-white focus:outline-none focus:ring-2 focus:ring-red-500"
+            @click="confirmDelete">
           Delete
         </button>
       </div>

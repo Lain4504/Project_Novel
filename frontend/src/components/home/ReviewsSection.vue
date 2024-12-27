@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, onMounted } from 'vue';
+import {onMounted, ref} from 'vue';
 import {getLatestReview} from "@/api/user";
 
 interface Review {
@@ -33,10 +33,14 @@ onMounted(() => {
     <h1 class="text-2xl font-bold mb-6 text-gray-800">Latest Reviews</h1>
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-      <div v-for="review in reviews" :key="review.id" class="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow duration-200 overflow-hidden flex flex-col">
+      <div v-for="review in reviews" :key="review.id"
+           class="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow duration-200 overflow-hidden flex flex-col">
         <h2 class="text-xl font-semibold mb-2">
-          <router-link :to="{ name: 'noveldetail', params: { id: review.novelId } }">{{ review.novelName }}</router-link>
-       </h2>
+          <router-link :to="{ name: 'noveldetail', params: { id: review.novelId } }">{{
+              review.novelName
+            }}
+          </router-link>
+        </h2>
         <div class="overflow-y-auto max-h-48 flex-grow">
           <p class="text-gray-600 italic mb-4 break-words">{{ review.review }}</p>
         </div>

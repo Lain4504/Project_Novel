@@ -6,7 +6,7 @@ interface UserState {
     user: {
         id: string;
         email: string;
-        role: string;
+        roles: { name: string; description: string | null; permissions: any[] }[];
     } | null;
 }
 
@@ -17,24 +17,24 @@ const store = createStore({
         user: localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user') as string) : null,
     } as UserState,
     mutations: {
-        setUser(state, user: { id: string; email: string; role: string; }) {
+        setUser(state, user: { id: string; email: string; roles: { name: string; description: string | null; permissions: any[] }[] }) {
             state.user = user;
-            localStorage.setItem('user', JSON.stringify(user));  // Lưu user vào localStorage
+            localStorage.setItem('user', JSON.stringify(user));
         },
         setToken(state, token: string) {
             state.token = token;
-            localStorage.setItem('token', token);  // Lưu token vào localStorage
+            localStorage.setItem('token', token);  // Save token to localStorage
         },
         setRefreshToken(state, refreshToken: string) {
             state.refreshToken = refreshToken;
-            localStorage.setItem('refreshToken', refreshToken);  // Lưu token vào localStorage
+            localStorage.setItem('refreshToken', refreshToken);  // Save refreshToken to localStorage
         },
         clearUser(state) {
             state.user = null;
             state.token = null;
-            localStorage.removeItem('user');  // Xóa user khỏi localStorage
-            localStorage.removeItem('token');  // Xóa token khỏi localStorage
-            localStorage.removeItem('refreshToken');  // Xóa token khỏi localStorage
+            localStorage.removeItem('user');  // Remove user from localStorage
+            localStorage.removeItem('token');  // Remove token from localStorage
+            localStorage.removeItem('refreshToken');  // Remove refreshToken from localStorage
         }
     },
     actions: {},
@@ -43,7 +43,7 @@ const store = createStore({
             return !!state.token;
         },
         getUserRole(state): string | null {
-            return state.user ? state.user.role : null;
+            return state.user ? state.user.roles.map(role => role.name).join(', ') : null;
         },
         getToken(state): string | null {
             return state.token;

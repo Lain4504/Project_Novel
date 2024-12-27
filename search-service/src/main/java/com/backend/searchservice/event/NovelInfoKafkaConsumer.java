@@ -15,12 +15,10 @@ import org.springframework.stereotype.Component;
 public class NovelInfoKafkaConsumer {
     SearchService searchService;
 
-
     @KafkaListener(topics = "novel-create")
     public void consumeCreate(NovelDataSenderEvent data) {
         searchService.handleCreate(data);
     }
-
     @KafkaListener(topics = "novel-update")
     public void consumeUpdate(NovelDataSenderEvent data) {
         searchService.handleUpdate(data);

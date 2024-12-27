@@ -24,6 +24,10 @@ const userProfile = ref({
 const notifications = ref([]);
 const unreadNotifications = ref(0);
 
+const store = useStore();
+const isAuthenticated = computed(() => store.getters.isAuthenticated || '');
+const router = useRouter();
+
 const fetchUserProfile = async () => {
   try {
     const userProfileData = await getUserProfile(store.getters.getUserId);
@@ -48,8 +52,10 @@ const fetchNotifications = async () => {
 };
 
 onMounted(() => {
-  fetchUserProfile();
-  fetchNotifications();
+  if (isAuthenticated.value) {
+    fetchUserProfile();
+    fetchNotifications();
+  }
 });
 
 watch(isMobileMenuOpen, (newVal) => {
@@ -80,9 +86,6 @@ watch(isNotificationListOpen, (newVal) => {
   }
 });
 
-const store = useStore();
-const isAuthenticated = computed(() => store.getters.isAuthenticated || '');
-const router = useRouter();
 const viewAccount = () => {
   router.push({name: 'account', params: {id: store.getters.getUserId}});
 };
@@ -194,14 +197,17 @@ onUnmounted(() => {
           </transition>
         </div>
 
-        <router-link class="text-black text-sm hover:underline transition-all duration-300" :to="{ name: 'postforum' }">Forum
+        <router-link :to="{ name: 'postforum' }" class="text-black text-sm hover:underline transition-all duration-300">
+          Forum
         </router-link>
         <router-link class="text-black text-sm hover:underline transition-all duration-300" to="#">Support</router-link>
         <router-link class="text-black text-sm hover:underline transition-all duration-300" to="#">Ranking</router-link>
 
         <div class="relative flex items-center">
-          <input class="p-[0.4rem] rounded-full placeholder:text-sm placeholder:pl-1 bg-gray-100 text-black focus:outline-none focus:ring-1 focus:ring-[#889b6c] transition-all duration-300" placeholder="Search by author or name..."
-                 type="text">
+          <input
+              class="p-[0.4rem] rounded-full placeholder:text-sm placeholder:pl-1 bg-gray-100 text-black focus:outline-none focus:ring-1 focus:ring-[#889b6c] transition-all duration-300"
+              placeholder="Search by author or name..."
+              type="text">
           <font-awesome-icon class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-700 cursor-pointer"
                              icon="fa-solid fa-magnifying-glass"/>
         </div>
@@ -217,8 +223,10 @@ onUnmounted(() => {
 
           <div class="relative dropdown">
             <div class="relative" @click="toggleNotificationList">
-              <font-awesome-icon class="cursor-pointer text-gray-700 hover:text-black transition-transform duration-200 hover:scale-110 focus:scale-125 active:animate-pulse focus:outline-none" icon="fa-regular fa-bell"
-                                 size="xl"/>
+              <font-awesome-icon
+                  class="cursor-pointer text-gray-700 hover:text-black transition-transform duration-200 hover:scale-110 focus:scale-125 active:animate-pulse focus:outline-none"
+                  icon="fa-regular fa-bell"
+                  size="xl"/>
               <span
                   class="absolute -right-1 -bottom-1 w-4 text-center leading-4 bg-black text-white aspect-square rounded-full text-[8px]">
                 {{ unreadNotifications }}
@@ -236,11 +244,14 @@ onUnmounted(() => {
           <div class="relative dropdown">
             <img
                 :src="userProfile.image"
-                alt="" class="w-10 h-10 rounded-full border-2 border-gray-50 transition-transform duration-200 hover:scale-110 hover:border-blue-500 cursor-pointer" @click="isAccountMenuOpen = !isAccountMenuOpen"/>
+                alt=""
+                class="w-10 h-10 rounded-full border-2 border-gray-50 transition-transform duration-200 hover:scale-110 hover:border-blue-500 cursor-pointer"
+                @click="isAccountMenuOpen = !isAccountMenuOpen"/>
             <transition name="fade">
               <div v-if="isAccountMenuOpen"
                    class="absolute right-0 mt-2 w-[10rem] bg-white shadow-lg rounded-lg border border-gray-200 text-sm z-10">
-                <div v-for="item in dropdownMenu" :key="item.label" class="flex items-center px-4 py-2 text-black hover:bg-gray-100 hover:underline transition-all duration-300"
+                <div v-for="item in dropdownMenu" :key="item.label"
+                     class="flex items-center px-4 py-2 text-black hover:bg-gray-100 hover:underline transition-all duration-300"
                      @click="closeMenu">
                   <div v-if="item.label === 'Logout'" class="cursor-pointer flex items-center w-full"
                        @click.prevent="handleLogout">
@@ -248,7 +259,7 @@ onUnmounted(() => {
                     {{ item.label }}
                   </div>
                   <div v-if="item.label === 'Account'" class="cursor-pointer flex items-center w-full"
-                  @click.prevent="viewAccount">
+                       @click.prevent="viewAccount">
                     <font-awesome-icon :icon="item.icon" class="mr-2"/>
                     {{ item.label }}
                   </div>
@@ -283,8 +294,10 @@ onUnmounted(() => {
 
           <div class="relative dropdown">
             <div class="relative" @click="toggleNotificationList">
-              <font-awesome-icon class="cursor-pointer text-gray-700 hover:text-black transition-transform duration-200 hover:scale-110 focus:scale-125 active:animate-pulse focus:outline-none" icon="fa-regular fa-bell"
-                                 size="xl"/>
+              <font-awesome-icon
+                  class="cursor-pointer text-gray-700 hover:text-black transition-transform duration-200 hover:scale-110 focus:scale-125 active:animate-pulse focus:outline-none"
+                  icon="fa-regular fa-bell"
+                  size="xl"/>
               <span
                   class="absolute -right-1 -bottom-1 w-4 text-center leading-4 bg-black text-white aspect-square rounded-full text-[8px]">
                 {{ unreadNotifications }}
@@ -301,11 +314,13 @@ onUnmounted(() => {
           <div class="relative dropdown">
             <img
                 :src="userProfile.image"
-                class="w-10 h-10 rounded-full border-2 border-gray-50 transition-transform duration-200 hover:scale-110 hover:border-blue-500 cursor-pointer" @click="isAccountMenuOpen = !isAccountMenuOpen"/>
+                class="w-10 h-10 rounded-full border-2 border-gray-50 transition-transform duration-200 hover:scale-110 hover:border-blue-500 cursor-pointer"
+                @click="isAccountMenuOpen = !isAccountMenuOpen"/>
             <transition name="fade">
               <div v-if="isAccountMenuOpen"
                    class="absolute right-0 mt-2 w-[10rem] bg-white shadow-lg rounded-lg border border-gray-200 text-sm z-10">
-                <div v-for="item in dropdownMenu" :key="item.label" class="flex items-center px-4 py-2 text-black hover:bg-gray-100 hover:underline transition-all duration-300"
+                <div v-for="item in dropdownMenu" :key="item.label"
+                     class="flex items-center px-4 py-2 text-black hover:bg-gray-100 hover:underline transition-all duration-300"
                      @click="closeMenu">
                   <div v-if="item.label === 'Logout'" class="cursor-pointer flex items-center w-full"
                        @click.prevent="handleLogout">
@@ -313,7 +328,7 @@ onUnmounted(() => {
                     {{ item.label }}
                   </div>
                   <div v-if="item.label === 'Account'" class="cursor-pointer flex items-center w-full"
-                  @click.prevent="viewAccount">
+                       @click.prevent="viewAccount">
                     <font-awesome-icon :icon="item.icon" class="mr-2"/>
                     {{ item.label }}
                   </div>
@@ -342,8 +357,10 @@ onUnmounted(() => {
       <div v-if="isMobileMenuOpen" class="md:hidden fixed top-16 left-0 w-full h-full bg-black bg-opacity-50 z-50">
         <div class="bg-white text-black p-4 space-y-4">
           <div class="relative">
-            <input class="p-[0.4rem] pr-10 rounded-full placeholder:text-sm w-full bg-gray-100 text-black focus:outline-none focus:ring-1 focus:ring-[#889b6c] transition-all duration-300" placeholder="Search..."
-                   type="text">
+            <input
+                class="p-[0.4rem] pr-10 rounded-full placeholder:text-sm w-full bg-gray-100 text-black focus:outline-none focus:ring-1 focus:ring-[#889b6c] transition-all duration-300"
+                placeholder="Search..."
+                type="text">
             <font-awesome-icon class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-700 cursor-pointer"
                                icon="fa-solid fa-magnifying-glass"/>
           </div>

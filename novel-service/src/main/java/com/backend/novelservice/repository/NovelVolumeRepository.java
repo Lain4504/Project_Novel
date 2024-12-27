@@ -16,4 +16,11 @@ public interface NovelVolumeRepository extends MongoRepository<NovelVolume, Stri
     Optional<NovelVolume> findTopByNovelIdOrderByVolumeNumberDesc(String novelId);
 
     List<NovelVolume> findAllByNovelId(String novelId);
+
+    @Query("{ 'novelId': ?0, 'volumeNumber': { $lt: ?1 } }")
+    Optional<NovelVolume> findPreviousVolume(String novelId, int currentVolumeNumber);
+
+    @Query("{ 'novelId': ?0, 'volumeNumber': { $gt: ?1 } }")
+    Optional<NovelVolume> findNextVolume(String novelId, int currentVolumeNumber);
+
 }

@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import {computed, onMounted, ref} from 'vue';
 import {getPosts} from "@/api/post";
-import {getMyNovels} from "@/api/novel";
 import {getMyReadingList} from "@/api/user";
 import store from "@/store";
 
@@ -10,9 +9,10 @@ interface Post {
   title: string;
   userId: string;
   content: string;
-  categoryId: string;
+  categoryName: string;
   created: string;
 }
+
 interface Novel {
   novelId: string;
   novelName: string;
@@ -21,9 +21,11 @@ interface Novel {
   novelChapterId: string;
   novelChapterTitle: string;
 }
+
 const latestPosts = ref<Post[]>([]);
 const readingNovels = ref<Novel[]>([]);
-// Đảm bảo rằng getPosts trả về dữ liệu đúng định dạng
+const isAuthenticated = computed(() => store.getters.isAuthenticated);
+
 const fetchLatestPosts = async () => {
   try {
     const page = 1;
@@ -34,15 +36,15 @@ const fetchLatestPosts = async () => {
       title: post.title,
       userId: post.userId,
       content: post.content,
-      categoryId: post.categoryName, // Map categoryName to categoryId
+      categoryName: post.categoryName,
       created: post.created,
     }));
-    console.log("Latest posts:", response);
-    latestPosts.value = posts; // Ensure posts is an array
+    latestPosts.value = posts;
   } catch (error) {
     console.error("Error fetching latest posts:", error);
   }
 };
+
 const fetchReadingNovels = async () => {
   try {
     const page = 1;
@@ -56,16 +58,19 @@ const fetchReadingNovels = async () => {
       novelChapterId: novel.novelChapterId,
       novelChapterTitle: novel.novelChapterTitle,
     }));
-  }
-  catch (error) {
+  } catch (error) {
     console.error("Error fetching reading novels:", error);
   }
-}
+};
+
 onMounted(() => {
   fetchLatestPosts();
-  fetchReadingNovels();
+  if (isAuthenticated.value) {
+    fetchReadingNovels();
+  }
 });
 </script>
+
 <template>
   <div class="flex flex-col md:flex-row md:space-x-4 space-y-4 md:space-y-0 mt-10">
     <!-- Bài viết mới nhất Section -->
@@ -73,7 +78,7 @@ onMounted(() => {
       <section class="p-4 border rounded">
         <div class="flex justify-between items-center">
           <h4 class="text-md font-bold">Bài viết mới nhất</h4>
-          <router-link class="text-[#98a77c] text-sm" :to="{ name: 'postforum' }">Xem tất cả</router-link>
+          <router-link :to="{ name: 'postforum' }" class="text-[#98a77c] text-sm">Xem tất cả</router-link>
         </div>
         <div class="mt-4 text-sm">
           <ul class="space-y-4">
@@ -89,7 +94,7 @@ onMounted(() => {
                 </router-link>
               </h5>
               <p class="text-gray-500 text-xs">
-                {{ post.created }} - {{ post.categoryId }}
+                {{ post.created }} - {{ post.categoryName }}
               </p>
             </li>
           </ul>
@@ -97,11 +102,11 @@ onMounted(() => {
       </section>
     </div>
     <!-- Đang đọc Section -->
-    <div class="w-full md:w-2/5">
+    <div v-if="isAuthenticated" class="w-full md:w-2/5">
       <section class="p-4 border rounded">
         <div class="flex justify-between items-center">
           <h4 class="text-md font-bold">Đang đọc</h4>
-          <router-link class="text-[#98a77c] text-sm" :to="{ name: 'readinglist' }">Xem tất cả</router-link>
+          <router-link :to="{ name: 'readinglist' }" class="text-[#98a77c] text-sm">Xem tất cả</router-link>
         </div>
         <div class="mt-4 text-sm">
           <div class="space-y-4">
@@ -124,7 +129,7 @@ onMounted(() => {
                 </h5>
                 <p class="text-gray-500 flex-shrink-0">
                   <router-link :to="{ name: 'chapter', params: { novel: novel.novelId, chapter: novel.novelChapterId}}">
-                  {{ novel.novelChapterTitle }}
+                    {{ novel.novelChapterTitle }}
                   </router-link>
                 </p>
               </div>

@@ -13,21 +13,18 @@ import java.util.Set;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class NovelSearchResponse {
     String id;
-    String title;
-    Set<String> categories;
+    Set<String> categoryId;
+    Set<String> categoryName;
+    String bookName;
     String authorId;
-    String authorName;
     String description;
-    Integer score;
-    Integer bookStatus;
+    String authorName;
+    double score;
+    String status;
     Long visitCount;
     Long wordCount;
-    Long commentCount;
-    Integer isVip;
-    List<String> volumeIds;
-    String imageUrl;
-    Integer chapterCount;
-    String latestChapterTitle;
-    String latestChapterId;
-    String status;
+    String lastChapterId;
+    String lastChapterName;
+    Long lastChapterUpdateTime;
+    String image;
 }

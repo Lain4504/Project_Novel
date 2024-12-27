@@ -1,8 +1,9 @@
-<script setup lang="ts">
-import {ref, onMounted} from 'vue';
+<script lang="ts" setup>
+import {onMounted, ref} from 'vue';
 import draggable from 'vue3-draggable-next';
 import {getChaptersByVolumeId, reorderChapter} from '@/api/novelChapter';
 import {notification} from "ant-design-vue";
+
 const showNotification = (type: string, message: string) => {
   notification[type]({
     message: type === 'success' ? 'Success' : 'Error',
@@ -34,7 +35,7 @@ onMounted(async () => {
 
 // Function to handle saving the order
 const saveOrder = async () => {
-  try{
+  try {
     // Call an API to save the order
     const list = items.value.map(item => item.id);
     await reorderChapter(props.volumeId, list);
@@ -58,7 +59,7 @@ const saveOrder = async () => {
     <h3 class="text-xl font-semibold mb-4">Sắp xếp</h3>
     <div class="p-2 mb-4">
       <!-- draggable component to enable drag-and-drop -->
-      <draggable v-model="items" item-key="id" class="list">
+      <draggable v-model="items" class="list" item-key="id">
         <template #item="{ element }">
           <div class="bg-green-300 p-2 mb-2 rounded border text-sm">
             {{ element.name }}
@@ -67,7 +68,7 @@ const saveOrder = async () => {
       </draggable>
     </div>
     <div class="flex justify-between">
-      <a-button @click="saveOrder" type="primary">
+      <a-button type="primary" @click="saveOrder">
         Lưu thứ tự
       </a-button>
     </div>

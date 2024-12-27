@@ -9,6 +9,14 @@ const props = defineProps({
     type: String,
     required: true,
   },
+  width: {
+    type: String,
+    default: '100%',
+  },
+  height: {
+    type: String,
+    default: '12rem',
+  },
 });
 const emit = defineEmits(["update:content"]);
 
@@ -20,8 +28,8 @@ const editor = useEditor({
   },
   editorProps: {
     attributes: {
-      class:
-          "border border-gray-300 rounded p-4 min-h-[24rem] max-h-[24rem] overflow-y-auto outline-none prose max-w-none",
+      class: `border border-gray-300 rounded p-4 overflow-y-auto outline-none prose max-w-none`,
+      style: `width: ${props.width}; height: ${props.height};`
     },
   },
 });
@@ -103,6 +111,6 @@ watch(
         <font-awesome-icon :icon="['fas', 'rotate-right']"/>
       </button>
     </section>
-    <editor-content :editor="editor" class="bg-white border border-gray-300 rounded-b shadow-sm"/>
+    <editor-content :editor="editor" :style="{ width: props.width, height: props.height }" class="bg-white border border-gray-300 rounded-b shadow-sm"/>
   </div>
 </template>

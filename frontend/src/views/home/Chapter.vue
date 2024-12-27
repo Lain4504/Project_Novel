@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import {onMounted, reactive, ref, onBeforeUnmount, watch} from 'vue';
+import {computed, onBeforeUnmount, onMounted, reactive, ref} from 'vue';
 import {useRoute, useRouter} from 'vue-router';
 import {getChapter, getNextChapter, getPreviousChapter, incrementChapterView} from '@/api/novelChapter';
 import ChapterContent from '@/components/home/ChapterContent.vue';
@@ -11,8 +11,9 @@ import {
 } from "@/api/novelComment";
 import CommentSection from "@/components/home/CommentSection.vue";
 import {getNovel} from "@/api/novel";
-import {createReadingHistory} from "@/api/user"; // Import the createReadingHistory function
-
+import {createReadingHistory} from "@/api/user";
+import store from "@/store"; // Import the createReadingHistory function
+const isAuthenticated = computed(() => store.getters.isAuthenticated); // Use the isAuthenticated computed property
 const route = useRoute();
 const router = useRouter();
 const chapterId = route.params.chapter as string;
@@ -94,6 +95,7 @@ const fetchNextChapter = async () => {
 };
 
 const trackReadingHistory = async () => {
+  if (!isAuthenticated.value) return;
   try {
     const data = {
       userId: chapter.userId,
@@ -135,21 +137,25 @@ onMounted(() => {
   fetchNovel(novelId);
   fetchChapter(chapterId);
   fetchComments(currentPage.value, pageSize.value);
-
-  window.addEventListener('beforeunload', trackReadingHistory);
+  if (isAuthenticated.value) {
+    window.addEventListener('beforeunload', trackReadingHistory);
+  }
 });
 
 onBeforeUnmount(() => {
   if (timeoutId) {
     clearTimeout(timeoutId);
   }
-  trackReadingHistory(); // Call the function to track reading history when the component is unmounted
-  window.removeEventListener('beforeunload', trackReadingHistory);
+  if (isAuthenticated.value) {
+    trackReadingHistory();
+    window.removeEventListener('beforeunload', trackReadingHistory);
+  }
 });
 </script>
 
 <template>
-  <ChapterContent :chapter="chapter" :novel="novel" @previous-chapter="fetchPreviousChapter" @next-chapter="fetchNextChapter"/>
+  <ChapterContent :chapter="chapter" :novel="novel" @previous-chapter="fetchPreviousChapter"
+                  @next-chapter="fetchNextChapter"/>
   <CommentSection :comments="comments" :create-comment-api="createChapterComment"
                   :create-reply-api="createChapterReply" :current-page="currentPage"
                   :fetch-comments="fetchComments"
