@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import {onMounted, ref, watch} from "vue";
 import router from "@/router";
-import ConfirmDeleteModal from "@/components/common/ConfirmDeleteModal.vue";
 import DynamicDataTable from "@/components/common/DynamicDataTable.vue";
 
 const novelColumns = [
@@ -62,14 +61,7 @@ const handleView = (row: any) => {
 </script>
 <template>
   <h3 class="text-2xl font-bold text-left py-2"> Novel Management</h3>
-  <ConfirmDeleteModal
-      :show="showConfirmModal"
-      confirmText="Xóa"
-      message="Thao tác này sẽ gửi yêu cầu xóa tiểu thuyết tới admin để xem xét, thời gian giải quyết tối đa 3 ngày làm việc."
-      title="Bạn có chắc chắn muốn xóa không?"
-      @cancel="cancelDelete"
-      @confirm="confirmDelete"
-  />
+
   <DynamicDataTable
       :columns="novelColumns"
       :currentPage="currentPage"

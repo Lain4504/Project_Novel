@@ -78,33 +78,36 @@ watch(() => props.chapterData, (newData) => {
 </script>
 
 <template>
-  <main class="flex-1 p-6 bg-[#F8F8F7] shadow-md">
-    <h1 class="my-2">Edit Chapter</h1>
-    <form @submit.prevent="handleSubmit">
-      <div>
-        <label class="block text-sm font-medium text-gray-700" for="title">Tiêu đề <span class="text-red-500">*</span></label>
-        <a-input id="title" v-model:value="title"
-                 class="block w-2/3 px-4 py-2 mt-1 text-gray-900 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"/>
-      </div>
-      <div class="mt-4">
-        <label class="block text-sm font-medium text-gray-700" for="status">Trạng thái <span class="text-red-500">*</span></label>
-        <a-radio-group id="status" v-model:value="status" class="block w-1/2">
+  <a-layout class="flex-1 p-6 bg-white shadow-md">
+    <a-typography-title level="3" class="my-2" :style="{ color: '#18A058', fontSize: '20px' }">Edit Chapter</a-typography-title>
+    <a-form @submit.prevent="handleSubmit">
+      <a-form-item label="Tiêu đề" required class="form-item">
+        <a-input v-model:value="title" placeholder="Nhập tiêu đề"/>
+      </a-form-item>
+      <a-form-item label="Trạng thái" required class="form-item">
+        <a-radio-group v-model:value="status">
           <a-radio :value="ChapterStatusEnum.COMPLETED">Đã hoàn thành</a-radio>
           <a-radio :value="ChapterStatusEnum.DRAFT">Chưa hoàn thành</a-radio>
         </a-radio-group>
-      </div>
-      <div class="mt-4 relative">
-        <label class="block text-sm font-medium text-gray-700" for="content">Nội dung <span class="text-red-500">*</span></label>
-        <Tiptap :content="content" class="mt-1" @update:content="content = $event" width="100%" height="24rem"/>
-        <p class="absolute top-0 right-0 mt-1 mr-2 text-sm text-gray-500">Số từ: {{ wordCount }}</p>
-      </div>
-      <div class="flex justify-end mt-4">
-        <a-button
-            type="primary"
-            html-type="submit">
-          Submit
-        </a-button>
-      </div>
-    </form>
-  </main>
+      </a-form-item>
+      <a-form-item label="Nội dung" required class="form-item">
+        <Tiptap :content="content" @update:content="content = $event" width="100%" height="24rem"/>
+        <a-typography-text class="absolute top-0 right-0 mt-1 mr-2 text-sm text-gray-500">Số từ: {{ wordCount }}</a-typography-text>
+      </a-form-item>
+      <a-form-item class="form-item submit-button">
+        <a-button type="primary" html-type="submit">Submit</a-button>
+      </a-form-item>
+    </a-form>
+  </a-layout>
 </template>
+
+<style scoped>
+.form-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.submit-button {
+  align-items: flex-end;
+}
+</style>

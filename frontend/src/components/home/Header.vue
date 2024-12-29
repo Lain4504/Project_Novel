@@ -1,38 +1,56 @@
 <script lang="ts" setup>
-import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome';
-import {computed, onMounted, onUnmounted, ref, watch} from 'vue';
+import {computed, onMounted, ref, watchEffect} from 'vue';
 import {useStore} from 'vuex';
+import {useRoute, useRouter} from 'vue-router';
 import {logout} from '@/api/auth';
-import NotificationDropdown from '../common/BellNotificationDropdown.vue';
-import {getUserProfile} from "@/api/user";
-import {getNotificationByUserId} from "@/api/notification";
-import {useRouter} from "vue-router";
+import {getUserProfile} from '@/api/user';
+import {getNotificationByUserId} from '@/api/notification';
+import {
+  AppstoreOutlined,
+  BellOutlined,
+  BookOutlined,
+  EditOutlined,
+  EyeOutlined,
+  LogoutOutlined,
+  MenuOutlined,
+  MessageOutlined,
+  ReadOutlined,
+  SearchOutlined,
+  SettingOutlined,
+  TrophyOutlined,
+  UserOutlined
+} from '@ant-design/icons-vue';
 
-const isAccountMenuOpen = ref(false);
-const isCategoryMenuOpen = ref(false);
-const isNotificationListOpen = ref(false);
-const isMobileMenuOpen = ref(false);
-const categories = [
-  "Action", "Fantasy", "Romance",
-  "Horror", "Adventure", "Comedy",
-];
-const userProfile = ref({
-  id: '',
-  image: '',
-  username: '',
-});
-const notifications = ref([]);
+interface Notification {
+  id: number;
+  user: string;
+  message: string;
+  time: string;
+  iconColor: string;
+  createdDate: string;
+  title: string;
+  content: string;
+  image: string;
+}
+
+const truncateContent = (content: string) => {
+  return content.length > 70 ? content.slice(0, 70) + '...' : content;
+};
+
+const userProfile = ref({id: '', image: '', username: ''});
+const notifications = ref<Notification[]>([]);
 const unreadNotifications = ref(0);
+const isMobileMenuOpen = ref(false);
 
 const store = useStore();
-const isAuthenticated = computed(() => store.getters.isAuthenticated || '');
+const isAuthenticated = computed(() => store.getters.isAuthenticated);
 const router = useRouter();
+const route = useRoute();
 
 const fetchUserProfile = async () => {
   try {
     const userProfileData = await getUserProfile(store.getters.getUserId);
-    userProfile.value = userProfileData;
-    userProfile.value.image = userProfileData.image.path;
+    userProfile.value = {...userProfileData, image: userProfileData.image.path};
   } catch (error) {
     console.error('Error fetching user profile:', error);
   }
@@ -41,9 +59,7 @@ const fetchUserProfile = async () => {
 const fetchNotifications = async () => {
   try {
     const userId = store.getters.getUserId;
-    const page = 1;
-    const size = 5;
-    const notificationData = await getNotificationByUserId(userId, page, size);
+    const notificationData = await getNotificationByUserId(userId, 1, 5);
     notifications.value = notificationData.data;
     unreadNotifications.value = notificationData.data.length;
   } catch (error) {
@@ -58,335 +74,154 @@ onMounted(() => {
   }
 });
 
-watch(isMobileMenuOpen, (newVal) => {
-  if (newVal) {
-    isAccountMenuOpen.value = false;
-    isCategoryMenuOpen.value = false;
-    isNotificationListOpen.value = false;
-  }
+watchEffect(() => {
+  const handleResize = () => {
+    isMobileMenuOpen.value = window.innerWidth < 768 ? isMobileMenuOpen.value : false;
+  };
+
+  window.addEventListener('resize', handleResize);
+
+  return () => {
+    window.removeEventListener('resize', handleResize);
+  };
 });
 
-watch(isAccountMenuOpen, (newVal) => {
-  if (newVal) {
-    isMobileMenuOpen.value = false;
-    isCategoryMenuOpen.value = false;
-    isNotificationListOpen.value = false;
-  }
-});
-watch(isCategoryMenuOpen, (newVal) => {
-  if (newVal) {
-    isAccountMenuOpen.value = false;
-    isNotificationListOpen.value = false;
-  }
-});
-watch(isNotificationListOpen, (newVal) => {
-  if (newVal) {
-    isAccountMenuOpen.value = false;
-    isCategoryMenuOpen.value = false;
-  }
-});
-
-const viewAccount = () => {
-  router.push({name: 'account', params: {id: store.getters.getUserId}});
-};
 const handleLogout = async () => {
   try {
-    const accessToken = store.getters.getToken;
-    const refreshToken = store.getters.getRefreshToken;
-
+    const {getToken, getRefreshToken} = store.getters;
+    const accessToken = getToken;
+    const refreshToken = getRefreshToken;
     if (!accessToken || !refreshToken) {
       console.error('Tokens are missing');
       return;
     }
-    await logout({
-      refreshToken: refreshToken,
-      accessToken: accessToken
-    });
+    await logout({refreshToken, accessToken});
     store.commit('clearUser');
   } catch (error) {
     console.error('Logout failed:', error);
-    alert('Logout failed. Please try again.');
   }
 };
+
+const menuItems = [
+  {key: 'forum', label: 'Thảo luận', path: '/forum', icon: MessageOutlined},
+  {key: 'categories', label: 'Thể loại', path: '/categories', icon: AppstoreOutlined},
+  {key: 'search', label: 'Tìm kiếm', path: '/search', icon: SearchOutlined},
+  {key: 'ranking', label: 'Xếp hạng', path: '/ranking', icon: TrophyOutlined},
+];
 
 const dropdownMenu = [
   {
-    label: 'Account',
-    icon: 'fa-solid fa-user',
-    action: viewAccount,
+    key: '1',
+    label: 'Tài khoản',
+    icon: UserOutlined,
+    action: () => router.push({name: 'account', params: {id: store.getters.getUserId}})
   },
-  {
-    label: 'Bookmark',
-    icon: 'fa-solid fa-bookmark',
-    link: '/list/bookmark',
-  },
-  {
-    label: 'Library',
-    icon: 'fa-solid fa-book',
-    link: '/library',
-  },
-  {
-    label: 'Setting',
-    icon: 'fa-solid fa-gear',
-    link: '/user-profile',
-  },
-  {
-    label: 'Logout',
-    icon: 'fa-solid fa-right-from-bracket',
-    action: handleLogout,
-  },
+  {key: '2', label: 'Bookmark', icon: BookOutlined, action: () => router.push('/list/bookmark')},
+  {key: '3', label: 'Thư viện', icon: ReadOutlined, action: () => router.push('/library')},
+  {key: '4', label: 'Cài đặt cá nhân', icon: SettingOutlined, action: () => router.push('/user-profile')},
+  {key: '5', label: 'Đăng xuất', icon: LogoutOutlined, action: handleLogout},
 ];
 
-const closeMenu = () => {
-  isAccountMenuOpen.value = false;
-  isCategoryMenuOpen.value = false;
-  isNotificationListOpen.value = false;
+const handleMenuItemClick = (action: Function) => {
+  action();
   isMobileMenuOpen.value = false;
 };
-
-const toggleNotificationList = () => {
-  isNotificationListOpen.value = !isNotificationListOpen.value;
-};
-
-const handleClickOutside = (event: MouseEvent) => {
-  const target = event.target as HTMLElement;
-  if (!target.closest('.dropdown')) {
-    closeMenu();
-  }
-};
-
-onMounted(() => {
-  document.addEventListener('click', handleClickOutside);
-});
-
-onUnmounted(() => {
-  document.removeEventListener('click', handleClickOutside);
-});
 </script>
 
 <template>
-  <nav class="bg-white p-4 shadow-md relative">
-    <div class="max-w-[90rem] mx-auto flex items-center justify-between">
-      <div class="flex items-center space-x-4 md:space-x-0">
-        <button class="text-black md:hidden w-6 h-6 hover:text-gray-600 transition-colors"
-                @click.stop="isMobileMenuOpen = !isMobileMenuOpen">
-          <font-awesome-icon icon="fa-solid fa-bars"/>
-        </button>
-        <router-link class="text-black text-xl font-semibold" to="/">
-          LOGO
+  <a-layout-header class="sticky top-0 bg-white border-b z-50 border-gray-200 p-0 h-auto">
+    <div class="max-w-9xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+      <div class="flex items-center justify-between">
+        <a-button type="link" shape="circle" class="md:hidden flex items-center" @click="isMobileMenuOpen = true">
+          <MenuOutlined/>
+        </a-button>
+        <router-link to="/" class="flex items-center">
+          <h1 class="text-xl mb-0 text-[#18A058] flex items-center">HawkNovel</h1>
         </router-link>
       </div>
-
-      <div class="hidden md:flex space-x-3 items-center relative">
-        <div class="relative dropdown">
-          <button class="text-black text-sm hover:underline transition-all duration-300"
-                  @click="isCategoryMenuOpen = !isCategoryMenuOpen">
-            Category
+      <a-menu mode="horizontal" class="hidden md:flex flex-1 justify-center border-none bg-transparent"
+              :selectedKeys="[route.path]">
+        <a-menu-item v-for="item in menuItems" :key="item.key">
+          <router-link :to="item.path">
+            <span><component :is="item.icon"/></span>
+            {{ item.label }}
+          </router-link>
+        </a-menu-item>
+      </a-menu>
+      <div class="flex items-center space-x-4">
+        <template v-if="isAuthenticated">
+          <button
+              class="flex items-center space-x-2 border border-[#18A058] p-2 rounded-md bg-white hover:bg-[#E7F5EE] hover:text-gray-700 transition duration-300 ease-in-out"
+              @click="router.push('/dashboard')">
+            <EditOutlined style="font-size: 20px"/>
+            <span class="hidden sm:inline text-sm">Đăng tiểu thuyết</span>
           </button>
-          <transition name="fade">
-            <div v-if="isCategoryMenuOpen"
-                 class="absolute top-full mt-2 w-[20rem] bg-white shadow-lg rounded-lg border border-gray-200 grid grid-cols-3 gap-4 p-4 z-10">
-              <div v-for="(category, index) in categories.slice(0, 9)" :key="index"
-                   class="text-black text-sm hover:underline transition-all duration-300">
-                {{ category }}
-              </div>
-              <router-link class="col-span-3 text-center text-blue-500 text-sm hover:underline" to="">
-                <font-awesome-icon icon="fa-solid fa-arrow-up-right-from-square"/>
-              </router-link>
-            </div>
-          </transition>
-        </div>
-
-        <router-link :to="{ name: 'postforum' }" class="text-black text-sm hover:underline transition-all duration-300">
-          Forum
-        </router-link>
-        <router-link class="text-black text-sm hover:underline transition-all duration-300" to="#">Support</router-link>
-        <router-link class="text-black text-sm hover:underline transition-all duration-300" to="#">Ranking</router-link>
-
-        <div class="relative flex items-center">
-          <input
-              class="p-[0.4rem] rounded-full placeholder:text-sm placeholder:pl-1 bg-gray-100 text-black focus:outline-none focus:ring-1 focus:ring-[#889b6c] transition-all duration-300"
-              placeholder="Search by author or name..."
-              type="text">
-          <font-awesome-icon class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-700 cursor-pointer"
-                             icon="fa-solid fa-magnifying-glass"/>
-        </div>
-
-        <div v-if="isAuthenticated" class="flex items-center space-x-3">
-          <div class="relative dropdown">
-            <router-link class="flex items-center text-black hover:underline transition-all duration-300 text-sm"
-                         to="/dashboard">
-              <font-awesome-icon :icon="['far', 'pen-to-square']" class="mr-1" size="lg"/>
-              Writting
-            </router-link>
-          </div>
-
-          <div class="relative dropdown">
-            <div class="relative" @click="toggleNotificationList">
-              <font-awesome-icon
-                  class="cursor-pointer text-gray-700 hover:text-black transition-transform duration-200 hover:scale-110 focus:scale-125 active:animate-pulse focus:outline-none"
-                  icon="fa-regular fa-bell"
-                  size="xl"/>
-              <span
-                  class="absolute -right-1 -bottom-1 w-4 text-center leading-4 bg-black text-white aspect-square rounded-full text-[8px]">
-                {{ unreadNotifications }}
-              </span>
-            </div>
-
-            <transition name="fade">
-              <div v-if="isNotificationListOpen"
-                   class="absolute right-0 top-full mt-2 w-80 bg-white shadow-lg rounded-lg border border-gray-200 z-20">
-                <NotificationDropdown :notifications="notifications"/>
-              </div>
-            </transition>
-          </div>
-
-          <div class="relative dropdown">
-            <img
-                :src="userProfile.image"
-                alt=""
-                class="w-10 h-10 rounded-full border-2 border-gray-50 transition-transform duration-200 hover:scale-110 hover:border-blue-500 cursor-pointer"
-                @click="isAccountMenuOpen = !isAccountMenuOpen"/>
-            <transition name="fade">
-              <div v-if="isAccountMenuOpen"
-                   class="absolute right-0 mt-2 w-[10rem] bg-white shadow-lg rounded-lg border border-gray-200 text-sm z-10">
-                <div v-for="item in dropdownMenu" :key="item.label"
-                     class="flex items-center px-4 py-2 text-black hover:bg-gray-100 hover:underline transition-all duration-300"
-                     @click="closeMenu">
-                  <div v-if="item.label === 'Logout'" class="cursor-pointer flex items-center w-full"
-                       @click.prevent="handleLogout">
-                    <font-awesome-icon :icon="item.icon" class="mr-2"/>
-                    {{ item.label }}
-                  </div>
-                  <div v-if="item.label === 'Account'" class="cursor-pointer flex items-center w-full"
-                       @click.prevent="viewAccount">
-                    <font-awesome-icon :icon="item.icon" class="mr-2"/>
-                    {{ item.label }}
-                  </div>
-                  <router-link v-else v-if="item.link" :to="item.link" class="flex items-center w-full">
-                    <font-awesome-icon :icon="item.icon" class="mr-2"/>
-                    {{ item.label }}
+          <a-dropdown placement="bottomRight" :trigger="['click']">
+            <template #overlay>
+              <a-menu>
+                <a-menu-item key="header" disabled>
+                  <span class="font-medium text-lg text-gray-700 text-center block">Thông báo của bạn</span>
+                </a-menu-item>
+                <a-menu-divider class="border-gray-200"/>
+                <a-menu-item v-for="notification in notifications" :key="notification.id" class="hover:bg-gray-100">
+                  <router-link to="/" class="flex items-center space-x-3 py-2">
+                    <a-avatar :src="notification.image"/>
+                    <div>
+                      <div class="text-gray-800 font-medium text-sm">{{ truncateContent(notification.content) }}</div>
+                      <div class="text-xs text-gray-500">{{ notification.createdDate }}</div>
+                    </div>
                   </router-link>
-                </div>
-              </div>
-            </transition>
-          </div>
-        </div>
-
-        <div v-else>
-          <router-link class="text-black text-sm hover:underline transition-all duration-300" to="/login">Login
-          </router-link>
-          <router-link class="text-black text-sm ml-4 hover:underline transition-all duration-300" to="/register">
-            Register
-          </router-link>
-        </div>
-      </div>
-
-      <div class="flex items-center md:hidden">
-        <div v-if="isAuthenticated" class="flex items-center space-x-4">
-          <div class="relative dropdown">
-            <router-link class="flex items-center text-black hover:underline transition-all duration-300 text-sm"
-                         to="/dashboard">
-              <font-awesome-icon :icon="['far', 'pen-to-square']" class="mr-1" size="lg"/>
-              Writting
-            </router-link>
-          </div>
-
-          <div class="relative dropdown">
-            <div class="relative" @click="toggleNotificationList">
-              <font-awesome-icon
-                  class="cursor-pointer text-gray-700 hover:text-black transition-transform duration-200 hover:scale-110 focus:scale-125 active:animate-pulse focus:outline-none"
-                  icon="fa-regular fa-bell"
-                  size="xl"/>
-              <span
-                  class="absolute -right-1 -bottom-1 w-4 text-center leading-4 bg-black text-white aspect-square rounded-full text-[8px]">
-                {{ unreadNotifications }}
-              </span>
-            </div>
-
-            <transition name="fade">
-              <div v-if="isNotificationListOpen"
-                   class="absolute right-0 top-full mt-2 w-80 bg-white shadow-lg rounded-lg border border-gray-200 z-20">
-                <NotificationDropdown :notifications="notifications"/>
-              </div>
-            </transition>
-          </div>
-          <div class="relative dropdown">
-            <img
-                :src="userProfile.image"
-                class="w-10 h-10 rounded-full border-2 border-gray-50 transition-transform duration-200 hover:scale-110 hover:border-blue-500 cursor-pointer"
-                @click="isAccountMenuOpen = !isAccountMenuOpen"/>
-            <transition name="fade">
-              <div v-if="isAccountMenuOpen"
-                   class="absolute right-0 mt-2 w-[10rem] bg-white shadow-lg rounded-lg border border-gray-200 text-sm z-10">
-                <div v-for="item in dropdownMenu" :key="item.label"
-                     class="flex items-center px-4 py-2 text-black hover:bg-gray-100 hover:underline transition-all duration-300"
-                     @click="closeMenu">
-                  <div v-if="item.label === 'Logout'" class="cursor-pointer flex items-center w-full"
-                       @click.prevent="handleLogout">
-                    <font-awesome-icon :icon="item.icon" class="mr-2"/>
-                    {{ item.label }}
-                  </div>
-                  <div v-if="item.label === 'Account'" class="cursor-pointer flex items-center w-full"
-                       @click.prevent="viewAccount">
-                    <font-awesome-icon :icon="item.icon" class="mr-2"/>
-                    {{ item.label }}
-                  </div>
-                  <router-link v-else v-if="item.link" :to="item.link" class="flex items-center w-full">
-                    <font-awesome-icon :icon="item.icon" class="mr-2"/>
-                    {{ item.label }}
+                </a-menu-item>
+                <a-menu-divider class="border-gray-200"/>
+                <a-menu-item key="footer">
+                  <router-link to="/notification-list"
+                               class="flex items-center text-[#18A058] justify-center font-medium hover:underline">
+                    <a-button type="link" class="flex items-center">
+                      <EyeOutlined class="mr-2"/>
+                      Xem tất cả
+                    </a-button>
                   </router-link>
-                </div>
-              </div>
-            </transition>
-          </div>
-        </div>
-
-        <div v-else class="flex items-center space-x-4">
-          <router-link class="text-black text-sm hover:underline transition-all duration-300" to="/login">
-            Login
-          </router-link>
-          <router-link class="text-black text-sm hover:underline transition-all duration-300" to="/register">
-            Register
-          </router-link>
-        </div>
+                </a-menu-item>
+              </a-menu>
+            </template>
+            <a-badge :count="unreadNotifications">
+              <button>
+                <BellOutlined class="text-xl" style="font-size: 24px"/>
+              </button>
+            </a-badge>
+          </a-dropdown>
+          <a-dropdown placement="bottomRight" :trigger="['click']">
+            <template #overlay>
+              <a-menu>
+                <a-menu-item v-for="item in dropdownMenu" :key="item.key" class="no-underline"
+                             @click="handleMenuItemClick(item.action)">
+                  <span class="mr-2"><component :is="item.icon"/></span>
+                  {{ item.label }}
+                </a-menu-item>
+              </a-menu>
+            </template>
+            <a-avatar :src="userProfile.image" alt="avatar" size="large"/>
+          </a-dropdown>
+        </template>
+        <template v-else>
+          <button class="text-sm text-[#18A058]" @click="router.push('/login')">Đăng nhập</button>
+          <button class="text-sm text-[#18A058]" @click="router.push('/register')">Tạo tài khoản</button>
+        </template>
       </div>
     </div>
-
-    <transition name="fade">
-      <div v-if="isMobileMenuOpen" class="md:hidden fixed top-16 left-0 w-full h-full bg-black bg-opacity-50 z-50">
-        <div class="bg-white text-black p-4 space-y-4">
-          <div class="relative">
-            <input
-                class="p-[0.4rem] pr-10 rounded-full placeholder:text-sm w-full bg-gray-100 text-black focus:outline-none focus:ring-1 focus:ring-[#889b6c] transition-all duration-300"
-                placeholder="Search..."
-                type="text">
-            <font-awesome-icon class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-700 cursor-pointer"
-                               icon="fa-solid fa-magnifying-glass"/>
-          </div>
-          <div>
-            <button class="block w-full text-sm hover:underline text-left transition-all"
-                    @click.stop="isCategoryMenuOpen = !isCategoryMenuOpen">
-              Category
-            </button>
-            <transition name="fade">
-              <div v-if="isCategoryMenuOpen" class="grid grid-cols-3 gap-4 mt-2 p-4 bg-gray-100 rounded-lg">
-                <div v-for="(category, index) in categories.slice(0, 9)" :key="index"
-                     class="text-black text-sm hover:underline transition-all duration-300">
-                  {{ category }}
-                </div>
-                <router-link class="col-span-3 text-center text-blue-500 text-sm hover:underline" to="">
-                  <font-awesome-icon icon="fa-solid fa-arrow-up-right-from-square"/>
-                </router-link>
-              </div>
-            </transition>
-          </div>
-          <router-link class="block text-sm hover:underline transition-all duration-300" to="/post-forum">Forum
+    <a-drawer placement="left" :visible="isMobileMenuOpen" @close="isMobileMenuOpen = false" :width="250">
+      <a-menu mode="inline" :selectedKeys="[route.path]">
+        <a-menu-item v-for="item in menuItems" :key="item.key">
+          <router-link :to="item.path" @click="isMobileMenuOpen = false">
+            <span><component :is="item.icon"/></span>
+            {{ item.label }}
           </router-link>
-          <router-link class="block text-sm hover:underline transition-all duration-300" to="#">Support</router-link>
-          <router-link class="block text-sm hover:underline transition-all duration-300" to="#">Ranking</router-link>
-        </div>
-      </div>
-    </transition>
-  </nav>
+        </a-menu-item>
+      </a-menu>
+    </a-drawer>
+  </a-layout-header>
 </template>
+
+<style scoped>
+/* Add any necessary styles here */
+</style>

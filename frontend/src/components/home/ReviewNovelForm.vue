@@ -27,6 +27,7 @@ const totalReviews = ref(0);
 const currentPage = ref(1);
 const pageSize = ref(10);
 const totalPages = ref(0);
+const expandedReviews = ref<string[]>([]);
 
 const fetchReviews = (page: number, size: number) => {
   getReviewList(props.itemId, page, size)
@@ -67,31 +68,35 @@ const handlePageChange = (page: number) => {
   fetchReviews(page, pageSize.value);
 };
 
+const toggleReview = (id: string) => {
+  if (expandedReviews.value.includes(id)) {
+    expandedReviews.value = expandedReviews.value.filter(reviewId => reviewId !== id);
+  } else {
+    expandedReviews.value.push(id);
+  }
+};
+
 onMounted(() => {
   fetchReviews(currentPage.value, pageSize.value);
 });
 </script>
 
 <template>
-  <section>
+  <section class="bg-white py-4 px-6 mx-auto review-section">
     <h3 class="text-xl font-bold mb-4">Chấm điểm nội dung truyện</h3>
 
     <!-- Form gửi đánh giá -->
-    <div v-if="isAuthenticated" class="flex flex-col space-y-4">
-      <div>
-        <textarea
-            v-model="reviewContent"
-            class="w-full p-4 border rounded"
-            placeholder="Nội dung bài đánh giá (ít nhất 100 từ)"
-        ></textarea>
+    <div v-if="isAuthenticated" class="flex flex-col">
+      <a-textarea
+          v-model="reviewContent"
+          class="w-full"
+          placeholder="Nội dung bài đánh giá (ít nhất 100 từ)"
+          :autosize="{ minRows: 2, maxRows: 6 }"></a-textarea>
+      <div class="flex justify-end">
+        <Button class="mt-2" type="primary" @click="submitReview">
+          Gửi đánh giá
+        </Button>
       </div>
-      <Button
-          class="self-start"
-          type="primary"
-          @click="submitReview"
-      >
-        Gửi đánh giá
-      </Button>
     </div>
     <div v-else class="text-gray-500">
       <p>Bạn cần đăng nhập để gửi đánh giá.</p>
@@ -104,14 +109,24 @@ onMounted(() => {
         <li
             v-for="review in reviews"
             :key="review.id"
-            class="p-4 border rounded shadow-sm bg-gray-50"
+            class="p-4 border rounded shadow-sm bg-gray-50 review-item"
         >
-          <h5 class="font-semibold">{{ review.novelName }}</h5>
-          <p class="text-gray-800">{{ review.review }}</p>
+          <h5 class="font-semibold text-[#18A058]">{{ review.novelName }}</h5>
+          <div :class="{'max-h-48': !expandedReviews.includes(review.id)}" class="overflow-hidden">
+            <p class="text-gray-800">{{ review.review }}</p>
+          </div>
+          <a-button type="link" v-if="review.review.length > 200" @click="toggleReview(review.id)"
+                  class="text-[#18A058] hover:underline float-right">
+            {{ expandedReviews.includes(review.id) ? 'Read Less' : 'Read More' }}
+          </a-button>
           <div class="mt-auto flex items-center justify-between">
             <div class="flex items-center space-x-2">
               <img :src="review.image" alt="User Avatar" class="w-8 h-8 rounded-full">
-              <div class="font-medium">{{ review.userName }}</div>
+              <div class="font-medium">
+                <router-link :to="{ name: 'account', params: { id: review.userId } }">
+                {{ review.userName }}
+                </router-link>
+              </div>
             </div>
             <div class="text-sm text-gray-500">{{ review.created }}</div>
           </div>
@@ -132,3 +147,22 @@ onMounted(() => {
     </div>
   </section>
 </template>
+
+<style scoped>
+.review-section {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+}
+
+.review-item {
+  border: 1px solid #d0d0d0;
+  border-radius: 4px;
+  padding: 16px;
+  background-color: #ffffff;
+}
+
+.max-h-48 {
+  max-height: 12rem;
+}
+</style>

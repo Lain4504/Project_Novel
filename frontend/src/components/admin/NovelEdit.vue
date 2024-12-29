@@ -99,83 +99,51 @@ onMounted(() => {
 </script>
 
 <template>
-  <main class="flex-1 p-6 bg-[#f8f8f7] shadow-sm">
-    <h1>Edit Novel</h1>
-    <form @submit.prevent="handleSubmit">
-      <div class="mt-4">
-        <label class="block text-sm font-medium text-gray-700" for="title">Title<span
-            class="text-red-500">*</span></label>
-        <a-input id="title" v-model="state.title"
-                 class="w-full text-sm p-2"
-                 type="text"/>
-      </div>
-      <div class="mt-4">
-        <label class="block text-sm font-medium text-gray-700" for="author">Author<span
-            class="text-red-500">*</span></label>
-        <a-input id="author" v-model="state.author"
-                 class="w-full text-sm p-2"
-                 type="text"/>
-      </div>
-      <div class="mt-4">
-        <label class="block text-sm font-medium text-gray-700" for="status">Status<span
-            class="text-red-500">*</span></label>
-        <select id="status" v-model="state.status"
-                class="block w-1/2 px-4 py-2 mt-1 text-gray-900 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-          <option value="COMPLETED">Completed</option>
-          <option value="HIATUS">Hiatus</option>
-          <option value="ON_GOING">On Going</option>
-        </select>
-      </div>
-      <div class="mt-4">
-        <label class="block text-sm font-medium text-gray-700" for="description">Description<span
-            class="text-red-500">*</span></label>
+  <a-layout class="flex-1 p-6 bg-white shadow-md">
+    <a-typography-title level="3" class="my-2" :style="{ color: '#18A058', fontSize: '20px' }">Edit Novel</a-typography-title>
+    <a-form @submit.prevent="handleSubmit">
+      <a-form-item label="Title" required class="form-item">
+        <a-input v-model:value="state.title" placeholder="Enter title"/>
+      </a-form-item>
+      <a-form-item label="Author" required class="form-item">
+        <a-input v-model:value="state.author" placeholder="Enter author"/>
+      </a-form-item>
+      <a-form-item label="Status" required class="form-item">
+        <a-select v-model:value="state.status" placeholder="Select status">
+          <a-select-option value="COMPLETED">Completed</a-select-option>
+          <a-select-option value="HIATUS">Hiatus</a-select-option>
+          <a-select-option value="ON_GOING">On Going</a-select-option>
+        </a-select>
+      </a-form-item>
+      <a-form-item label="Description" required class="form-item">
         <Tiptap :content="state.description" @update:content="state.description = $event" width="100%" height="20rem"/>
-      </div>
-      <div class="mt-4">
-        <label class="block text-sm font-medium text-gray-800" for="file_input">Upload File<span
-            class="text-red-500">*</span></label>
-        <input id="file_input"
-               class="bg-white block w-full text-sm text-gray-900 border rounded-lg cursor-pointer focus:ring-blue-500 focus:border-blue-500 dark:text-gray-400 dark:bg-gray-800 dark:border-gray-600 dark:focus:ring-blue-400 dark:focus:border-blue-400 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-               type="file"
-               @change="handleImageChange"/>
+      </a-form-item>
+      <a-form-item label="Upload File" required class="form-item">
+        <input type="file" @change="handleImageChange" class="bg-white block w-full text-sm text-gray-900 border rounded-lg cursor-pointer focus:ring-[#18A058] focus:border-[#18A058] file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-medium file:bg-[#E7F5EE] file:text-[#18A058] hover:file:bg-[#E7F5EE]"/>
         <p class="text-sm text-gray-500">SVG, PNG, JPG, or GIF (MAX. 800x400px)</p>
         <div v-if="state.imageUrl" class="mt-4">
-          <img :src="state.imageUrl" alt="Selected image"
-               class="object-cover w-48 h-60 rounded-lg border border-gray-300 shadow-sm"/>
+          <img :src="state.imageUrl" alt="Selected image" class="object-cover w-48 h-60 rounded-lg border border-gray-300 shadow-sm"/>
         </div>
-      </div>
-      <div class="mt-4 relative">
-        <label class="block text-sm font-medium text-gray-700" for="floating_category">Chọn thể loại<span
-            class="text-red-500">*</span></label>
-        <a-select
-            v-model:value="selectedCategories"
-            :filter-option="(input: string, option: { label: string }) => {
-              return option.label.toLowerCase().includes(input.toLowerCase());
-            }"
-            allow-clear
-            class="w-full"
-            mode="multiple"
-            placeholder="Chọn thể loại"
-            show-search
-        >
-          <a-select-option
-              v-for="category in categories"
-              :key="category.value"
-              :label="category.label"
-              :value="category.value"
-          >
-            {{ category.label }}
-          </a-select-option>
+      </a-form-item>
+      <a-form-item label="Categories" required class="form-item">
+        <a-select v-model:value="selectedCategories" mode="multiple" placeholder="Select categories" show-search>
+          <a-select-option v-for="category in categories" :key="category.value" :value="category.value">{{ category.label }}</a-select-option>
         </a-select>
-      </div>
-      <div class="flex justify-end mt-4">
-        <a-button
-            type="primary"
-            html-type="submit"
-        >
-          Submit
-        </a-button>
-      </div>
-    </form>
-  </main>
+      </a-form-item>
+      <a-form-item class="form-item submit-button">
+        <a-button type="primary" html-type="submit">Submit</a-button>
+      </a-form-item>
+    </a-form>
+  </a-layout>
 </template>
+
+<style scoped>
+.form-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.submit-button {
+  align-items: flex-end;
+}
+</style>

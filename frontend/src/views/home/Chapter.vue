@@ -156,6 +156,7 @@ onBeforeUnmount(() => {
 <template>
   <ChapterContent :chapter="chapter" :novel="novel" @previous-chapter="fetchPreviousChapter"
                   @next-chapter="fetchNextChapter"/>
+  <div class="max-w-7xl mx-auto">
   <CommentSection :comments="comments" :create-comment-api="createChapterComment"
                   :create-reply-api="createChapterReply" :current-page="currentPage"
                   :fetch-comments="fetchComments"
@@ -169,4 +170,5 @@ onBeforeUnmount(() => {
                   @commentAdded="handleCommentAdded"
                   @pageChange="handlePageChange"
   />
+  </div>
 </template>

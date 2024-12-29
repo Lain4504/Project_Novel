@@ -1,4 +1,4 @@
-import {createStore} from "vuex";
+import { createStore } from "vuex";
 
 interface UserState {
     token: string | null;
@@ -8,6 +8,7 @@ interface UserState {
         email: string;
         roles: { name: string; description: string | null; permissions: any[] }[];
     } | null;
+    isDarkMode: boolean; // Trạng thái cho Dark Mode
 }
 
 const store = createStore({
@@ -15,6 +16,7 @@ const store = createStore({
         token: localStorage.getItem('token') || null,
         refreshToken: localStorage.getItem('refreshToken') || null,
         user: localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user') as string) : null,
+        isDarkMode: localStorage.getItem('isDarkMode') === "true", // Lấy trạng thái từ localStorage
     } as UserState,
     mutations: {
         setUser(state, user: { id: string; email: string; roles: { name: string; description: string | null; permissions: any[] }[] }) {
@@ -23,21 +25,40 @@ const store = createStore({
         },
         setToken(state, token: string) {
             state.token = token;
-            localStorage.setItem('token', token);  // Save token to localStorage
+            localStorage.setItem('token', token);
         },
         setRefreshToken(state, refreshToken: string) {
             state.refreshToken = refreshToken;
-            localStorage.setItem('refreshToken', refreshToken);  // Save refreshToken to localStorage
+            localStorage.setItem('refreshToken', refreshToken);
         },
         clearUser(state) {
             state.user = null;
             state.token = null;
-            localStorage.removeItem('user');  // Remove user from localStorage
-            localStorage.removeItem('token');  // Remove token from localStorage
-            localStorage.removeItem('refreshToken');  // Remove refreshToken from localStorage
-        }
+            state.refreshToken = null;
+            localStorage.removeItem('user');
+            localStorage.removeItem('token');
+            localStorage.removeItem('refreshToken');
+        },
+        // Mutations cho Dark Mode
+        toggleDarkMode(state) {
+            state.isDarkMode = !state.isDarkMode;
+            localStorage.setItem('isDarkMode', state.isDarkMode.toString());
+        },
+        setDarkMode(state, isDark: boolean) {
+            state.isDarkMode = isDark;
+            localStorage.setItem('isDarkMode', isDark.toString());
+        },
     },
-    actions: {},
+    actions: {
+        // Actions cho Dark Mode
+        toggleDarkMode({ commit }) {
+            commit("toggleDarkMode");
+        },
+        initializeDarkMode({ commit }) {
+            const savedDarkMode = localStorage.getItem("isDarkMode") === "true";
+            commit("setDarkMode", savedDarkMode);
+        },
+    },
     getters: {
         isAuthenticated(state): boolean {
             return !!state.token;
@@ -56,7 +77,11 @@ const store = createStore({
         },
         getEmail(state): string | null {
             return state.user ? state.user.email : null;
-        }
+        },
+        // Getter cho Dark Mode
+        isDarkMode(state): boolean {
+            return state.isDarkMode;
+        },
     }
 });
 

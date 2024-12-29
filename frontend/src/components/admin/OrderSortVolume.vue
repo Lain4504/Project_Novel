@@ -55,22 +55,21 @@ const saveOrder = async () => {
 </script>
 
 <template>
-  <div class="p-5 border border-gray-300 w-full bg-[#F8F8F7]">
-    <h3 class="text-xl font-semibold mb-4">Sắp xếp</h3>
-    <div class="p-2 mb-4">
-      <!-- draggable component to enable drag-and-drop -->
+  <a-card class="p-5 border border-gray-300 w-full bg-[#F8F8F7]">
+    <a-typography-title level="3" class="mb-4" style="font-size: 25px">Sắp xếp</a-typography-title>
+    <a-divider />
+    <a-space direction="vertical" size="small" class="w-full">
       <draggable v-model="items" class="list" item-key="id">
         <template #item="{ element }">
-          <div class="bg-green-300 p-2 mb-2 rounded border text-sm">
+          <a-card class="mb-2 rounded border text-sm bg-[#E7F5EE]" size="small">
             {{ element.name }}
-          </div>
+          </a-card>
         </template>
       </draggable>
-    </div>
-    <div class="flex justify-between">
+      <a-divider />
       <a-button type="primary" @click="saveOrder">
         Lưu thứ tự
       </a-button>
-    </div>
-  </div>
+    </a-space>
+  </a-card>
 </template>

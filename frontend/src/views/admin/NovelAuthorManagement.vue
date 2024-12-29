@@ -9,11 +9,10 @@ import {useRoute} from "vue-router";
 import {deleteVolume, getVolumesByNovelId} from "@/api/novelVolume";
 import {deleteChapter, getChaptersByVolumeId} from "@/api/novelChapter";
 import router from "@/router";
-import ConfirmDeleteModal from "@/components/common/ConfirmDeleteModal.vue";
 import NovelEdit from "@/components/admin/NovelEdit.vue";
 import OrderSortChapter from "@/components/admin/OrderSortChapter.vue";
 import OrderSortVolume from "@/components/admin/OrderSortVolume.vue";
-import {notification} from "ant-design-vue";
+import {notification, Modal} from "ant-design-vue";
 
 interface Chapter {
   id: string;
@@ -285,36 +284,29 @@ onMounted(() => {
 </script>
 
 <template>
-  <ConfirmDeleteModal
-      :show="showConfirmModal"
-      confirmText="Delete"
-      message="This action cannot be undone."
-      title="Are you sure you want to delete?"
-      @cancel="cancelDelete"
-      @confirm="confirmDelete"
-  />
+  <a-modal
+    v-model:visible="showConfirmModal"
+    title="Are you sure you want to delete?"
+    okText="Delete"
+    cancelText="Cancel"
+    @ok="confirmDelete"
+    @cancel="cancelDelete"
+  >
+    <p>This action cannot be undone.</p>
+  </a-modal>
   <div class="flex justify-center items-center max-w-7xl mx-auto">
-    <div class="bg-[#F8F8F7] p-8 rounded-lg shadow-md w-full">
-      <p class="text-lg font-bold">Novel Management</p>
+    <div class="bg-white p-8 rounded-lg shadow-md w-full">
+      <h1 class="text-lg font-bold ">Quản lý tiểu thuyết</h1>
       <div class="space-y-4 mt-10">
         <div class="md:col-span-1 relative">
-          <p class="text-lg font-bold cursor-pointer" @click="toggleDropdownNovel">{{ novel.title }}</p>
+          <h2 class="text-lg font-bold cursor-pointer text-[#18A058]" @click="toggleDropdownNovel">{{ novel.title }}</h2>
           <div v-if="isDropdownVisible"
-               class="absolute z-10 bg-[#F8F8F7] border border-gray-300 rounded-md mt-2 w-36 shadow-md">
-            <button class="block w-full p-2 cursor-pointer hover:bg-gray-100 text-sm" @click="viewNovel(novel.id)">Xem
-              tiểu thuyết
-            </button>
-            <button class="block w-full p-2 cursor-pointer hover:bg-gray-100 text-sm" @click="addVolume">
-              Thêm tập
-            </button>
-            <button class="block w-full p-2 cursor-pointer hover:bg-gray-100 text-sm" @click="sortVolumes">Sắp xếp tập
-            </button>
-            <button class="block w-full p-2 cursor-pointer hover:bg-gray-100 text-sm" @click="editNovel">Sửa tiểu
-              thuyết
-            </button>
-            <button class="block w-full p-2 cursor-pointer hover:bg-gray-100 text-sm"
-                    @click="() => { handleDelete(novel.id, 'novel'); }">Xóa tiểu thuyết
-            </button>
+               class="absolute z-10 bg-white border border-gray-300 rounded-md mt-2 w-36 shadow-md">
+            <button class="block w-full p-2 cursor-pointer hover:bg-[#E7F5EE] text-sm" @click="viewNovel(novel.id)">View Novel</button>
+            <button class="block w-full p-2 cursor-pointer hover:bg-[#E7F5EE] text-sm" @click="addVolume">Add Volume</button>
+            <button class="block w-full p-2 cursor-pointer hover:bg-[#E7F5EE] text-sm" @click="sortVolumes">Sort Volumes</button>
+            <button class="block w-full p-2 cursor-pointer hover:bg-[#E7F5EE] text-sm" @click="editNovel">Edit Novel</button>
+            <button class="block w-full p-2 cursor-pointer hover:bg-[#E7F5EE] text-sm text-red-600" @click="() => { handleDelete(novel.id, 'novel'); }">Delete Novel</button>
           </div>
         </div>
         <div>
@@ -332,56 +324,42 @@ onMounted(() => {
                 </button>
               </div>
               <div v-if="activeDropdown === volume.volumeName"
-                   class="z-10 absolute mt-2 bg-[#F8F8F7] border border-gray-300 rounded-md shadow-lg">
+                   class="z-10 absolute mt-2 bg-white border border-gray-300 rounded-md shadow-lg">
                 <ul class="py-1 text-sm text-gray-700">
                   <li>
-                    <button class="block w-full px-4 py-2 hover:bg-gray-100" @click="() => { addChapter(volume.id) }">
-                      Thêm chương
-                    </button>
+                    <button class="block w-full px-4 py-2 hover:bg-[#E7F5EE]" @click="() => { addChapter(volume.id) }">Add Chapter</button>
                   </li>
                   <li>
-                    <button class="block w-full px-4 py-2 hover:bg-gray-100" @click="() => { sortChapters(volume.id)}">
-                      Sắp xếp chương
-                    </button>
+                    <button class="block w-full px-4 py-2 hover:bg-[#E7F5EE]" @click="() => { sortChapters(volume.id)}">Sort Chapters</button>
                   </li>
                   <li>
-                    <button class="block w-full px-4 py-2 hover:bg-gray-100" @click="() => { editVolume(volume) }">Sửa
-                      tập
-                    </button>
+                    <button class="block w-full px-4 py-2 hover:bg-[#E7F5EE]" @click="() => { editVolume(volume) }">Edit Volume</button>
                   </li>
                   <li>
-                    <button class="block w-full px-4 py-2 text-red-600 hover:bg-gray-100"
-                            @click="() => { handleDelete(volume.id, 'volume')}">Xóa tập
-                    </button>
+                    <button class="block w-full px-4 py-2 text-red-600 hover:bg-[#E7F5EE]" @click="() => { handleDelete(volume.id, 'volume')}">Delete Volume</button>
                   </li>
                 </ul>
               </div>
               <div v-if="activeChapters[volume.volumeName]" class="mt-2 relative">
                 <div v-if="!volume.chapters || volume.chapters.length === 0" class="text-gray-500 text-sm">
-                  Không có chapter
+                  No chapters
                 </div>
                 <div class="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   <div v-for="chapter in volume.chapters" :key="chapter.id" class="text-left relative">
-                    <button class="text-sm text-blue-600 hover:underline" @click="toggleChapterDropdown(chapter.id)">
+                    <button class="text-sm hover:underline" @click="toggleChapterDropdown(chapter.id)">
                       {{ chapter.chapterTitle }}
                     </button>
                     <div v-if="activeDropdown === chapter.id"
-                         class="z-10 absolute left-0 mt-2 bg-[#F8F8F7] border border-gray-300 rounded-md shadow-lg">
+                         class="z-10 absolute left-0 mt-2 bg-white border border-gray-300 rounded-md shadow-lg">
                       <ul class="py-1 text-sm text-gray-700">
                         <li>
-                          <button class="block w-full px-4 py-2 hover:bg-gray-100"
-                                  @click="() => { viewChapter(chapter.id, novel.id)}">Xem chương
-                          </button>
+                          <button class="block w-full px-4 py-2 hover:bg-[#E7F5EE]" @click="() => { viewChapter(chapter.id, novel.id)}">View Chapter</button>
                         </li>
                         <li>
-                          <button class="block w-full px-4 py-2 hover:bg-gray-100"
-                                  @click="() => { editChapter(chapter)}">Chỉnh sửa chương
-                          </button>
+                          <button class="block w-full px-4 py-2 hover:bg-[#E7F5EE]" @click="() => { editChapter(chapter)}">Edit Chapter</button>
                         </li>
                         <li>
-                          <button class="block w-full px-4 py-2 text-red-600 hover:bg-gray-100"
-                                  @click="() => { handleDelete(chapter.id, 'chapter')}">Xóa chương
-                          </button>
+                          <button class="block w-full px-4 py-2 text-red-600 hover:bg-[#E7F5EE]" @click="() => { handleDelete(chapter.id, 'chapter')}">Delete Chapter</button>
                         </li>
                       </ul>
                     </div>

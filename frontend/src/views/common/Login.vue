@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import {Button, Checkbox, Form, Input, message} from 'ant-design-vue';
+import {message} from 'ant-design-vue';
 import {GoogleOutlined, LockOutlined, UserOutlined} from '@ant-design/icons-vue';
 import {ref} from 'vue';
 import {useStore} from 'vuex';
@@ -67,18 +67,18 @@ const openModal = () => {
 </script>
 
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-gray-100 px-4">
-    <div class="w-full max-w-md bg-white border border-gray-300 shadow-lg p-6 rounded-lg">
+  <main class="min-h-screen flex items-center justify-center bg-gray-100 px-4">
+    <section class="w-full max-w-md bg-white border border-gray-300 shadow-lg p-6 rounded-lg">
       <h2 class="text-center text-2xl font-bold mb-8">Login</h2>
 
-      <Form
+      <a-form
           ref="form"
           :model="formState"
           :rules="rules"
           @finish="handleFinish"
       >
-        <Form.Item name="email">
-          <Input
+        <a-form-item name="email">
+          <a-input
               v-model:value="formState.email"
               placeholder="Email"
               size="large"
@@ -86,11 +86,11 @@ const openModal = () => {
             <template #prefix>
               <UserOutlined class="text-gray-400"/>
             </template>
-          </Input>
-        </Form.Item>
+          </a-input>
+        </a-form-item>
 
-        <Form.Item name="password">
-          <Input.Password
+        <a-form-item name="password">
+          <a-input-password
               v-model:value="formState.password"
               placeholder="Password"
               size="large"
@@ -98,25 +98,25 @@ const openModal = () => {
             <template #prefix>
               <LockOutlined class="text-gray-400"/>
             </template>
-          </Input.Password>
-        </Form.Item>
+          </a-input-password>
+        </a-form-item>
 
         <div class="flex justify-between mb-4">
-          <Form.Item :wrapper-col="{ span: 24 }" class="mb-0" name="remember">
-            <Checkbox v-model:checked="formState.remember">
+          <a-form-item :wrapper-col="{ span: 24 }" class="mb-0" name="remember">
+            <a-checkbox v-model:checked="formState.remember">
               Remember me
-            </Checkbox>
-          </Form.Item>
-          <a class="text-primary hover:text-primary-dark" @click="openModal">
+            </a-checkbox>
+          </a-form-item>
+          <a class="text-primary hover:text-[#18A058]" @click="openModal">
             Forgot password?
           </a>
         </div>
 
-        <Form.Item>
-          <Button class="w-full" html-type="submit" size="large" type="primary">
+        <a-form-item>
+          <a-button class="w-full" html-type="submit" size="large" type="primary">
             Log in
-          </Button>
-        </Form.Item>
+          </a-button>
+        </a-form-item>
 
         <div class="flex items-center justify-center my-4">
           <div class="flex-grow border-t border-gray-300"></div>
@@ -124,33 +124,34 @@ const openModal = () => {
           <div class="flex-grow border-t border-gray-300"></div>
         </div>
 
-        <Button
+        <a-button
             class="w-full"
             size="large"
             @click="handleGoogleLogin"
         >
           <GoogleOutlined/>
           Login with Google
-        </Button>
+        </a-button>
 
         <div class="text-center mt-4">
           <span class="text-gray-600">Don't have an account? </span>
-          <router-link class="text-primary hover:text-primary-dark" to="/register">
+          <router-link class="text-primary hover:text-[#18A058]" to="/register">
             Sign up
           </router-link>
         </div>
-      </Form>
-    </div>
+      </a-form>
+    </section>
 
     <ForgotPasswordModal
         :isModalVisible="isModalVisible"
         @update:isModalVisible="isModalVisible = $event"
     />
-  </div>
+  </main>
 </template>
 
 <style scoped>
 .ant-input-affix-wrapper {
   background-color: #fff !important;
 }
+
 </style>

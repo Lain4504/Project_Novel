@@ -1,7 +1,8 @@
 <script lang="ts" setup>
 import {ref, watch} from 'vue';
 import Tiptap from "@/components/common/Tiptap.vue";
-import {Button, Input, notification, Select} from 'ant-design-vue';
+import {notification} from 'ant-design-vue';
+import router from "@/router";
 
 interface Field {
   id: string;
@@ -15,7 +16,6 @@ interface Props {
   fields: { title: string; inputs: Field[] };
   initialData: Record<string, any>;
   onSave: (id: string, data: Record<string, any>) => Promise<void>;
-  onCancel: () => void;
 }
 
 const props = defineProps<Props>();
@@ -40,6 +40,7 @@ const handleSave = async () => {
   try {
     await props.onSave(formData.value.id, formData.value);
     showNotification('success', 'Item updated successfully.');
+    router.back();
   } catch (error: any) {
     console.error('Failed to update item:', error);
     if (error.response) {
@@ -51,67 +52,42 @@ const handleSave = async () => {
     }
   }
 };
+const handleCancel = () => {
+  router.back();
+};
 </script>
 
 <template>
-  <div class="py-10 px-4">
-    <div class="bg-white shadow-lg rounded-lg p-6 max-w-4xl mx-auto">
-      <h3 class="text-xl font-semibold mb-6">Edit {{ props.fields.title }}</h3>
-      <form class="space-y-6">
-        <div class="flex flex-col space-y-6">
-          <div v-for="field in props.fields.inputs" :key="field.id">
-            <label :for="field.id" class="block text-sm font-medium text-gray-700">
-              {{ field.label }}<span v-if="field.required" class="text-red-500">*</span>
-            </label>
-            <div class="mt-1">
-              <template v-if="field.type === 'tiptap'">
-                <Tiptap
-                    :content="formData[field.id]"
-                    @update:content="formData[field.id] = $event"
-                />
-              </template>
-              <template v-else-if="field.type === 'select'">
-                <Select
-                    :id="field.id"
-                    v-model:value="formData[field.id]"
-                    class="w-full"
-                >
-                  <Select.Option
-                      v-for="option in field.options"
-                      :key="option.value"
-                      :value="option.value"
-                  >
-                    {{ option.label }}
-                  </Select.Option>
-                </Select>
-              </template>
-              <template v-else>
-                <Input
-                    :id="field.id"
-                    v-model:value="formData[field.id]"
-                    :type="field.type"
-                    class="w-full"
-                />
-              </template>
-            </div>
-          </div>
-        </div>
-
-        <div class="flex justify-end space-x-4">
-          <Button
-              type="default"
-              @click="props.onCancel"
-          >
-            Cancel
-          </Button>
-          <Button
-              type="primary"
-              @click="handleSave"
-          >
-            Save
-          </Button>
-        </div>
-      </form>
-    </div>
-  </div>
+  <a-layout class="flex-1 p-6 bg-white shadow-md max-w-5xl mx-auto">
+    <a-typography-title level="3" class="my-2" :style="{ color: '#18A058', fontSize: '20px' }">Edit
+      {{ props.fields.title }}
+    </a-typography-title>
+    <a-form @submit.prevent="handleSave">
+      <div class="space-y-6">
+        <a-form-item v-for="field in props.fields.inputs" :key="field.id" :label="field.label"
+                     :required="field.required" class="form-item">
+          <template v-if="field.type === 'tiptap'">
+            <Tiptap :content="formData[field.id]" @update:content="formData[field.id] = $event"/>
+          </template>
+          <template v-else-if="field.type === 'select'">
+            <a-select v-model:value="formData[field.id]" class="w-full">
+              <a-select-option v-for="option in field.options" :key="option.value" :value="option.value">
+                {{ option.label }}
+              </a-select-option>
+            </a-select>
+          </template>
+          <template v-else>
+            <a-input v-model:value="formData[field.id]" :type="field.type" class="w-full"/>
+          </template>
+        </a-form-item>
+      </div>
+      <div class="flex justify-end space-x-4 my-4">
+        <a-button type="default" @click="handleCancel">Cancel</a-button>
+        <a-button type="primary" html-type="submit">Save</a-button>
+      </div>
+    </a-form>
+  </a-layout>
 </template>
+
+<style scoped>
+</style>

@@ -7,9 +7,12 @@ import Ads from '@/components/home/Banner.vue';
 import {getNovel} from '@/api/novel';
 import {getVolumesByNovelId} from '@/api/novelVolume';
 import {getChaptersByVolumeId} from '@/api/novelChapter';
+import {StarFilled, StarOutlined} from '@ant-design/icons-vue';
+import {message} from "ant-design-vue";
 import {
   createRating,
   followNovel,
+  getRatingOfNovel,
   getReviewList,
   hasRated,
   isFollowingNovel,
@@ -23,6 +26,7 @@ import {
   getAllNovelComments,
   getAllNovelRepliesByCommentId
 } from "@/api/novelComment";
+import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 
 const route = useRoute();
 const novelId = Array.isArray(route.params.id) ? route.params.id[0] : route.params.id;
@@ -57,7 +61,7 @@ interface Novel {
   authorId: string;
   authorName: string;
   description: string;
-  bookStatus: string;
+  status: string;
   categories: Category[];
   wordCount: number;
   coverPicture: string;
@@ -175,6 +179,7 @@ const toggleCollect = async () => {
       await followNovel({userId, novelId});
     }
     isCollected.value = !isCollected.value;
+    showNotification(isCollected.value ? 'Followed successfully!' : 'Unfollowed successfully!');
   } catch (error) {
     console.error(error);
   }
@@ -204,12 +209,13 @@ const currentTabComponent = computed(() => {
 
 const rateNovel = async (rating: number) => {
   if (!isAuthenticated.value) {
-    alert('Please log in to rate the novel.');
+    message.error('Please log in to rate the novel.');
     return;
   }
   try {
     if (!novelId || !userId) {
-      throw new Error('Novel ID or User ID is missing');
+      console.error('Novel ID or User ID is missing.');
+      return;
     }
     if (userRating.value !== null) {
       await updateRating({userId, novelId, rating});
@@ -217,6 +223,7 @@ const rateNovel = async (rating: number) => {
       await createRating({userId, novelId, rating});
     }
     userRating.value = rating;
+    showNotification('Rating updated successfully!');
   } catch (error) {
     console.error('Failed to rate novel:', error);
   }
@@ -226,8 +233,20 @@ const checkUserRating = async () => {
   try {
     const response = await hasRated(userId, novelId);
     userRating.value = response ? response : null;
+    await fetchUserRating();
   } catch (error) {
     console.error('Failed to check user rating:', error);
+  }
+};
+const fetchUserRating = async () => {
+  if (isAuthenticated.value) {
+    try {
+      const response = await getRatingOfNovel(userId, novelId);
+      console.log('User rating:', response);
+      userRating.value = response.rating;
+    } catch (error) {
+      console.error('Failed to fetch user rating:', error);
+    }
   }
 };
 onMounted(() => {
@@ -238,95 +257,134 @@ onMounted(() => {
   checkFollowStatus();
   checkUserRating();
 });
+const isRatingModalVisible = ref(false);
+
+const toggleRatingModal = () => {
+  isRatingModalVisible.value = !isRatingModalVisible.value;
+};
+const novelUrl = `${window.location.origin}/novel/${novelId}`;
+const copyToClipboard = async (text: string) => {
+  try {
+    await navigator.clipboard.writeText(text);
+    showNotification('URL copied to clipboard!');
+  } catch (err) {
+    console.error('Failed to copy: ', err);
+  }
+};
+const showNotification = (msg: string) => {
+  message.success({
+    content: msg,
+    duration: 3,
+  });
+};
+const handleShareClick = () => {
+  copyToClipboard(novelUrl);
+};
 </script>
 
 <template>
-  <div class="max-w-7xl mx-auto my-5">
+  <div class="mx-auto max-w-7xl">
     <Ads class="my-4"/>
-    <Breadcrumb :breadcrumbs="[
-      { label: 'Home', to: { name: 'home' } },
-      { label: novel.title, to: { name: 'noveldetail', params: { id: novel.id } }, isCurrent: true }
-    ]"/>
+    <a-breadcrumb class="mb-6">
+      <a-breadcrumb-item v-for="(item, index) in [
+        { label: 'Home', to: { name: 'home' } },
+        { label: novel.title, to: { name: 'noveldetail', params: { id: novel.id } }, isCurrent: true }
+      ]" :key="index">
+        <router-link v-if="item.to" :to="item.to">{{ item.label }}</router-link>
+        <span v-else>{{ item.label }}</span>
+      </a-breadcrumb-item>
+    </a-breadcrumb>
   </div>
-  <div class="bg-gray-50 p-6 rounded-lg shadow-lg max-w-7xl mx-auto">
-    <div class="flex flex-col lg:flex-row items-center space-y-6 lg:space-y-0 lg:space-x-8">
-      <div class="w-full lg:w-1/4 flex justify-center">
-        <img :src="novel.image?.path" alt="Novel Cover" class="w-56 h-72 object-cover rounded-lg shadow-lg"/>
-      </div>
-      <div class="w-full lg:w-3/4 space-y-4 text-left lg:text-left">
-        <h1 class="text-xl font-semibold text-gray-800 hover:text-[#728156]">{{ novel.title }}</h1>
-        <div class="space-x-2">
-          <span v-for="(category, index) in novel.categories" :key="index"
-                class="inline-block py-1 px-3 text-sm font-semibold text-gray-700 bg-gray-200 rounded-full hover:bg-[#b6c99b]">
-            {{ category.name }}
-          </span>
+    <div class="max-w-7xl mx-auto p-4">
+      <div class="flex flex-col md:flex-row gap-6">
+        <div class="w-48 flex-shrink-0">
+          <img
+              :src="novel.image?.path"
+              alt="Novel Cover"
+              class="w-full rounded-lg shadow-md"
+          />
         </div>
-        <p class="text-gray-600 text-left">
-          <span class="font-bold text-md">Author:</span> {{ novel.authorName }}
-        </p>
-        <p class="text-gray-600 text-left">
-          <span class="font-bold text-md">Status:</span> Completed
-        </p>
-        <div class="grid grid-cols-3 lg:grid-cols-6 gap-4">
-          <div class="flex justify-center items-center">
-            <button id="collect" class="flex flex-col items-center text-center text-gray-700 cursor-pointer"
-                    @click="toggleCollect">
-              <font-awesome-icon :class="isCollected ? 'text-red-700' : 'text-red-300'" :icon="['fa', 'heart']"
+
+        <div class="flex-grow">
+          <h1 class="text-xl font-bold mb-4">
+            {{ novel.title }}
+          </h1>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6 text-sm">
+            <div class="flex items-start gap-2">
+              <span class="text-gray-500">Tác giả:</span>
+              <span>{{ novel.authorName }}</span>
+            </div>
+            <div class="flex items-start gap-2">
+              <span class="text-gray-500">Trình trạng:</span>
+              <span>{{ novel.status }}</span>
+            </div>
+            <div class="flex flex-wrap items-start gap-1">
+              <span class="text-gray-500 w-full sm:w-auto">Thể loại:</span>
+              <a-tag v-for="(category, index) in novel.categories" :key="index" class="mt-1">
+                {{ category.name }}
+              </a-tag>
+            </div>
+            <div class="flex items-start gap-2">
+              <span class="text-gray-500">Ngày cập nhập mới nhất:</span>
+              <span>2024-12-14</span>
+            </div>
+          </div>
+
+          <div class="flex gap-4 mb-6">
+            <button class="flex items-center gap-2 px-4 py-2 rounded-full border border-gray-300 hover:bg-gray-50"
+                    id="collect" @click="toggleCollect">
+              <span class="text-sm text-gray-600">Yêu thích</span>
+              <font-awesome-icon :class="isCollected ? 'text-[#18A058]' : 'text-[#E7F5EE]'" :icon="['fa', 'heart']"
                                  class="text-xl transition-colors duration-200"/>
-              <span class="text-sm">{{ isCollected ? 'Following' : 'Follow' }}</span>
+            </button>
+            <button class="flex items-center gap-2 px-4 py-2 rounded-full border border-gray-300 hover:bg-gray-50"
+                    @click="toggleRatingModal">
+              <span class="text-sm text-gray-600">Đánh giá</span>
+              <StarFilled v-if="userRating !== null" class="text-xl text-yellow-500 transition-colors duration-200"/>
+              <StarOutlined v-else class="text-xl text-gray-400 transition-colors duration-200"/>
+            </button>
+            <button @click="handleShareClick"
+                    class="flex items-center gap-2 px-4 py-2 rounded-full border border-gray-300 hover:bg-gray-50">
+              <span class="text-sm text-gray-600">Chia sẻ</span>
+              <font-awesome-icon :icon="['fa', 'share-alt']" class="text-xl"/>
             </button>
           </div>
-          <div class="flex justify-center items-center">
-            <div class="flex flex-col items-center text-center text-gray-700">
-              <label class="flex flex-col items-center" for="open-rating">
-                <font-awesome-icon :icon="userRating !== null ? 'fas fa-star' : 'far fa-star'"
-                                   class="text-yellow-500"/>
-                <span class="text-sm">{{ userRating !== null ? `Rated: ${userRating}` : 'Rate' }}</span>
-              </label>
-              <div class="flex space-x-1 mt-2">
-                <font-awesome-icon v-for="n in 5" :key="n" :icon="['far', 'star']"
-                                   class="text-yellow-500 cursor-pointer"
-                                   @click="rateNovel(n)"/>
+          <div v-if="isRatingModalVisible"
+               class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+            <div class="bg-white p-6 rounded-lg shadow-lg relative">
+              <h2 class="text-lg font-semibold mb-4">Đánh giá tiểu thuyết</h2>
+              <!-- Rating form content -->
+              <div class="flex items-center justify-between space-x-2">
+                <button v-for="star in 5" :key="star" @click="rateNovel(star)"
+                        :class="{'text-yellow-500': (userRating ?? 0) >= star, 'text-yellow-400 hover:text-yellow-500 transition-colors': (userRating ?? 0) < star}">
+                  <StarFilled v-if="(userRating ?? 0) >= star" class="text-xl"/>
+                  <StarOutlined v-else class="text-xl"/>
+                </button>
               </div>
+              <!-- Close button with "X" -->
+              <button @click="toggleRatingModal"
+                      class="absolute top-2 right-2 text-gray-500 hover:text-black transition">
+                <font-awesome-icon :icon="['fa', 'times']"/>
+              </button>
             </div>
           </div>
-          <div class="flex justify-center items-center">
-            <router-link class="flex flex-col items-center text-center text-gray-700 hover:text-blue-600" to="#">
-              <font-awesome-icon :icon="['far', 'comments']"/>
-              <span class="text-sm">Bàn luận</span>
-            </router-link>
-          </div>
-          <div class="flex justify-center items-center">
-            <label class="flex flex-col items-center text-center text-gray-700 hover:text-blue-600" for="open-sharing">
-              <font-awesome-icon :icon="['fas', 'share-nodes']"/>
-              <span class="text-sm">Chia sẻ</span>
-            </label>
-            <input id="open-sharing" class="hidden" type="checkbox"/>
-            <div class="sharing-box hidden mt-2">
-              <a class="sharing-item block text-sm text-blue-600 hover:text-blue-800" href="#" x-data="">Link rút
-                gọn</a>
-              <a class="sharing-item block text-xl text-blue-600 hover:text-blue-800" href="#" target="_blank"><i
-                  class="fab fa-facebook-f"></i></a>
-              <a class="sharing-item block text-xl text-blue-600 hover:text-blue-800" href="#" target="_blank"><i
-                  class="fab fa-twitter"></i></a>
-            </div>
-          </div>
+
+          <p class="text-gray-700 mb-6 leading-relaxed">
+            <a class="italic" v-html="novel.description"/>
+          </p>
         </div>
       </div>
     </div>
-    <div class="mt-10 text-left lg:text-left">
-      <h3 class="font-bold text-md items-start justify-start flex">Description:</h3>
-      <p class="text-md text-gray-600 mt-4 text-left" v-html="novel.description"/>
-    </div>
     <div class="w-full max-w-7xl mx-auto mt-10">
-      <h2 class="text-xl font-semibold text-gray-800 mb-6">Chapter List</h2>
+      <h2 class="text-xl font-semibold text-gray-800 mb-6">Danh sách chương</h2>
       <div class="space-y-6">
         <div v-for="(volume, volumeIndex) in volumes" :key="volumeIndex"
              class="border border-gray-200 rounded-lg overflow-hidden">
           <button
-              class="w-full px-4 py-3 bg-gray-50 flex items-center justify-between hover:bg-gray-100 transition-colors"
+              class="w-full px-4 py-3 bg-gray-100 flex items-center justify-between hover:bg-gray-200 transition-colors text-[#18A058] font-semibold"
               @click="toggleVolume(volumeIndex, volume.id)">
-            <h3 class="text-lg font-medium text-gray-800">{{ volume.volumeName }}</h3>
+            {{ volume.volumeName }}
             <font-awesome-icon :icon="volume.expanded ? 'fa-solid fa-sort-up' : 'fa-solid fa-sort-down'"/>
           </button>
           <div v-show="volume.expanded" class="transition-all duration-300 ease-in-out">
@@ -334,22 +392,20 @@ onMounted(() => {
               <div v-if="volume.chapters.length === 0" class="text-center text-gray-600">
                 Không có chapter
               </div>
-              <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div v-else class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 <router-link
                     v-for="(chapter, chapterIndex) in volume.chapters.slice(0, volume.showMore ? undefined : 6)"
                     :key="chapterIndex"
                     :to="{ name: 'chapter', params: { novel: novelId, chapter: chapter.id } }"
                     class="group relative">
-                  <div
-                      class="p-3 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow border border-gray-100 hover:border-gray-200">
-                    <span class="text-sm text-gray-700 truncate block">
-                    {{ chapter.chapterTitle }}
-                  </span>
+                  <a-tooltip :title="chapter.chapterTitle">
                     <div
-                        class="absolute left-1/2 transform -translate-x-1/2 bottom-full mb-2 hidden group-hover:block z-10 bg-black text-white text-xs py-1 px-2 rounded">
-                      {{ chapter.chapterTitle }}
+                        class="p-2 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow border border-gray-300 hover:border-gray-400">
+                   <span class="text-sm text-gray-700 truncate block">
+                 {{ chapter.chapterTitle }}
+                 </span>
                     </div>
-                  </div>
+                  </a-tooltip>
                 </router-link>
               </div>
               <div v-if="volume.chapters.length > 6" class="mt-4 text-center">
@@ -365,10 +421,10 @@ onMounted(() => {
         </div>
       </div>
     </div>
-    <div class="container mx-auto p-4">
+    <div class="container mx-auto p-4 max-w-7xl">
       <div class="flex space-x-4 border-b mb-4">
         <button v-for="(tab, index) in tabs" :key="index"
-                :class="['px-4 py-2 text-sm font-semibold', currentTab === tab ? 'border-b-2 border-blue-500 text-blue-500' : 'text-gray-600']"
+                :class="['px-4 py-2 text-sm font-semibold', currentTab === tab ? 'border-b-2 border-[#18A058] text-[#18A058]' : 'text-gray-600']"
                 @click="currentTab = tab">
           {{ tab }}
         </button>
@@ -389,5 +445,8 @@ onMounted(() => {
                  @reviewCreated="handleReviewCreated"
       />
     </div>
-  </div>
 </template>
+
+<style scoped>
+
+</style>

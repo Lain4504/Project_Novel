@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import {Button, Form, Input, message} from 'ant-design-vue';
+import {message} from 'ant-design-vue';
 import {LockOutlined, MailOutlined} from '@ant-design/icons-vue';
 import {ref} from 'vue';
 import {useStore} from 'vuex';
@@ -76,15 +76,15 @@ const handleConfirm = () => {
     <div class="w-full max-w-md bg-white border border-gray-300 shadow-lg p-6 rounded-lg">
       <h2 class="text-center text-2xl font-bold mb-8">Register</h2>
 
-      <Form
+      <a-form
           ref="form"
           :model="formState"
           :rules="rules"
           scrollToFirstError
           @finish="handleFinish"
       >
-        <Form.Item name="email">
-          <Input
+        <a-form-item name="email">
+          <a-input
               v-model:value="formState.email"
               placeholder="Email"
               size="large"
@@ -92,11 +92,11 @@ const handleConfirm = () => {
             <template #prefix>
               <MailOutlined class="text-gray-400"/>
             </template>
-          </Input>
-        </Form.Item>
+          </a-input>
+        </a-form-item>
 
-        <Form.Item name="password">
-          <Input.Password
+        <a-form-item name="password">
+          <a-input-password
               v-model:value="formState.password"
               placeholder="Password"
               size="large"
@@ -104,11 +104,11 @@ const handleConfirm = () => {
             <template #prefix>
               <LockOutlined class="text-gray-400"/>
             </template>
-          </Input.Password>
-        </Form.Item>
+          </a-input-password>
+        </a-form-item>
 
-        <Form.Item name="confirmPassword">
-          <Input.Password
+        <a-form-item name="confirmPassword">
+          <a-input-password
               v-model:value="formState.confirmPassword"
               placeholder="Confirm Password"
               size="large"
@@ -116,22 +116,22 @@ const handleConfirm = () => {
             <template #prefix>
               <LockOutlined class="text-gray-400"/>
             </template>
-          </Input.Password>
-        </Form.Item>
+          </a-input-password>
+        </a-form-item>
 
-        <Form.Item>
-          <Button class="w-full" html-type="submit" size="large" type="primary">
+        <a-form-item>
+          <a-button class="w-full" html-type="submit" size="large" type="primary">
             Register
-          </Button>
-        </Form.Item>
+          </a-button>
+        </a-form-item>
 
         <div class="text-center mt-4">
           <span class="text-gray-600">Already have an account? </span>
-          <router-link class="text-primary hover:text-primary-dark" to="/login">
+          <router-link class="text-primary hover:text-[#18A058]" to="/login">
             Login
           </router-link>
         </div>
-      </Form>
+      </a-form>
     </div>
     <ConfirmModal
         :visible="showModal"

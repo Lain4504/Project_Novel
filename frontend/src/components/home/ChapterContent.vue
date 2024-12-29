@@ -2,8 +2,9 @@
 import {computed, defineEmits, defineProps, onMounted, onUnmounted, ref} from 'vue';
 import {addBookmark} from '@/api/user';
 import store from "@/store";
-import {Button} from 'ant-design-vue';
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
+import router from "@/router";
+import ChapterList from '@/components/home/ChapterList.vue';
 
 const props = defineProps<{
   chapter: {
@@ -27,6 +28,7 @@ const bookmarkPosition = ref({top: 0, left: 0});
 const bookmarkVisible = ref(false);
 const selectedText = ref('');
 const isAuthenticated = computed(() => store.getters.isAuthenticated);
+const showChapterList = ref(false);
 
 const handleContentClick = (event: MouseEvent | TouchEvent) => {
   if (!isAuthenticated.value) return;
@@ -65,6 +67,10 @@ const handleResize = () => {
   bookmarkVisible.value = false;
 };
 
+const toggleChapterList = () => {
+  showChapterList.value = !showChapterList.value;
+};
+
 onMounted(() => {
   const contentElement = document.querySelector('.content');
   if (contentElement) {
@@ -76,6 +82,9 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener('resize', handleResize);
 });
+const goBackNovel = () => {
+  router.push({name: 'noveldetail', params: {id: props.novel.id}});
+};
 </script>
 
 <template>
@@ -90,7 +99,7 @@ onUnmounted(() => {
         <font-awesome-icon :icon="['fas', 'bookmark']" size="lg"/>
       </button>
     </div>
-    <main class="container mx-auto px-4 py-6 max-w-5xl">
+    <main class="container mx-auto px-4 py-6 max-w-6xl">
       <div class="text-center mb-6">
         <h2 class="text-2xl font-semibold mb-2">
           {{ chapter.title }}
@@ -107,63 +116,63 @@ onUnmounted(() => {
       </div>
       <div class="prose prose-blue mx-auto max-w-none" v-html="chapter.content"></div>
       <div class="flex justify-between mt-8">
-        <Button type="primary" @click="$emit('previous-chapter')">Previous Chapter</Button>
-        <Button type="primary" @click="$emit('next-chapter')">Next Chapter</Button>
+        <a-button type="primary" @click="$emit('previous-chapter')">Previous Chapter</a-button>
+        <a-button type="primary" @click="$emit('next-chapter')">Next Chapter</a-button>
       </div>
     </main>
     <div class="sidebar fixed right-4 top-1/2 -translate-y-1/2 flex flex-col gap-1 z-10">
       <nav class="bg-white/90 rounded-lg shadow-lg p-2 flex flex-col gap-4">
-        <button class="p-2 hover:bg-gray-100 rounded transition-colors">
+        <button class="p-2 hover:bg-[#E7F5EE] rounded transition-colors" @click="$emit('next-chapter')">
           <font-awesome-icon :icon="['fas', 'angles-right']" class="text-gray-600"/>
         </button>
 
-        <button class="p-2 hover:bg-gray-100 rounded transition-colors">
+        <button class="p-2 hover:bg-[#E7F5EE] rounded transition-colors" @click="goBackNovel">
           <font-awesome-icon :icon="['fas', 'home']" class="text-gray-600"/>
         </button>
 
-        <button class="p-2 hover:bg-gray-100 rounded transition-colors">
+        <button class="p-2 hover:bg-[#E7F5EE] rounded transition-colors">
           <font-awesome-icon :icon="['fas', 'font']"/>
         </button>
 
-        <button class="p-2 hover:bg-gray-100 rounded transition-colors">
+        <button class="p-2 hover:bg-gray-100 rounded transition-colors"  @click="toggleChapterList">
           <font-awesome-icon :icon="['fas', 'list']" class="text-gray-600"/>
         </button>
 
-        <button class="p-2 hover:bg-gray-100 rounded transition-colors">
+        <button class="p-2 hover:bg-[#E7F5EE]  rounded transition-colors">
           <font-awesome-icon :icon="['fas', 'bookmark']" class="text-gray-600"/>
         </button>
 
-        <button class="p-2 hover:bg-gray-100 rounded transition-colors">
+        <button class="p-2 hover:bg-[#E7F5EE] rounded transition-colors" @click="$emit('previous-chapter')">
           <font-awesome-icon :icon="['fas', 'angles-left']" class="text-gray-600"/>
         </button>
       </nav>
     </div>
     <div class="mobile-menu fixed bottom-0 left-0 right-0 bg-white border-t border-gray-300 px-4 py-2 z-10">
       <div class="max-w-screen-sm mx-auto flex justify-between items-center">
-        <button class="p-2 hover:bg-black/5 rounded-full transition-colors">
+        <button class="p-2 hover:bg-[#E7F5EE] rounded-full transition-colors" @click="$emit('next-chapter')">
           <font-awesome-icon :icon="['fas', 'angles-left']" class="w-5 h-5 text-gray-600"/>
         </button>
-
-        <button class="p-2 hover:bg-black/5 rounded-full transition-colors">
-          <font-awesome-icon :icon="['fas', 'home']" class="w-5 h-5 text-gray-600"/>
+        <button class="p-2 hover:bg-[#E7F5EE] rounded-full transition-colors" @click="goBackNovel">
+            <font-awesome-icon :icon="['fas', 'home']" class="w-5 h-5 text-gray-600"/>
         </button>
-        <button class="p-2 hover:bg-black/5 rounded-full transition-colors">
+        <button class="p-2 hover:bg-[#E7F5EE] rounded-full transition-colors">
           <font-awesome-icon :icon="['fas', 'font']" class="w-5 h-5 text-gray-600"/>
         </button>
 
-        <button class="p-2 hover:bg-black/5 rounded-full transition-colors">
+        <button class="p-2 hover:bg-[#E7F5EE] rounded-full transition-colors"  @click="toggleChapterList" >
           <font-awesome-icon :icon="['fas', 'list']" class="w-5 h-5 text-gray-600"/>
         </button>
 
-        <button class="p-2 hover:bg-black/5 rounded-full transition-colors">
+        <button class="p-2 hover:bg-[#E7F5EE] rounded-full transition-colors">
           <font-awesome-icon :icon="['fas', 'bookmark']" class="w-5 h-5 text-gray-600"/>
         </button>
 
-        <button class="p-2 hover:bg-black/5 rounded-full transition-colors">
+        <button class="p-2 hover:bg-[#E7F5EE] rounded-full transition-colors" @click="$emit('previous-chapter')">
           <font-awesome-icon :icon="['fas', 'angles-right']" class="w-5 h-5 text-gray-600"/>
         </button>
       </div>
     </div>
+    <ChapterList v-if="showChapterList" :volumeId="props.chapter.volumeId" :novelId="props.novel.id" @close="toggleChapterList" class="fixed left-0 top-0 h-full bg-white shadow-lg z-50"/>
   </div>
 </template>
 

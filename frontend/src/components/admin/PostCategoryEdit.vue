@@ -8,7 +8,7 @@ import router from "@/router";
 const fields = {
   title: 'Post Category',
   inputs: [
-    {id: 'name', label: 'Name', type: 'text'},
+    {id: 'name', label: 'Name', type: 'text', required: true},
     {id: 'description', label: 'Description', type: 'tiptap'},
   ],
 };
@@ -27,27 +27,10 @@ const initialData = ref({});
 // Hàm tải dữ liệu từ API
 const loadPostCategory = async () => {
   try {
-    const response = await getPostCategory(props.id);
-    initialData.value = response;
+    initialData.value = await getPostCategory(props.id);
   } catch (error) {
     console.error('Failed to fetch post category:', error);
   }
-};
-// Hàm xử lý lưu dữ liệu
-const handleSave = async (id: string, data: Record<string, any>) => {
-  try {
-    await updatePostCategory(id, data);
-    console.log('Post category updated successfully!');
-    router.push({name: 'postCategoryList'});
-  } catch (error) {
-    console.error('Failed to update post category:', error);
-    throw error; // Ném lỗi để component con xử lý
-  }
-};
-
-// Hàm xử lý khi người dùng hủy chỉnh sửa
-const handleCancel = () => {
-  router.back();
 };
 
 // Gọi hàm tải dữ liệu khi component được mount
@@ -60,7 +43,6 @@ onMounted(() => {
   <DynamicFormEdit
       :fields="fields"
       :initialData="initialData"
-      :onCancel="handleCancel"
-      :onSave="handleSave"
+      :onSave="updatePostCategory"
   />
 </template>

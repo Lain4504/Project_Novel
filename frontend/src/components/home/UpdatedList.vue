@@ -2,7 +2,6 @@
 import {onMounted, ref} from 'vue';
 import {getLatestNovels} from "@/api/novel";
 
-// Dữ liệu mẫu
 interface Novel {
   id: number;
   title: string;
@@ -36,12 +35,11 @@ const columnWidths = ref({
   updatedAt: 200,
 });
 
-// Kiểm tra màn hình mobile
 const isMobile = ref(false);
 
 onMounted(() => {
   const checkMobile = () => {
-    isMobile.value = window.innerWidth < 768; // 768px là ngưỡng độ rộng màn hình mobile
+    isMobile.value = window.innerWidth < 768;
   };
   checkMobile();
   window.addEventListener('resize', checkMobile);
@@ -52,19 +50,17 @@ onMounted(() => {
   <div class="max-w-7xl mx-auto py-8">
     <h1 class="text-xl font-semibold mb-6 text-start">Cập nhật mới nhất</h1>
 
-    <!-- Hiển thị bảng trên màn hình lớn -->
     <table v-if="!isMobile && novels.length > 0" class="w-full border-collapse">
       <tbody>
-      <tr v-for="novel in novels" :key="novel.id" class="border-b hover:bg-gray-50">
-        <!-- <td :style="{ width: columnWidths.category + 'px' }" class="px-4 py-2 text-gray-700">ssss</td>  -->
-        <td :style="{ width: columnWidths.title + 'px' }" class="px-4 py-2 text-sm font-semibold text-blue-600">
+      <tr v-for="novel in novels" :key="novel.id" class="border-b hover:bg-[#E7F5EE]">
+        <td :style="{ width: columnWidths.title + 'px' }" class="px-4 py-2 text-sm font-semibold text-[#18A058]">
           <router-link :to="{ name: 'noveldetail', params: { id: novel.id } }">{{ novel.title }}</router-link>
         </td>
-        <td :style="{ width: columnWidths.author + 'px' }" class="px-4 py-2 text-sm text-gray-700 hover:text-blue-700">
+        <td :style="{ width: columnWidths.author + 'px' }" class="px-4 py-2 text-sm text-gray-700 hover:text-[#18A058] italic">
           <router-link :to="{ name: 'account', params: { id: novel.authorId } }">{{ novel.authorName }}</router-link>
         </td>
         <td :style="{ width: columnWidths.latestChapter + 'px' }"
-            class="px-4 py-2 text-sm text-gray-700 hover:text-blue-700">
+            class="px-4 py-2 text-sm text-gray-700 hover:text-[#18A058] hover:underline">
           <router-link :to="{ name: 'chapter', params: { novel: novel.id, chapter: novel.latestChapterId } }">
             {{ novel.latestChapterTitle }}
           </router-link>
@@ -76,27 +72,23 @@ onMounted(() => {
       </tbody>
     </table>
 
-    <!-- Hiển thị cho mobile -->
     <div v-else-if="novels.length > 0">
-      <div v-for="novel in novels" :key="novel.id" class="border-b hover:bg-gray-50 mb-4 p-4">
-        <!-- Title -->
-        <div class="text-sm font-semibold text-blue-600 mb-2">
+      <div v-for="novel in novels" :key="novel.id" class="border-b hover:bg-[#E7F5EE] mb-4 p-4">
+        <div class="text-sm font-semibold text-[#18A058] mb-2">
           <router-link :to="{ name: 'noveldetail', params: { id: novel.id } }">{{ novel.title }}</router-link>
         </div>
 
-        <!-- Author, Chapter (hàng ngang) -->
         <div class="flex justify-between mb-2">
-          <div class="text-sm text-gray-700">
+          <div class="text-sm text-gray-700 italic">
             <router-link :to="{ name: 'account', params: { id: novel.authorId } }">{{ novel.authorName }}</router-link>
           </div>
-          <div class="text-sm text-gray-700">
+          <div class="text-sm text-gray-700 hover:underline">
             <router-link :to="{ name: 'chapter', params: { novel: novel.id, chapter: novel.latestChapterId } }">
               {{ novel.latestChapterTitle }}
             </router-link>
           </div>
         </div>
 
-        <!-- Category và UpdateAt (hàng ngang) -->
         <div class="flex justify-between">
           <div class="text-sm text-gray-700"></div>
           <div class="text-sm text-gray-500">{{ novel.created }}</div>
@@ -104,14 +96,12 @@ onMounted(() => {
       </div>
     </div>
 
-    <!-- Hiển thị thông báo nếu không có tiểu thuyết -->
     <p v-else class="text-gray-500 text-center">Không có tiểu thuyết nào được cập nhật.</p>
   </div>
 </template>
 
 <style scoped>
 @media screen and (max-width: 768px) {
-  /* Định dạng cho màn hình di động */
   .text-start {
     text-align: left;
   }

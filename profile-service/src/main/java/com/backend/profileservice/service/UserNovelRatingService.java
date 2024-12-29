@@ -51,4 +51,8 @@ public class UserNovelRatingService {
     public boolean hasRatedNovel(String userId, String novelId) {
         return userNovelRatingRepository.findByUserIdAndNovelId(userId, novelId) != null;
     }
+    public UserNovelRatingResponse getRating(String userId, String novelId) {
+        UserNovelRating userNovelRating = userNovelRatingRepository.findByUserIdAndNovelId(userId, novelId);
+        return userNovelRatingMapper.toUserNovelRatingResponse(userNovelRating);
+    }
 }

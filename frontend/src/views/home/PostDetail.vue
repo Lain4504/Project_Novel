@@ -92,15 +92,15 @@ onMounted(() => {
 <template>
   <div class="max-w-7xl mx-auto">
     <Ads class="my-4"/>
-    <div class="bg-white p-6 mt-6 rounded-lg shadow-md">
-      <div class="flex items-center justify-between mb-6">
+    <article class="bg-white p-6 mt-6 rounded-lg shadow-md">
+      <header class="flex items-center justify-between mb-6">
         <div class="flex items-center">
           <img :src="user?.image.path" alt="Avatar" class="w-10 h-10 rounded-full mr-3">
-          <div class="font-semibold text-lg">{{ user?.username }} <span class="text-gray-500 text-sm"></span></div>
+          <div class="font-semibold text-lg ">{{ user?.username }}</div>
         </div>
-        <div class="text-sm text-gray-500">{{ post?.created }}</div>
-      </div>
-      <h1 class="text-3xl font-bold text-gray-800 mb-4">{{ post?.title }}</h1>
+        <time class="text-sm text-gray-500">{{ post?.created }}</time>
+      </header>
+      <h1 class="text-3xl font-bold mb-4">{{ post?.title }}</h1>
       <div class="content-body mb-6" v-html="post?.content"></div>
       <CommentSection :comments="comments" :create-comment-api="createComment"
                       :create-reply-api="createReply" :current-page="currentPage"
@@ -115,7 +115,7 @@ onMounted(() => {
                       @commentAdded="handleCommentAdded"
                       @pageChange="handlePageChange"
       />
-    </div>
+    </article>
   </div>
 </template>
 
@@ -123,5 +123,6 @@ onMounted(() => {
 .content-body {
   font-size: 1rem;
   line-height: 1.75;
+  color: #333;
 }
 </style>

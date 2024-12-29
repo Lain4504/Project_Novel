@@ -73,44 +73,49 @@ onMounted(() => {
 
 <template>
   <div class="flex flex-col md:flex-row md:space-x-4 space-y-4 md:space-y-0 mt-10">
-    <!-- Bài viết mới nhất Section -->
+    <!-- Latest Posts Section -->
     <div class="w-full md:w-3/5">
-      <section class="p-4 border rounded">
+      <section class="p-4 border rounded bg-white">
         <div class="flex justify-between items-center">
-          <h4 class="text-md font-bold">Bài viết mới nhất</h4>
-          <router-link :to="{ name: 'postforum' }" class="text-[#98a77c] text-sm">Xem tất cả</router-link>
+          <h2 class="text-md font-bold">Thảo luận mới nhất</h2>
+          <router-link :to="{ name: 'postforum' }" class="text-[#18A058] text-sm hover:underline">Xem tất cả
+          </router-link>
         </div>
         <div class="mt-4 text-sm">
           <ul class="space-y-4">
-            <li v-if="latestPosts.length === 0">Chưa có dữ liệu bài viết</li>
+            <li v-if="latestPosts.length === 0">No posts available</li>
             <li
                 v-for="(post, index) in latestPosts"
                 :key="index"
                 class="border-b pb-2"
             >
-              <h5 class="font-semibold truncate">
+              <h3 class="font-semibold truncate hover:text-[#18A058]">
                 <router-link :to="{ name: 'postdetail', params: { id: post.id } }">
                   {{ post.title }}
                 </router-link>
-              </h5>
-              <p class="text-gray-500 text-xs">
-                {{ post.created }} - {{ post.categoryName }}
+              </h3>
+              <p class="text-[#18A058] text-xs space-x-2">
+                <a-tag class="italic text-[#E7F5EE] bg-[#18A058] ">
+                  {{ post.categoryName }}
+                </a-tag>
+                {{ post.created }}
               </p>
             </li>
           </ul>
         </div>
       </section>
     </div>
-    <!-- Đang đọc Section -->
+    <!-- Reading Section -->
     <div v-if="isAuthenticated" class="w-full md:w-2/5">
-      <section class="p-4 border rounded">
+      <section class="p-4 border rounded bg-white">
         <div class="flex justify-between items-center">
-          <h4 class="text-md font-bold">Đang đọc</h4>
-          <router-link :to="{ name: 'readinglist' }" class="text-[#98a77c] text-sm">Xem tất cả</router-link>
+          <h2 class="text-md font-bold">Tiểu thuyết vừa đọc</h2>
+          <router-link :to="{ name: 'readinglist' }" class="text-[#18A058] text-sm hover:underline">Xem tất cả
+          </router-link>
         </div>
         <div class="mt-4 text-sm">
           <div class="space-y-4">
-            <div v-if="readingNovels.length === 0">Bạn chưa đọc truyện nào</div>
+            <div v-if="readingNovels.length === 0">You are not reading any novels</div>
             <div
                 v-for="(novel, index) in readingNovels"
                 :key="index"
@@ -122,12 +127,12 @@ onMounted(() => {
                   class="w-14 h-20 object-cover"
               />
               <div class="flex justify-between items-center w-full">
-                <h5 class="font-semibold truncate">
+                <h3 class="font-semibold truncate hover:text-[#18A058]">
                   <router-link :to="{ name: 'noveldetail', params: { id: novel.novelId } }">
                     {{ novel.novelName }}
                   </router-link>
-                </h5>
-                <p class="text-gray-500 flex-shrink-0">
+                </h3>
+                <p class="text-gray-500 flex-shrink-0 hover:text-[#18A058]">
                   <router-link :to="{ name: 'chapter', params: { novel: novel.novelId, chapter: novel.novelChapterId}}">
                     {{ novel.novelChapterTitle }}
                   </router-link>
@@ -140,3 +145,13 @@ onMounted(() => {
     </div>
   </div>
 </template>
+
+<style scoped>
+.bg-white {
+  background-color: #FFFFFF;
+}
+
+.border {
+  border-color: #E7F5EE;
+}
+</style>

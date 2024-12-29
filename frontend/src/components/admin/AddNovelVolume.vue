@@ -50,30 +50,35 @@ const handleSubmit = async () => {
 </script>
 
 <template>
-  <main class="flex-1 p-6 bg-[#f8f8f7] shadow-sm">
-    <h1>Add Novel Volume</h1>
-    <form @submit.prevent="handleSubmit">
-      <!-- Title Input -->
-      <div class="mt-4">
-        <label class="block text-sm font-medium text-gray-700" for="title">Title   <span class="text-red-500">*</span></label>
-        <a-input id="title" v-model:value="state.title" class="w-full text-sm p-[0.4rem]" placeholder="Enter title"/>
-      </div>
-      <div class="mt-4">
-        <label class="block text-sm font-medium text-gray-700" for="status">Status   <span class="text-red-500">*</span></label>
-        <a-select id="status" v-model:value="state.status" class="block w-1/2">
+  <a-layout class="flex-1 p-6 bg-white shadow-md">
+    <a-typography-title level="3" class="my-2" :style="{ color: '#18A058', fontSize: '20px' }">Add Novel Volume</a-typography-title>
+    <a-form @submit.prevent="handleSubmit">
+      <a-form-item label="Title" required class="form-item">
+        <a-input v-model:value="state.title" placeholder="Enter title"/>
+      </a-form-item>
+      <a-form-item label="Status" required class="form-item">
+        <a-select v-model:value="state.status" class="block w-1/2">
           <a-select-option value="ongoing">Ongoing</a-select-option>
           <a-select-option value="completed">Completed</a-select-option>
         </a-select>
-      </div>
-      <div class="mt-4">
-        <label class="block text-sm font-medium text-gray-700" for="description">Description</label>
+      </a-form-item>
+      <a-form-item label="Description" class="form-item">
         <Tiptap :content="state.description" @update:content="state.description = $event"/>
-      </div>
-      <div class="flex justify-end mt-4">
-        <a-button html-type="submit" type="primary">
-          Submit
-        </a-button>
-      </div>
-    </form>
-  </main>
+      </a-form-item>
+      <a-form-item class="form-item submit-button">
+        <a-button type="primary" html-type="submit">Submit</a-button>
+      </a-form-item>
+    </a-form>
+  </a-layout>
 </template>
+
+<style scoped>
+.form-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.submit-button {
+  align-items: flex-end;
+}
+</style>

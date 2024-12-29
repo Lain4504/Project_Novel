@@ -6,6 +6,7 @@ import {getUserProfile} from '@/api/user';
 import {getNovelsByAuthorId} from '@/api/novel';
 import Ads from '@/components/home/Banner.vue';
 import {useRoute} from "vue-router";
+import store from "../../store";
 
 const {Title, Paragraph, Text} = Typography;
 const route = useRoute();
@@ -44,6 +45,7 @@ const currentPage = ref(1);
 const pageSize = 3;
 const totalPages = ref(1);
 const loading = ref(false);
+const expandedNovels = ref<{ [key: string]: boolean }>({});
 
 const userStats = computed(() => [
   {key: 'Read', value: `${userProfile.value.readNovels} novels`},
@@ -90,6 +92,14 @@ const handlePageChange = (page: number) => {
   fetchNovelsData(page, pageSize);
 };
 
+const toggleExpanded = (id: string) => {
+  expandedNovels.value[id] = !expandedNovels.value[id];
+};
+
+const isDescriptionLong = (description: string) => {
+  return description.length > 300; // Adjust the length as needed
+};
+
 onMounted(() => {
   fetchNovelsData(currentPage.value, pageSize);
   fetchUserProfile();
@@ -125,7 +135,7 @@ onMounted(() => {
               />
               <div>
                 <Title :level="4" class="mb-0">{{ userProfile.username }}</Title>
-                <Text type="secondary">Member</Text>
+                <a-tag class="bg-purple-300">{{store.getters.getUserRole}}</a-tag>
               </div>
             </div>
 
@@ -149,7 +159,7 @@ onMounted(() => {
         <Col :md="16" :sm="24" :xs="24">
           <Card :bordered="false" class="shadow-sm">
             <template #title>
-              <Title :level="4">Your Published Novels</Title>
+              <Title :level="4">Tiểu thuyết đã đăng</Title>
             </template>
 
             <List
@@ -168,19 +178,27 @@ onMounted(() => {
                     />
                     <div class="flex-1">
                       <router-link :to="`/${item.id}`">
-                        <Title :level="4" class="mb-2">{{ item.title }}</Title>
+                        <Title :level="4" class="mb-2 hover:text-[#18A058]">{{ item.title }}</Title>
                       </router-link>
 
                       <Paragraph type="secondary">
-                        <strong>Author:</strong> {{ item.authorName }}
+                        <strong>Tác giả:</strong> <span class="italic">{{ item.authorName }}</span>
                       </Paragraph>
 
                       <Paragraph type="secondary">
-                        <strong>Genres:</strong>
-                        {{ item.categories.map((cat: { name: string }) => cat.name).join(', ') }}
+                        <strong class="mr-2">Thể loại:</strong>
+                        <template v-for="cat in item.categories" :key="cat.name">
+                          <a-tag class="text-[#18A058] font-semibold bg-[#E7F5EE]">{{ cat.name }}</a-tag>
+                        </template>
                       </Paragraph>
 
-                      <Paragraph class="italic" v-html="item.description"/>
+                      <Paragraph class="italic" v-html="expandedNovels[item.id] ? item.description : item.description.slice(0, 300) + '...'" />
+                      <div v-if="isDescriptionLong(item.description) && !expandedNovels[item.id]" class="text-right">
+                        <a @click="toggleExpanded(item.id)" class="text-[#18A058] cursor-pointer hover:text-[#18A058]">Đọc thêm</a>
+                      </div>
+                      <div v-if="expandedNovels[item.id]" class="text-right">
+                        <a @click="toggleExpanded(item.id)" class="text-[#18A058] cursor-pointer hover:text-[#18A058]">Rút gọn</a>
+                      </div>
 
                       <div class="flex justify-between text-gray-500 text-sm">
                         <span>{{ item.chapterCount }} Chapters</span>

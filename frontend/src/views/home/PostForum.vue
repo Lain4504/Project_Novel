@@ -52,18 +52,14 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="max-w-7xl mx-auto">
+  <main class="max-w-7xl mx-auto bg-white">
     <Ads class="my-4"/>
-    <Breadcrumb :breadcrumbs="[
-            { label: 'Home', href: '/' },
-            { label: 'Forum', href: '/post-forum', isCurrent: true },
-        ]"/>
-    <div class="p-4 min-h-screen">
-      <div class="mb-6">
+    <section class="p-4 min-h-screen">
+      <header class="mb-6">
         <div class="flex justify-between items-center mb-2">
           <h1 class="text-xl font-semibold text-gray-800">Thảo luận</h1>
           <router-link
-              class="flex items-center justify-center w-10 h-10 bg-[#C96442] text-white rounded-full hover:bg-[#BA5B38]"
+              class="flex items-center justify-center w-10 h-10 bg-[#18A058] text-white rounded-full hover:bg-[#E7F5EE]"
               to="/post-create-form">
             <font-awesome-icon :icon="['fas', 'plus']" class="text-lg"/>
           </router-link>
@@ -72,7 +68,7 @@ onMounted(() => {
           <div class="w-full md:w-1/3 mb-4 md:mb-0">
             <select
                 v-model="selectedCategory"
-                class="block w-full px-3 py-2 text-gray-700 bg-white border border-gray-300 rounded shadow-sm focus:outline-none focus:ring-1 focus:ring-[#AB5235] focus:border-[#AB5235]">
+                class="block w-full px-3 py-2 text-gray-700 bg-white border border-gray-300 rounded shadow-sm focus:outline-none focus:ring-1 focus:ring-[#18A058] focus:border-[#18A058]">
               <option value="">Tất cả</option>
               <option v-for="category in categories" :key="category.id" :value="category.id">
                 {{ category.name }}
@@ -80,10 +76,10 @@ onMounted(() => {
             </select>
           </div>
         </div>
-      </div>
+      </header>
       <table class="min-w-full bg-white shadow rounded-lg overflow-hidden">
         <thead>
-        <tr class="bg-[#F8F8F7] text-left text-sm font-semibold text-gray-600 uppercase">
+        <tr class="bg-[#E7F5EE] text-left text-sm font-semibold text-gray-600 uppercase">
           <th class="px-4 py-3">Chủ đề</th>
           <th class="px-4 py-3 hidden md:table-cell">Chuyên mục</th>
           <th class="px-4 py-3 hidden md:table-cell">Bình luận</th>
@@ -128,9 +124,33 @@ onMounted(() => {
             @change="goToPage"
         />
       </div>
-    </div>
-  </div>
+    </section>
+  </main>
 </template>
 
-<style>
+<style scoped>
+.breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+  list-style: none;
+  background-color: #E7F5EE;
+  border-radius: 0.375rem;
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+  content: ">";
+  padding: 0 0.5rem;
+  color: #18A058;
+}
+
+.breadcrumb-item a {
+  color: #18A058;
+  text-decoration: none;
+}
+
+.breadcrumb-item.active {
+  color: #6c757d;
+}
 </style>

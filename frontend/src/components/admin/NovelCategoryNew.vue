@@ -2,6 +2,8 @@
 import DynamicFormNew from "@/components/common/DynamicFormNew.vue";
 import {createNovelCategory} from "@/api/novelCategory";
 import {useRouter} from "vue-router";
+import DynamicFormEdit from "@/components/common/DynamicFormEdit.vue";
+import router from "@/router";
 
 const collectionInputs = [
   {
@@ -19,18 +21,13 @@ const collectionInputs = [
     required: false,
   },
 ];
-const handleCreateNovelCategory = async (data: any) => {
-  const response = await createNovelCategory(data);
-}
-const location = '/novel-category-list';
 
 </script>
 
 <template>
   <DynamicFormNew
-      :handleAdd="handleCreateNovelCategory"
+      :handleAdd="createNovelCategory"
       :inputs="collectionInputs"
-      :location="location"
       title="Create Novel Category"
   />
 </template>

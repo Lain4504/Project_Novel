@@ -11,20 +11,16 @@ const tabs: TabSwitch[] = [
   {name: 'bookmark', label: 'BOOKMARK'}
 ];
 </script>
-<template>
-  <div class="max-w-7xl mx-auto">
 
+<template>
+  <section class="max-w-7xl mx-auto bg-white p-4 rounded">
     <Ads class="my-4"/>
-    <Breedcrumb :breadcrumbs="[
-      { label: 'Home', href: '/' },
-      { label: 'Reading List', href: '/list/readinglist', isCurrent: true }
-    ]"/>
-    <div class="flex space-x-4 my-2">
+    <nav class="flex space-x-4 my-2">
       <router-link
           v-for="tab in tabs"
           :key="tab.name"
           :class="{
-          'text-blue-500 border-b-2 border-blue-500': $route.name === tab.name,
+          'text-[#18A058] border-b-2 border-[#18A058]': $route.name === tab.name,
           'text-gray-500': $route.name !== tab.name
         }"
           :to="`/list/${tab.name}`"
@@ -32,14 +28,13 @@ const tabs: TabSwitch[] = [
       >
         {{ tab.label }}
       </router-link>
-    </div>
+    </nav>
 
-    <div class="mt-4">
+    <article class="mt-4 bg-white p-4 rounded">
       <router-view/>
-    </div>
-  </div>
+    </article>
+  </section>
 </template>
-
 
 <style scoped>
 /* Add custom styles if needed */

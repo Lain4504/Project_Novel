@@ -59,7 +59,7 @@ import {
     faPlus,
     faQuestion,
     faQuestionCircle,
-    faQuoteRight,
+    faQuoteRight, faReply,
     faRightFromBracket,
     faRotateLeft,
     faRotateRight,
@@ -79,7 +79,7 @@ import {faGoogle} from '@fortawesome/free-brands-svg-icons'
 import 'ant-design-vue/dist/reset.css';
 import Antd from 'ant-design-vue';
 
-library.add(faFont, faAnglesLeft, faAnglesRight, faMoon, faKey, faSun, faNewspaper, faBookOpen, faPlus, faImage, faMinus, faRotateRight, faRotateLeft, faBold, faItalic, faUnderline, faListUl, faListOl, faQuoteRight, faCode, faEnvelope, faChevronDown, faChevronUp, faSquarePlus, faSquareMinus, faQuestionCircle, faHouse, faArrowUpFromBracket, faArrowUpRightFromSquare, faSortUp, faSortDown, faStar, faShareNodes, faList, faComments, faQuestion, faXmark, faHeart, faPen, faTrash, faFeatherPointed, faAnglesUp, faAnglesDown, faPhone, faBullhorn, faChartPie, faPhone, faBell, faPenToSquare, faSearch, faBars, faUser, faBookmark, faBook, faGear, faMoneyBill, faRightFromBracket, faChevronLeft, faChevronRight, faInfoCircle, faExclamationCircle, faCheckCircle, faExclamationTriangle, faEyeSlash, faEye, faGoogle, faBarsProgress)
+library.add(faReply,faFont, faAnglesLeft, faAnglesRight, faMoon, faKey, faSun, faNewspaper, faBookOpen, faPlus, faImage, faMinus, faRotateRight, faRotateLeft, faBold, faItalic, faUnderline, faListUl, faListOl, faQuoteRight, faCode, faEnvelope, faChevronDown, faChevronUp, faSquarePlus, faSquareMinus, faQuestionCircle, faHouse, faArrowUpFromBracket, faArrowUpRightFromSquare, faSortUp, faSortDown, faStar, faShareNodes, faList, faComments, faQuestion, faXmark, faHeart, faPen, faTrash, faFeatherPointed, faAnglesUp, faAnglesDown, faPhone, faBullhorn, faChartPie, faPhone, faBell, faPenToSquare, faSearch, faBars, faUser, faBookmark, faBook, faGear, faMoneyBill, faRightFromBracket, faChevronLeft, faChevronRight, faInfoCircle, faExclamationCircle, faCheckCircle, faExclamationTriangle, faEyeSlash, faEye, faGoogle, faBarsProgress)
 
 createApp(App)
     .component('font-awesome-icon', FontAwesomeIcon)

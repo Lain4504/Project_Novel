@@ -35,4 +35,10 @@ public class UserNovelRatingController {
                 .result(userNovelRatingService.hasRatedNovel(userId, novelId))
                 .build();
     }
+    @GetMapping("/get-rating/{userId}/{novelId}")
+    public ApiResponse<UserNovelRatingResponse> getRating(@PathVariable String userId, @PathVariable String novelId) {
+        return ApiResponse.<UserNovelRatingResponse>builder()
+                .result(userNovelRatingService.getRating(userId, novelId))
+                .build();
+    }
 }

@@ -21,24 +21,12 @@ const props = defineProps({
 const initialData = ref({});
 const loadNovelCategory = async () => {
   try {
-    const response = await getNovelCategory(props.id);
-    initialData.value = response;
+    initialData.value = await getNovelCategory(props.id);
   } catch (error) {
     console.error('Failed to fetch novel category:', error);
   }
 }
-const handleSave = async (id: string, data: Record<string, any>) => {
-  try {
-    await updateNovelCategory(id, data);
-    router.push({name: 'novelCategoryList'});
-  } catch (error) {
-    console.error('Failed to update novel category:', error);
-    throw error;
-  }
-}
-const handleCancel = () => {
-  router.back();
-}
+
 onMounted(() => {
   loadNovelCategory();
 });
@@ -47,7 +35,6 @@ onMounted(() => {
   <DynamicFormEdit
       :fields="fields"
       :initialData="initialData"
-      :onCancel="handleCancel"
-      :onSave="handleSave"
+      :onSave="updateNovelCategory"
   />
 </template>

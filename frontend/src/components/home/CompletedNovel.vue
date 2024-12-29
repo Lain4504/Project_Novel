@@ -71,23 +71,24 @@ const handleResize = () => {
   }
 };
 </script>
+
 <template>
-  <div class="w-full max-w-7xl mx-auto px-4">
+  <div class="w-full max-w-7xl mx-auto px-4 bg-white">
     <div class="flex items-center justify-between mb-6">
-      <h2 class="text-xl font-bold text-amber-600">MỚI HOÀN THÀNH</h2>
+      <h1 class="text-xl font-bold text-[#18A058]">MỚI HOÀN THÀNH</h1>
       <div class="flex items-center gap-4">
         <span class="text-sm text-gray-600">{{ currentPage }}/{{ totalPages }}</span>
         <div class="flex gap-2">
           <button
               :disabled="currentPage === 1"
-              class="text-amber-600 hover:text-amber-700 disabled:opacity-50 disabled:cursor-not-allowed w-8 h-8 flex items-center justify-center"
+              class="text-[#18A058] hover:text-[#18A058] disabled:opacity-50 disabled:cursor-not-allowed w-8 h-8 flex items-center justify-center"
               @click="prevPage"
           >
             «
           </button>
           <button
               :disabled="currentPage === totalPages"
-              class="text-amber-600 hover:text-amber-700 disabled:opacity-50 disabled:cursor-not-allowed w-8 h-8 flex items-center justify-center"
+              class="text-[#18A058] hover:text-[#18A058] disabled:opacity-50 disabled:cursor-not-allowed w-8 h-8 flex items-center justify-center"
               @click="nextPage"
           >
             »
@@ -97,8 +98,8 @@ const handleResize = () => {
     </div>
 
     <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-      <div v-for="novel in paginatedNovels" :key="novel.id" class="flex flex-col">
-        <div class="relative aspect-[3/4] mb-2 overflow-hidden rounded-lg bg-gray-100">
+      <article v-for="novel in paginatedNovels" :key="novel.id" class="flex flex-col">
+        <div class="relative aspect-[3/4] mb-2 overflow-hidden rounded-lg bg-[#E7F5EE]">
           <img
               :alt="novel.title"
               :src="novel.imageUrl"
@@ -106,10 +107,10 @@ const handleResize = () => {
               loading="lazy"
           />
         </div>
-        <h3 class="text-sm line-clamp-2 hover:text-amber-600">
+        <h2 class="text-sm line-clamp-2 hover:text-[#18A058]">
           {{ novel.title }}
-        </h3>
-      </div>
+        </h2>
+      </article>
     </div>
   </div>
 </template>

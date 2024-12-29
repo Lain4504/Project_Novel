@@ -1,11 +1,14 @@
 <script lang="ts" setup>
-import {computed, onMounted, ref} from 'vue';
-import {getUserProfile, updateUserProfile} from "@/api/user";
-import {changePassword} from "@/api/auth";
-import store from "@/store";
+import { computed, onMounted, ref, watch } from 'vue';
+import { getUserProfile, updateUserProfile } from "@/api/user";
+import { changePassword } from "@/api/auth";
+import { useStore } from 'vuex';
 import Banner from "@/components/home/Banner.vue";
 import Tiptap from "@/components/common/Tiptap.vue";
-import {Button, Form, Input, message, Select, Tabs} from 'ant-design-vue';
+import { Button, Form, Input, message, Select, Tabs } from 'ant-design-vue';
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+
+const store = useStore();
 
 const profile = ref({
   id: '',
@@ -16,7 +19,7 @@ const profile = ref({
   bio: '',
 });
 
-const email = store.getters.getEmail;
+const email = computed(() => store.getters.getEmail);
 
 const passwords = ref({
   oldPassword: '',
@@ -25,7 +28,7 @@ const passwords = ref({
 });
 
 const activeTab = ref('profile');
-const isDarkMode = ref(localStorage.getItem('theme') === 'dark');
+const isDarkMode = computed(() => store.getters.isDarkMode);
 
 const fetchUserProfile = async () => {
   try {
@@ -49,7 +52,7 @@ const handleProfileSubmit = async () => {
     imageUrl: selectedImage.value ? '' : profile.value.image // Send empty string if new image is selected
   };
   const formData = new FormData();
-  formData.append("profile", new Blob([JSON.stringify(profileData)], {type: "application/json"}));
+  formData.append("profile", new Blob([JSON.stringify(profileData)], { type: "application/json" }));
   if (selectedImage.value) {
     formData.append("image", selectedImage.value);
   }
@@ -89,11 +92,9 @@ const handleChangePassword = async () => {
 }
 
 const toggleTheme = () => {
-  isDarkMode.value = !isDarkMode.value;
-  const theme = isDarkMode.value ? 'dark' : 'light';
-  localStorage.setItem('theme', theme);
-  document.documentElement.classList.toggle('dark', isDarkMode.value);
+  store.dispatch('toggleDarkMode');
 }
+
 const handleImageChange = (event: Event) => {
   const file = (event.target as HTMLInputElement).files?.[0];
   if (file) {
@@ -113,16 +114,28 @@ const formattedDateOfBirth = computed({
 onMounted(() => {
   fetchUserProfile();
   // Initial theme setup
-  document.documentElement.classList.toggle('dark', isDarkMode.value);
+  if (isDarkMode.value) {
+    document.documentElement.classList.add('dark');
+  } else {
+    document.documentElement.classList.remove('dark');
+  }
+  console.log('Current theme is dark mode:', isDarkMode.value);
+});
+
+watch(isDarkMode, (newValue) => {
+  if (newValue) {
+    document.documentElement.classList.add('dark');
+  } else {
+    document.documentElement.classList.remove('dark');
+  }
 });
 </script>
-
 <template>
   <Banner class="max-w-7xl mx-auto mt-5"/>
   <div class="container mx-auto px-4 py-8 max-w-5xl min-h-screen">
     <div class="bg-white dark:bg-gray-800 shadow-2xl rounded-2xl overflow-hidden">
-      <Tabs v-model:activeKey="activeTab" class="custom-tabs">
-        <Tabs.TabPane key="profile" tab="Profile">
+      <a-tabs v-model:activeKey="activeTab" class="custom-tabs">
+        <a-tab-pane key="profile" tab="Profile">
           <div class="p-6 space-y-6">
             <div class="flex items-center space-x-6">
               <div class="relative">
@@ -143,73 +156,77 @@ onMounted(() => {
               </div>
             </div>
 
-            <Form class="grid md:grid-cols-2 gap-6" @submit.prevent="handleProfileSubmit">
+            <a-form class="grid md:grid-cols-2 gap-6" @submit.prevent="handleProfileSubmit">
               <div class="space-y-4">
-                <Form.Item label="Username">
+                <a-form-item label="Username">
                   <Input v-model:value="profile.username"/>
-                </Form.Item>
-                <Form.Item label="Gender">
-                  <Select v-model:value="profile.gender">
-                    <Select.Option value="male">Male</Select.Option>
-                    <Select.Option value="female">Female</Select.Option>
-                    <Select.Option value="other">Other</Select.Option>
-                  </Select>
-                </Form.Item>
+                </a-form-item>
+                <a-form-item label="Gender">
+                  <a-select v-model:value="profile.gender">
+                    <a-select-option value="male">Male</a-select-option>
+                    <a-select-option value="female">Female</a-select-option>
+                    <a-select-option value="other">Other</a-select-option>
+                  </a-select>
+                </a-form-item>
               </div>
               <div class="space-y-4">
-                <Form.Item label="Date of Birth">
-                  <Input v-model:value="formattedDateOfBirth" type="date"/>
-                </Form.Item>
+                <a-form-item label="Date of Birth">
+                  <a-input v-model:value="formattedDateOfBirth" type="date"/>
+                </a-form-item>
               </div>
               <div class="md:col-span-2 space-y-4">
-                <Form.Item label="Bio">
+                <a-form-item label="Bio">
                   <Tiptap :content="profile.bio" @update:content="profile.bio = $event"/>
-                </Form.Item>
+                </a-form-item>
               </div>
               <div class="md:col-span-2 flex justify-end">
-                <Button html-type="submit" type="primary">
+                <a-button html-type="submit" type="primary">
                   Update Profile
-                </Button>
+                </a-button>
               </div>
-            </Form>
+            </a-form>
           </div>
-        </Tabs.TabPane>
-        <Tabs.TabPane key="security" tab="Security">
+        </a-tab-pane>
+        <a-tab-pane key="security" tab="Security">
           <div class="p-6 space-y-6">
-            <Form class="space-y-4" @submit.prevent="handleChangePassword">
-              <Form.Item :labelCol="{ span: 6 }" :wrapperCol="{ span: 18 }" class="form-item-stacked"
+            <a-form class="space-y-4" @submit.prevent="handleChangePassword">
+              <a-form-item :labelCol="{ span: 6 }" :wrapperCol="{ span: 18 }" class="form-item-stacked"
                          label="Current Password">
                 <Input.Password v-model:value="passwords.oldPassword"/>
-              </Form.Item>
-              <Form.Item :labelCol="{ span: 6 }" :wrapperCol="{ span: 18 }" class="form-item-stacked"
+              </a-form-item>
+              <a-form-item :labelCol="{ span: 6 }" :wrapperCol="{ span: 18 }" class="form-item-stacked"
                          label="New Password">
                 <Input.Password v-model:value="passwords.newPassword"/>
-              </Form.Item>
-              <Form.Item :labelCol="{ span: 6 }" :wrapperCol="{ span: 18 }" class="form-item-stacked"
+              </a-form-item>
+              <a-form-item :labelCol="{ span: 6 }" :wrapperCol="{ span: 18 }" class="form-item-stacked"
                          label="Confirm New Password">
                 <Input.Password v-model:value="passwords.confirmPassword"/>
-              </Form.Item>
+              </a-form-item>
               <div class="flex justify-end">
                 <Button html-type="submit" type="primary">
                   Change Password
                 </Button>
               </div>
-            </Form>
+            </a-form>
           </div>
-        </Tabs.TabPane>
-        <Tabs.TabPane key="theme" tab="Theme">
+        </a-tab-pane>
+        <a-tab-pane key="theme" tab="Theme">
           <div class="p-6 space-y-6">
             <div class="flex justify-between items-center">
               <div>
                 <h3 class="text-lg font-medium dark:text-white">Theme</h3>
                 <p class="text-sm text-gray-500">Switch between light and dark modes</p>
               </div>
-              <Button v-if="!isDarkMode" icon="sun" shape="circle" @click="toggleTheme"/>
-              <Button v-else icon="moon" shape="circle" @click="toggleTheme"/>
+              <a-button v-if="!isDarkMode" shape="circle" @click="toggleTheme">
+                <font-awesome-icon :icon="['fas', 'sun']"/>
+              </a-button>
+              <a-button  v-else shape="circle" @click="toggleTheme">
+                <font-awesome-icon :icon="['fas', 'moon']"/>
+              </a-button>
             </div>
           </div>
-        </Tabs.TabPane>
-      </Tabs>
+        </a-tab-pane>
+      </a-tabs>
     </div>
   </div>
 </template>

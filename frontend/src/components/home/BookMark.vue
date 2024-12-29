@@ -51,30 +51,30 @@ onMounted(() => {
 
 <template>
   <div class="max-w-7xl mx-auto">
-    <section class="p-4 border rounded">
+    <section class="p-4 border rounded bg-white">
       <div class="mt-4 text-sm">
         <div class="space-y-4">
-          <div
+          <article
               v-for="(item, index) in novel"
               :key="index"
-              class="flex items-center space-x-4 border p-4 rounded"
+              class="flex items-center space-x-4 border p-4 rounded bg-[#E7F5EE]"
           >
             <div class="flex flex-col w-full">
-              <h5 class="font-semibold truncate font-bold break-words text-lg text-blue-600">
+              <h2 class="font-semibold truncate break-words text-lg text-[#18A058]">
                 <router-link :to="{ name: 'noveldetail', params: { id: item.novelId } }">
                   {{ item.novelTitle }}
                 </router-link>
-              </h5>
-              <p class="text-gray-500 flex-shrink-0 break-words text-base">
+              </h2>
+              <p class="text-gray-700 flex-shrink-0 break-words text-base">
                 <router-link :to="{ name: 'chapter', params: { novel: item.novelId, chapter: item.novelChapterId } }">
                   {{ item.novelChapterTitle }}
                 </router-link>
               </p>
-              <p class="text-gray-400 break-words text-sm italic">
+              <p class="text-gray-500 break-words text-sm italic bg-gray-50 p-2">
                 "{{ item.contentNote }}"
               </p>
             </div>
-          </div>
+          </article>
         </div>
       </div>
       <div class="flex justify-center mt-4">
@@ -89,4 +89,6 @@ onMounted(() => {
   </div>
 </template>
 
+<style scoped>
 
+</style>

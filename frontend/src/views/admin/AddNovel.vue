@@ -99,53 +99,23 @@ const handleSearch = (value: string) => {
       <div class="text-gray-700">
         <p><strong>Lưu ý:</strong> Để đăng truyện do bạn sáng tác, vui lòng đọc <a>Hướng dẫn tại đây</a>.</p>
       </div>
-      <form class="my-5" @submit.prevent="saveNovel">
-        <div class="md:col-span-1 my-4">
-          <label class="block text-sm font-medium text-gray-700" for="floating_title">Tiêu đề tiểu thuyết<span
-              class="text-red-500">*</span></label>
-          <a-input
-              id="floating_title"
-              v-model="form.title"
-              class="w-full text-sm p-2"
-              required
-              type="text"
-          />
-        </div>
-
-        <div class="md:col-span-1 my-4">
-          <label class="block text-sm font-medium text-gray-700" for="floating_author">Tác giả<span
-              class="text-red-500">*</span></label>
-          <a-input
-              id="floating_author"
-              v-model="form.author"
-              class="w-full text-sm p-2"
-              required
-              type="text"
-          />
-        </div>
-
-        <div class="space-y-4">
-          <label class="block text-sm font-medium text-gray-800" for="file_input">Upload File<span
-              class="text-red-500">*</span></label>
-          <div class="relative">
-            <input
-                id="file_input"
-                class="bg-white block w-full text-sm text-gray-900 border rounded-lg cursor-pointer focus:ring-blue-500 focus:border-blue-500 dark:text-gray-400 dark:bg-gray-800 dark:border-gray-600 dark:focus:ring-blue-400 dark:focus:border-blue-400 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                type="file"
-                @change="handleImageChange"/>
-          </div>
+      <a-form @submit.prevent="saveNovel" layout="vertical">
+        <a-form-item label="Title" required>
+          <a-input v-model:value="form.title" placeholder="Enter title"/>
+        </a-form-item>
+        <a-form-item label="Author" required>
+          <a-input v-model:value="form.author" placeholder="Enter author"/>
+        </a-form-item>
+        <a-form-item label="Upload File" required>
+          <input type="file" @change="handleImageChange"
+                 class="bg-white block w-full text-sm text-gray-900 border rounded-lg cursor-pointer focus:ring-[#18A058] focus:border-[#18A058] file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-medium file:bg-[#E7F5EE] file:text-[#18A058] hover:file:bg-[#E7F5EE]"/>
           <p class="text-sm text-gray-500">SVG, PNG, JPG, or GIF (MAX. 800x400px)</p>
-          <div v-if="selectedImage" class="mt-4">
-            <div
-                class="relative w-48 h-60 overflow-hidden rounded-lg border border-gray-300 shadow-sm">
-              <img :src="imageUrl" alt="Selected image" class="object-cover w-full h-full"/>
-            </div>
+          <div v-if="imageUrl" class="mt-4">
+            <img :src="imageUrl" alt="Selected image"
+                 class="object-cover w-48 h-60 rounded-lg border border-gray-300 shadow-sm"/>
           </div>
-        </div>
-
-        <div class="md:col-span-1 my-4 relative">
-          <label class="block text-sm font-medium text-gray-700" for="floating_category">Chọn thể loại<span
-              class="text-red-500">*</span></label>
+        </a-form-item>
+        <a-form-item label="Categories" required>
           <a-select
               v-model:value="selectedCategories"
               :filter-option="(input, option) => {
@@ -167,22 +137,14 @@ const handleSearch = (value: string) => {
               {{ category.label }}
             </a-select-option>
           </a-select>
-        </div>
-        <div class="my-4">
-          <label class="block text-sm font-medium text-gray-700" for="novel_description">Mô tả<span
-              class="text-red-500">*</span></label>
+        </a-form-item>
+        <a-form-item label="Description" required>
           <Tiptap :content="form.content" @update:content="form.content = $event" width="100%" height="20rem"/>
-        </div>
-
-        <div class="flex justify-end my-4">
-          <a-button
-              type="primary"
-              html-type="submit"
-          >
-            Lưu tiểu thuyết
-          </a-button>
-        </div>
-      </form>
+        </a-form-item>
+        <a-form-item>
+          <a-button type="primary" html-type="submit">Submit</a-button>
+        </a-form-item>
+      </a-form>
     </div>
 
     <div class="bg-[#F8F8F7] border border-gray-300 rounded-lg p-4 shadow-md flex-1">

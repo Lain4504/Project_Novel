@@ -2,7 +2,7 @@
 import {PropType, ref} from 'vue';
 import {useRouter} from 'vue-router';
 import Tiptap from '@/components/common/Tiptap.vue';
-import {Button, Input, notification, Select} from 'ant-design-vue';
+import {notification} from 'ant-design-vue';
 
 interface InputField {
   id: string;
@@ -25,10 +25,6 @@ const props = defineProps({
     type: Function as PropType<(values: any) => Promise<void>>,
     required: true
   },
-  location: {
-    type: String,
-    required: true
-  }
 });
 
 const router = useRouter();
@@ -45,11 +41,11 @@ const showNotification = (type: 'success' | 'error', message: string) => {
 const handleAddItem = async () => {
   try {
     await props.handleAdd(formData.value);
+    router.back();
     showNotification('success', 'Item added successfully.');
-    router.push(props.location);
   } catch (error: any) {
     console.error('Failed to add item:', error);
-    if (error.response) {
+    if (error.response && error.response.data) {
       showNotification('error', error.response.data.message || 'Novel category creation failed. Please try again.');
     } else if (error.request) {
       showNotification('error', 'No response from server. Please try again.');
@@ -65,38 +61,37 @@ const handleCancel = () => {
 </script>
 
 <template>
-  <div class="flex items-center justify-center">
-    <div class="w-full max-w-4xl bg-white shadow-md rounded-lg p-8">
-      <h1 class="text-xl font-bold text-gray-800 mb-6">{{ title }}</h1>
-      <form class="space-y-6" @submit.prevent="handleAddItem">
-        <div v-for="input in inputs" :key="input.id">
-          <label :for="input.id" class="block text-sm font-medium text-gray-700">
-            {{ input.label }}<span v-if="input.required" class="text-red-500">*</span>
-          </label>
-          <div v-if="input.type === 'select'" class="mt-1">
-            <Select :id="input.id" v-model:value="formData[input.id]" class="w-full">
-              <Select.Option v-for="option in input.options" :key="option.value" :value="option.value">
-                {{ option.label }}
-              </Select.Option>
-            </Select>
-          </div>
-          <div v-else-if="input.type === 'tiptap'" class="mt-1">
+  <a-layout class="flex-1 p-6 bg-white shadow-md max-w-5xl mx-auto">
+    <a-typography-title level="3" class="my-2" :style="{ color: '#18A058', fontSize: '20px' }">{{ title }}</a-typography-title>
+    <a-form @submit.prevent="handleAddItem">
+      <div class="space-y-6">
+        <a-form-item v-for="input in inputs" :key="input.id" :label="input.label" :required="input.required" class="form-item">
+          <template v-if="input.type === 'tiptap'">
             <Tiptap :content="formData[input.id]" @update:content="formData[input.id] = $event"/>
-          </div>
-          <div v-else class="mt-1">
-            <Input :id="input.id" v-model:value="formData[input.id]" :placeholder="input.placeholder || ''"
-                   :type="input.type" class="w-full"/>
-          </div>
-        </div>
-        <div class="flex justify-between items-center">
-          <Button type="default" @click="handleCancel">Cancel</Button>
-          <Button htmlType="submit" type="primary">Save</Button>
-        </div>
-      </form>
-    </div>
-  </div>
+          </template>
+          <template v-else-if="input.type === 'select'">
+            <a-select v-model:value="formData[input.id]" class="w-full">
+              <a-select-option v-for="option in input.options" :key="option.value" :value="option.value">
+                {{ option.label }}
+              </a-select-option>
+            </a-select>
+          </template>
+          <template v-else>
+            <a-input v-model:value="formData[input.id]" :type="input.type" :placeholder="input.placeholder || ''" class="w-full"/>
+          </template>
+        </a-form-item>
+      </div>
+      <div class="flex justify-end space-x-4 my-4">
+        <a-button type="default" @click="handleCancel">Cancel</a-button>
+        <a-button type="primary" html-type="submit">Save</a-button>
+      </div>
+    </a-form>
+  </a-layout>
 </template>
 
 <style scoped>
-/* You can add additional styles if needed */
+.form-item {
+  display: flex;
+  flex-direction: column;
+}
 </style>

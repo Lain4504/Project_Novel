@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import {onMounted, ref} from "vue";
-import {getNovelCategories, getNovelCategoriesWithoutPagination} from "@/api/novelCategory";
+import {getNovelCategories} from "@/api/novelCategory";
 
 const novelCategories = ref<any[]>([]);
 const currentPage = ref(1);
@@ -31,11 +31,11 @@ const goToPage = (page: number) => {
 <template>
   <div class="p-6">
     <div class="max-w-4xl mx-auto bg-white rounded-md shadow-md">
-      <h1 class="text-xl font-bold text-gray-700 bg-gray-200 px-4 py-2 border-b">Genres</h1>
+      <h1 class="text-xl font-bold text-gray-700 bg-[#E7F5EE] px-4 py-2 border-b">Genres</h1>
       <div class="divide-y divide-gray-300">
         <div v-for="(category, index) in novelCategories" :key="category.id"
-             :class="{'bg-blue-100': index % 2 === 0, 'bg-white': index % 2 !== 0}" class="px-4 py-3">
-          <h2 class="font-bold text-gray-800">{{ category.name }}</h2>
+             :class="{'bg-[#E7F5EE]': index % 2 === 0, 'bg-white': index % 2 !== 0}" class="px-4 py-3">
+          <h2 class="font-bold text-[#18A058]">{{ category.name }}</h2>
           <p class="text-sm text-gray-600" v-html="category.description"></p>
         </div>
       </div>
@@ -51,3 +51,11 @@ const goToPage = (page: number) => {
     </div>
   </div>
 </template>
+
+<style scoped>
+/* Custom styles for active items */
+.active-item:hover {
+  background-color: #E7F5EE !important;
+  color: #18A058 !important;
+}
+</style>

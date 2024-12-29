@@ -54,10 +54,6 @@ const fetchBooks = async (page: number, sort: string) => {
   }
 };
 
-const totalPages = computed(() => {
-  return Math.ceil(books.value.length / itemsPerPage);
-});
-
 const setActiveTab = (tab: { label: string; value: string; sort: string }) => {
   activeTab.value = tab.value;
   currentPage.value = 1;
@@ -77,6 +73,7 @@ watch(activeTab, (newTab) => {
   fetchBooks(currentPage.value, tabs.find(tab => tab.value === newTab)?.sort || '');
 });
 </script>
+
 <template>
   <div class="p-6">
     <ul class="hnt-tab flex justify-start space-x-4 text-start py-4">
@@ -85,7 +82,7 @@ watch(activeTab, (newTab) => {
           :key="tab.value"
           :class="[
           activeTab === tab.value
-            ? 'text-blue-600 font-bold border-b-2 border-blue-600'
+            ? 'text-[#18A058] font-bold border-b-2 border-[#18A058]'
             : 'text-gray-600',
           'hover:scale-105',
         ]"
@@ -108,25 +105,26 @@ watch(activeTab, (newTab) => {
             class="w-24 h-36 object-cover rounded-lg"
         />
         <div class="flex-1">
-          <h3 class="text-lg font-semibold line-clamp-2">
+          <h3 class="text-lg font-semibold line-clamp-2 hover:text-[#18A058]">
             <router-link :to="{ name: 'noveldetail', params: { id: book.id } }">
               {{ book.title }}
             </router-link>
           </h3>
           <p class="text-sm text-gray-500 line-clamp-3" v-html="book.description"/>
-          <div class="flex items-center text-sm text-gray-700 mt-2">
+          <div class="flex items-center text-sm text-gray-700 mt-2 italic">
             <i class="fas fa-user mr-2"></i>
             <router-link :to="{ name: 'account', params: { id: book.authorId } }">
               {{ book.authorName }}
             </router-link>
           </div>
-          <span
+          <div class="mt-2">
+          <a-tag
               v-for="category in book.categories.slice(0, 4)"
               :key="category.id"
-              class="inline-block bg-yellow-100 text-yellow-600 text-xs font-semibold mt-3 px-2 py-1 rounded-full"
-          >
+              class="text-[#18A058] font-semibold bg-[#E7F5EE] my-[0.2rem]">
               {{ category.name }}
-          </span>
+          </a-tag>
+          </div>
         </div>
       </div>
     </div>
@@ -137,10 +135,16 @@ watch(activeTab, (newTab) => {
           :key="page"
           :class="[
           'w-3 h-3 rounded-full transition-all',
-          currentPage === page ? 'bg-yellow-600' : 'bg-gray-300',
+          currentPage === page ? 'bg-[#18A058]' : 'bg-gray-300',
         ]"
           @click="() => changePage(page)"
       ></button>
     </div>
   </div>
 </template>
+
+<style scoped>
+.hnt-tab li:hover {
+  background-color: #E7F5EE;
+}
+</style>

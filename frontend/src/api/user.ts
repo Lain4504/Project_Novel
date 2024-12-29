@@ -111,7 +111,10 @@ const getBookmark = (userId: string, page: number, size: number) => {
     return axios.get(`${USER_NOVEL_BOOKMARK_API}/user/${userId}?page=${page}&size=${size}`)
         .then(response => response.data.result);
 }
-
+const getRatingOfNovel = (userId: string, novelId: string) => {
+    return axios.get(`${USER_NOVEL_RATING_API}/get-rating/${userId}/${novelId}`)
+        .then(response => response.data.result);
+}
 export {
     register,
     getMyInfo,
@@ -132,5 +135,6 @@ export {
     createReadingHistory,
     getMyReadingList,
     addBookmark,
-    getBookmark
+    getBookmark,
+    getRatingOfNovel
 };

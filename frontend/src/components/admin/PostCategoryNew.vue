@@ -8,6 +8,7 @@ const collectionInputs = [
     label: 'Name',
     type: 'text',
     placeholder: 'Enter category name',
+    required: true,
   },
   {
     id: 'description',
@@ -17,24 +18,12 @@ const collectionInputs = [
   },
 ];
 
-// Function to handle creating a post category
-const handleCreatePostCategory = async (data: any) => {
-  try {
-    // Call the API function to create the post category
-    const response = await createPostCategory(data);
-    console.log('Category created:', response);
-  } catch (error) {
-    console.error('Failed to create category:', error);
-  }
-};
-const location = '/post-category-list';
 </script>
 
 <template>
   <DynamicFormNew
-      :handleAdd="handleCreatePostCategory"
+      :handleAdd="createPostCategory"
       :inputs="collectionInputs"
-      :location="location"
       title="Create Post Category"
   />
 </template>

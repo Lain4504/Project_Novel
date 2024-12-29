@@ -14,6 +14,5 @@ public class PostCategoryRequest {
     @NotBlank(message = "TITLE_REQUIRED")
     @Size(max = 100, message = "TITLE_TOO_LONG")
     String name;
-    @NotBlank(message = "CONTENT_REQUIRED")
     String description;
 }
