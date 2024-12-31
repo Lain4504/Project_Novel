@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import {onMounted, ref, watch} from "vue";
+import {onMounted, ref} from "vue";
 import DynamicDataTable from "@/components/common/DynamicDataTable.vue";
 import {deletePost, getPosts} from "@/api/post";
 import router from "@/router";
@@ -44,7 +44,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <h3 class="text-2xl font-bold text-left py-2">Post Management</h3>
+  <h3 class="text-2xl font-bold text-left py-2">Quản lý bài viết</h3>
   <DynamicDataTable
       :columns="postColumns"
       :currentPage="currentPage"

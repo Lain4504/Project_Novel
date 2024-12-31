@@ -2,6 +2,8 @@ package com.backend.novelservice.dto.response;
 
 import lombok.*;
 
+import java.time.Instant;
+
 @Setter
 @Getter
 @NoArgsConstructor
@@ -15,6 +17,7 @@ public class PromptResponse {
     String description;
     String type;
     String status;
-    String createdBy;
-    String updatedBy;
+    Instant createdBy;
+    Instant updatedBy;
+    String created;
 }

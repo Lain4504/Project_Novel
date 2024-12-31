@@ -1,32 +1,26 @@
 <template>
-  <button v-if="isVisible" class="fixed bottom-6 right-6" @click="scrollToTop">
-    <font-awesome-icon :icon="['fas', 'arrow-up-from-bracket']" size="xl"/>
-  </button>
+  <a-back-top>
+    <div class="ant-back-top-inner">
+      <a-icon>
+        <VerticalAlignTopOutlined />
+      </a-icon>
+    </div>
+  </a-back-top>
 </template>
 
 <script lang="ts" setup>
-import {onMounted, ref} from 'vue';
-
-// Quản lý hiển thị của nút
-const isVisible = ref(false);
-
-// Kiểm tra khi nào hiển thị nút ScrollToTop
-const checkScrollPosition = () => {
-  // Nếu cuộn trang xuống hơn 200px, hiển thị nút
-  isVisible.value = window.scrollY > 200;
-};
-
-// Cuộn về đầu trang
-const scrollToTop = () => {
-  window.scrollTo({top: 0, behavior: 'smooth'});
-};
-
-// Lắng nghe sự kiện cuộn
-onMounted(() => {
-  window.addEventListener('scroll', checkScrollPosition);
-});
+import { VerticalAlignTopOutlined } from '@ant-design/icons-vue';
 </script>
 
 <style scoped>
-/* Bạn có thể thêm style tùy chỉnh cho nút ScrollToTop */
+.ant-back-top-inner {
+  height: 40px;
+  width: 40px;
+  line-height: 40px;
+  border-radius: 4px;
+  background-color: #1088e9;
+  color: #fff;
+  text-align: center;
+  font-size: 14px;
+}
 </style>

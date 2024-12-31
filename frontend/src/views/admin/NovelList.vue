@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import {onMounted, ref, watch} from "vue";
+import {onMounted, ref} from "vue";
 import {deleteNovel, getNovels} from "@/api/novel";
 import router from "@/router";
 import DynamicDataTable from "@/components/common/DynamicDataTable.vue";
@@ -41,7 +41,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <h3 class="text-2xl font-bold text-left py-2">Novel Management</h3>
+  <h3 class="text-2xl font-bold text-left py-2">Quảng lý tiểu thuyết</h3>
   <DynamicDataTable
       :columns="novelColumns"
       :currentPage="currentPage"

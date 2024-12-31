@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import {onMounted, ref} from "vue";
-import {deleteNovel, getMyNovels, getNovelsByAuthorId} from "@/api/novel";
+import {deleteNovel, getMyNovels} from "@/api/novel";
 import router from "@/router";
 import DynamicDataTable from "@/components/common/DynamicDataTable.vue";
 

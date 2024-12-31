@@ -79,7 +79,7 @@ const handleSave = async (id: string, data: Record<string, any>) => {
   try {
     await updatePost(id, data);
     console.log("Post updated successfully!");
-    router.push({name: "postList"});
+    await router.push({name: "postList"});
   } catch (error) {
     console.error("Failed to update post:", error);
     throw error; // Ném lỗi để component con xử lý

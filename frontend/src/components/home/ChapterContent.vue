@@ -121,7 +121,7 @@ const goBackNovel = () => {
       </div>
     </main>
     <div class="sidebar fixed right-4 top-1/2 -translate-y-1/2 flex flex-col gap-1 z-10">
-      <nav class="bg-white/90 rounded-lg shadow-lg p-2 flex flex-col gap-4">
+      <nav class="bg-white/90 rounded-lg shadow-lg p-2 flex flex-col gap-4 border">
         <button class="p-2 hover:bg-[#E7F5EE] rounded transition-colors" @click="$emit('next-chapter')">
           <font-awesome-icon :icon="['fas', 'angles-right']" class="text-gray-600"/>
         </button>

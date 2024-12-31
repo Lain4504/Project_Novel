@@ -73,44 +73,52 @@ const handleResize = () => {
 </script>
 
 <template>
-  <div class="w-full max-w-7xl mx-auto px-4 bg-white">
+  <div class="w-full max-w-7xl mx-auto px-4 bg-white my-5">
     <div class="flex items-center justify-between mb-6">
-      <h1 class="text-xl font-bold text-[#18A058]">MỚI HOÀN THÀNH</h1>
+      <a-typography-title level={4} style="color: #18A058; font-size: 20px">MỚI HOÀN THÀNH</a-typography-title>
       <div class="flex items-center gap-4">
         <span class="text-sm text-gray-600">{{ currentPage }}/{{ totalPages }}</span>
         <div class="flex gap-2">
-          <button
-              :disabled="currentPage === 1"
-              class="text-[#18A058] hover:text-[#18A058] disabled:opacity-50 disabled:cursor-not-allowed w-8 h-8 flex items-center justify-center"
-              @click="prevPage"
+          <a-button
+            :disabled="currentPage === 1"
+            class="text-[#18A058] hover:text-[#18A058] disabled:opacity-50 disabled:cursor-not-allowed w-8 h-8 flex items-center justify-center"
+            @click="prevPage"
           >
             «
-          </button>
-          <button
-              :disabled="currentPage === totalPages"
-              class="text-[#18A058] hover:text-[#18A058] disabled:opacity-50 disabled:cursor-not-allowed w-8 h-8 flex items-center justify-center"
-              @click="nextPage"
+          </a-button>
+          <a-button
+            :disabled="currentPage === totalPages"
+            class="text-[#18A058] hover:text-[#18A058] disabled:opacity-50 disabled:cursor-not-allowed w-8 h-8 flex items-center justify-center"
+            @click="nextPage"
           >
             »
-          </button>
+          </a-button>
         </div>
       </div>
     </div>
 
     <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-      <article v-for="novel in paginatedNovels" :key="novel.id" class="flex flex-col">
-        <div class="relative aspect-[3/4] mb-2 overflow-hidden rounded-lg bg-[#E7F5EE]">
+      <a-card
+        v-for="novel in paginatedNovels"
+        :key="novel.id"
+        class="hover:shadow-md transition-shadow duration-200"
+        :bordered="false"
+        :bodyStyle="{ padding: '0px' }"
+      >
+        <div class="relative aspect-[3/4] mb-2 overflow-hidden">
           <img
-              :alt="novel.title"
-              :src="novel.imageUrl"
-              class="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-              loading="lazy"
+            :alt="novel.title"
+            :src="novel.imageUrl"
+            class="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+            loading="lazy"
           />
         </div>
-        <h2 class="text-sm line-clamp-2 hover:text-[#18A058]">
-          {{ novel.title }}
-        </h2>
-      </article>
+        <a-typography-title level={5} style="font-size: 16px; margin-left: 10px" >
+          <router-link :to="{ name: 'noveldetail', params: { id: novel.id } }">
+            {{ novel.title }}
+          </router-link>
+        </a-typography-title>
+      </a-card>
     </div>
   </div>
 </template>

@@ -1,6 +1,7 @@
 package com.backend.novelservice.controller;
 
 import com.backend.dto.response.ApiResponse;
+import com.backend.dto.response.PageResponse;
 import com.backend.novelservice.dto.request.PromptRequest;
 import com.backend.novelservice.dto.response.PromptResponse;
 import com.backend.novelservice.service.PromptService;
@@ -34,8 +35,10 @@ public class PromptController {
         return ApiResponse.<PromptResponse>builder().result(promptService.getPrompt(promptId)).build();
     }
     @GetMapping("/get/all")
-    public ApiResponse<List<PromptResponse>> getAllPrompts(){
-        return ApiResponse.<List<PromptResponse>>builder().result(promptService.getAllPrompts()).build();
+    public ApiResponse<PageResponse<PromptResponse>> getAllPrompts(
+            @RequestParam(defaultValue = "0", required = false) int page,
+            @RequestParam(defaultValue = "10", required = false) int size
+    ){
+        return ApiResponse.<PageResponse<PromptResponse>>builder().result(promptService.getAllPrompts(page, size)).build();
     }
-
 }

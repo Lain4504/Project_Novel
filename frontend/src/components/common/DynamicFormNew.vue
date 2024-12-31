@@ -10,6 +10,7 @@ interface InputField {
   type: string; // text, select, tiptap, etc.
   placeholder?: string;
   options?: { value: string; label: string }[];
+  required?: boolean;
 }
 
 const props = defineProps({

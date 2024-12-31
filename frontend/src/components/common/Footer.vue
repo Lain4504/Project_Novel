@@ -108,12 +108,7 @@
 </template>
 
 <script lang="ts" setup>
-import {
-  FacebookFilled,
-  TwitterOutlined,
-  InstagramOutlined,
-  MailOutlined
-} from '@ant-design/icons-vue';
+import {FacebookFilled, InstagramOutlined, MailOutlined, TwitterOutlined} from '@ant-design/icons-vue';
 </script>
 
 <style scoped>

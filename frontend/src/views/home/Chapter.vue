@@ -78,7 +78,7 @@ const fetchPreviousChapter = async () => {
   try {
     const response = await getPreviousChapter(chapter.volumeId, parseInt(chapter.chapterNumber));
     await fetchChapter(response.id);
-    router.push({name: 'chapter', params: {id: response.id}});
+    await router.push({name: 'chapter', params: {id: response.id}});
   } catch (error) {
     console.error('Failed to fetch previous chapter:', error);
   }

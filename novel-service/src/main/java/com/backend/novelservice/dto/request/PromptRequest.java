@@ -2,6 +2,8 @@ package com.backend.novelservice.dto.request;
 
 import lombok.*;
 
+import java.time.Instant;
+
 @Setter
 @Getter
 @NoArgsConstructor
@@ -14,6 +16,4 @@ public class PromptRequest {
     String description;
     String type;
     String status;
-    String createdBy;
-    String updatedBy;
 }

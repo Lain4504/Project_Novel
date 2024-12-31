@@ -1,10 +1,10 @@
 <script lang="ts" setup>
-import { useRoute } from 'vue-router';
+import {useRoute} from 'vue-router';
 import Header from '@/components/home/Header.vue';
-import { computed, onMounted, watch } from 'vue';
+import {computed, onMounted} from 'vue';
 import ScrollToTop from '@/components/common/ScrollToTop.vue';
 import Footer from '@/components/common/Footer.vue';
-import { useStore } from 'vuex';
+import {useStore} from 'vuex';
 
 const route = useRoute();
 const store = useStore();
@@ -15,38 +15,28 @@ const routesIncludeHome = ['home', 'chapter', 'noveldetail', 'userprofile', 'acc
 const showAdmin = computed(() => {
   return routesIncludeHome.includes(route.name as string);
 });
-
+const lightTheme = {};
+const darkTheme = {};
 const isDarkMode = computed(() => store.getters.isDarkMode);
 
-onMounted(() => {
-  if (isDarkMode.value) {
-    document.documentElement.classList.add('dark');
-  } else {
-    document.documentElement.classList.remove('dark');
-  }
-});
+const theme = computed(() => isDarkMode.value ? darkTheme : lightTheme);
 
-watch(isDarkMode, (newValue) => {
-  if (newValue) {
-    document.documentElement.classList.add('dark');
-  } else {
-    document.documentElement.classList.remove('dark');
-  }
+onMounted(() => {
+  console.log('Current mode:', store.getters.isDarkMode);
+  console.log('Current theme:', theme.value);
 });
 </script>
 
 <template>
-  <a-config-provider
-      :theme="{
-      token: {
-        colorPrimary: '#18A058',
-        colorLink: '#18A058',
-        colorLinkHover: '#1dc26b',
-      },
-    }">
-  <Header v-if="showAdmin"/>
-  <RouterView class=" min-h-screen"/>
-  <ScrollToTop/>
-  <Footer v-if="showAdmin"/>
+  <a-config-provider :theme="{
+    token: {
+      colorPrimary: '#18A058',
+      colorLink: '#18A058',
+      colorLinkHover: '#1dc26b',
+  } }">
+      <Header v-if="showAdmin"/>
+      <RouterView class="min-h-screen"/>
+      <ScrollToTop/>
+      <Footer v-if="showAdmin"/>
   </a-config-provider>
 </template>

@@ -3,7 +3,6 @@ import {computed, onMounted, ref, watchEffect} from 'vue';
 import {useStore} from 'vuex';
 import {useRoute, useRouter} from 'vue-router';
 import {logout} from '@/api/auth';
-import {getUserProfile} from '@/api/user';
 import {getNotificationByUserId} from '@/api/notification';
 import {
   AppstoreOutlined,
@@ -37,7 +36,6 @@ const truncateContent = (content: string) => {
   return content.length > 70 ? content.slice(0, 70) + '...' : content;
 };
 
-const userProfile = ref({id: '', image: '', username: ''});
 const notifications = ref<Notification[]>([]);
 const unreadNotifications = ref(0);
 const isMobileMenuOpen = ref(false);
@@ -46,15 +44,7 @@ const store = useStore();
 const isAuthenticated = computed(() => store.getters.isAuthenticated);
 const router = useRouter();
 const route = useRoute();
-
-const fetchUserProfile = async () => {
-  try {
-    const userProfileData = await getUserProfile(store.getters.getUserId);
-    userProfile.value = {...userProfileData, image: userProfileData.image.path};
-  } catch (error) {
-    console.error('Error fetching user profile:', error);
-  }
-};
+const userImage = store.getters.getUserImage;
 
 const fetchNotifications = async () => {
   try {
@@ -69,7 +59,6 @@ const fetchNotifications = async () => {
 
 onMounted(() => {
   if (isAuthenticated.value) {
-    fetchUserProfile();
     fetchNotifications();
   }
 });
@@ -103,7 +92,7 @@ const handleLogout = async () => {
 };
 
 const menuItems = [
-  {key: 'forum', label: 'Thảo luận', path: '/forum', icon: MessageOutlined},
+  {key: 'forum', label: 'Thảo luận', path: '/post-forum', icon: MessageOutlined},
   {key: 'categories', label: 'Thể loại', path: '/categories', icon: AppstoreOutlined},
   {key: 'search', label: 'Tìm kiếm', path: '/search', icon: SearchOutlined},
   {key: 'ranking', label: 'Xếp hạng', path: '/ranking', icon: TrophyOutlined},
@@ -200,7 +189,9 @@ const handleMenuItemClick = (action: Function) => {
                 </a-menu-item>
               </a-menu>
             </template>
-            <a-avatar :src="userProfile.image" alt="avatar" size="large"/>
+            <button>
+            <a-avatar :src="userImage" alt="userImage" size="large"/>
+            </button>
           </a-dropdown>
         </template>
         <template v-else>

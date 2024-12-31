@@ -139,8 +139,7 @@ const fetchVolumes = async (novelId: string) => {
 const fetchChapters = async (volumeIndex: number, volumeId: string) => {
   const status = "COMPLETED";
   try {
-    const data = await getChaptersByVolumeId(volumeId, status);
-    volumes.value[volumeIndex].chapters = data;
+    volumes.value[volumeIndex].chapters = await getChaptersByVolumeId(volumeId, status);
   } catch (error) {
     console.error(error);
   }
@@ -160,8 +159,7 @@ const toggleShowMore = (index: number) => {
 const checkFollowStatus = async () => {
   if (!isAuthenticated.value) return;
   try {
-    const response = await isFollowingNovel({userId, novelId});
-    isCollected.value = response;
+    isCollected.value = await isFollowingNovel({userId, novelId});
   } catch (error) {
     console.error(error);
   }

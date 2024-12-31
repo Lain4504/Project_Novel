@@ -1,12 +1,12 @@
 <script lang="ts" setup>
-import { computed, onMounted, ref, watch } from 'vue';
-import { getUserProfile, updateUserProfile } from "@/api/user";
-import { changePassword } from "@/api/auth";
-import { useStore } from 'vuex';
+import {computed, onMounted, ref} from 'vue';
+import {getUserProfile, updateUserProfile} from "@/api/user";
+import {changePassword} from "@/api/auth";
+import {useStore} from 'vuex';
 import Banner from "@/components/home/Banner.vue";
 import Tiptap from "@/components/common/Tiptap.vue";
-import { Button, Form, Input, message, Select, Tabs } from 'ant-design-vue';
-import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import {Button, Input, message, Form, Tabs, Select, Avatar, Upload, Layout} from 'ant-design-vue';
+import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 
 const store = useStore();
 
@@ -93,6 +93,7 @@ const handleChangePassword = async () => {
 
 const toggleTheme = () => {
   store.dispatch('toggleDarkMode');
+  console.log('Dark mode:', store.getters.isDarkMode);
 }
 
 const handleImageChange = (event: Event) => {
@@ -113,153 +114,110 @@ const formattedDateOfBirth = computed({
 
 onMounted(() => {
   fetchUserProfile();
-  // Initial theme setup
-  if (isDarkMode.value) {
-    document.documentElement.classList.add('dark');
-  } else {
-    document.documentElement.classList.remove('dark');
-  }
-  console.log('Current theme is dark mode:', isDarkMode.value);
-});
-
-watch(isDarkMode, (newValue) => {
-  if (newValue) {
-    document.documentElement.classList.add('dark');
-  } else {
-    document.documentElement.classList.remove('dark');
-  }
 });
 </script>
+
 <template>
   <Banner class="max-w-7xl mx-auto mt-5"/>
-  <div class="container mx-auto px-4 py-8 max-w-5xl min-h-screen">
-    <div class="bg-white dark:bg-gray-800 shadow-2xl rounded-2xl overflow-hidden">
-      <a-tabs v-model:activeKey="activeTab" class="custom-tabs">
-        <a-tab-pane key="profile" tab="Profile">
-          <div class="p-6 space-y-6">
-            <div class="flex items-center space-x-6">
-              <div class="relative">
-                <img
-                    :src="profile.image || 'default-avatar.png'"
-                    alt=""
-                    class="w-24 h-24 rounded-full object-cover border-4 border-blue-500"
-                />
-                <input
-                    class="absolute inset-0 opacity-0 cursor-pointer"
-                    type="file"
-                    @change="handleImageChange"
-                />
-              </div>
-              <div>
-                <h2 class="text-2xl font-bold dark:text-white">{{ profile.username }}</h2>
-                <p class="text-gray-500">{{ email }}</p>
-              </div>
-            </div>
+  <a-layout>
+    <a-layout-content>
+      <div class="container mx-auto px-4 py-8 max-w-5xl min-h-screen">
+        <div class="shadow-2xl rounded-2xl overflow-hidden">
+          <a-tabs v-model:activeKey="activeTab" class="ml-4">
+            <a-tab-pane key="profile" tab="Profile">
+              <div class="p-6 space-y-6">
+                <div class="flex items-center space-x-6">
+                  <div class="relative">
+                    <a-avatar
+                        :src="profile.image || 'default-avatar.png'"
+                        size="large"
+                    />
+                    <a-upload
+                        class="absolute inset-0 opacity-0 cursor-pointer"
+                        :beforeUpload="handleImageChange"
+                    >
+                      <Button>Upload</Button>
+                    </a-upload>
+                  </div>
+                  <div>
+                    <h2 class="text-2xl font-bold">{{ profile.username }}</h2>
+                    <p class="text-gray-500">{{ email }}</p>
+                  </div>
+                </div>
 
-            <a-form class="grid md:grid-cols-2 gap-6" @submit.prevent="handleProfileSubmit">
-              <div class="space-y-4">
-                <a-form-item label="Username">
-                  <Input v-model:value="profile.username"/>
-                </a-form-item>
-                <a-form-item label="Gender">
-                  <a-select v-model:value="profile.gender">
-                    <a-select-option value="male">Male</a-select-option>
-                    <a-select-option value="female">Female</a-select-option>
-                    <a-select-option value="other">Other</a-select-option>
-                  </a-select>
-                </a-form-item>
+                <a-form class="grid md:grid-cols-2 gap-6" @submit.prevent="handleProfileSubmit">
+                  <div class="space-y-4">
+                    <a-form-item label="Username">
+                      <Input v-model:value="profile.username"/>
+                    </a-form-item>
+                    <a-form-item label="Gender">
+                      <Select v-model:value="profile.gender">
+                        <Select.Option value="male">Male</Select.Option>
+                        <Select.Option value="female">Female</Select.Option>
+                        <Select.Option value="other">Other</Select.Option>
+                      </Select>
+                    </a-form-item>
+                  </div>
+                  <div class="space-y-4">
+                    <a-form-item label="Date of Birth">
+                      <Input v-model:value="formattedDateOfBirth" type="date"/>
+                    </a-form-item>
+                  </div>
+                  <div class="md:col-span-2 space-y-4">
+                    <a-form-item label="Bio">
+                      <Tiptap :content="profile.bio" @update:content="profile.bio = $event"/>
+                    </a-form-item>
+                  </div>
+                  <div class="md:col-span-2 flex justify-end">
+                    <Button html-type="submit" type="primary">
+                      Update Profile
+                    </Button>
+                  </div>
+                </a-form>
               </div>
-              <div class="space-y-4">
-                <a-form-item label="Date of Birth">
-                  <a-input v-model:value="formattedDateOfBirth" type="date"/>
-                </a-form-item>
+            </a-tab-pane>
+            <a-tab-pane key="security" tab="Security">
+              <div class="p-6 space-y-6">
+                <a-form class="space-y-4" @submit.prevent="handleChangePassword">
+                  <a-form-item :labelCol="{ span: 6 }" :wrapperCol="{ span: 18 }" class="form-item-stacked"
+                             label="Current Password">
+                    <Input.Password v-model:value="passwords.oldPassword"/>
+                  </a-form-item>
+                  <a-form-item :labelCol="{ span: 6 }" :wrapperCol="{ span: 18 }" class="form-item-stacked"
+                             label="New Password">
+                    <Input.Password v-model:value="passwords.newPassword"/>
+                  </a-form-item>
+                  <a-form-item :labelCol="{ span: 6 }" :wrapperCol="{ span: 18 }" class="form-item-stacked"
+                             label="Confirm New Password">
+                    <Input.Password v-model:value="passwords.confirmPassword"/>
+                  </a-form-item>
+                  <div class="flex justify-end">
+                    <Button html-type="submit" type="primary">
+                      Change Password
+                    </Button>
+                  </div>
+                </a-form>
               </div>
-              <div class="md:col-span-2 space-y-4">
-                <a-form-item label="Bio">
-                  <Tiptap :content="profile.bio" @update:content="profile.bio = $event"/>
-                </a-form-item>
+            </a-tab-pane>
+            <a-tab-pane key="theme" tab="Theme">
+              <div class="p-6 space-y-6">
+                <div class="flex justify-between items-center">
+                  <div>
+                    <h3 class="text-lg font-medium">Theme</h3>
+                    <p class="text-sm text-gray-500">Switch between light and dark modes</p>
+                  </div>
+                  <a-button v-if="!isDarkMode" shape="circle" @click="toggleTheme">
+                    <font-awesome-icon :icon="['fas', 'sun']"/>
+                  </a-button>
+                  <a-button v-else shape="circle" @click="toggleTheme">
+                    <font-awesome-icon :icon="['fas', 'moon']"/>
+                  </a-button>
+                </div>
               </div>
-              <div class="md:col-span-2 flex justify-end">
-                <a-button html-type="submit" type="primary">
-                  Update Profile
-                </a-button>
-              </div>
-            </a-form>
-          </div>
-        </a-tab-pane>
-        <a-tab-pane key="security" tab="Security">
-          <div class="p-6 space-y-6">
-            <a-form class="space-y-4" @submit.prevent="handleChangePassword">
-              <a-form-item :labelCol="{ span: 6 }" :wrapperCol="{ span: 18 }" class="form-item-stacked"
-                         label="Current Password">
-                <Input.Password v-model:value="passwords.oldPassword"/>
-              </a-form-item>
-              <a-form-item :labelCol="{ span: 6 }" :wrapperCol="{ span: 18 }" class="form-item-stacked"
-                         label="New Password">
-                <Input.Password v-model:value="passwords.newPassword"/>
-              </a-form-item>
-              <a-form-item :labelCol="{ span: 6 }" :wrapperCol="{ span: 18 }" class="form-item-stacked"
-                         label="Confirm New Password">
-                <Input.Password v-model:value="passwords.confirmPassword"/>
-              </a-form-item>
-              <div class="flex justify-end">
-                <Button html-type="submit" type="primary">
-                  Change Password
-                </Button>
-              </div>
-            </a-form>
-          </div>
-        </a-tab-pane>
-        <a-tab-pane key="theme" tab="Theme">
-          <div class="p-6 space-y-6">
-            <div class="flex justify-between items-center">
-              <div>
-                <h3 class="text-lg font-medium dark:text-white">Theme</h3>
-                <p class="text-sm text-gray-500">Switch between light and dark modes</p>
-              </div>
-              <a-button v-if="!isDarkMode" shape="circle" @click="toggleTheme">
-                <font-awesome-icon :icon="['fas', 'sun']"/>
-              </a-button>
-              <a-button  v-else shape="circle" @click="toggleTheme">
-                <font-awesome-icon :icon="['fas', 'moon']"/>
-              </a-button>
-            </div>
-          </div>
-        </a-tab-pane>
-      </a-tabs>
-    </div>
-  </div>
+            </a-tab-pane>
+          </a-tabs>
+        </div>
+      </div>
+    </a-layout-content>
+  </a-layout>
 </template>
-
-<style scoped>
-.custom-tabs {
-  padding: 16px; /* Add padding to the tabs */
-}
-
-.custom-tabs .ant-tabs-nav {
-  margin-bottom: 16px;
-}
-
-.custom-tabs .ant-tabs-tab {
-  padding: 12px 16px;
-  font-size: 16px;
-}
-
-.custom-tabs .ant-tabs-tab-active {
-  color: #1890ff;
-  font-weight: bold;
-}
-
-.custom-tabs .ant-tabs-ink-bar {
-  background-color: #1890ff;
-}
-
-.form-item-stacked .ant-form-item-label {
-  display: block;
-  margin-bottom: 8px;
-}
-
-.form-item-stacked .ant-form-item-control {
-  display: block;
-}
-</style>

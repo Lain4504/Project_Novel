@@ -1,8 +1,7 @@
 <script lang="ts" setup>
-import {onMounted, ref} from "vue";
+import {onMounted, ref} from 'vue';
 import {getMyReadingList} from "@/api/user";
 import store from "@/store";
-
 interface Novel {
   novelId: string;
   novelName: string;
@@ -43,44 +42,56 @@ onMounted(() => {
   fetchNovel(currentPage.value);
 });
 </script>
+
 <template>
-  <section class="p-4 border rounded">
-    <div class="mt-4 text-sm">
-      <div class="space-y-4">
-        <div
+  <div class="max-w-7xl mx-auto">
+    <section class="p-4 border rounded bg-white">
+      <div class="mt-4 text-sm">
+        <div class="space-y-4">
+          <a-card
             v-for="(item, index) in novel"
             :key="index"
-            class="flex items-center space-x-4"
-        >
-          <img
-              :src="item.image"
-              alt="Book Image"
-              class="w-14 h-20 object-cover"
-          />
-          <div class="flex justify-between items-center w-full">
-            <h5 class="font-semibold truncate hover:underline">
-              <router-link :to="{ name: 'noveldetail', params: { id: item.novelId } }">
-                {{ item.novelName }}
-              </router-link>
-            </h5>
-            <p class="text-gray-500 flex-shrink-0 hover:underline">
-              <router-link
-                  :to="{ name: 'chapter', params: { novel: item.novelId, chapter: item.novelChapterId} }"
-              >
-                {{ item.novelChapterTitle }}
-              </router-link>
-            </p>
-          </div>
+            class="hover:shadow-md transition-shadow duration-200"
+            :bordered="false"
+            :bodyStyle="{ padding: '12px' }"
+          >
+            <div class="flex space-x-4">
+              <img
+                :src="item.image"
+                alt="Book Image"
+                class="w-14 h-20 object-cover rounded-lg"
+              />
+              <div class="flex-1">
+                <router-link
+                  :to="{ name: 'noveldetail', params: { id: item.novelId } }"
+                  class="hover:text-[#18A058]"
+                >
+                  <a-typography-title :level="5" class="!mb-2 line-clamp-2">
+                    {{ item.novelName }}
+                  </a-typography-title>
+                </router-link>
+                <a-typography-text class="text-gray-500 line-clamp-3">
+                  <router-link :to="{ name: 'chapter', params: { novel: item.novelId, chapter: item.novelChapterId } }">
+                    {{ item.novelChapterTitle }}
+                  </router-link>
+                </a-typography-text>
+              </div>
+            </div>
+          </a-card>
         </div>
       </div>
-    </div>
-    <div class="flex justify-center mt-4">
-      <a-pagination
+      <div class="flex justify-center mt-4">
+        <a-pagination
           :current="currentPage"
           :pageSize="pageSize"
           :total="totalPages * pageSize"
           @change="handlePageChange"
-      />
-    </div>
-  </section>
+        />
+      </div>
+    </section>
+  </div>
 </template>
+
+<style scoped>
+/* Add any necessary styles here */
+</style>

@@ -1,13 +1,13 @@
 <script lang="ts" setup>
 import {onMounted, ref} from 'vue';
 import DynamicDataTable from "@/components/common/DynamicDataTable.vue";
-import {deletePostCategory, getPostCategories} from "@/api/postCategory";
 import router from "@/router";
+import {deleteAds, getAllAds} from "@/api/resource";
 
 // Define columns for the data table
-const postCategoryColumns = [
+const AdsColumns = [
   {field: "id", headerName: "ID", width: 70},
-  {field: "name", headerName: "Tiêu đề", width: 200},
+  {field: "title", headerName: "Tiêu đề", width: 200},
   {field: "created", headerName: "Thời gian tạo", width: 200},
   {
     field: "actions",
@@ -21,40 +21,40 @@ const postCategoryColumns = [
 const currentPage = ref(1);
 const pageSize = ref(10);
 const totalPages = ref(1);
-const postCategoryRows = ref<any[]>([]);
-const createPath = '/create-post-category';
+const adsRows = ref<any[]>([]);
+const createPath = '/create-ads';
 
 const handleEdit = (row: any) => {
-  router.push({name: 'updatePostCategory', params: {id: row.id}});
+  router.push({name: 'updateAds', params: {id: row.id}});
 };
 // Function to fetch post categories
-const fetchPostCategories = async (page: number, size: number) => {
+const fetchAds = async (page: number, size: number) => {
   try {
-    const response = await getPostCategories(page, size);
-    postCategoryRows.value = response.data;
+    const response = await getAllAds(page, size);
+    adsRows.value = response.data;
     totalPages.value = response.totalPages;
   } catch (error) {
     console.error('Error fetching post categories:', error);
   }
 };
 onMounted(() => {
-  fetchPostCategories(currentPage.value, pageSize.value);
+  fetchAds(currentPage.value, pageSize.value);
 });
 
 </script>
 
 <template>
-  <h3 class="text-2xl font-bold text-left py-2">Quản lý thể loại bài viết</h3>
+  <h3 class="text-2xl font-bold text-left py-2">Quảng lý quảng cáo</h3>
 
   <DynamicDataTable
-      :columns="postCategoryColumns"
+      :columns="AdsColumns"
       :createPath="createPath"
       :currentPage="currentPage"
       :emits="['page-change', 'delete', 'edit']"
-      :rows="postCategoryRows"
+      :rows="adsRows"
       :totalPages="totalPages"
-      :deleteApi="deletePostCategory"
-      :fetchApi="fetchPostCategories"
+      :deleteApi="deleteAds"
+      :fetchApi="getAllAds"
       @edit="handleEdit"
   />
 </template>

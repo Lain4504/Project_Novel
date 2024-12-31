@@ -31,7 +31,7 @@ const goToPage = (page: number) => {
 <template>
   <div class="p-6">
     <div class="max-w-4xl mx-auto bg-white rounded-md shadow-md">
-      <h1 class="text-xl font-bold text-gray-700 bg-[#E7F5EE] px-4 py-2 border-b">Genres</h1>
+      <h1 class="text-xl font-bold text-gray-700 bg-[#E7F5EE] px-4 py-2 border-b">Thể loại tiểu thuyết</h1>
       <div class="divide-y divide-gray-300">
         <div v-for="(category, index) in novelCategories" :key="category.id"
              :class="{'bg-[#E7F5EE]': index % 2 === 0, 'bg-white': index % 2 !== 0}" class="px-4 py-3">

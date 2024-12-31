@@ -7,6 +7,7 @@ import {useRouter} from 'vue-router';
 import {register} from '@/api/user';
 import ConfirmModal from '@/components/common/ConfirmModal.vue';
 import type {RuleObject} from 'ant-design-vue/es/form/interface';
+import bannerUrl from '@/assets/banner.webp';
 
 const store = useStore();
 const router = useRouter();
@@ -72,74 +73,88 @@ const handleConfirm = () => {
 </script>
 
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-[#f0f2f5] px-4">
-    <div class="w-full max-w-md bg-white border border-gray-300 shadow-lg p-6 rounded-lg">
-      <h2 class="text-center text-2xl font-bold mb-8">Register</h2>
+  <a-layout class="relative min-h-screen bg-cover bg-center" :style="{ background: `url(${bannerUrl})`}">
+    <div class="absolute inset-0 bg-black bg-opacity-75 z-1"></div>
+    <a-layout-content class="relative z-2 flex flex-col justify-center items-center p-6">
+      <div class="text-center mb-8">
+        <a-typography-title
+            style="
+            font-size: 2em;
+            color: #fff;
+            filter: drop-shadow(0.05em 0.05em black);
+          "
+        >
+          HawkNovel
+        </a-typography-title>
+      </div>
+      <section class="w-full max-w-md bg-white p-6 rounded-lg shadow-md">
+        <h2 class="text-center text-2xl font-bold mb-8">Register</h2>
+        <a-form
+            ref="form"
+            :model="formState"
+            :rules="rules"
+            scrollToFirstError
+            @finish="handleFinish"
+        >
+          <a-form-item name="email">
+            <a-input
+                v-model:value="formState.email"
+                placeholder="Email"
+                size="large"
+            >
+              <template #prefix>
+                <MailOutlined class="text-gray-400"/>
+              </template>
+            </a-input>
+          </a-form-item>
 
-      <a-form
-          ref="form"
-          :model="formState"
-          :rules="rules"
-          scrollToFirstError
-          @finish="handleFinish"
-      >
-        <a-form-item name="email">
-          <a-input
-              v-model:value="formState.email"
-              placeholder="Email"
-              size="large"
-          >
-            <template #prefix>
-              <MailOutlined class="text-gray-400"/>
-            </template>
-          </a-input>
-        </a-form-item>
+          <a-form-item name="password">
+            <a-input-password
+                v-model:value="formState.password"
+                placeholder="Password"
+                size="large"
+            >
+              <template #prefix>
+                <LockOutlined class="text-gray-400"/>
+              </template>
+            </a-input-password>
+          </a-form-item>
 
-        <a-form-item name="password">
-          <a-input-password
-              v-model:value="formState.password"
-              placeholder="Password"
-              size="large"
-          >
-            <template #prefix>
-              <LockOutlined class="text-gray-400"/>
-            </template>
-          </a-input-password>
-        </a-form-item>
+          <a-form-item name="confirmPassword">
+            <a-input-password
+                v-model:value="formState.confirmPassword"
+                placeholder="Confirm Password"
+                size="large"
+            >
+              <template #prefix>
+                <LockOutlined class="text-gray-400"/>
+              </template>
+            </a-input-password>
+          </a-form-item>
 
-        <a-form-item name="confirmPassword">
-          <a-input-password
-              v-model:value="formState.confirmPassword"
-              placeholder="Confirm Password"
-              size="large"
-          >
-            <template #prefix>
-              <LockOutlined class="text-gray-400"/>
-            </template>
-          </a-input-password>
-        </a-form-item>
+          <a-form-item>
+            <a-button class="w-full" html-type="submit" size="large" type="primary">
+              Register
+            </a-button>
+          </a-form-item>
 
-        <a-form-item>
-          <a-button class="w-full" html-type="submit" size="large" type="primary">
-            Register
-          </a-button>
-        </a-form-item>
+          <div class="text-center mt-4">
+            <span class="text-gray-600">Already have an account? </span>
+            <router-link class="text-primary hover:text-[#18A058]" to="/login">
+              Login
+            </router-link>
+          </div>
+        </a-form>
+      </section>
 
-        <div class="text-center mt-4">
-          <span class="text-gray-600">Already have an account? </span>
-          <router-link class="text-primary hover:text-[#18A058]" to="/login">
-            Login
-          </router-link>
-        </div>
-      </a-form>
-    </div>
-    <ConfirmModal
-        :visible="showModal"
-        content="Your registration was successful. Please confirm to proceed to the login page."
-        title="Registration Successful"
-        @close="handleConfirm"
-    />
-  </div>
+      <ConfirmModal
+          :visible="showModal"
+          content="Your registration was successful. Please confirm to proceed to the login page."
+          title="Registration Successful"
+          @close="handleConfirm"
+      />
+    </a-layout-content>
+  </a-layout>
 </template>
 
 <style scoped>

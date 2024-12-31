@@ -1,4 +1,5 @@
-import { createStore } from "vuex";
+// frontend/src/store/index.ts
+import {createStore} from "vuex";
 
 interface UserState {
     token: string | null;
@@ -6,9 +7,10 @@ interface UserState {
     user: {
         id: string;
         email: string;
+        image: string;
         roles: { name: string; description: string | null; permissions: any[] }[];
     } | null;
-    isDarkMode: boolean; // Trạng thái cho Dark Mode
+    isDarkMode: boolean;
 }
 
 const store = createStore({
@@ -16,10 +18,10 @@ const store = createStore({
         token: localStorage.getItem('token') || null,
         refreshToken: localStorage.getItem('refreshToken') || null,
         user: localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user') as string) : null,
-        isDarkMode: localStorage.getItem('isDarkMode') === "true", // Lấy trạng thái từ localStorage
+        isDarkMode: localStorage.getItem('isDarkMode') === "true",
     } as UserState,
     mutations: {
-        setUser(state, user: { id: string; email: string; roles: { name: string; description: string | null; permissions: any[] }[] }) {
+        setUser(state, user: { id: string; email: string; image: string; roles: { name: string; description: string | null; permissions: any[] }[] }) {
             state.user = user;
             localStorage.setItem('user', JSON.stringify(user));
         },
@@ -39,7 +41,6 @@ const store = createStore({
             localStorage.removeItem('token');
             localStorage.removeItem('refreshToken');
         },
-        // Mutations cho Dark Mode
         toggleDarkMode(state) {
             state.isDarkMode = !state.isDarkMode;
             localStorage.setItem('isDarkMode', state.isDarkMode.toString());
@@ -50,7 +51,6 @@ const store = createStore({
         },
     },
     actions: {
-        // Actions cho Dark Mode
         toggleDarkMode({ commit }) {
             commit("toggleDarkMode");
         },
@@ -78,9 +78,11 @@ const store = createStore({
         getEmail(state): string | null {
             return state.user ? state.user.email : null;
         },
-        // Getter cho Dark Mode
         isDarkMode(state): boolean {
             return state.isDarkMode;
+        },
+        getUserImage(state): string | null {
+            return state.user ? state.user.image : null;
         },
     }
 });

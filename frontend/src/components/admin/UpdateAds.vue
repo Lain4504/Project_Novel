@@ -1,13 +1,15 @@
 <script lang="ts" setup>
 import {onMounted, ref} from 'vue';
 import DynamicFormEdit from "@/components/common/DynamicFormEdit.vue";
-import {getPostCategory, updatePostCategory} from "@/api/postCategory";
+import {getAdsById, updateAds} from "@/api/resource";
 
 // Inject hàm showAlert từ context
 const fields = {
-  title: 'Post Category',
+  title: 'quảng cáo',
   inputs: [
-    {id: 'name', label: 'Name', type: 'text', required: true},
+    {id: 'title', label: 'Title', type: 'text', required: true},
+    {id: 'redirectUrl', label: 'Redirect Url', type: 'text', required: true},
+    {id: 'imageUrl', label: 'Image Url', type: 'text', required: true},
     {id: 'description', label: 'Description', type: 'tiptap'},
   ],
 };
@@ -26,7 +28,7 @@ const initialData = ref({});
 // Hàm tải dữ liệu từ API
 const loadPostCategory = async () => {
   try {
-    initialData.value = await getPostCategory(props.id);
+    initialData.value = await getAdsById(props.id);
   } catch (error) {
     console.error('Failed to fetch post category:', error);
   }
@@ -42,6 +44,6 @@ onMounted(() => {
   <DynamicFormEdit
       :fields="fields"
       :initialData="initialData"
-      :onSave="updatePostCategory"
+      :onSave="updateAds"
   />
 </template>

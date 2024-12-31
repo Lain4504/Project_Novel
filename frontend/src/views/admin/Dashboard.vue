@@ -1,18 +1,23 @@
 <script lang="ts" setup>
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
-import { useRouter } from 'vue-router';
-import { BellOutlined, CloseOutlined, EyeOutlined, LogoutOutlined, MenuOutlined, SettingOutlined } from '@ant-design/icons-vue';
-import { notification } from 'ant-design-vue';
-import { getUserProfile } from '@/api/user';
-import { getNotificationByUserId } from '@/api/notification';
-import { logout } from '@/api/auth';
-import { useStore } from 'vuex';
+import {computed, onBeforeUnmount, onMounted, ref} from 'vue';
+import {useRouter} from 'vue-router';
+import {
+  BellOutlined,
+  CloseOutlined,
+  EyeOutlined,
+  HomeOutlined,
+  LogoutOutlined,
+  MenuOutlined,
+  SettingOutlined
+} from '@ant-design/icons-vue';
+import {notification} from 'ant-design-vue';
+import {getNotificationByUserId} from '@/api/notification';
+import {logout} from '@/api/auth';
+import {useStore} from 'vuex';
 
 enum Routes {
   NewNovel = '/create-novel',
   ExistingNovels = '/novels-of-author',
-  Analytics = '/analytics',
-  AdminNotification = '/system-notification',
   FAQ = '/faq',
   PostCategory = '/post-category-for-author',
   BookCategory = '/novel-category-for-author',
@@ -20,9 +25,7 @@ enum Routes {
   PostManagement = '/post-list',
   BookCategoryManagement = '/novel-category-list',
   PostCategoryManagement = '/post-category-list',
-  AdsManagement = '/ads-admin',
-  UserManagement = '/user-admin',
-  AdminDashboard = '/admin-dashboard',
+  AdsManagement = '/ads-list',
 }
 
 interface UserProfile {
@@ -50,11 +53,7 @@ const collapsed = ref(false);
 const isMobile = ref(false);
 const notifications = ref<Notification[]>([]);
 const unreadNotifications = ref(0);
-const userProfile = ref<UserProfile>({
-  id: '',
-  image: '',
-  username: '',
-});
+const userProfile = store.getters.getUserImage;
 
 const isAdmin = computed(() => {
   return store.getters.getUserRole.includes('ADMIN');
@@ -68,14 +67,6 @@ const menuItems = computed(() => {
       children: [
         { key: Routes.NewNovel, label: 'Add Novel' },
         { key: Routes.ExistingNovels, label: 'Existed Novel' },
-        { key: Routes.Analytics, label: 'Analytics' },
-      ],
-    },
-    {
-      key: 'notification',
-      label: 'Notification',
-      children: [
-        { key: Routes.AdminNotification, label: 'Notification' },
       ],
     },
     {
@@ -99,8 +90,6 @@ const menuItems = computed(() => {
         { key: Routes.BookCategoryManagement, label: 'Book Category Management' },
         { key: Routes.PostCategoryManagement, label: 'Post Category Management' },
         { key: Routes.AdsManagement, label: 'Ads Management' },
-        { key: Routes.UserManagement, label: 'User Management' },
-        { key: Routes.AdminDashboard, label: 'Admin Dashboard' },
       ],
     });
   }
@@ -131,26 +120,11 @@ const fetchNotifications = async () => {
     const userId = store.getters.getUserId;
     const response = await getNotificationByUserId(userId, 1, 5);
     notifications.value = response.data;
-    unreadNotifications.value = response.data.filter((n: Notification) => !n.read).length;
+    unreadNotifications.value = response.data.length;
   } catch (error) {
     notification.error({
       message: 'Error',
       description: 'Failed to fetch notifications',
-    });
-  }
-};
-
-const fetchUserProfile = async () => {
-  try {
-    const response = await getUserProfile(store.getters.getUserId);
-    userProfile.value = {
-      ...response,
-      image: response.image?.path || '',
-    };
-  } catch (error) {
-    notification.error({
-      message: 'Error',
-      description: 'Failed to fetch user profile',
     });
   }
 };
@@ -161,12 +135,16 @@ const handleLogout = async () => {
     const refreshToken = store.getters.getRefreshToken;
 
     if (!accessToken || !refreshToken) {
-      throw new Error('Missing tokens');
+      notification.error({
+        message: 'Error',
+        description: 'Invalid token',
+      });
+      return;
     }
 
     await logout({ refreshToken, accessToken });
     store.commit('clearUser');
-    router.push('/');
+    await router.push('/');
   } catch (error) {
     notification.error({
       message: 'Error',
@@ -183,7 +161,6 @@ const truncateContent = (content: string) => {
 
 onMounted(() => {
   handleResize();
-  fetchUserProfile();
   fetchNotifications();
   window.addEventListener('resize', handleResize);
 });
@@ -193,7 +170,7 @@ onBeforeUnmount(() => {
 });
 </script>
 <template>
-  <a-layout class="h-screen">
+  <a-layout style="width: 100%; min-height: 100vh">
     <a-drawer
         v-if="isMobile"
         v-model:visible="showSide"
@@ -215,15 +192,21 @@ onBeforeUnmount(() => {
         v-model:collapsed="collapsed"
         :width="256"
         :collapsed-width="80"
-        style="background: #FFFFFF"
+        style="background: #FFFFFF; border-right: 1px solid #f0f0f0"
     >
         <h1 class="font-bold text-xl text-[#18A058] my-4 ml-4">HawkNovel</h1>
-      <a-menu theme="light" mode="inline" :items="menuItems" @click="handleMenuClick"/>
+      <a-menu theme="light" mode="inline" :items="menuItems" @click="handleMenuClick" style="border: none"/>
     </a-layout-sider>
     <a-layout>
-      <a-layout-header class="flex justify-between items-center shadow-sm px-4" style="background: #FFFFFF">
-        <MenuOutlined class="cursor-pointer " style="font-size: 20px" @click="toggleSidebar"/>
+      <a-layout-header class="flex justify-between items-center shadow-sm px-4 border-b" style="background: #FFFFFF">
+        <MenuOutlined class="cursor-pointer" style="font-size: 20px" @click="toggleSidebar"/>
         <div class="flex items-center space-x-4">
+          <a-button
+              class="flex items-center space-x-2 border border-[#18A058] p-2 rounded-md bg-white hover:bg-[#E7F5EE] hover:text-gray-700 transition duration-300 ease-in-out"
+              @click="router.push('/')"
+          >
+            <HomeOutlined style="font-size: 20px"/>
+          </a-button>
           <a-dropdown placement="bottomRight" :trigger="['click']">
             <template #overlay>
               <a-menu>
@@ -259,7 +242,7 @@ onBeforeUnmount(() => {
             </a-badge>
           </a-dropdown>
           <a-dropdown placement="bottomRight" :trigger="['click']">
-            <a-avatar size="large" :src="userProfile.image || ''" alt=""/>
+            <a-avatar size="large" :src="userProfile || ''" alt=""/>
             <template #overlay>
               <a-menu>
                 <a-menu-item key="logout" @click="handleLogout">
@@ -275,7 +258,7 @@ onBeforeUnmount(() => {
           </a-dropdown>
         </div>
       </a-layout-header>
-      <a-layout-content class="p-4">
+      <a-layout-content class="p-4 bg-white">
         <router-view/>
       </a-layout-content>
     </a-layout>

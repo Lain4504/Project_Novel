@@ -1,120 +1,51 @@
-<script lang="ts" setup>
-import {ref} from 'vue';
-
-interface GameAd {
-  id: number;
-  title: string;
-  subtitle: string;
-  backgroundImage: string;
-  logo?: string;
-  className?: string;
-}
-
-// Sample data
-const gameAds = ref<GameAd[]>([
-  {
-    id: 1,
-    title: "TRỞ LẠI 1982",
-    subtitle: "LÀM TRÙM XÃ HỘI ĐEN",
-    backgroundImage: "/path-to-banner-bg.jpg",
-    logo: "/path-to-game-logo.png",
-    className: "font-game" // Custom class for game-style font
-  }
-]);
-
-// Optional: Add animation state
-const isHovered = ref(false);
-</script>
-
 <template>
-  <div class="w-full">
-    <!-- Game Ad Banner Container -->
-    <div
-        v-for="ad in gameAds"
-        :key="ad.id"
-        class="relative w-full h-[300px] overflow-hidden rounded-lg cursor-pointer group"
-        @mouseenter="isHovered = true"
-        @mouseleave="isHovered = false"
-    >
-      <!-- Background Image -->
-      <img
-          :alt="ad.title"
-          :src="ad.backgroundImage"
-          class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-      />
-
-      <!-- Overlay Content -->
+  <a-carousel :autoplay="true" :dots="false" class="my-3">
+    <div v-for="ad in ads" :key="ad.id" class="relative w-full h-[200px] overflow-hidden rounded-lg cursor-pointer group">
+      <img :src="ad.imageUrl" :alt="ad.title" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
       <div class="absolute inset-0 flex flex-col justify-center items-center">
-        <!-- Game Logo if exists -->
-        <img
-            v-if="ad.logo"
-            :src="ad.logo"
-            alt="Game Logo"
-            class="h-16 md:h-20 object-contain absolute top-4 right-4"
-        />
-
-        <!-- Title Text with Game-style Font -->
-        <div
-            :class="[
-            ad.className,
-            'space-y-2'
-          ]"
-            class="text-center transform"
-        >
-          <!-- Main Title with 3D Effect -->
-          <h1
-              class="text-4xl md:text-6xl font-bold text-white tracking-wider"
-              style="text-shadow:
-              2px 2px 0 #000,
-              -2px -2px 0 #000,
-              2px -2px 0 #000,
-              -2px 2px 0 #000,
-              0 2px 0 #000,
-              2px 0 0 #000,
-              0 -2px 0 #000,
-              -2px 0 0 #000;
-            "
-          >
+        <div class="text-center transform">
+          <h1 class="text-2xl md:text-4xl font-bold text-white tracking-wider" style="text-shadow: 2px 2px 0 #000, -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 0 2px 0 #000, 2px 0 0 #000, 0 -2px 0 #000, -2px 0 0 #000;">
             {{ ad.title }}
           </h1>
-
-          <!-- Subtitle -->
-          <h2
-              class="text-3xl md:text-5xl font-bold text-white tracking-wide"
-              style="text-shadow:
-              2px 2px 0 #000,
-              -2px -2px 0 #000,
-              2px -2px 0 #000,
-              -2px 2px 0 #000;
-            "
-          >
-            {{ ad.subtitle }}
-          </h2>
+          <h2 v-html="ad.description" class="text-xl md:text-3xl font-bold text-white tracking-wide" style="text-shadow: 2px 2px 0 #000, -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000;"/>
         </div>
-
-        <!-- Optional: Floating Effects -->
         <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent pointer-events-none"></div>
-
-        <!-- Sparkle Effects -->
         <div class="absolute inset-0 overflow-hidden pointer-events-none">
-          <div
-              v-for="i in 5"
-              :key="i"
-              :style="{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              animationDelay: `${i * 0.5}s`
-            }"
-              class="absolute w-1 h-1 bg-white rounded-full animate-ping"
-          ></div>
+          <div v-for="i in 5" :key="i" :style="{ left: `${Math.random() * 100}%`, top: `${Math.random() * 100}%`, animationDelay: `${i * 0.5}s` }" class="absolute w-1 h-1 bg-white rounded-full animate-ping"></div>
         </div>
       </div>
     </div>
-  </div>
+  </a-carousel>
 </template>
 
+<script lang="ts" setup>
+import { ref, onMounted } from 'vue';
+import { getAllAds } from '@/api/resource';
+
+interface Ad {
+  id: string;
+  imageUrl: string;
+  title: string;
+  description: string;
+  createdAt: string;
+}
+const ads = ref<Ad[]>([]);
+
+const fetchAds = async () => {
+  try {
+    const adsData = await getAllAds(1, 10); // Adjust page and size as needed
+    ads.value = adsData.data;
+  } catch (error) {
+    console.error('Error fetching ads:', error);
+  }
+};
+
+onMounted(() => {
+  fetchAds();
+});
+</script>
+
 <style scoped>
-/* Custom Animation for Floating Effect */
 @keyframes float {
   0%, 100% {
     transform: translateY(0);
@@ -124,16 +55,6 @@ const isHovered = ref(false);
   }
 }
 
-.font-game {
-  font-family: 'GameFont', sans-serif;
-}
-
-/* Custom Animation Classes */
-.animate-float {
-  animation: float 3s ease-in-out infinite;
-}
-
-/* Custom Sparkle Animation */
 @keyframes sparkle {
   0%, 100% {
     opacity: 0;

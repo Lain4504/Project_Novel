@@ -12,7 +12,8 @@ import router from "@/router";
 import NovelEdit from "@/components/admin/NovelEdit.vue";
 import OrderSortChapter from "@/components/admin/OrderSortChapter.vue";
 import OrderSortVolume from "@/components/admin/OrderSortVolume.vue";
-import {notification, Modal} from "ant-design-vue";
+import {notification} from "ant-design-vue";
+
 
 interface Chapter {
   id: string;
@@ -65,7 +66,6 @@ const id = Array.isArray(route.params.id) ? route.params.id[0] : route.params.id
 const fetchChaptersForVolume = async (volumeId: string) => {
   try {
     const response = await getChaptersByVolumeId(volumeId);
-    console.log(response);
     const chapters = response.map((chapter: any) => ({
       id: chapter.id,
       volumeId: chapter.volumeId,
@@ -92,7 +92,6 @@ const fetchChaptersForVolume = async (volumeId: string) => {
 const refreshNovelData = async () => {
   try {
     const novelData = await getNovel(id);
-    console.log(novelData);
     novel.value = {
       id: novelData.id,
       title: novelData.title,
@@ -103,8 +102,7 @@ const refreshNovelData = async () => {
       image: novelData.image,
     };
 
-    const volumeData = await getVolumesByNovelId(id);
-    volumes.value = volumeData;
+    volumes.value = await getVolumesByNovelId(id);
 
     const activeChaptersState = {...activeChapters.value};
     activeChapters.value = {};
@@ -131,20 +129,6 @@ const toggleChapters = async (volumeName: string) => {
   }
 };
 
-const toggleDropdownNovel = () => {
-  isDropdownVisible.value = !isDropdownVisible.value;
-  activeDropdown.value = null;
-};
-
-const toggleDropdown = (volumeName: string) => {
-  activeDropdown.value = activeDropdown.value === volumeName ? null : volumeName;
-  isDropdownVisible.value = false;
-};
-
-const toggleChapterDropdown = (chapterId: string) => {
-  activeDropdown.value = activeDropdown.value === chapterId ? null : chapterId;
-  isDropdownVisible.value = false;
-};
 
 const viewChapter = (chapterId: string, novelId: string) => {
   router.push({name: 'chapter', params: {novel: novelId, chapter: chapterId}});
@@ -153,6 +137,7 @@ const viewChapter = (chapterId: string, novelId: string) => {
 const viewNovel = (novelId: string) => {
   router.push({name: 'noveldetail', params: {id: novelId}});
 };
+
 const showModal = (modalName: string) => {
   showEditNovel.value = false;
   showEditVolume.value = false;
@@ -169,9 +154,11 @@ const showModal = (modalName: string) => {
   if (modalName === 'orderSortChapter') showOrderSortChapter.value = true;
   if (modalName === 'orderSortVolume') showOrderSortVolume.value = true;
 };
+
 const sortVolumes = () => {
   showModal('orderSortVolume');
-}
+};
+
 const sortChapters = (volumeId: string) => {
   if (volumeId) {
     const volume = volumes.value.find(v => v.id === volumeId);
@@ -233,9 +220,11 @@ const handleDelete = (id: string, type: string) => {
   itemToDelete.value = {id, type};
   showConfirmModal.value = true;
 };
+
 const handleNovelUpdated = async () => {
   await refreshNovelData();
 };
+
 const showNotification = (type: string, message: string) => {
   notification[type]({
     message: type === 'success' ? 'Success' : 'Error',
@@ -285,60 +274,59 @@ onMounted(() => {
 
 <template>
   <a-modal
-    v-model:visible="showConfirmModal"
-    title="Are you sure you want to delete?"
-    okText="Delete"
-    cancelText="Cancel"
-    @ok="confirmDelete"
-    @cancel="cancelDelete"
+      v-model:visible="showConfirmModal"
+      title="Are you sure you want to delete?"
+      okText="Delete"
+      cancelText="Cancel"
+      @ok="confirmDelete"
+      @cancel="cancelDelete"
   >
     <p>This action cannot be undone.</p>
   </a-modal>
   <div class="flex justify-center items-center max-w-7xl mx-auto">
-    <div class="bg-white p-8 rounded-lg shadow-md w-full">
-      <h1 class="text-lg font-bold ">Quản lý tiểu thuyết</h1>
+    <a-card class="bg-white rounded-lg shadow-md w-full">
+      <a-typography-title level={1} style="font-size: 20px;">Quản lý tiểu thuyết</a-typography-title>
       <div class="space-y-4 mt-10">
         <div class="md:col-span-1 relative">
-          <h2 class="text-lg font-bold cursor-pointer text-[#18A058]" @click="toggleDropdownNovel">{{ novel.title }}</h2>
-          <div v-if="isDropdownVisible"
-               class="absolute z-10 bg-white border border-gray-300 rounded-md mt-2 w-36 shadow-md">
-            <button class="block w-full p-2 cursor-pointer hover:bg-[#E7F5EE] text-sm" @click="viewNovel(novel.id)">View Novel</button>
-            <button class="block w-full p-2 cursor-pointer hover:bg-[#E7F5EE] text-sm" @click="addVolume">Add Volume</button>
-            <button class="block w-full p-2 cursor-pointer hover:bg-[#E7F5EE] text-sm" @click="sortVolumes">Sort Volumes</button>
-            <button class="block w-full p-2 cursor-pointer hover:bg-[#E7F5EE] text-sm" @click="editNovel">Edit Novel</button>
-            <button class="block w-full p-2 cursor-pointer hover:bg-[#E7F5EE] text-sm text-red-600" @click="() => { handleDelete(novel.id, 'novel'); }">Delete Novel</button>
-          </div>
+          <a-dropdown :trigger="['click']">
+            <template #overlay>
+              <a-menu style="width: 200px">
+                <a-menu-item key="1" @click="viewNovel(novel.id)">View Novel</a-menu-item>
+                <a-menu-item key="2" @click="addVolume">Add Volume</a-menu-item>
+                <a-menu-item key="3" @click="sortVolumes">Sort Volumes</a-menu-item>
+                <a-menu-item key="4" @click="editNovel">Edit Novel</a-menu-item>
+                <a-menu-item key="5" @click="() => { handleDelete(novel.id, 'novel'); }" style="color: #ff0f0f">Delete
+                  Novel
+                </a-menu-item>
+              </a-menu>
+            </template>
+            <a-typography-title level={2} style="font-size: 16px">{{ novel.title }}</a-typography-title>
+          </a-dropdown>
         </div>
         <div>
           <ul class="space-y-4 text-gray-700">
             <li v-for="volume in volumes" :key="volume.volumeName" class="relative">
               <div class="flex items-center w-full">
-                <button class="flex items-center text-left font-medium hover:underline mr-2"
-                        @click="toggleChapters(volume.volumeName)">
+                <a-button type="default" class="mr-2" @click="toggleChapters(volume.volumeName)">
                   <font-awesome-icon
                       :icon="activeChapters[volume.volumeName] ? 'fas fa-square-minus' : 'fas fa-square-plus'"
                       size='xl'/>
-                </button>
-                <button class="text-left w-full font-medium hover:underline" @click="toggleDropdown(volume.volumeName)">
-                  {{ volume.volumeName }}
-                </button>
-              </div>
-              <div v-if="activeDropdown === volume.volumeName"
-                   class="z-10 absolute mt-2 bg-white border border-gray-300 rounded-md shadow-lg">
-                <ul class="py-1 text-sm text-gray-700">
-                  <li>
-                    <button class="block w-full px-4 py-2 hover:bg-[#E7F5EE]" @click="() => { addChapter(volume.id) }">Add Chapter</button>
-                  </li>
-                  <li>
-                    <button class="block w-full px-4 py-2 hover:bg-[#E7F5EE]" @click="() => { sortChapters(volume.id)}">Sort Chapters</button>
-                  </li>
-                  <li>
-                    <button class="block w-full px-4 py-2 hover:bg-[#E7F5EE]" @click="() => { editVolume(volume) }">Edit Volume</button>
-                  </li>
-                  <li>
-                    <button class="block w-full px-4 py-2 text-red-600 hover:bg-[#E7F5EE]" @click="() => { handleDelete(volume.id, 'volume')}">Delete Volume</button>
-                  </li>
-                </ul>
+                </a-button>
+                <a-dropdown :trigger="['click']">
+                  <template #overlay>
+                    <a-menu>
+                      <a-menu-item key="1" @click="() => { addChapter(volume.id) }">Add Chapter</a-menu-item>
+                      <a-menu-item key="2" @click="() => { sortChapters(volume.id) }">Sort Chapters</a-menu-item>
+                      <a-menu-item key="3" @click="() => { editVolume(volume) }">Edit Volume</a-menu-item>
+                      <a-menu-item key="4" @click="() => { handleDelete(volume.id, 'volume') }" style="color: #ff0f0f">
+                        Delete Volume
+                      </a-menu-item>
+                    </a-menu>
+                  </template>
+                  <button class="text-left font-medium hover:underline">
+                    {{ volume.volumeName }}
+                  </button>
+                </a-dropdown>
               </div>
               <div v-if="activeChapters[volume.volumeName]" class="mt-2 relative">
                 <div v-if="!volume.chapters || volume.chapters.length === 0" class="text-gray-500 text-sm">
@@ -346,23 +334,21 @@ onMounted(() => {
                 </div>
                 <div class="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   <div v-for="chapter in volume.chapters" :key="chapter.id" class="text-left relative">
-                    <button class="text-sm hover:underline" @click="toggleChapterDropdown(chapter.id)">
-                      {{ chapter.chapterTitle }}
-                    </button>
-                    <div v-if="activeDropdown === chapter.id"
-                         class="z-10 absolute left-0 mt-2 bg-white border border-gray-300 rounded-md shadow-lg">
-                      <ul class="py-1 text-sm text-gray-700">
-                        <li>
-                          <button class="block w-full px-4 py-2 hover:bg-[#E7F5EE]" @click="() => { viewChapter(chapter.id, novel.id)}">View Chapter</button>
-                        </li>
-                        <li>
-                          <button class="block w-full px-4 py-2 hover:bg-[#E7F5EE]" @click="() => { editChapter(chapter)}">Edit Chapter</button>
-                        </li>
-                        <li>
-                          <button class="block w-full px-4 py-2 text-red-600 hover:bg-[#E7F5EE]" @click="() => { handleDelete(chapter.id, 'chapter')}">Delete Chapter</button>
-                        </li>
-                      </ul>
-                    </div>
+                    <a-dropdown :trigger="['click']">
+                      <template #overlay>
+                        <a-menu>
+                          <a-menu-item key="1" @click="() => { viewChapter(chapter.id, novel.id) }">View Chapter
+                          </a-menu-item>
+                          <a-menu-item key="2" @click="() => { editChapter(chapter) }">Edit Chapter</a-menu-item>
+                          <a-menu-item key="3" @click="() => { handleDelete(chapter.id, 'chapter') }"
+                                       style="color: #ff0f0f">Delete Chapter
+                          </a-menu-item>
+                        </a-menu>
+                      </template>
+                      <a-button type="link" class="text-sm hover:underline">
+                        {{ chapter.chapterTitle }}
+                      </a-button>
+                    </a-dropdown>
                   </div>
                 </div>
               </div>
@@ -370,7 +356,7 @@ onMounted(() => {
           </ul>
         </div>
       </div>
-    </div>
+    </a-card>
   </div>
   <div class="flex justify-center items-center max-w-7xl mx-auto">
     <EditContentChapter v-if="showEditChapter" :chapterData="selectedChapterData"
@@ -387,3 +373,13 @@ onMounted(() => {
                      @volume-order-updated="handleVolumeUpdated"/>
   </div>
 </template>
+
+<style scoped>
+.bg-white {
+  background-color: #FFFFFF;
+}
+
+.border {
+  border-color: #E7F5EE;
+}
+</style>

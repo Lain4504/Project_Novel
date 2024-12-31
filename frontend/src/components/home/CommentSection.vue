@@ -145,7 +145,7 @@ const submitReply = async (commentId: string) => {
       }
       await props.createReplyApi(replyData);
       replyText.value[commentId] = '';
-      fetchReplies(commentId, 1);
+      await fetchReplies(commentId, 1);
     } catch (error) {
       console.error('Failed to submit reply:', error);
     }

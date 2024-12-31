@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import {ref, onMounted, watch, computed} from 'vue';
-import { getChaptersByVolumeId } from '@/api/novelChapter';
-import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import { useRouter } from "vue-router";
+import {computed, onMounted, ref, watch} from 'vue';
+import {getChaptersByVolumeId} from '@/api/novelChapter';
+import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
+import {useRouter} from "vue-router";
 import {getVolume} from "@/api/novelVolume";
 
 const props = defineProps<{
@@ -30,8 +30,7 @@ const fetchVolume = async () => {
 };
 const fetchChapters = async () => {
   try {
-    const data = await getChaptersByVolumeId(props.volumeId);
-    chapters.value = data;
+    chapters.value = await getChaptersByVolumeId(props.volumeId);
   } catch (error) {
     console.error('Failed to fetch chapters:', error);
   }

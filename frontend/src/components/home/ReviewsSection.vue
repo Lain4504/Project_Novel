@@ -2,6 +2,7 @@
 import {onMounted, ref} from 'vue';
 import {getLatestReview} from "@/api/user";
 
+
 interface Review {
   id: string;
   userId: string;
@@ -40,44 +41,40 @@ onMounted(() => {
 
 <template>
   <div class="max-w-7xl mx-auto p-4">
-    <h1 class="text-2xl font-bold mb-6 text-gray-800">Latest Reviews</h1>
+    <a-typography-title level={2} style="font-size: 24px">Đánh giá mới nhất</a-typography-title>
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-      <div v-for="review in reviews" :key="review.id"
-           class="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow duration-200 overflow-hidden flex flex-col">
-        <h2 class="text-xl font-semibold mb-2 text-[#18A058]">
-          <router-link :to="{ name: 'noveldetail', params: { id: review.novelId } }">{{
-              review.novelName
-            }}
+      <a-card
+        v-for="review in reviews"
+        :key="review.id"
+        class="hover:shadow-lg transition-shadow duration-200"
+        :bordered="false"
+        :bodyStyle="{ padding: '12px' }"
+      >
+        <a-typography-title level={4} style="font-size: 20px; color: #18A058">
+          <router-link :to="{ name: 'noveldetail', params: { id: review.novelId } }">
+            {{ review.novelName }}
           </router-link>
-        </h2>
+        </a-typography-title>
         <div :class="{'max-h-48': !expandedReviews.includes(review.id)}" class="overflow-hidden flex-grow">
-          <p class="text-gray-600 italic mb-4 break-words">{{ review.review }}</p>
+          <a-typography-text class="text-gray-600 italic mb-4 break-words">{{ review.review }}</a-typography-text>
         </div>
-        <button v-if="review.review.length > 200" @click="toggleReview(review.id)" class="text-[#18A058] hover:underline">
+        <a-button type="link" v-if="review.review.length > 200" @click="toggleReview(review.id)" class="text-[#18A058] p-0">
           {{ expandedReviews.includes(review.id) ? 'Read Less' : 'Read More' }}
-        </button>
+        </a-button>
         <div class="mt-auto flex items-center justify-between">
           <div class="flex items-center space-x-2">
-            <img :src="review.image" alt="User Avatar" class="w-8 h-8 rounded-full">
+            <a-avatar :src="review.image" size="large" alt="User Avatar" class="w-8 h-8 rounded-full"/>
             <div class="font-medium">{{ review.userName }}</div>
           </div>
           <div class="text-sm text-gray-500">{{ review.created }}</div>
         </div>
-      </div>
+      </a-card>
     </div>
   </div>
 </template>
 
 <style scoped>
-.bg-white {
-  background-color: #FFFFFF;
-}
-
-.hover\:underline:hover {
-  text-decoration: underline;
-}
-
 .max-h-48 {
   max-height: 12rem;
 }

@@ -1,6 +1,9 @@
 <script lang="ts" setup>
 import {computed, onMounted, ref, watch} from 'vue';
 import {getLatestNovels} from '@/api/novel';
+import {Button, Typography} from 'ant-design-vue';
+
+const { Title, Text } = Typography;
 
 interface Category {
   id: string;
@@ -21,8 +24,8 @@ interface Novel {
 }
 
 const tabs = [
-  {label: 'TOP THÁNG', value: 'top', sort: ''},
-  {label: 'ĐỀ CỬ', value: 'recommentation', sort: 'recommentation'},
+  { label: 'TOP THÁNG', value: 'top', sort: '' },
+  { label: 'ĐỀ CỬ', value: 'recommentation', sort: 'recommentation' },
 ];
 
 const activeTab = ref(tabs[0].value);
@@ -65,6 +68,10 @@ const changePage = (page: number) => {
   fetchBooks(page, tabs.find(tab => tab.value === activeTab.value)?.sort || '');
 };
 
+const shouldShowSingleDot = computed(() => {
+  return currentPage.value === 1 && books.value.length < itemsPerPage;
+});
+
 onMounted(() => {
   fetchBooks(currentPage.value, tabs[0].sort);
 });
@@ -78,73 +85,90 @@ watch(activeTab, (newTab) => {
   <div class="p-6">
     <ul class="hnt-tab flex justify-start space-x-4 text-start py-4">
       <li
-          v-for="tab in tabs"
-          :key="tab.value"
-          :class="[
+        v-for="tab in tabs"
+        :key="tab.value"
+        :class="[
           activeTab === tab.value
             ? 'text-[#18A058] font-bold border-b-2 border-[#18A058]'
             : 'text-gray-600',
           'hover:scale-105',
         ]"
-          class="item cursor-pointer transition-transform duration-300 ease-in-out"
-          @click="setActiveTab(tab)"
+        class="item cursor-pointer transition-transform duration-300 ease-in-out"
+        @click="setActiveTab(tab)"
       >
         {{ tab.label }}
       </li>
     </ul>
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      <div
-          v-for="book in books"
-          :key="book.id"
-          class="flex space-x-4 border p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200"
+      <a-card
+        v-for="book in books"
+        :key="book.id"
+        class="hover:shadow-md transition-shadow duration-200"
+        :bordered="false"
+        :bodyStyle="{ padding: '12px' }"
       >
-        <img
+        <div class="flex space-x-4">
+          <img
             :src="book.image"
             alt="book cover"
             class="w-24 h-36 object-cover rounded-lg"
-        />
-        <div class="flex-1">
-          <h3 class="text-lg font-semibold line-clamp-2 hover:text-[#18A058]">
-            <router-link :to="{ name: 'noveldetail', params: { id: book.id } }">
-              {{ book.title }}
+          />
+          <div class="flex-1">
+            <router-link
+              :to="{ name: 'noveldetail', params: { id: book.id } }"
+              class="hover:text-[#18A058]"
+            >
+              <Title :level="5" class="!mb-2 line-clamp-2">
+                {{ book.title }}
+              </Title>
             </router-link>
-          </h3>
-          <p class="text-sm text-gray-500 line-clamp-3" v-html="book.description"/>
-          <div class="flex items-center text-sm text-gray-700 mt-2 italic">
-            <i class="fas fa-user mr-2"></i>
-            <router-link :to="{ name: 'account', params: { id: book.authorId } }">
-              {{ book.authorName }}
-            </router-link>
-          </div>
-          <div class="mt-2">
-          <a-tag
-              v-for="category in book.categories.slice(0, 4)"
-              :key="category.id"
-              class="text-[#18A058] font-semibold bg-[#E7F5EE] my-[0.2rem]">
-              {{ category.name }}
-          </a-tag>
+            <Text class="text-gray-500 line-clamp-3" v-html="book.description" />
+            <div class="flex items-center mt-2 italic">
+              <router-link
+                :to="{ name: 'account', params: { id: book.authorId } }"
+                class="text-gray-700"
+              >
+                <Text>
+                  <template #prefix>
+                    <i class="fas fa-user mr-2"></i>
+                  </template>
+                  {{ book.authorName }}
+                </Text>
+              </router-link>
+            </div>
+            <div class="mt-3 flex flex-wrap gap-2">
+              <a-tag
+                v-for="category in book.categories.slice(0, 4)"
+                :key="category.id"
+                class="text-[#18A058] bg-[#E7F5EE] border-0"
+              >
+                {{ category.name }}
+              </a-tag>
+            </div>
           </div>
         </div>
-      </div>
+      </a-card>
     </div>
 
     <div class="flex justify-center mt-4 space-x-2">
       <button
-          v-for="page in [1, 2]"
-          :key="page"
-          :class="[
+        v-if="!shouldShowSingleDot"
+        v-for="page in [1, 2]"
+        :key="page"
+        :class="[
           'w-3 h-3 rounded-full transition-all',
           currentPage === page ? 'bg-[#18A058]' : 'bg-gray-300',
         ]"
-          @click="() => changePage(page)"
+        @click="() => changePage(page)"
+      ></button>
+      <button
+        v-else
+        :class="[
+          'w-3 h-3 rounded-full transition-all',
+          'bg-[#18A058]',
+        ]"
       ></button>
     </div>
   </div>
 </template>
-
-<style scoped>
-.hnt-tab li:hover {
-  background-color: #E7F5EE;
-}
-</style>

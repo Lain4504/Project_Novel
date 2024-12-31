@@ -1,6 +1,9 @@
 <script lang="ts" setup>
 import {onMounted, ref} from 'vue';
 import {getLatestNovels, getNovels} from '@/api/novel';
+import {Typography} from 'ant-design-vue';
+
+const { Title, Text } = Typography;
 
 interface Category {
   id: string;
@@ -16,7 +19,7 @@ interface Novel {
   description: string;
   image: string;
   authorName: string;
-  authorId: string
+  authorId: string;
   followCount?: number;
   categories: Category[];
 }
@@ -83,86 +86,131 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="max-w-screen-xl mx-auto p-6">
-    <div class="flex flex-col lg:flex-row gap-6">
+  <div class="max-w-screen-xl mx-auto">
+    <a-row :gutter="[24, 24]">
       <!-- Left: Latest Books Section -->
-      <section class="flex-1">
-        <header class="flex justify-between items-center my-2 p-2">
-          <h1 class="text-lg font-semibold">TIỂU THUYẾT MỚI</h1>
-        </header>
-        <div v-if="latestNovels.length === 0" class="text-center text-gray-500">
-          Chưa có dữ liệu tiểu thuyết mới
-        </div>
-        <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
-          <article
-              v-for="novel in latestNovels"
-              :key="novel.id"
-              class="flex space-x-4 border p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200"
-          >
-            <img
-                :src="novel.image"
-                :alt="novel.title"
-                class="w-24 h-36 object-cover rounded-lg"
-            />
-            <div class="flex-1">
-              <h2 class="text-lg font-semibold line-clamp-2 hover:text-[#18A058]">
-                <router-link :to="{ name: 'noveldetail', params: { id: novel.id } }">
-                  {{ novel.title }}
-                </router-link>
-              </h2>
-              <p class="text-sm text-gray-500 line-clamp-3" v-html="novel.description"/>
-              <div class="flex items-center text-sm text-gray-700 mt-2 italic">
-                <i class="fas fa-user mr-2"></i>
-                <router-link :to="{ name: 'account', params: { id: novel.authorId } }">
-                  {{ novel.authorName }}
-                </router-link>
+      <a-col :xs="24" :md="24" :lg="18">
+        <a-card class="mb-6">
+          <template #title>
+            <Title :level="4" class="!mb-0">TIỂU THUYẾT MỚI</Title>
+          </template>
+
+          <a-empty v-if="latestNovels.length === 0" description="Chưa có dữ liệu tiểu thuyết mới" />
+
+          <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <a-card
+                v-for="novel in latestNovels"
+                :key="novel.id"
+                class="hover:shadow-md transition-shadow duration-200"
+                :bordered="false"
+                :bodyStyle="{ padding: '12px' }"
+            >
+              <div class="flex space-x-4">
+                <img
+                    :src="novel.image"
+                    :alt="novel.title"
+                    class="w-24 h-36 object-cover rounded-lg"
+                />
+                <div class="flex-1">
+                  <router-link
+                      :to="{ name: 'noveldetail', params: { id: novel.id } }"
+                      class="hover:text-[#18A058]"
+                  >
+                    <Title :level="5" class="!mb-2 line-clamp-2">
+                      {{ novel.title }}
+                    </Title>
+                  </router-link>
+
+                  <Text class="text-gray-500 line-clamp-3" v-html="novel.description" />
+
+                  <div class="flex items-center mt-2 italic">
+                    <router-link
+                        :to="{ name: 'account', params: { id: novel.authorId } }"
+                        class="text-gray-700"
+                    >
+                      <Text>
+                        <template #prefix>
+                          <UserOutlined class="mr-1" />
+                        </template>
+                        {{ novel.authorName }}
+                      </Text>
+                    </router-link>
+                  </div>
+
+                  <div class="mt-3 flex flex-wrap gap-2">
+                    <a-tag
+                        v-for="category in novel.categories.slice(0, 4)"
+                        :key="category.id"
+                        class="text-[#18A058] bg-[#E7F5EE] border-0"
+                    >
+                      {{ category.name }}
+                    </a-tag>
+                  </div>
+                </div>
               </div>
-              <div class="mt-3">
-                <a-tag
-                  v-for="category in novel.categories.slice(0, 4)"
-                  :key="category.id"
-                  class="text-[#18A058] font-semibold bg-[#E7F5EE]"
-                >
-                  {{ category.name }}
-                </a-tag>
-              </div>
-            </div>
-          </article>
-        </div>
-        <div class="flex justify-center mt-4">
-          <button
-              class="text-sm bg-[#18A058] text-white py-2 px-4 rounded-full hover:bg-[#16a34a] transition"
-          >
-            Xem Thêm
-          </button>
-        </div>
-      </section>
+            </a-card>
+          </div>
+
+          <div class="flex justify-center mt-4">
+            <a-button type="primary" class="bg-[#18A058] hover:bg-[#16a34a]">
+              Xem Thêm
+            </a-button>
+          </div>
+        </a-card>
+      </a-col>
 
       <!-- Right: Trending Books Sidebar -->
-      <aside class="w-full lg:w-1/4 flex flex-col gap-6">
-        <div class="bg-gray-50 p-4 rounded-lg shadow-lg">
-          <h2 class="text-xl font-semibold">Theo Dõi Nhiều</h2>
-          <div v-if="trendingBooks.length === 0" class="text-center text-gray-500">
-            Chưa có dữ liệu tiểu thuyết theo dõi nhiều
-          </div>
-          <div v-else class="mt-4">
-            <div v-for="book in trendingBooks" :key="book.id" class="flex items-center mb-4">
-              <img :src="book.image" :alt="book.title" class="w-16 h-24 object-cover rounded-md"/>
-              <div class="ml-4">
-                <h3 class="text-sm font-semibold text-gray-800 hover:text-[#18A058]">
-                  <router-link :to="{ name: 'noveldetail', params: { id: book.id } }">
-                    {{ book.title }}
-                  </router-link>
-                </h3>
-                <p class="text-xs text-gray-500">{{ book.followCount }} theo dõi</p>
-              </div>
+      <a-col :xs="24" :md="24" :lg="6">
+        <a-card title="Theo Dõi Nhiều" class="bg-gray-50">
+          <a-empty v-if="trendingBooks.length === 0" description="Chưa có dữ liệu tiểu thuyết theo dõi nhiều" />
+
+          <template v-else>
+            <div class="trending-books-grid">
+              <a-card
+                  v-for="book in trendingBooks"
+                  :key="book.id"
+                  :bordered="false"
+                  :bodyStyle="{ padding: '8px' }"
+              >
+                <div class="flex items-center">
+                  <img
+                      :src="book.image"
+                      :alt="book.title"
+                      class="w-16 h-24 object-cover rounded-md"
+                  />
+                  <div class="ml-4">
+                    <router-link
+                        :to="{ name: 'noveldetail', params: { id: book.id } }"
+                        class="hover:text-[#18A058]"
+                    >
+                      <Text strong class="text-sm">{{ book.title }}</Text>
+                    </router-link>
+                    <br />
+                    <Text type="secondary" class="text-xs">
+                      {{ book.followCount }} theo dõi
+                    </Text>
+                  </div>
+                </div>
+              </a-card>
             </div>
-          </div>
-        </div>
-      </aside>
-    </div>
+          </template>
+        </a-card>
+      </a-col>
+    </a-row>
   </div>
 </template>
+
 <style scoped>
 
+.trending-books-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+@media (min-width: 768px) {
+  .trending-books-grid {
+    grid-template-columns: 1fr;
+  }
+}
 </style>

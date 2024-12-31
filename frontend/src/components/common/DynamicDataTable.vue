@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import {defineEmits, defineProps, ref, computed, watch} from 'vue';
+import {computed, defineEmits, defineProps, ref, watch} from 'vue';
 
 const props = defineProps<{
   columns: Column[];
@@ -101,76 +101,99 @@ const cancelDelete = () => {
   showConfirmModal.value = false;
 };
 </script>
-
 <template>
-  <div class="p-6">
+  <div class="p-3">
     <div v-if="props.createPath" class="mt-4 flex justify-end my-4">
       <router-link :to="props.createPath">
         <a-button
-          class="bg-[#18A058] hover:bg-[#18A058] border-none text-white flex items-center justify-center"
-          shape="circle"
-          style="width: 40px; height: 40px;"
-          type="primary"
+            class="bg-[#18A058] hover:bg-[#18A058] border-none text-white flex items-center justify-center"
+            shape="circle"
+            style="width: 40px; height: 40px;"
+            type="primary"
         >
           <font-awesome-icon :icon="['fas', 'plus']" class="text-xl"/>
         </a-button>
       </router-link>
     </div>
-    <div class="relative sm:rounded-lg">
-      <a-table class="custom-table" :columns="formattedColumns" :dataSource="rows" rowKey="id" :pagination="false">
-        <template #bodyCell="{ column, record }">
-          <template v-if="column.isAction">
-            <div class="flex justify-center items-center space-x-3">
-              <a-button v-if="props.emits.includes('view')" type="default" @click="$emit('view', record)">
-                <font-awesome-icon :icon="['far', 'eye']" style="color: #FFD43B" />
-              </a-button>
-              <a-button v-if="props.emits.includes('edit')" type="default" @click="$emit('edit', record)">
-                <font-awesome-icon :icon="['fas', 'pen']" style="color: #1890ff"/>
-              </a-button>
-              <a-button v-if="props.emits.includes('delete')" type="default" @click="handleDelete(record)">
-                <font-awesome-icon :icon="['fas', 'trash']" style="color: #ff0f0f"/>
-              </a-button>
-            </div>
+    <!-- Added wrapper div with overflow handling -->
+    <div class="w-full overflow-x-auto">
+      <div class="relative sm:rounded-lg min-w-full">
+        <a-table
+            :columns="formattedColumns"
+            :dataSource="rows"
+            rowKey="id"
+            :pagination="false"
+            :scroll="{ x: 'max-content' }"
+            class="min-w-full"
+        >
+          <template #bodyCell="{ column, record }">
+            <template v-if="column.isAction">
+              <div class="flex justify-center items-center space-x-3 whitespace-nowrap">
+                <a-button v-if="props.emits.includes('view')" type="default" @click="$emit('view', record)">
+                  <font-awesome-icon :icon="['far', 'eye']" style="color: #FFD43B"/>
+                </a-button>
+                <a-button v-if="props.emits.includes('edit')" type="default" @click="$emit('edit', record)">
+                  <font-awesome-icon :icon="['fas', 'pen']" style="color: #1890ff"/>
+                </a-button>
+                <a-button v-if="props.emits.includes('delete')" type="default" @click="handleDelete(record)">
+                  <font-awesome-icon :icon="['fas', 'trash']" style="color: #ff0f0f"/>
+                </a-button>
+              </div>
+            </template>
+            <template v-else-if="column.renderCell">
+              <div class="whitespace-nowrap">
+                {{ column.renderCell(record) }}
+              </div>
+            </template>
+            <template v-else>
+              <div class="whitespace-nowrap">
+                {{ record[column.field] }}
+              </div>
+            </template>
           </template>
-          <template v-else-if="column.renderCell">
-            {{ column.renderCell(record) }}
-          </template>
-          <template v-else>
-            {{ record[column.field] }}
-          </template>
-        </template>
-      </a-table>
+        </a-table>
+      </div>
     </div>
 
     <!-- Pagination -->
     <div class="flex flex-col items-center my-4">
       <a-pagination
-        :current="currentPage"
-        :pageSize="pageSize"
-        :total="totalPages * pageSize"
-        show-size-changer
-        @change="handlePageChange"
-        @showSizeChange="onShowSizeChange"
+          :current="currentPage"
+          :pageSize="pageSize"
+          :total="totalPages * pageSize"
+          show-size-changer
+          @change="handlePageChange"
+          @showSizeChange="onShowSizeChange"
       />
     </div>
 
     <!-- Confirm Delete Modal -->
     <a-modal
-      v-model:visible="showConfirmModal"
-      title="Are you sure you want to delete?"
-      okText="Delete"
-      cancelText="Cancel"
-      @ok="confirmDelete"
-      @cancel="cancelDelete"
+        v-model:visible="showConfirmModal"
+        title="Are you sure you want to delete?"
+        okText="Delete"
+        cancelText="Cancel"
+        @ok="confirmDelete"
+        @cancel="cancelDelete"
     >
-      <p>Thao tác này sẽ gửi yêu cầu xóa tiểu thuyết tới admin để xem xét, thời gian giải quyết tối đa 3 ngày làm việc.</p>
+      <p>Thao tác này sẽ gửi yêu cầu xóa tiểu thuyết tới admin để xem xét, thời gian giải quyết tối đa 3 ngày làm
+        việc.</p>
     </a-modal>
   </div>
 </template>
 
 <style scoped>
-.custom-table {
-  border: 1px solid #d9d9d9;
-  border-radius: 4px;
+/* Add custom styles for better mobile handling */
+:deep(.ant-table-wrapper) {
+  overflow-x: auto;
+}
+
+:deep(.ant-table) {
+  min-width: 100%;
+}
+
+:deep(.ant-table-cell) {
+  white-space: nowrap;
+  padding: 8px;
 }
 </style>

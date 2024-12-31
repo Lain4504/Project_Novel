@@ -3,6 +3,9 @@ import {computed, onMounted, ref} from 'vue';
 import {getPosts} from "@/api/post";
 import {getMyReadingList} from "@/api/user";
 import store from "@/store";
+import {Typography} from 'ant-design-vue';
+
+const { Title, Text } = Typography;
 
 interface Post {
   id: string;
@@ -30,8 +33,8 @@ const fetchLatestPosts = async () => {
   try {
     const page = 1;
     const size = 5;
-    const response = await getPosts({page, size});
-    const posts = response.data.map((post: any) => ({
+    const response = await getPosts({ page, size });
+    latestPosts.value = response.data.map((post: any) => ({
       id: post.id,
       title: post.title,
       userId: post.userId,
@@ -39,7 +42,6 @@ const fetchLatestPosts = async () => {
       categoryName: post.categoryName,
       created: post.created,
     }));
-    latestPosts.value = posts;
   } catch (error) {
     console.error("Error fetching latest posts:", error);
   }
@@ -75,73 +77,69 @@ onMounted(() => {
   <div class="flex flex-col md:flex-row md:space-x-4 space-y-4 md:space-y-0 mt-10">
     <!-- Latest Posts Section -->
     <div class="w-full md:w-3/5">
-      <section class="p-4 border rounded bg-white">
-        <div class="flex justify-between items-center">
-          <h2 class="text-md font-bold">Thảo luận mới nhất</h2>
-          <router-link :to="{ name: 'postforum' }" class="text-[#18A058] text-sm hover:underline">Xem tất cả
-          </router-link>
-        </div>
+      <a-card class="mb-6">
+        <template #title>
+          <div class="flex justify-between items-center">
+            <span>Thảo luận mới nhất</span>
+            <router-link :to="{ name: 'postforum' }">
+              <a-button type="link" class="text-[#18A058] text-sm hover:underline">Xem tất cả</a-button>
+            </router-link>
+          </div>
+        </template>
         <div class="mt-4 text-sm">
           <ul class="space-y-4">
             <li v-if="latestPosts.length === 0">No posts available</li>
-            <li
-                v-for="(post, index) in latestPosts"
-                :key="index"
-                class="border-b pb-2"
-            >
-              <h3 class="font-semibold truncate hover:text-[#18A058]">
+            <li v-for="(post, index) in latestPosts" :key="index" class="border-b pb-2">
+              <a-typography-title level={5} style="font-size: 16px">
                 <router-link :to="{ name: 'postdetail', params: { id: post.id } }">
+                  <span class="font-medium text-black truncate hover:text-[#18A058]">
                   {{ post.title }}
+                  </span>
                 </router-link>
-              </h3>
-              <p class="text-[#18A058] text-xs space-x-2">
-                <a-tag class="italic text-[#E7F5EE] bg-[#18A058] ">
-                  {{ post.categoryName }}
-                </a-tag>
+              </a-typography-title>
+              <a-typography-text class="text-[#18A058] text-xs space-x-2">
+                <a-tag class="italic text-[#E7F5EE] bg-[#18A058]">{{ post.categoryName }}</a-tag>
                 {{ post.created }}
-              </p>
+              </a-typography-text>
             </li>
           </ul>
         </div>
-      </section>
+      </a-card>
     </div>
     <!-- Reading Section -->
     <div v-if="isAuthenticated" class="w-full md:w-2/5">
-      <section class="p-4 border rounded bg-white">
-        <div class="flex justify-between items-center">
-          <h2 class="text-md font-bold">Tiểu thuyết vừa đọc</h2>
-          <router-link :to="{ name: 'readinglist' }" class="text-[#18A058] text-sm hover:underline">Xem tất cả
-          </router-link>
-        </div>
+      <a-card class="mb-6">
+        <template #title>
+          <div class="flex justify-between items-center">
+            <span>Tiểu thuyết vừa đọc</span>
+            <router-link :to="{ name: 'readinglist' }">
+              <a-button type="link" class="text-[#18A058] text-sm hover:underline">Xem tất cả</a-button>
+            </router-link>
+          </div>
+        </template>
         <div class="mt-4 text-sm">
           <div class="space-y-4">
             <div v-if="readingNovels.length === 0">You are not reading any novels</div>
-            <div
-                v-for="(novel, index) in readingNovels"
-                :key="index"
-                class="flex items-center space-x-4"
-            >
-              <img
-                  :src="novel.image"
-                  alt="Reading Image"
-                  class="w-14 h-20 object-cover"
-              />
-              <div class="flex justify-between items-center w-full">
-                <h3 class="font-semibold truncate hover:text-[#18A058]">
+            <div v-for="(novel, index) in readingNovels" :key="index" class="flex items-center space-x-4">
+              <img :src="novel.image" alt="Reading Image" class="w-14 h-20 object-cover rounded-lg" />
+              <div class="flex-1">
+                <a-typography-title level={5} style="font-size: 16px">
                   <router-link :to="{ name: 'noveldetail', params: { id: novel.novelId } }">
+                     <span class="font-medium text-black truncate hover:text-[#18A058]">
                     {{ novel.novelName }}
+                    </span>
                   </router-link>
-                </h3>
-                <p class="text-gray-500 flex-shrink-0 hover:text-[#18A058]">
+                </a-typography-title>
+                <Text class="text-gray-500 hover:text-[#18A058]">
                   <router-link :to="{ name: 'chapter', params: { novel: novel.novelId, chapter: novel.novelChapterId}}">
                     {{ novel.novelChapterTitle }}
                   </router-link>
-                </p>
+                </Text>
               </div>
             </div>
           </div>
         </div>
-      </section>
+      </a-card>
     </div>
   </div>
 </template>

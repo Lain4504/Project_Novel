@@ -7,7 +7,6 @@ interface Novel {
   id: string;
   novelId: string;
   novelTitle: string;
-  image: string;
   novelChapterId: string;
   novelChapterTitle: string;
   created: string;
@@ -27,7 +26,6 @@ const fetchNovel = async (page: number) => {
       id: novel.id,
       novelId: novel.novelId,
       novelTitle: novel.novelTitle,
-      image: novel.image,
       novelChapterId: novel.novelChapterId,
       novelChapterTitle: novel.novelChapterTitle,
       created: novel.created,
@@ -47,48 +45,59 @@ const handlePageChange = (page: number) => {
 onMounted(() => {
   fetchNovel(currentPage.value);
 });
+
+const truncatedContentNote = (contentNote: string) => {
+  return contentNote.length > 500 ? contentNote.substring(0, 500) + '...' : contentNote;
+};
 </script>
 
 <template>
-  <div class="max-w-7xl mx-auto">
-    <section class="p-4 border rounded bg-white">
-      <div class="mt-4 text-sm">
-        <div class="space-y-4">
-          <article
-              v-for="(item, index) in novel"
-              :key="index"
-              class="flex items-center space-x-4 border p-4 rounded bg-[#E7F5EE]"
-          >
-            <div class="flex flex-col w-full">
-              <h2 class="font-semibold truncate break-words text-lg text-[#18A058]">
-                <router-link :to="{ name: 'noveldetail', params: { id: item.novelId } }">
-                  {{ item.novelTitle }}
+  <a-layout class="max-w-7xl mx-auto">
+    <a-layout-content>
+      <section class="p-4 border rounded bg-white">
+        <div class="mt-4 text-sm">
+          <div class="space-y-4">
+            <a-card
+                v-for="(item, index) in novel"
+                :key="index"
+                class="hover:shadow-md transition-shadow duration-200"
+                :bordered="false"
+                :bodyStyle="{ padding: '12px' }"
+            >
+              <div class="flex-1">
+                <router-link
+                    :to="{ name: 'noveldetail', params: { id: item.novelId } }"
+                    class="hover:text-[#18A058]"
+                >
+                  <a-typography-title :level="5" class="!mb-2 line-clamp-2">
+                    {{ item.novelTitle }}
+                  </a-typography-title>
                 </router-link>
-              </h2>
-              <p class="text-gray-700 flex-shrink-0 break-words text-base">
-                <router-link :to="{ name: 'chapter', params: { novel: item.novelId, chapter: item.novelChapterId } }">
-                  {{ item.novelChapterTitle }}
-                </router-link>
-              </p>
-              <p class="text-gray-500 break-words text-sm italic bg-gray-50 p-2">
-                "{{ item.contentNote }}"
-              </p>
-            </div>
-          </article>
+                <a-typography-text class="text-gray-500 line-clamp-3">
+                  <router-link :to="{ name: 'chapter', params: { novel: item.novelId, chapter: item.novelChapterId } }">
+                    {{ item.novelChapterTitle }}
+                  </router-link>
+                </a-typography-text>
+                <a-typography-text class="text-gray-500 line-clamp-3 italic bg-gray-50 p-2">
+                  "{{ truncatedContentNote(item.contentNote) }}"
+                </a-typography-text>
+              </div>
+            </a-card>
+          </div>
         </div>
-      </div>
-      <div class="flex justify-center mt-4">
-        <a-pagination
-            :current="currentPage"
-            :pageSize="pageSize"
-            :total="totalPages * pageSize"
-            @change="handlePageChange"
-        />
-      </div>
-    </section>
-  </div>
+        <div class="flex justify-center mt-4">
+          <a-pagination
+              :current="currentPage"
+              :pageSize="pageSize"
+              :total="totalPages * pageSize"
+              @change="handlePageChange"
+          />
+        </div>
+      </section>
+    </a-layout-content>
+  </a-layout>
 </template>
 
 <style scoped>
-
+/* Add any necessary styles here */
 </style>

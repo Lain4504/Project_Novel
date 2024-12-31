@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import {onMounted, ref} from "vue";
-import {getNovelCategories, deleteNovelCategory} from "@/api/novelCategory";
+import {deleteNovelCategory, getNovelCategories} from "@/api/novelCategory";
 import router from "@/router";
 import DynamicDataTable from "@/components/common/DynamicDataTable.vue";
 
@@ -42,7 +42,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <h3 class="text-2xl font-bold text-left py-2">Novel Category Management</h3>
+  <h3 class="text-2xl font-bold text-left py-2">Quản lý thể loại tiểu thuyết</h3>
   <DynamicDataTable
       :columns="novelCategoryColumns"
       :createPath="createPath"

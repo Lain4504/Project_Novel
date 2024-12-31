@@ -2,7 +2,6 @@
 
 import {getNovelCategory, updateNovelCategory} from "@/api/novelCategory";
 import {onMounted, ref} from "vue";
-import router from "@/router";
 import DynamicFormEdit from "@/components/common/DynamicFormEdit.vue";
 
 const fields = {
