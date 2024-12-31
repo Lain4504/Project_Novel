@@ -4,13 +4,14 @@ import draggable from 'vue3-draggable-next';
 import {notification} from "ant-design-vue";
 import {getVolumesByNovelId, reorderVolume} from "@/api/novelVolume";
 
-const showNotification = (type: string, message: string) => {
+const showNotification = (type: 'success' | 'error', message: string) => {
   notification[type]({
     message: type === 'success' ? 'Success' : 'Error',
     description: message,
-    duration: 3
+    duration: 3,
   });
 };
+
 // Define props to receive volumeId
 const props = defineProps<{
   novelId: string

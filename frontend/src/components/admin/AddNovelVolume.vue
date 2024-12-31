@@ -4,13 +4,14 @@ import {createVolume} from "@/api/novelVolume";
 import Tiptap from "@/components/common/Tiptap.vue";
 import {notification} from "ant-design-vue";
 
-const showNotification = (type: string, message: string) => {
+const showNotification = (type: 'success' | 'error', message: string) => {
   notification[type]({
     message: type === 'success' ? 'Success' : 'Error',
     description: message,
-    duration: 3
+    duration: 3,
   });
 };
+
 
 const props = defineProps({
   novelId: {

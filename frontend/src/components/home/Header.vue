@@ -141,7 +141,7 @@ const handleMenuItemClick = (action: Function) => {
         <template v-if="isAuthenticated">
           <button
               class="flex items-center space-x-2 border border-[#18A058] p-2 rounded-md bg-white hover:bg-[#E7F5EE] hover:text-gray-700 transition duration-300 ease-in-out"
-              @click="router.push('/dashboard')">
+              @click="router.push('/novels-of-author')">
             <EditOutlined style="font-size: 20px"/>
             <span class="hidden sm:inline text-sm">Đăng tiểu thuyết</span>
           </button>

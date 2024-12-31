@@ -58,7 +58,7 @@ onMounted(() => {
           <h1 class="text-xl font-semibold text-gray-800">Thảo luận</h1>
           <a-button type="default" class="flex items-center">
             <font-awesome-icon :icon="['fas', 'plus']" class="text-lg mr-2"/>
-            <router-link :to="{ name: 'createpost' }">
+            <router-link :to="{ name: 'postcreateform' }">
               <span>Đăng bài</span>
             </router-link>
           </a-button>

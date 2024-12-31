@@ -120,7 +120,17 @@ scalability, modularity, and maintainability.
 ## Web Application
 
 - Base UI : 100%
-
+- Demo:
+  ![home1.png](frontend/data/home1.png)
+  ![home2.png](frontend/data/home2.png)
+  ![novel1.png](frontend/data/novel1.png)
+  ![novel2.png](frontend/data/novel2.png)
+  ![chapter1.png](frontend/data/chapter1.png)
+  ![bookmark.png](frontend/data/bookmark.png)
+  ![account.png](frontend/data/account.png)
+  ![dashboard.png](frontend/data/dashboard.png)
+  ![post.png](frontend/data/post.png)
+  ![novelmanagement.png](frontend/data/novelmanagement.png)
 ## Social Features
 
 - [x] User profiles
@@ -187,5 +197,5 @@ scalability, modularity, and maintainability.
 - [x] Notification settings
 - [x] Notification management
 
----TO BE COUNTINUED---
+
 
