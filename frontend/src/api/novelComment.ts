@@ -1,4 +1,4 @@
-import axios from "@/utils/axiosInstance";
+import axios from "../utils/axiosInstance";
 
 const NOVEL_COMMENT_API = "/comment/novel-comments";
 const NOVEL_CHAPTER_API = "/comment/novel-chapter-comments";

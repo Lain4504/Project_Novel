@@ -1,91 +1,97 @@
-import {createRouter, createWebHistory, RouteRecordRaw} from 'vue-router';
-import store from '@/store';
+import { createRouter, createWebHistory } from 'vue-router';
+import type { RouteRecordRaw } from 'vue-router';
+import store from '../store';
 
-// Import các component
-import Dashboard from '@/views/admin/Dashboard.vue';
-import AddNovel from '@/views/admin/AddNovel.vue';
-import NovelAuthorList from '@/views/admin/NovelAuthorList.vue';
-import Login from '@/views/common/Login.vue';
-import Register from '@/views/common/Register.vue';
-import Home from '@/views/home/Home.vue';
-import Chapter from '@/views/home/Chapter.vue';
-import NovelDetail from '@/views/home/NovelDetail.vue';
-import Account from '@/views/home/Account.vue';
-import TabSwitch from '@/views/home/TabSwitch.vue';
-import BookMark from '@/components/home/BookMark.vue';
-import RecentlyReadingList from '@/components/home/RecentlyReadingList.vue';
-import UserProfileSetting from '@/views/home/UserProfileSetting.vue';
-import Library from '@/views/home/Library.vue';
-import NovelAuthorManagement from '@/views/admin/NovelAuthorManagement.vue';
-import FAQ from '@/views/common/FAQ.vue';
-import PostForum from '@/views/home/PostForum.vue';
-import PostDetail from '@/views/home/PostDetail.vue';
-import PostCreateForm from '@/views/home/PostCreateForm.vue';
-import Activation from "@/views/home/Activation.vue";
-import PostUpdateForm from "@/views/home/PostUpdateForm.vue";
-import PostCategoryNew from "@/components/admin/PostCategoryNew.vue";
-import PostCategoryList from "@/views/admin/PostCategoryList.vue";
-import PostCategoryEdit from "@/components/admin/PostCategoryEdit.vue";
-import PostList from "@/views/admin/PostList.vue";
-import NovelCategoryNew from "@/components/admin/NovelCategoryNew.vue";
-import NovelCategoryList from "@/views/admin/NovelCategoryList.vue";
-import NovelCategoryEdit from "@/components/admin/NovelCategoryEdit.vue";
-import NovelList from "@/views/admin/NovelList.vue";
-import NovelCategoryForAuthor from "@/views/admin/NovelCategoryForAuthor.vue";
-import PostCategoryForAuthor from "@/views/admin/PostCategoryForAuthor.vue";
-import FilterByCategory from "@/views/home/FilterByCategory.vue";
-import SearchAdvanced from "@/views/home/SearchAdvanced.vue";
-import NotifcationList from "@/views/home/NotifcationList.vue";
-import AdsList from "@/views/admin/AdsList.vue";
-import UpdateAds from "@/components/admin/UpdateAds.vue";
-import CreateAds from "@/components/admin/CreateAds.vue";
+// Define route names as constants
+const ROUTE_NAMES = {
+    DASHBOARD: 'dashboard',
+    CREATE_NOVEL: 'createNovel',
+    NOVELS_OF_AUTHOR: 'novelOfAuthorList',
+    NOVEL_AUTHOR_MANAGEMENT: 'novelAuthorManagement',
+    CREATE_POST_CATEGORY: 'createPostCategory',
+    POST_CATEGORY_LIST: 'postCategoryList',
+    UPDATE_POST_CATEGORY: 'updatePostCategory',
+    POST_LIST: 'postList',
+    CREATE_NOVEL_CATEGORY: 'createNovelCategory',
+    NOVEL_CATEGORY_LIST: 'novelCategoryList',
+    UPDATE_NOVEL_CATEGORY: 'updateNovelCategory',
+    NOVEL_LIST: 'novelList',
+    NOVEL_CATEGORY_FOR_AUTHOR: 'novelCategoryForAuthor',
+    POST_CATEGORY_FOR_AUTHOR: 'postCategoryForAuthor',
+    ADS_LIST: 'adsList',
+    UPDATE_ADS: 'updateAds',
+    CREATE_ADS: 'createAds',
+    LOGIN: 'login',
+    REGISTER: 'register',
+    HOME: 'home',
+    CHAPTER: 'chapter',
+    NOVEL_DETAIL: 'noveldetail',
+    ACCOUNT: 'account',
+    LIST: 'list',
+    BOOKMARK: 'bookmark',
+    READING_LIST: 'readinglist',
+    USER_PROFILE: 'userprofile',
+    LIBRARY: 'library',
+    FAQ: 'faq',
+    POST_FORUM: 'postforum',
+    POST_DETAIL: 'postdetail',
+    POST_CREATE_FORM: 'postcreateform',
+    POST_UPDATE_FORM: 'postupdateform',
+    ACTIVATION: 'activation',
+    FILTER_BY_CATEGORY: 'filterbycategory',
+    SEARCH_ADVANCED: 'searchadvanced',
+    NOTIFICATION_LIST: 'notificationlist',
+};
 
 const routes: Array<RouteRecordRaw> = [
     {
-        name: 'dashboard', path: '/dashboard', component: Dashboard,
+        name: ROUTE_NAMES.DASHBOARD, path: '/dashboard', component: () => import('../views/admin/Dashboard.vue'),
         children: [
-            {name: 'createNovel', path: '/create-novel', component: AddNovel},
-            {name: 'novelOfAuthorList', path: '/novels-of-author', component: NovelAuthorList},
-            {name: 'novelAuthorManagement', path: '/novel-author-management/:id', component: NovelAuthorManagement, props: true },
-            {name: 'createPostCategory', path: '/create-post-category', component: PostCategoryNew},
-            {name: 'postCategoryList', path: '/post-category-list', component: PostCategoryList},
-            {name: 'updatePostCategory', path: '/update-post-category/:id', component: PostCategoryEdit, props: true},
-            {name: 'postList', path: '/post-list', component: PostList},
-            {name: 'createNovelCategory', path: '/create-novel-category', component: NovelCategoryNew},
-            {name: 'novelCategoryList', path: '/novel-category-list', component: NovelCategoryList},
-            {name: 'updateNovelCategory', path: '/update-novel-category/:id', component: NovelCategoryEdit, props: true },
-            {name: 'novelList', path: '/novel-list', component: NovelList},
-            {name: 'novelCategoryForAuthor', path: '/novel-category-for-author', component: NovelCategoryForAuthor},
-            {name: 'postCategoryForAuthor', path: '/post-category-for-author', component: PostCategoryForAuthor},
-            {name: 'adsList', path: '/ads-list', component: AdsList},
-            {name: 'updateAds', path: '/update-ads/:id', component: UpdateAds, props: true},
-            {name: 'createAds', path: '/create-ads', component: CreateAds},
-
+            { name: ROUTE_NAMES.CREATE_NOVEL, path: '/create-novel', component: () => import('../views/admin/novelauthor/novel/AddNovel.vue') },
+            { name: ROUTE_NAMES.NOVELS_OF_AUTHOR, path: '/novels-of-author', component: () => import('../views/admin/novelauthor/NovelAuthorList.vue') },
+            { name: ROUTE_NAMES.NOVEL_AUTHOR_MANAGEMENT, path: '/novel-author-management/:id', component: () => import('../views/admin/novelauthor/NovelAuthorManagement.vue'), props: true },
+            { name: ROUTE_NAMES.CREATE_POST_CATEGORY, path: '/create-post-category', component: () => import('../views/admin/adminmanagement/post/PostCategoryNew.vue') },
+            { name: ROUTE_NAMES.POST_CATEGORY_LIST, path: '/post-category-list', component: () => import('../views/admin/adminmanagement/post/PostCategoryList.vue') },
+            { name: ROUTE_NAMES.UPDATE_POST_CATEGORY, path: '/update-post-category/:id', component: () => import('../views/admin/adminmanagement/post/PostCategoryEdit.vue'), props: true },
+            { name: ROUTE_NAMES.POST_LIST, path: '/post-list', component: () => import('../views/admin/adminmanagement/post/PostList.vue') },
+            { name: ROUTE_NAMES.CREATE_NOVEL_CATEGORY, path: '/create-novel-category', component: () => import('../views/admin/adminmanagement/novel/NovelCategoryNew.vue') },
+            { name: ROUTE_NAMES.NOVEL_CATEGORY_LIST, path: '/novel-category-list', component: () => import('../views/admin/adminmanagement/novel/NovelCategoryList.vue') },
+            { name: ROUTE_NAMES.UPDATE_NOVEL_CATEGORY, path: '/update-novel-category/:id', component: () => import('../views/admin/adminmanagement/novel/NovelCategoryEdit.vue'), props: true },
+            { name: ROUTE_NAMES.NOVEL_LIST, path: '/novel-list', component: () => import('../views/admin/adminmanagement/novel/NovelList.vue') },
+            { name: ROUTE_NAMES.NOVEL_CATEGORY_FOR_AUTHOR, path: '/novel-category-for-author', component: () => import('../views/admin/NovelCategoryForAuthor.vue') },
+            { name: ROUTE_NAMES.POST_CATEGORY_FOR_AUTHOR, path: '/post-category-for-author', component: () => import('../views/admin/PostCategoryForAuthor.vue') },
+            { name: ROUTE_NAMES.ADS_LIST, path: '/ads-list', component: () => import('../views/admin/adminmanagement/prompt/AdsList.vue') },
+            { name: ROUTE_NAMES.UPDATE_ADS, path: '/update-ads/:id', component: () => import('../views/admin/adminmanagement/prompt/UpdateAds.vue'), props: true },
+            { name: ROUTE_NAMES.CREATE_ADS, path: '/create-ads', component: () => import('../views/admin/adminmanagement/prompt/CreateAds.vue') },
         ]
     },
-    {name: 'login', path: '/login', component: Login},
-    {name: 'register', path: '/register', component: Register},
-    {name: 'home', path: '/', component: Home},
-    {name: 'chapter', path: '/:novel/:chapter', component: Chapter},
-    {name: 'noveldetail', path: '/novel/:id', component: NovelDetail},
-    {name: 'account', path: '/account/:id', component: Account},
-    {name: 'list', path: '/list', component: TabSwitch, children: [
-            { path: '', redirect: '/list/readinglist'},
-            {name: 'bookmark', path: 'bookmark', component: BookMark, props: {type: 'bookmark'} },
-            {name: 'readinglist', path: 'readinglist', component: RecentlyReadingList, props: {type: 'readinglist'} }
+    {
+        name: ROUTE_NAMES.HOME, path: '/', component: () => import('../views/home/Home.vue'),
+        children: [
+            { name: ROUTE_NAMES.CHAPTER, path: '/:novel/:chapter', component: () => import('../views/home/novel/Chapter.vue') },
+            { name: ROUTE_NAMES.NOVEL_DETAIL, path: '/novel/:id', component: () => import('../views/home/novel/NovelDetail.vue') },
+            { name: ROUTE_NAMES.ACCOUNT, path: '/account/:id', component: () => import('../views/home/account/Account.vue') },
+            { name: ROUTE_NAMES.LIST, path: '/list', component: () => import('../views/home/account/TabSwitch.vue'), children: [
+                    { path: '', redirect: '/list/readinglist' },
+                    { name: ROUTE_NAMES.BOOKMARK, path: 'bookmark', component: () => import('../views/home/account/BookMark.vue'), props: { type: 'bookmark' } },
+                    { name: ROUTE_NAMES.READING_LIST, path: 'readinglist', component: () => import('../views/home/homepage/RecentlyReadingList.vue'), props: { type: 'readinglist' } }
+                ]
+            },
+            { name: ROUTE_NAMES.USER_PROFILE, path: '/user-profile', component: () => import('../views/home/account/UserProfileSetting.vue') },
+            { name: ROUTE_NAMES.LIBRARY, path: '/library', component: () => import('../views/home/account/Library.vue') },
+            { name: ROUTE_NAMES.FAQ, path: '/faq', component: () => import('../views/common/FAQ.vue') },
+            { name: ROUTE_NAMES.POST_FORUM, path: '/post-forum', component: () => import('../views/home/forum/PostForum.vue') },
+            { name: ROUTE_NAMES.POST_DETAIL, path: '/post/:id', component: () => import('../views/home/forum/PostDetail.vue'), props: true },
+            { name: ROUTE_NAMES.POST_CREATE_FORM, path: '/post-create-form', component: () => import('../views/home/forum/PostCreateForm.vue') },
+            { name: ROUTE_NAMES.POST_UPDATE_FORM, path: '/post-update-form/:id', component: () => import('../views/home/forum/PostUpdateForm.vue'), props: true },
+            { name: ROUTE_NAMES.ACTIVATION, path: '/activation/:token', component: () => import('../views/home/account/Activation.vue') },
+            { name: ROUTE_NAMES.FILTER_BY_CATEGORY, path: '/filter-by-category', component: () => import('../views/home/novel/FilterByCategory.vue') },
+            { name: ROUTE_NAMES.SEARCH_ADVANCED, path: '/search-advanced', component: () => import('../views/home/novel/SearchAdvanced.vue') },
+            { name: ROUTE_NAMES.NOTIFICATION_LIST, path: '/notification-list', component: () => import('../views/home/account/NotifcationList.vue') },
         ]
     },
-    {name: 'userprofile', path: '/user-profile', component: UserProfileSetting},
-    {name: 'library', path: '/library', component: Library},
-    {name: 'faq', path: '/faq', component: FAQ},
-    {name: 'postforum', path: '/post-forum', component: PostForum},
-    {name: 'postdetail', path: '/post/:id', component: PostDetail, props: true},
-    {name: 'postcreateform', path: '/post-create-form', component: PostCreateForm},
-    {name: 'postupdateform', path: '/post-update-form/:id', component: PostUpdateForm, props: true},
-    {name: 'activation', path: '/activation/:token', component: Activation},
-    {name: 'filterbycategory', path: '/filter-by-category', component: FilterByCategory},
-    {name: 'searchadvanced', path: '/search-advanced', component: SearchAdvanced},
-    {name: 'notificationlist', path: '/notification-list', component: NotifcationList},
+    { name: ROUTE_NAMES.LOGIN, path: '/login', component: () => import('../views/auth/Login.vue') },
+    { name: ROUTE_NAMES.REGISTER, path: '/register', component: () => import('../views/auth/Register.vue') },
 ];
 
 const router = createRouter({
@@ -93,20 +99,24 @@ const router = createRouter({
     routes,
 });
 
-const adminRoutes = ['dashboard', 'novelOfAuthorList', 'novelCategoryForAuthor', 'postCategoryForAuthor', 'authorAccount'];
+const adminRoutes = [
+    ROUTE_NAMES.DASHBOARD, ROUTE_NAMES.NOVELS_OF_AUTHOR, ROUTE_NAMES.NOVEL_CATEGORY_FOR_AUTHOR,
+    ROUTE_NAMES.POST_CATEGORY_FOR_AUTHOR, 'authorAccount'
+];
 
-router.beforeEach((to, from, next) => {
+router.beforeEach((to, _from, next) => {
     const isAuthenticated = store.getters.isAuthenticated;
     const userRole = store.getters.getUserRole;
 
-    if (isAuthenticated && (to.name === 'login' || to.name === 'register')) {
-        next({name: 'home'});
+    if (isAuthenticated && (to.name === ROUTE_NAMES.LOGIN || to.name === ROUTE_NAMES.REGISTER)) {
+        next({ name: ROUTE_NAMES.HOME });
     } else if (!isAuthenticated && to.matched.some(record => record.path.startsWith('/dashboard'))) {
-        next({name: 'login'});
+        next({ name: ROUTE_NAMES.LOGIN });
     } else if (adminRoutes.includes(to.name as string) && userRole !== 'ADMIN') {
-        next({name: 'home'});
+        next({ name: ROUTE_NAMES.HOME });
     } else {
         next();
     }
 });
+
 export default router;

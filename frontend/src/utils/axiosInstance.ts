@@ -1,6 +1,6 @@
 import axios from 'axios';
-import store from "@/store";
-import router from "@/router";
+import store from "../store/index";
+import router from "../router/index";
 
 
 axios.defaults.baseURL = import.meta.env.VITE_API_URL

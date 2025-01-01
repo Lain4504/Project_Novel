@@ -1,4 +1,4 @@
-import axios from "@/utils/axiosInstance";
+import axios from "../utils/axiosInstance";
 
 const POST_CATEGORY_API = "/post/post-categories";
 

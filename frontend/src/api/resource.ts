@@ -1,4 +1,4 @@
-import axios from "@/utils/axiosInstance";
+import axios from "../utils/axiosInstance";
 const ADS_API = "/novel/prompt";
 const createAds = (data: any) => {
     return axios.post(`${ADS_API}/create`, data)

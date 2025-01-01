@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import {onMounted, ref} from "vue";
-import {getPostCategories} from "@/api/postCategory";
+import {getPostCategories} from "../../api/postCategory";
 
 const postCategories = ref<any[]>([]);
 const currentPage = ref(1);

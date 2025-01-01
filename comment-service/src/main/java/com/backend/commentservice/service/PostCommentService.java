@@ -99,7 +99,7 @@ public class PostCommentService {
     }
 
     public PageResponse<PostCommentReplyResponse> getAllRepliesByCommentId(String commentId, int page, int size) {
-        Sort sort = Sort.by(Sort.Order.desc("createdDate"));
+        Sort sort = Sort.by(Sort.Order.asc("createdDate"));
         Pageable pageable = PageRequest.of(page - 1, size, sort);
         var pageData = postCommentReplyRepository.findAllByCommentId(commentId, pageable);
         var replyList = pageData.getContent().stream()

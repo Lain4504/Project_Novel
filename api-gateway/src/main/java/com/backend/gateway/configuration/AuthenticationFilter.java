@@ -49,6 +49,7 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
             "/comment/novel-chapter-comments/replies/get/.*",
             "/comment/post-comments/replies/get/.*",
             "/novel/novels/get/.*",
+            "/novel/prompt/get/.*",
             "/novel/novel-categories/get/.*",
             "/novel/novel-chapters/get/.*",
             "/novel/novel-volumes/get/.*",

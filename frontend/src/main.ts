@@ -14,8 +14,9 @@ import {
     faEyeSlash,
     faImage,
     faPenToSquare,
-    faStar
 } from '@fortawesome/free-regular-svg-icons';
+import { faStar as farStar } from '@fortawesome/free-regular-svg-icons';
+import {faMagnifyingGlass, faStar as fasStar, faTrophy} from '@fortawesome/free-solid-svg-icons';
 import {
     faAnglesDown,
     faAnglesLeft,
@@ -49,7 +50,7 @@ import {
     faKey,
     faList,
     faListOl,
-    faListUl,
+    faListUl, faLock,
     faMinus,
     faMoneyBill,
     faMoon,
@@ -74,13 +75,13 @@ import {
     faTrash,
     faUnderline,
     faUser,
-    faXmark
+    faXmark,
 } from '@fortawesome/free-solid-svg-icons'
-import {faGoogle} from '@fortawesome/free-brands-svg-icons'
+import {faAppStore, faFacebookF, faGoogle, faXTwitter} from '@fortawesome/free-brands-svg-icons'
 import 'ant-design-vue/dist/reset.css';
 import Antd from 'ant-design-vue';
+library.add(faAppStore, faComments, faMagnifyingGlass, faTrophy, faFacebookF, faXTwitter, faBars, faEnvelope, faLock, faReply,faFont, faAnglesLeft, faAnglesRight, faMoon, faKey, faSun, faNewspaper, faBookOpen, faPlus, faImage, faMinus, faRotateRight, faRotateLeft, faBold, faItalic, faUnderline, faListUl, faListOl, faQuoteRight, faCode, faEnvelope, faChevronDown, faChevronUp, faSquarePlus, faSquareMinus, faQuestionCircle, faHouse, faArrowUpFromBracket, faArrowUpRightFromSquare, faSortUp, faSortDown, farStar, fasStar, faShareNodes, faList, faComments, faQuestion, faXmark, faHeart, faPen, faTrash, faFeatherPointed, faAnglesUp, faAnglesDown, faPhone, faBullhorn, faChartPie, faPhone, faBell, faPenToSquare, faSearch, faBars, faUser, faBookmark, faBook, faGear, faMoneyBill, faRightFromBracket, faChevronLeft, faChevronRight, faInfoCircle, faExclamationCircle, faCheckCircle, faExclamationTriangle, faEyeSlash, faEye, faGoogle, faBarsProgress)
 
-library.add(faReply,faFont, faAnglesLeft, faAnglesRight, faMoon, faKey, faSun, faNewspaper, faBookOpen, faPlus, faImage, faMinus, faRotateRight, faRotateLeft, faBold, faItalic, faUnderline, faListUl, faListOl, faQuoteRight, faCode, faEnvelope, faChevronDown, faChevronUp, faSquarePlus, faSquareMinus, faQuestionCircle, faHouse, faArrowUpFromBracket, faArrowUpRightFromSquare, faSortUp, faSortDown, faStar, faShareNodes, faList, faComments, faQuestion, faXmark, faHeart, faPen, faTrash, faFeatherPointed, faAnglesUp, faAnglesDown, faPhone, faBullhorn, faChartPie, faPhone, faBell, faPenToSquare, faSearch, faBars, faUser, faBookmark, faBook, faGear, faMoneyBill, faRightFromBracket, faChevronLeft, faChevronRight, faInfoCircle, faExclamationCircle, faCheckCircle, faExclamationTriangle, faEyeSlash, faEye, faGoogle, faBarsProgress)
 
 createApp(App)
     .component('font-awesome-icon', FontAwesomeIcon)

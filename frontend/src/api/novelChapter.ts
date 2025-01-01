@@ -1,4 +1,4 @@
-import axios from "@/utils/axiosInstance";
+import axios from "../utils/axiosInstance";
 
 const CHAPTER_API = "/novel/novel-chapters";
 const createChapter = (volumeId: string, data = {}) => {

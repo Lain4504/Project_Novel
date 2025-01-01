@@ -60,6 +60,7 @@ scalability, modularity, and maintainability.
 | **Tiptap**              | 2.0.0   | Headless, framework-agnostic text editor                                                                                           |
 | **vue3-draggable-next** |         | A Vue 3 component for draggable elements, providing a simple and flexible way to create drag-and-drop interfaces.                  |
 | **vuex**                |         | A state management pattern + library for Vue.js applications, enabling centralized state management with a single source of truth. |
+| **Ant Design Vue**      | 4.2.6   | A Vue 3 UI library based on Ant Design, providing a set of high-quality components for building rich user interfaces.              |
 
 ## Key Features
 
@@ -121,6 +122,7 @@ scalability, modularity, and maintainability.
 
 - Base UI : 100%
 - Demo:
+  ![auth.png](frontend/data/auth.png)
   ![home1.png](frontend/data/home1.png)
   ![home2.png](frontend/data/home2.png)
   ![novel1.png](frontend/data/novel1.png)
@@ -137,7 +139,7 @@ scalability, modularity, and maintainability.
 - [x] Follow system
 - [x] Commenting system
 - [x] Likes and ratings
-- [ ] Activity feed
+- [x] Activity feed
 
 ## Authentication & Email
 
@@ -177,7 +179,7 @@ scalability, modularity, and maintainability.
 
 ## Admin Dashboard
 
-- [ ] Admin dashboard
+- [x] Admin dashboard
 - [x] User management
 - [x] Novel management
 - [x] Post management

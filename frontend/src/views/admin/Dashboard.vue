@@ -1,19 +1,11 @@
 <script lang="ts" setup>
 import {computed, onBeforeUnmount, onMounted, ref} from 'vue';
 import {useRouter} from 'vue-router';
-import {
-  BellOutlined,
-  CloseOutlined,
-  EyeOutlined,
-  HomeOutlined,
-  LogoutOutlined,
-  MenuOutlined,
-  SettingOutlined
-} from '@ant-design/icons-vue';
 import {notification} from 'ant-design-vue';
-import {getNotificationByUserId} from '@/api/notification';
-import {logout} from '@/api/auth';
+import {getNotificationByUserId} from '../../api/notification';
+import {logout} from '../../api/auth';
 import {useStore} from 'vuex';
+import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 
 enum Routes {
   NewNovel = '/create-novel',
@@ -26,12 +18,6 @@ enum Routes {
   BookCategoryManagement = '/novel-category-list',
   PostCategoryManagement = '/post-category-list',
   AdsManagement = '/ads-list',
-}
-
-interface UserProfile {
-  id: string;
-  image: string;
-  username: string;
 }
 
 interface Notification {
@@ -180,7 +166,7 @@ onBeforeUnmount(() => {
         :class="{ 'fixed inset-0 z-50 w-full': isMobile }"
     >
       <template #close-icon>
-        <CloseOutlined style="font-size: 24px"/>
+        <font-awesome-icon :icon="[ 'fas', 'times' ]" class="text-2xl"/>
       </template>
       <div class="h-[30px] flex items-center px-4 border-b border-gray-300 bg-white">
         <h1 class="font-bold text-xl text-[#18A058]">HawkNovel</h1>
@@ -199,14 +185,13 @@ onBeforeUnmount(() => {
     </a-layout-sider>
     <a-layout>
       <a-layout-header class="flex justify-between items-center shadow-sm px-4 border-b" style="background: #FFFFFF">
-        <MenuOutlined class="cursor-pointer" style="font-size: 20px" @click="toggleSidebar"/>
+        <button>
+        <font-awesome-icon :icon="[ 'fas', 'bars']" @click="toggleSidebar"/>
+        </button>
         <div class="flex items-center space-x-4">
-          <a-button
-              class="flex items-center space-x-2 border border-[#18A058] p-2 rounded-md bg-white hover:bg-[#E7F5EE] hover:text-gray-700 transition duration-300 ease-in-out"
-              @click="router.push('/')"
-          >
-            <HomeOutlined style="font-size: 20px"/>
-          </a-button>
+          <button class="text-xl" @click="router.push('/')">
+            <font-awesome-icon :icon="[ 'fas', 'home' ]"/>
+          </button>
           <a-dropdown placement="bottomRight" :trigger="['click']">
             <template #overlay>
               <a-menu>
@@ -228,7 +213,7 @@ onBeforeUnmount(() => {
                   <router-link to="/notification-list"
                                class="flex items-center text-[#18A058] justify-center font-medium hover:underline">
                     <a-button type="link" class="flex items-center">
-                      <EyeOutlined class="mr-2"/>
+                      <font-awesome-icon :icon="[ 'far', 'eye' ]" class="text-lg mr-2"/>
                       Xem tất cả
                     </a-button>
                   </router-link>
@@ -237,20 +222,22 @@ onBeforeUnmount(() => {
             </template>
             <a-badge :count="unreadNotifications">
               <button>
-                <BellOutlined class="text-xl" style="font-size: 24px"/>
+                <font-awesome-icon :icon="[ 'far', 'bell' ]" class="text-xl"/>
               </button>
             </a-badge>
           </a-dropdown>
           <a-dropdown placement="bottomRight" :trigger="['click']">
+            <button>
             <a-avatar size="large" :src="userProfile || ''" alt=""/>
+            </button>
             <template #overlay>
               <a-menu>
                 <a-menu-item key="logout" @click="handleLogout">
-                  <SettingOutlined/>
+                  <font-awesome-icon :icon="[ 'fas', 'gear' ]" class="mr-2"/>
                   Cài đặt tài khoản
                 </a-menu-item>
                 <a-menu-item key="logout" @click="handleLogout">
-                  <LogoutOutlined/>
+                  <font-awesome-icon :icon="[ 'fas', 'sign-out-alt' ]" class="mr-2"/>
                   Đăng xuất
                 </a-menu-item>
               </a-menu>
@@ -259,7 +246,9 @@ onBeforeUnmount(() => {
         </div>
       </a-layout-header>
       <a-layout-content class="p-4 bg-white">
+        <keep-alive>
         <router-view/>
+        </keep-alive>
       </a-layout-content>
     </a-layout>
   </a-layout>

@@ -1,4 +1,4 @@
-import axios from '@/utils/axiosInstance';
+import axios from '../utils/axiosInstance';
 
 const NOVEL_CATEGORY_API = "/novel/novel-categories";
 

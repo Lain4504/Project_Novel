@@ -1,9 +1,6 @@
 <script lang="ts" setup>
-import {onMounted, ref} from 'vue';
-import store from "@/store";
-import {getUserProfile} from "@/api/user";
-import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
-
+import { onMounted, ref } from 'vue';
+import store from "../../store/index";
 interface Comment {
   id: string;
   userId: string;
@@ -40,26 +37,15 @@ const props = defineProps<{
   totalComments: number;
 }>();
 
-const currentUser = ref({
-  username: '',
-  image: ''
-});
 const isAuthenticated = store.getters.isAuthenticated;
+const submitting = ref(false);
+const loading = ref(true);
+const currentUsername = store.getters.getUsername;
+const currentUserAvatar = store.getters.getUserImage;
 
-const fetchCurrentUser = async () => {
-  if (isAuthenticated) {
-    try {
-      const result = await getUserProfile(store.getters.getUserId);
-      currentUser.value.username = result.username;
-      currentUser.value.image = result.image.path;
-    } catch (error) {
-      console.error('Failed to fetch current user:', error);
-    }
-  }
-};
-
-onMounted(() => {
-  fetchCurrentUser();
+onMounted(async () => {
+  await props.fetchComments(props.currentPage, props.pageSize);
+  loading.value = false;
 });
 
 const newComment = ref<string>('');
@@ -73,8 +59,10 @@ const fetchReplies = async (commentId: string, page: number) => {
     const result = await props.getAllRepliesApi(commentId, page, replyPageSize);
     const comment = props.comments.find(comment => comment.id === commentId);
     if (comment) {
-      if (!comment.replies) {
-        comment.replies = [];
+      if (page === 1) {
+        comment.replies = []; // Refresh the replies list when loading from the first page
+      } else {
+        comment.replies = comment.replies || []; // Initialize replies if undefined
       }
       comment.replies.push(...result.data);
       comment.replyPage = page;
@@ -84,11 +72,10 @@ const fetchReplies = async (commentId: string, page: number) => {
     console.error('Failed to fetch replies:', error);
   }
 };
-
 const emit = defineEmits(['commentAdded', 'pageChange']);
 const addComment = async () => {
-  console.log('newComment:', newComment.value);
   if (newComment.value.trim()) {
+    submitting.value = true;
     try {
       const commentData: any = {
         content: newComment.value,
@@ -110,6 +97,8 @@ const addComment = async () => {
       emit('commentAdded');
     } catch (error) {
       console.error('Failed to add comment:', error);
+    } finally {
+      submitting.value = false;
     }
   }
 };
@@ -124,6 +113,7 @@ const toggleReplyBox = (commentId: string) => {
 
 const submitReply = async (commentId: string) => {
   if (replyText.value[commentId]?.trim()) {
+    submitting.value = true;
     try {
       const comment = props.comments.find(comment => comment.id === commentId);
       const replyData: any = {
@@ -148,6 +138,8 @@ const submitReply = async (commentId: string) => {
       await fetchReplies(commentId, 1);
     } catch (error) {
       console.error('Failed to submit reply:', error);
+    } finally {
+      submitting.value = false;
     }
   }
 };
@@ -166,12 +158,14 @@ const loadMoreReplies = (commentId: string) => {
     fetchReplies(commentId, (comment.replyPage || 1) + 1);
   }
 };
+
 const toggleReplyBoxForReply = (replyId: string) => {
   replyBoxes.value[replyId] = !replyBoxes.value[replyId];
 };
 
 const submitReplyForReply = async (replyId: string, commentId: string) => {
   if (replyText.value[replyId]?.trim()) {
+    submitting.value = true;
     try {
       const comment = props.comments.find(comment => comment.id === commentId);
       const reply = comment?.replies?.find(reply => reply.id === replyId);
@@ -197,116 +191,147 @@ const submitReplyForReply = async (replyId: string, commentId: string) => {
       await fetchReplies(commentId, 1);
     } catch (error) {
       console.error('Failed to submit reply:', error);
+    } finally {
+      submitting.value = false;
     }
   }
 };
 </script>
 
 <template>
-  <section class="bg-white py-4 px-6 mx-auto comment-section">
-    <h3 class="text-xl font-bold mb-4">Comment</h3>
-    <div v-if="isAuthenticated" class="flex flex-col">
-      <a-textarea v-model:value="newComment"
-                  class="w-full"
-                  placeholder="Để lại bình luận..."
-                  :autosize="{ minRows: 2, maxRows: 6 }"/>
-      <div class="flex justify-end">
-        <a-button class="mt-2" type="primary" @click="addComment">
-          Gửi bình luận
-        </a-button>
-      </div>
-    </div>
-    <ul class="mt-4 space-y-6">
-      <li v-for="comment in comments" :key="comment.id" class="border-b pb-4 comment-item">
-        <div class="flex items-start space-x-4">
-          <img :src="comment.userAvatar" alt="" class="w-10 h-10 bg-gray-300 rounded-full">
-          <div class="w-full">
-            <p class="text-gray-700 font-semibold">{{ comment.username }}</p>
-            <p class="text-gray-600">{{ comment.content }}</p>
-            <div class="flex items-center space-x-4 mt-2">
-              <a-button class="p-0 text-[#18A058]" type="link" @click="toggleReplyBox(comment.id)">
-                <font-awesome-icon :icon="['fas', 'reply']" class="mr-1"/> Trả lời
-              </a-button>
-              <a-button v-if="comment.replyCount > 0" class="p-0 text-[#18A058]" type="link" @click="toggleShowReplies(comment.id)">
-                {{ showReplies[comment.id] ? 'Ẩn trả lời' : `Hiển thị thêm (${comment.replyCount} trả lời)` }}
-              </a-button>
+  <div>
+    <!-- Main comment form -->
+    <a-comment v-if="isAuthenticated">
+      <template #avatar>
+        <a-avatar :src="currentUserAvatar" :alt="currentUsername" />
+      </template>
+      <template #content>
+        <a-form-item>
+          <a-textarea v-model:value="newComment" :rows="4" />
+        </a-form-item>
+        <a-form-item>
+          <a-button html-type="submit" :loading="submitting" type="primary" @click="addComment">
+            Add Comment
+          </a-button>
+        </a-form-item>
+      </template>
+    </a-comment>
+
+    <!-- Comments list -->
+    <a-skeleton :loading="loading" active>
+      <template #default>
+        <div v-for="comment in comments" :key="comment.id">
+          <a-comment>
+            <template #actions>
+              <div class="comment-actions">
+                <span key="comment-basic-reply-to" @click="toggleReplyBox(comment.id)">Reply to</span>
+                <span v-if="comment.replyCount > 0" @click="toggleShowReplies(comment.id)">
+                  {{ showReplies[comment.id] ? 'Hide Replies' : `Show Replies (${comment.replyCount})` }}
+                </span>
+              </div>
+            </template>
+            <template #author>
+              <a>{{ comment.username }}</a>
+            </template>
+            <template #avatar>
+              <a-avatar :src="comment.userAvatar" :alt="comment.username" />
+            </template>
+            <template #content>
+              <p>{{ comment.content }}</p>
+            </template>
+
+            <!-- Comment reply form -->
+            <div v-if="replyBoxes[comment.id]">
+              <a-comment>
+                <template #avatar>
+                  <a-avatar :src="currentUserAvatar" :alt="currentUsername" />
+                </template>
+                <template #content>
+                  <a-form-item>
+                    <a-textarea v-model:value="replyText[comment.id]" :rows="4" />
+                  </a-form-item>
+                  <a-form-item>
+                    <a-button html-type="submit" :loading="submitting" type="primary" @click="() => submitReply(comment.id)">
+                      Add Reply
+                    </a-button>
+                  </a-form-item>
+                </template>
+              </a-comment>
             </div>
-            <div v-if="replyBoxes[comment.id]" class="mt-2">
-                <a-textarea v-model:value="replyText[comment.id]"
-                          class="w-full "
-                          placeholder="Write your reply..." :autosize="{ minRows: 2, maxRows: 6 }"/>
-              <div class="flex justify-end">
-                <a-button class="mt-2" type="primary" @click="submitReply(comment.id)">
-                  Trả lời
-                </a-button>
+
+            <!-- Replies -->
+            <div v-if="showReplies[comment.id] && comment.replies?.length">
+              <div v-for="reply in comment.replies" :key="reply.id">
+                <a-comment :author="reply.username" :avatar="reply.userAvatar">
+                  <template #actions>
+                    <div class="reply-actions">
+                      <span @click="() => toggleReplyBoxForReply(reply.id)">Reply to</span>
+                    </div>
+                  </template>
+                  <template #content>
+                    <p>{{ reply.replyContent }}</p>
+                  </template>
+                </a-comment>
+
+                <!-- Reply to reply form -->
+                <div v-if="replyBoxes[reply.id]" class="ml-16">
+                  <a-comment>
+                    <template #avatar>
+                      <a-avatar :src="currentUserAvatar" :alt="currentUsername" />
+                    </template>
+                    <template #content>
+                      <a-form-item>
+                        <a-textarea v-model:value="replyText[reply.id]" :rows="4" />
+                      </a-form-item>
+                      <a-form-item>
+                        <a-button html-type="submit" :loading="submitting" type="primary" @click="() => submitReplyForReply(reply.id, comment.id)">
+                          Add Reply
+                        </a-button>
+                      </a-form-item>
+                    </template>
+                  </a-comment>
+                </div>
               </div>
             </div>
-            <ul v-if="showReplies[comment.id] && comment.replies" class="mt-4 space-y-4">
-              <li v-for="reply in comment.replies" :key="reply.id" class="pl-4 border-l reply-item">
-                <div class="flex items-center space-x-4 my-4">
-                <img :src="reply.userAvatar" alt="" class="w-10 h-10 bg-gray-300 rounded-full">
-                <p class="text-gray-700 font-semibold">{{ reply.username }}</p>
-                </div>
-                <p class="text-gray-600">
-                  <span class="text-[#18A058] italic">@{{ reply.replyTo }}: </span>
-                  {{ reply.replyContent }}</p>
-                <div class="flex items-center space-x-4 mt-2">
-                  <a-button class="p-0 text-[#18A058]" type="link" @click="toggleReplyBoxForReply(reply.id)">
-                   <font-awesome-icon :icon="['fas', 'reply']" class="mr-1"/> Trả lời
-                  </a-button>
-                </div>
-                <div v-if="replyBoxes[reply.id]" class="mt-2">
-                    <a-textarea v-model:value="replyText[reply.id]"
-                              class="w-full"
-                                :autosize="{ minRows: 2, maxRows: 6 }"
-                              placeholder="Write your reply..."
-                    />
-                  <div class="flex justify-end">
-                    <a-button class="mt-2" type="primary" @click="submitReplyForReply(reply.id, comment.id)">
-                      Trả lời
-                    </a-button>
-                  </div>
-                </div>
-              </li>
-              <li v-if="comment.replies.length < comment.replyCount" class="pl-4 border-l">
-                <a-button class="p-0" type="link" @click="loadMoreReplies(comment.id)">
-                  Hiển thị thêm ({{ comment.replyCount - comment.replies.length }} )
-                </a-button>
-              </li>
-            </ul>
-          </div>
+
+            <!-- Load more replies button -->
+            <div v-if="showReplies[comment.id] && comment.replies?.length && comment.replyCount > comment.replies.length"
+                 class="load-more">
+              <a-button @click="() => loadMoreReplies(comment.id)">Load More Replies</a-button>
+            </div>
+          </a-comment>
         </div>
-      </li>
-    </ul>
-    <div class="flex justify-center mt-4">
-      <a-pagination
-          :current="props.currentPage"
-          :pageSize="props.pageSize"
-          :total="props.totalComments"
-          @change="handlePageChange"
-      />
-    </div>
-  </section>
+      </template>
+    </a-skeleton>
+
+    <!-- Pagination -->
+    <a-pagination
+        v-if="totalComments > 0"
+        :current="currentPage"
+        :total="totalComments"
+        :pageSize="pageSize"
+        @change="handlePageChange"
+    />
+  </div>
 </template>
 
 <style scoped>
-.comment-section {
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  background-color: #f9f9f9;
+.ml-16 {
+  margin-left: 64px;
 }
 
-.comment-item {
-  border: 1px solid #d0d0d0;
-  border-radius: 4px;
-  padding: 16px;
-  background-color: #ffffff;
+.load-more {
+  text-align: center;
+  margin-top: 12px;
 }
 
-.reply-item {
-  border: 1px solid #c0c0c0;
-  border-radius: 4px;
-  padding: 12px;
-  background-color: #f0f0f0;
+.reply-actions {
+  display: flex;
+  justify-content: space-between;
+}
+
+.comment-actions {
+  display: flex;
+  justify-content: space-between;
 }
 </style>

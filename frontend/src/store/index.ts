@@ -1,5 +1,4 @@
-// frontend/src/store/index.ts
-import {createStore} from "vuex";
+import { createStore } from "vuex";
 
 interface UserState {
     token: string | null;
@@ -21,19 +20,19 @@ const store = createStore({
         isDarkMode: localStorage.getItem('isDarkMode') === "true",
     } as UserState,
     mutations: {
-        setUser(state, user: { id: string; email: string; image: string; roles: { name: string; description: string | null; permissions: any[] }[] }) {
+        setUser(state: UserState, user: { id: string; email: string; image: string; roles: { name: string; description: string | null; permissions: any[] }[] }) {
             state.user = user;
             localStorage.setItem('user', JSON.stringify(user));
         },
-        setToken(state, token: string) {
+        setToken(state: UserState, token: string) {
             state.token = token;
             localStorage.setItem('token', token);
         },
-        setRefreshToken(state, refreshToken: string) {
+        setRefreshToken(state: UserState, refreshToken: string) {
             state.refreshToken = refreshToken;
             localStorage.setItem('refreshToken', refreshToken);
         },
-        clearUser(state) {
+        clearUser(state: UserState) {
             state.user = null;
             state.token = null;
             state.refreshToken = null;
@@ -41,47 +40,47 @@ const store = createStore({
             localStorage.removeItem('token');
             localStorage.removeItem('refreshToken');
         },
-        toggleDarkMode(state) {
+        toggleDarkMode(state: UserState) {
             state.isDarkMode = !state.isDarkMode;
             localStorage.setItem('isDarkMode', state.isDarkMode.toString());
         },
-        setDarkMode(state, isDark: boolean) {
+        setDarkMode(state: UserState, isDark: boolean) {
             state.isDarkMode = isDark;
             localStorage.setItem('isDarkMode', isDark.toString());
         },
     },
     actions: {
-        toggleDarkMode({ commit }) {
+        toggleDarkMode({ commit }: { commit: Function }) {
             commit("toggleDarkMode");
         },
-        initializeDarkMode({ commit }) {
+        initializeDarkMode({ commit }: { commit: Function }) {
             const savedDarkMode = localStorage.getItem("isDarkMode") === "true";
             commit("setDarkMode", savedDarkMode);
         },
     },
     getters: {
-        isAuthenticated(state): boolean {
+        isAuthenticated(state: UserState): boolean {
             return !!state.token;
         },
-        getUserRole(state): string | null {
+        getUserRole(state: UserState): string | null {
             return state.user ? state.user.roles.map(role => role.name).join(', ') : null;
         },
-        getToken(state): string | null {
+        getToken(state: UserState): string | null {
             return state.token;
         },
-        getRefreshToken(state): string | null {
+        getRefreshToken(state: UserState): string | null {
             return state.refreshToken;
         },
-        getUserId(state): string | null {
+        getUserId(state: UserState): string | null {
             return state.user ? state.user.id : null;
         },
-        getEmail(state): string | null {
+        getEmail(state: UserState): string | null {
             return state.user ? state.user.email : null;
         },
-        isDarkMode(state): boolean {
+        isDarkMode(state: UserState): boolean {
             return state.isDarkMode;
         },
-        getUserImage(state): string | null {
+        getUserImage(state: UserState): string | null {
             return state.user ? state.user.image : null;
         },
     }

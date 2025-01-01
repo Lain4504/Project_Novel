@@ -20,7 +20,7 @@
 
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue';
-import { getAllAds } from '@/api/resource';
+import { getAllAds } from '../../api/resource';
 
 interface Ad {
   id: string;

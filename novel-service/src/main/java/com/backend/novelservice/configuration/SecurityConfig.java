@@ -17,7 +17,7 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     private static final String[] PUBLIC_ENDPOINTS = {
-            "/novels/get/**", "/novel-categories/get/**", "/novel-chapters/get/**", "/novel-volumes/get/**"
+            "/novels/get/**", "/novel-categories/get/**", "/novel-chapters/get/**", "/novel-volumes/get/**", "/prompt/get/**"
     };
     private static final String[] PUBLIC_ENDPOINTS_POST = {
             "internal/novels/**"

@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import {onMounted, ref} from "vue";
-import {getNovelCategories} from "@/api/novelCategory";
+import {getNovelCategories} from "../../api/novelCategory";
 
 const novelCategories = ref<any[]>([]);
 const currentPage = ref(1);

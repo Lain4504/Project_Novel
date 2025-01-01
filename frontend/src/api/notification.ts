@@ -1,4 +1,4 @@
-import axios from "@/utils/axiosInstance";
+import axios from "../utils/axiosInstance";
 
 const NOTIFICATION_API = "notification/notifications/";
 const getNotificationByUserId = async (userId: string, page: number, size: number) => {

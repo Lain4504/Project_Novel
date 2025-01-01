@@ -1,23 +1,25 @@
 <script lang="ts" setup>
-import Ads from '@/components/home/Banner.vue';
-import Banner from '@/components/home/Searchbar.vue';
-import CompletedNovel from '@/components/home/CompletedNovel.vue';
-import NewNovel from '@/components/home/NewNovel.vue';
-import PromptNovel from '@/components/home/PromptNovel.vue';
-import Reviews from '@/components/home/ReviewsSection.vue';
-import StoryList from '@/components/home/StoryList.vue';
-import UpdatedList from '@/components/home/UpdatedList.vue';
+import Header from "../../components/home/Header.vue";
+import Footer from "../../components/home/Footer.vue";
+import Layout from "./homepage/Layout.vue";
+import { useRoute } from 'vue-router';
+import { computed } from 'vue';
+import Searchbar from "./homepage/Searchbar.vue";
+import Banner from "../../components/home/Banner.vue";
+
+const route = useRoute();
+const isHomeRoute = computed(() => route.name === 'home');
 </script>
 
 <template>
-  <Banner/>
-  <div class="max-w-[83rem] mx-auto px-4 sm:px-6 lg:px-8 my-5">
-    <StoryList/>
-    <PromptNovel/>
-    <UpdatedList/>
-    <NewNovel/>
-    <Ads/>
-    <CompletedNovel/>
-    <Reviews/>
+  <Header/>
+  <Searchbar v-if="isHomeRoute"/>
+  <div class="max-w-[83rem] mx-auto px-4 sm:px-6 lg:px-8 my-5 min-h-screen">
+    <Banner v-if="!isHomeRoute"/>
+    <Layout v-if="isHomeRoute"/>
+    <keep-alive>
+      <router-view v-if="!isHomeRoute"/>
+    </keep-alive>
   </div>
+  <Footer/>
 </template>
